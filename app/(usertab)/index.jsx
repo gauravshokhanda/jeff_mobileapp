@@ -5,8 +5,6 @@ import React from 'react';
 export default function Home() {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-
-
       <View className="flex-1 bg-sky-950 border border-b-white p-10">
 
         <View>
@@ -57,8 +55,6 @@ export default function Home() {
               Real Estate Developer
             </Text>
           </View>
-
-
           <View className="w-[48%] h-36 bg-slate-100 justify-center items-center rounded-2xl">
             <Image
               className="h-16 absolute"

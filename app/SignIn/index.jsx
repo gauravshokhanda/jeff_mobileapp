@@ -6,6 +6,7 @@ import { Link, useRouter } from "expo-router";
 export default function Index() {
     const router = useRouter();
     const handleSignIn = () => {
+        console.log("handle sign in")
         router.push('/(usertab)')
     }
     return (
@@ -14,7 +15,7 @@ export default function Index() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
             <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-                <View className="flex-1 bg-sky-950 p-12 border ">
+                <View className="flex-1 bg-sky-950 p-12 border">
                     <View className="flex-1">
                         <View className="flex-row items-center border-b border-b-white  pb-4 mt-8 mb-10">
                             <FontAwesome name="chevron-left" size={15} color="white" />
@@ -30,8 +31,10 @@ export default function Index() {
                         <View>
                             <AuthInput placeholder="Email Address" secureTextEntry={false} />
                             <AuthInput placeholder="Password" secureTextEntry={true} />
-                           
+
                         </View>
+
+
 
                         {/* Sign up button */}
                         <View className="items-center justify-center mt-6">
@@ -42,9 +45,15 @@ export default function Index() {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <View className="ml-2 flex-row items-center justify-center mt-10">
-                        <Text className="text-white text-lg">Forgot Your Password?</Text>
 
+                    <View>
+                        <View className="mt-10 items-center justify-center pl-1 pb-2">
+                            <Link href={""} className="text-slate-300">Forgot Your Password</Link>
+                        </View>
+                        <View className="ml-2 flex-row items-center justify-center ">
+                            <Text className="text-white text-lg">Already Have a Account?</Text>
+                            <Link className="text-white text-lg pl-1" href={"/"}>Sign up</Link>
+                        </View>
                     </View>
 
                 </View>

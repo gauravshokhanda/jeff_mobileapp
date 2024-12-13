@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView, TextInput } from 'react-native'
+import { View, Text, Image, ScrollView, TextInput, TouchableOpacity } from 'react-native'
 import React from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { FontAwesome } from '@expo/vector-icons';
@@ -23,6 +23,65 @@ export default function User() {
             size={27}
             color={"black"}
             className="bg-slate-200 w-[20%] text-center pt-1 rounded-xl border-8 border-sky-900 " />
+       
+        </View>
+        {/* first */}
+        <View className="items-center mt-20">
+          <View className="border  flex-row  bg-slate-100 justify-between px-4 items-center rounded-2xl w-[95%]">
+            <View>
+              <Image
+                className="w-24 h-24"
+                style={{ tintColor:"#abadaf"}}
+                source={require('../../assets/images/Untitled_design__8_-removebg-preview.png')} />
+            </View>
+            <View>
+              <TouchableOpacity>
+              <Text className="text-xl text-customGray">Explore Properties</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+{/* second */}
+        <View className="items-center my-10">
+          <View className="border  flex-row bg-slate-100 justify-between px-4 items-center rounded-2xl w-[95%]">
+            <View>
+              <TouchableOpacity>
+                <Text className="text-xl text-customGray">Find Contractors</Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <Image
+                className="w-24 h-24"
+                style={{ tintColor:"#abadaf"}}
+                source={require('../../assets/images/Untitled_design__7_-removebg-preview.png')} />
+            </View>
+           
+          </View>
+        </View>
+        {/* third */}
+        <View className="items-center">
+          <View className="border  flex-row bg-slate-100 justify-around px-4 items-center rounded-2xl w-[95%]">
+            <View>
+              <Image
+                className="w-24 h-24"
+                style={{ tintColor: "#abadaf" }}
+                source={require('../../assets/images/Untitled_design__6_-removebg-preview.png')} />
+            </View>
+
+            <View>
+              <TouchableOpacity>
+                <Text className="text-xl text-customGray">More Services</Text>
+              </TouchableOpacity>
+            </View>   
+          </View>
+        </View>
+
+        <View className="items-center justify-center mt-14">
+          <TouchableOpacity
+            className="text-center rounded-3xl bg-slate-200 px-5">
+            <Text className="text-center mx-10 my-3 text-lg text-sky-950">Search</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView >
