@@ -3,7 +3,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import { combineReducers } from 'redux';
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
-import userReducer from './userSlice'; 
+import authReducer from './slice/authSlice'; 
 
 // Persist Config
 const persistConfig = {
@@ -13,7 +13,7 @@ const persistConfig = {
 
 // Root Reducer
 const rootReducer = combineReducers({
-    user: userReducer,
+    auth: authReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

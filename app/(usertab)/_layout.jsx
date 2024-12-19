@@ -1,9 +1,28 @@
 import { Tabs } from 'expo-router'
 import Ionicons from '@expo/vector-icons/Ionicons';
 // import '../../global.css';
+import ProtectedRoute from "../../components/ProtectedRoute"
+
+import { useFocusEffect } from '@react-navigation/native';
+import { BackHandler } from 'react-native';
+
+// const disableBackAction = () => {
+//     useFocusEffect(() => {
+//         const onBackPress = () => {
+//             return true;
+//         };
+
+//         BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+//         return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+//     });
+// };
+
 
 export default function TabRoot() {
+    // disableBackAction()
     return (
+        // <ProtectedRoute>
         <Tabs screenOptions={{
             headerShown: false,
             tabBarStyle: {
@@ -56,5 +75,6 @@ export default function TabRoot() {
                 }} />
 
         </Tabs>
+        // </ProtectedRoute>
     )
 }
