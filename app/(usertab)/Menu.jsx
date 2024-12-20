@@ -15,7 +15,7 @@ export default function Menu() {
           <View className="h-[60%] w-[60%]">
             <Image
               className="h-full w-full"
-              source={require("../../assets/images/Add a heading.png")}
+              source={require("../../assets/images/AC5D_Logo.jpg")}
               resizeMode="cover"
             />
 

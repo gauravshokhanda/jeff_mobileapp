@@ -13,10 +13,7 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="index" options={{ title: 'Sign in', headerShown: false }} />
           <Stack.Screen name="SignUp/index" options={{ title: 'Sign up', headerShown: false }} />
-          
             <Stack.Screen name='(usertab)' options={{ headerShown: false }} />
-
-          
         </Stack>
       </PersistGate>
     </Provider>

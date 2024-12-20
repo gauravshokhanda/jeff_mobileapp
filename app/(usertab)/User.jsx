@@ -8,35 +8,39 @@ import { FontAwesome } from '@expo/vector-icons';
 export default function User() {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <View className="flex-1 bg-sky-950 border border-b-white p-10">
-        <View className="flex-row items-center border-b border-b-white  pb-4 mt-6 mb-5 mx-5">
-          <FontAwesome name="chevron-left" size={15} color="white" className="pr-3 pl-2" />
-          <Text className="text-white text-2xl font-medium">
-            User
-          </Text>
-        </View>
+      <View className="flex-row items-center bg-sky-950 pt-12 pb-4">
+        <TouchableOpacity className="pr-4 pl-10">
+        <FontAwesome name="chevron-left" size={15} color="white"  />
+        </TouchableOpacity>
+        <Text className="text-white text-2xl ">
+          User
+        </Text>
+      </View>
 
-        <View className="flex-row border-2 border-sky-900 bg-sky-900 rounded-xl mt-7">
-          <TextInput className="w-[80%] bg-slate-200 rounded-xl border-8 border-sky-900" />
+      <View className="flex-1 bg-white border border-b-white p-10">
+       
+
+        <View className="flex-row border-2 border-sky-800 bg-sky-800 rounded-xl mt-7">
+          <TextInput className="w-[80%] bg-white rounded-2xl border-8 border-sky-800" />
           <Ionicons
             name="search"
             size={27}
-            color={"black"}
-            className="bg-slate-200 w-[20%] text-center pt-1 rounded-xl border-8 border-sky-900 " />
+            color={"#075985"}
+            className="bg-white w-[20%] text-center pt-1 rounded-2xl border-8 border-sky-800 " />
        
         </View>
         {/* first */}
         <View className="items-center mt-20">
-          <View className="border  flex-row  bg-slate-100 justify-between px-4 items-center rounded-2xl w-[95%]">
+          <View className="border  flex-row  bg-sky-950 justify-between px-4 items-center rounded-2xl w-[95%]">
             <View>
               <Image
                 className="w-24 h-24"
-                style={{ tintColor:"#abadaf"}}
+                style={{ tintColor:"white"}}
                 source={require('../../assets/images/Untitled_design__8_-removebg-preview.png')} />
             </View>
             <View>
               <TouchableOpacity>
-              <Text className="text-xl text-customGray">Explore Properties</Text>
+              <Text className="text-xl text-white">Explore Properties</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -44,16 +48,16 @@ export default function User() {
 
 {/* second */}
         <View className="items-center my-10">
-          <View className="border  flex-row bg-slate-100 justify-between px-4 items-center rounded-2xl w-[95%]">
+          <View className="border  flex-row bg-sky-950 justify-between px-4 items-center rounded-2xl w-[95%]">
             <View>
               <TouchableOpacity>
-                <Text className="text-xl text-customGray">Find Contractors</Text>
+                <Text className="text-xl text-white">Find Contractors</Text>
               </TouchableOpacity>
             </View>
             <View>
               <Image
                 className="w-24 h-24"
-                style={{ tintColor:"#abadaf"}}
+                style={{ tintColor:"white"}}
                 source={require('../../assets/images/Untitled_design__7_-removebg-preview.png')} />
             </View>
            
@@ -61,17 +65,17 @@ export default function User() {
         </View>
         {/* third */}
         <View className="items-center">
-          <View className="border  flex-row bg-slate-100 justify-around px-4 items-center rounded-2xl w-[95%]">
+          <View className="border  flex-row bg-sky-950 justify-around px-4 items-center rounded-2xl w-[95%]">
             <View>
               <Image
                 className="w-24 h-24"
-                style={{ tintColor: "#abadaf" }}
+                style={{ tintColor: "white" }}
                 source={require('../../assets/images/Untitled_design__6_-removebg-preview.png')} />
             </View>
 
             <View>
               <TouchableOpacity>
-                <Text className="text-xl text-customGray">More Services</Text>
+                <Text className="text-xl text-white">More Services</Text>
               </TouchableOpacity>
             </View>   
           </View>
@@ -79,8 +83,8 @@ export default function User() {
 
         <View className="items-center justify-center mt-14">
           <TouchableOpacity
-            className="text-center rounded-3xl bg-slate-200 px-5">
-            <Text className="text-center mx-10 my-3 text-lg text-sky-950">Search</Text>
+            className="text-center rounded-3xl bg-sky-950 px-5">
+            <Text className="text-center mx-10 my-3 text-lg text-white">Search</Text>
           </TouchableOpacity>
         </View>
       </View>
