@@ -1,4 +1,4 @@
-import { Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform, ScrollView, Image } from "react-native";
 import { FontAwesome } from '@expo/vector-icons';
 import AuthInput from "../components/AuthInput";
 import { Link, useRouter } from "expo-router";
@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { setLogin } from "../redux/slice/authSlice";
 import { Alert } from 'react-native';
 import { useSelector } from 'react-redux';
+import Logo from '../assets/images/AC5D_Logo.jpg';
 
 export default function SignIn() {
   const [email, setEmail] = useState("")
@@ -46,58 +47,84 @@ export default function SignIn() {
     }
   }
   return (
-    <KeyboardAvoidingView
-      className="flex-1"
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-        <View className="flex-1 bg-sky-950 p-12 border">
-          <View className="flex-1">
-            <View className="flex-row items-center border-b border-b-white  pb-4 mt-8 mb-10">
-              <FontAwesome name="chevron-left" size={15} color="white" />
-              <Text className="text-white text-2xl font-medium pl-6 ">
-                Sign In
-              </Text>
-            </View>
-            <View className="my-10 pt-8 pb-10">
-              <Text
-                className="text-white text-5xl text-center elevation-lg font-semibold">G32CROP</Text>
-            </View>
-            {/* input text */}
-            <View>
-              <AuthInput
-                placeholder="Email Address"
-                secureTextEntry={false}
-                onChangeText={setEmail}
-              />
-              <AuthInput
-                placeholder="Password"
-                secureTextEntry={true}
-                onChangeText={setPassword}
-              />
+<KeyboardAvoidingView
+  className="flex-1"
+  behavior={Platform.OS === "ios" ? "padding" : "height"}
+>
+  <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+    <View className="flex-1 bg-sky-10 p-12 border items-center justify-center">
+      
+      {/* Logo */}
+      <View className="mb-8 items-center justify-center">
+  {/* Circular Container */}
+  <View className="w-44 h-44 rounded-full border-4 border-sky-950 overflow-hidden items-center justify-center">
+    <Image
+      source={Logo} 
+      style={{
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
+      }}
+    />
+  </View>
+</View>
 
-            </View>
-            {/* Sign up button */}
-            <View className="items-center justify-center mt-6">
-              <TouchableOpacity
-                onPress={handleSignIn}
-                className="text-center rounded-3xl bg-slate-200 px-5 ">
-                <Text className="text-center mx-10 my-3 text-lg">SIGN IN</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View>
-            <View className="mt-10 items-center justify-center pl-1 pb-2">
-              <Link href={""} className="text-slate-300">Forgot Your Password</Link>
-            </View>
-            <View className="ml-2 flex-row items-center justify-center ">
-              <Text className="text-white text-lg">Already Have a Account?</Text>
-              <Link className="text-white text-lg pl-1" href={"/SignUp"}>Sign up</Link>
-            </View>
-          </View>
+      <View className="w-full max-w-md">
+        
+        {/* Input Fields */}
+        <View className="w-full space-y-4">
+          <AuthInput
+            placeholder="Email Address"
+            secureTextEntry={false}
+            onChangeText={setEmail}
+            style={{
+              backgroundColor: "white",
+              borderColor: "gray",
+              borderWidth: 1,
+              borderRadius: 8,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              fontSize: 16,
+            }}
+          />
+          <AuthInput
+            placeholder="Password"
+            secureTextEntry={true}
+            onChangeText={setPassword}
+            style={{
+              backgroundColor: "white",
+              borderColor: "gray",
+              borderWidth: 1,
+              borderRadius: 8,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              fontSize: 16,
+            }}
+          />
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        
+        {/* Sign In Button */}
+        <View className="items-center justify-center mt-6">
+          <TouchableOpacity
+            onPress={handleSignIn}
+            className="text-center rounded-3xl bg-sky-950  px-5 py-3 w-full max-w-xs">
+            <Text className="text-center text-white text-lg">SIGN IN</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Additional Links */}
+      <View className="w-full max-w-md mt-10 items-center">
+        <View className="items-center pb-2">
+          <Link href={""} className="text-slate-500">Forgot Your Password</Link>
+        </View>
+        <View className="flex-row items-center justify-center">
+          <Text className="text-gray-700 text-lg">Already Have an Account?</Text>
+          <Link className="text-blue-600 text-lg pl-1" href={"/SignUp"}>Sign up</Link>
+        </View>
+      </View>
+    </View>
+  </ScrollView>
+</KeyboardAvoidingView>
   );
 }

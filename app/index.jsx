@@ -1,7 +1,9 @@
 import { View, Image, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Index() {
+  const navigation = useNavigation(); 
     return (
         <View className="flex-1">
             <View className='flex-1 border items-center flex-row flex-wrap gap-2 h-[100%]'>
@@ -41,10 +43,11 @@ export default function Index() {
             </View>
             <View className='flex-1'>
             <View className="items-center justify-center mt-6">
-                <TouchableOpacity
-                    className="text-center rounded-3xl  px-10 bg-sky-500 ">
-                    <Text className="text-center mx-10 my-3 text-lg">Get Started</Text>
-                </TouchableOpacity>
+            <TouchableOpacity
+                        onPress={() => navigation.navigate('SignIn')} // Navigate to SignIn
+                        className="text-center rounded-3xl px-10 bg-sky-500">
+                        <Text className="text-center mx-10 my-3 text-lg text-white">Get Started</Text>
+                    </TouchableOpacity>
             </View>
         </View>
         </View>
