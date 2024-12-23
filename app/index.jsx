@@ -19,9 +19,13 @@ export default function Index() {
                     source={require('../assets/images/homescreen/homeLogo.jpg')} />
                 <TouchableOpacity
                     onPress={() => navigation.navigate('SignIn')}
-                    className="text-center rounded-3xl px-10 bg-customBlue">
-                    <Text className="font-semibold text-center mx-10 my-3 text-lg text-white">Get Started</Text>
+                    className="text-center rounded-3xl px-10 bg-customBlue"
+                >
+                    <Text className="font-semibold text-center mx-10 my-3 text-lg text-white">
+                        Get Started
+                    </Text>
                 </TouchableOpacity>
+
             </View>
 
         </View>
