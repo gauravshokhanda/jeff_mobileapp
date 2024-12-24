@@ -6,6 +6,7 @@ import { Link, useRouter } from "expo-router";
 import { API, baseUrl } from "../../config/apiConfig";
 import { Alert } from 'react-native';
 import { setSignUp } from "../../redux/slice/authSlice"
+import { Picker } from '@react-native-picker/picker';
 
 // import { setLogin } from "../redux/slice/authSlice"
 export default function Index() {
@@ -13,17 +14,18 @@ export default function Index() {
     const [email, setEmail] = useState("")
     const [password, setpassword] = useState("")
     const [password_confirmation, setpassword_confirmation] = useState("")
+    const [role, setRole] = useState('')
 
     const router = useRouter()
 
 
     const handleSignIn = async () => {
-        if (!name || !email || !password || !password_confirmation) {
+        if (!name || !email || !password || !password_confirmation || !role) {
             Alert.alert("Error", "All fields are required.");
             console.log("all fields are required")
             return;
         }
-        const data = { name, email, password, password_confirmation }
+        const data = { name, email, password, password_confirmation, role }
         try {
             const response = await API.post("auth/register", data);
             const { access_token } = response.data
@@ -83,6 +85,17 @@ export default function Index() {
                                 onChangeText={setpassword_confirmation}
                             />
                             {/* <TextInput className=' text-gray-600 bg-slate-200 rounded-xl mb-8 px-5 py-4' /> */}
+                            <View className="mb-8 rounded-xl overflow-hidden ">
+                                <Picker className="rounded-xl"
+                                    selectedValue={role}
+                                    onValueChange={(itemValue) => setRole(itemValue)}
+                                    style={{backgroundColor: '#e2e8f0', color:"#4b5563",  }}
+                                >
+                                    <Picker.Item label="Select Role" value="" />
+                                    <Picker.Item label="Contractor" value="contractor" />
+                                    <Picker.Item label="User" value="user" />
+                                </Picker>
+                            </View>
                         </View>
 
                         {/* Sign up button */}
@@ -93,6 +106,7 @@ export default function Index() {
                                 <Text className="text-center mx-10 my-3 text-lg">SIGN UP</Text>
                             </TouchableOpacity>
                         </View>
+
                     </View>
                     <View className="ml-2 flex-row items-center justify-center mt-10">
                         <Text className="text-white text-lg">Already Have a Account?</Text>
