@@ -17,11 +17,10 @@ export default function Index() {
                 />
             </View>
 
-            <View className=" h-[20%] justify-between items-center">
+            <View className=" h-[20%] w-[100%] justify-between items-center">
                 <Image
-                    className='rounded-3xl'
-                    resizeMode='contain'
-                    source={require('../assets/images/homescreen/MainLogo.jpg')} />
+                    className='h-[50%]'
+                    source={require('../assets/images/homescreen/mainHomeLogo.jpg')} />
                 <TouchableOpacity
                     onPress={() => navigation.navigate('SignIn')}
                     className="text-center rounded-3xl px-10 bg-sky-950"
