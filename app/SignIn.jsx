@@ -29,7 +29,7 @@ export default function SignIn() {
       const response = await API.post("auth/login", data);
       const { access_token } = response.data
       dispatch(setLogin({ access_token }))
-      router.replace('/(usertab)')
+      router.replace('/(usertab)/Dashboard')
     }
     catch (err) {
       let errorMessage = "An unexpected error occurred. Please try again.";
