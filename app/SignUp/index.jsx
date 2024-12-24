@@ -5,6 +5,7 @@ import AuthInput from "../../components/AuthInput";
 import { Link, useRouter } from "expo-router";
 import { API, baseUrl } from "../../config/apiConfig";
 import { Alert } from 'react-native';
+import { setSignUp } from "../../redux/slice/authSlice"
 
 // import { setLogin } from "../redux/slice/authSlice"
 export default function Index() {
@@ -22,16 +23,13 @@ export default function Index() {
             console.log("all fields are required")
             return;
         }
-        // if (password !== password_confirmation) {
-        //     Alert.alert("Error", 'Password do not match.');
-        //     return;
-        // }
         const data = { name, email, password, password_confirmation }
         try {
             const response = await API.post("auth/register", data);
+            const { access_token } = response.data
+            dispatch(setSignUp({ access_token }))
             Alert.alert("Success", "Account created Successfully!")
-            router.push("/")
-            // console.log("response", response.data)
+            router.replace('/(usertab)')
         } catch (error) {
             if (error.response && error.response.data) {
                 const errorData = error.response.data;

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
 import { useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 
@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children }) => {
         // console.log("key points", isAuthenticated, token)
 
         if (!isAuthenticated || !token) {
-            router.replace("/SignIn/index.jsx");
+            router.replace("/SignUp/index.jsx");
         }
     }, [isAuthenticated, token]);
 

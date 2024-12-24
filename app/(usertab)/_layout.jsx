@@ -22,7 +22,7 @@ import { BackHandler } from 'react-native';
 export default function TabRoot() {
     // disableBackAction()
     return (
-        // <ProtectedRoute>
+        <ProtectedRoute>
         <Tabs screenOptions={{
             headerShown: false,
             tabBarStyle: {
@@ -75,6 +75,6 @@ export default function TabRoot() {
                 }} />
 
         </Tabs>
-        // </ProtectedRoute>
+        </ProtectedRoute>
     )
 }

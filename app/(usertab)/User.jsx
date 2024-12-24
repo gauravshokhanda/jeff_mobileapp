@@ -1,93 +1,92 @@
-import { View, Text, Image, ScrollView, TextInput, TouchableOpacity } from 'react-native'
-import React from 'react'
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { FontAwesome } from '@expo/vector-icons';
+import React from 'react';
+import { View, Text, TextInput, Image, TouchableOpacity } from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
-
-
-export default function User() {
+const ProfileScreen = () => {
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <View className="flex-row items-center bg-sky-950 pt-12 pb-4">
-        <TouchableOpacity className="pr-4 pl-10">
-        <FontAwesome name="chevron-left" size={15} color="white"  />
-        </TouchableOpacity>
-        <Text className="text-white text-2xl ">
-          User
-        </Text>
+    <View className="flex-1 bg-white px-5 py-5">
+      {/* Header */}
+      <View className="flex-row justify-between items-center">
+        <Ionicons name="arrow-back" size={24} color="black" />
+        <Ionicons name="settings-outline" size={24} color="black" />
       </View>
 
-      <View className="flex-1 bg-white border border-b-white p-10">
-       
-
-        <View className="flex-row border-2 border-sky-800 bg-sky-800 rounded-xl mt-7">
-          <TextInput className="w-[80%] bg-white rounded-2xl border-8 border-sky-800" />
-          <Ionicons
-            name="search"
-            size={27}
-            color={"#075985"}
-            className="bg-white w-[20%] text-center pt-1 rounded-2xl border-8 border-sky-800 " />
-       
-        </View>
-        {/* first */}
-        <View className="items-center mt-20">
-          <View className="border  flex-row  bg-sky-950 justify-between px-4 items-center rounded-2xl w-[95%]">
-            <View>
-              <Image
-                className="w-24 h-24"
-                style={{ tintColor:"white"}}
-                source={require('../../assets/images/Untitled_design__8_-removebg-preview.png')} />
-            </View>
-            <View>
-              <TouchableOpacity>
-              <Text className="text-xl text-white">Explore Properties</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-
-{/* second */}
-        <View className="items-center my-10">
-          <View className="border  flex-row bg-sky-950 justify-between px-4 items-center rounded-2xl w-[95%]">
-            <View>
-              <TouchableOpacity>
-                <Text className="text-xl text-white">Find Contractors</Text>
-              </TouchableOpacity>
-            </View>
-            <View>
-              <Image
-                className="w-24 h-24"
-                style={{ tintColor:"white"}}
-                source={require('../../assets/images/Untitled_design__7_-removebg-preview.png')} />
-            </View>
-           
-          </View>
-        </View>
-        {/* third */}
-        <View className="items-center">
-          <View className="border  flex-row bg-sky-950 justify-around px-4 items-center rounded-2xl w-[95%]">
-            <View>
-              <Image
-                className="w-24 h-24"
-                style={{ tintColor: "white" }}
-                source={require('../../assets/images/Untitled_design__6_-removebg-preview.png')} />
-            </View>
-
-            <View>
-              <TouchableOpacity>
-                <Text className="text-xl text-white">More Services</Text>
-              </TouchableOpacity>
-            </View>   
-          </View>
-        </View>
-
-        <View className="items-center justify-center mt-14">
-          <TouchableOpacity
-            className="text-center rounded-3xl bg-sky-950 px-5">
-            <Text className="text-center mx-10 my-3 text-lg text-white">Search</Text>
+      {/* Profile Section */}
+      <View className="items-center my-5">
+        <View className="relative">
+          <Image
+            source={{ uri: 'https://example.com/profile.png' }} // Replace with your image URL
+            className="w-20 h-20 rounded-full"
+          />
+          <TouchableOpacity className="absolute bottom-0 right-0 bg-customBlue p-1 rounded-full">
+            <MaterialIcons name="edit" size={16} color="white" />
           </TouchableOpacity>
         </View>
+        <Text className="text-sm text-gray-500">Basic Design</Text>
       </View>
-    </ScrollView >
-  )
-}
+
+      {/* Form Section */}
+      <View className="space-y-4">
+        {/* Email Field */}
+        <View>
+          <Text className="text-sm font-semibold text-gray-500">Your Email</Text>
+          <View className="flex-row items-center border border-gray-300 rounded-lg p-3 mt-1">
+            <Ionicons name="mail-outline" size={20} color="gray" />
+            <TextInput
+              className="ml-2 flex-1 text-black"
+              placeholder="xx@gmail.com"
+              editable={false}
+            />
+          </View>
+        </View>
+
+        {/* Phone Number Field */}
+        <View>
+          <Text className="text-sm font-semibold text-gray-500">Phone Number</Text>
+          <View className="flex-row items-center border border-gray-300 rounded-lg p-3 mt-1">
+            <Ionicons name="call-outline" size={20} color="gray" />
+            <TextInput
+              className="ml-2 flex-1 text-black"
+              placeholder="+60123456789"
+              editable={false}
+            />
+          </View>
+        </View>
+
+        {/* Website Field */}
+        <View>
+          <Text className="text-sm font-semibold text-gray-500">Website</Text>
+          <View className="flex-row items-center border border-gray-300 rounded-lg p-3 mt-1">
+            <Ionicons name="globe-outline" size={20} color="gray" />
+            <TextInput
+              className="ml-2 flex-1 text-black"
+              placeholder="www.gfx.com"
+              editable={false}
+            />
+          </View>
+        </View>
+
+        {/* Password Field */}
+        <View>
+          <Text className="text-sm font-semibold text-gray-500">Password</Text>
+          <View className="flex-row items-center border border-gray-300 rounded-lg p-3 mt-1">
+            <Ionicons name="lock-closed-outline" size={20} color="gray" />
+            <TextInput
+              className="ml-2 flex-1 text-black"
+              placeholder="********"
+              secureTextEntry
+              editable={false}
+            />
+          </View>
+        </View>
+      </View>
+
+      {/* Logout Button */}
+      <TouchableOpacity className="bg-customBlue mt-10 py-3 rounded-lg">
+        <Text className="text-center text-white font-bold text-lg">Logout</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+export default ProfileScreen;

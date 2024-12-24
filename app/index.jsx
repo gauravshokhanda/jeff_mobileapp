@@ -1,14 +1,18 @@
 import { View, Image, Text, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { useRouter } from "expo-router";
+import { useSelector } from "react-redux";
 
 export default function Index() {
     const navigation = useNavigation();
+    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+    const token = useSelector((state) => state.auth.token);
+
     return (
         <View className="flex-1 items-center bg-white">
             <View className='items-center'>
                 <Image
-
                     source={require('../assets/images/homescreen/homeImage.png')}
                 />
             </View>
