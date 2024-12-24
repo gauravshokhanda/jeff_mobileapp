@@ -1,8 +1,17 @@
 import React from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-
+import { useDispatch } from 'react-redux';
+import { setLogout } from "../../redux/slice/authSlice"
+import { useNavigation } from '@react-navigation/native';
 const ProfileScreen = () => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+
+  const handleLogout = () => {
+    dispatch(setLogout()); 
+    navigation.replace('SignIn');
+  };
   return (
     <View className="flex-1 bg-white px-5 py-5">
       {/* Header */}
@@ -82,7 +91,9 @@ const ProfileScreen = () => {
       </View>
 
       {/* Logout Button */}
-      <TouchableOpacity className="bg-customBlue mt-10 py-3 rounded-lg">
+      <TouchableOpacity 
+        onPress={handleLogout}
+      className="bg-customBlue mt-10 py-3 rounded-lg">
         <Text className="text-center text-white font-bold text-lg">Logout</Text>
       </TouchableOpacity>
     </View>
