@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import Logo from '../assets/images/AC5D_Logo.jpg';
 
 export default function SignIn() {
-  const [email, setEmail] = useState("")
+  const [email, setEmail] = useState()
   const [password, setPassword] = useState("")
   const [error, setError] = useState(null)
   const router = useRouter();
