@@ -7,18 +7,18 @@ const ProtectedRoute = ({ children }) => {
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
     const token = useSelector((state) => state.auth.token);
     const router = useRouter();
-
     useEffect(() => {
-        // console.log("key points", isAuthenticated, token)
-
         if (!isAuthenticated || !token) {
-            router.replace("/SignUp/index.jsx");
+            router.replace("/SignIn");
         }
-    }, [isAuthenticated, token]);
+    }, [isAuthenticated, token, router]);
 
-    if (!isAuthenticated || !token) {
-        return null;
+    if (isAuthenticated && token) {
+        return children;
     }
-    return children;
+
+    return null;
+
+
 };
 export default ProtectedRoute;
