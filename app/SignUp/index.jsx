@@ -54,6 +54,7 @@ export default function SignUp() {
         const data = { name, email, password, password_confirmation: passwordConfirmation, role: role.key };
 
         try {
+            
             const response = await API.post("auth/register", data);
             const { access_token } = response.data;
             dispatch(setSignUp({ access_token }))
