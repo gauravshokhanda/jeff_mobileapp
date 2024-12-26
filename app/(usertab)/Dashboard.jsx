@@ -4,8 +4,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { FontAwesome } from '@expo/vector-icons';
 import CardSlider from '../../components/CardSlider';
 import EsateSlider from '../../components/Estateslider';
+import { useRouter } from "expo-router";
 
 export default function Dashboard() {
+  const router = useRouter();
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       {/* Header */}
@@ -47,7 +49,8 @@ export default function Dashboard() {
         {/* Search using Map & Images */}
         <View className="flex-row justify-between mt-10">
   {/* Search using Map */}
-  <TouchableOpacity className="border bg-sky-150 rounded-xl w-[48%] h-24 items-center p-4">
+  <TouchableOpacity className="border bg-sky-150 rounded-xl w-[48%] h-24 items-center p-4"
+   onPress={() => router.push('MapScreen')} >
     <Ionicons name="map-outline" size={28} color="#111827" className="mb-2" />
     <Text className="text-sky-950 text-lg">Search using Map</Text>
   </TouchableOpacity>

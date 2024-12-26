@@ -19,8 +19,8 @@ export default function Index() {
 
             <View className=" h-[20%] w-[100%] justify-between items-center">
                 <Image
-                    className='h-[50%]'
-                    source={require('../assets/images/homescreen/mainHomeLogo.jpg')} />
+                    className='h-[60%] w-[80%] rounded-lg '
+                    source={require('../assets/images/homescreen/MainLogo.jpg')} />
                 <TouchableOpacity
                     onPress={() => navigation.navigate('SignIn')}
                     className="text-center rounded-3xl px-10 bg-sky-950"
