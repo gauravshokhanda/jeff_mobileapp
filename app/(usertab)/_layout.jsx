@@ -74,7 +74,7 @@ export default function TabRoot() {
                         }
                     }} />
 
-                <Tabs.Screen name='FloorMapScreen' options={{
+                {/* <Tabs.Screen name='FloorMapScreen' options={{
 
                     tabBarStyle: { display: 'none' },
                     tabBarIconStyle: { display: 'none' },
@@ -84,7 +84,7 @@ export default function TabRoot() {
 
                     tabBarStyle: { display: 'none' },
                     tabBarIconStyle: { display: 'none' }
-                }} />
+                }} /> */}
             </Tabs>
         </ProtectedRoute>
     )
