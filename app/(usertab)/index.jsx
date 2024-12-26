@@ -1,81 +1,85 @@
-import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import React from 'react';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { FontAwesome } from '@expo/vector-icons';
+import CardSlider from '../../components/CardSlider';
+import EsateSlider from '../../components/Estateslider';
+import { useRouter } from "expo-router";
 
-
-
-export default function Home() {
+export default function Dashboard() {
+  const router = useRouter();
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <View className="bg-sky-950 pt-12 pb-4 flex-row">
-        <TouchableOpacity className="pr-4 pt-2 pl-10 font-light">
-          <FontAwesome
-            name="chevron-left"
-            size={15}
-            color="white" />
-        </TouchableOpacity>
-        <Text className="text-white text-2xl">
-          Role Selection
-        </Text>
+      {/* Header */}
+      <View className="flex-row justify-center items-center bg-sky-950 pt-12 p-10 pb-4">
 
+        {/* Home Icon */}
+        <Ionicons name="home" size={24} color="#ffffff" className="mr-5 mt-2 " />
+
+        {/* Search Bar */}
+        <View className="flex-row items-center border border-white rounded-full px-4 mt-2 bg-white">
+          <Ionicons name="search" size={24} color="#000000" />
+          <TextInput
+            className="flex-1 ml-2 text-black"
+            placeholder="Start Search"
+            placeholderTextColor="#000000"
+          />
+          {/* Filter Icon */}
+          <Ionicons name="filter" size={24} color="#000000" className="ml-4" />
+        </View>
       </View>
 
-      <View className="flex-1 bg-white p-10">
 
-        <View className="h-56 mt-9 mb-10">
-          <Image
-            className="w-full h-full border-2 border-slate-200"
-            source={require('../../assets/images/AC5D_Logo.jpg')}
-            resizeMode="cover"
-          />
+      {/* Main Content */}
+
+
+      <View className="bg-white border border-b-white p-2">
+
+
+        {/* Welcome Message */}
+        <View className=" flex-row justify-center items-center mt-2">
+          <Text className="text-black text-lg">Welcome,</Text>
+          <Text className="text-sky-950 text-lg text-bold font-semibold">
+            Gaurav
+          </Text>
+        </View>
+
+        {/* Search Bar */}
+
+        {/* Search using Map & Images */}
+        <View className="flex-row justify-between mt-10">
+          {/* Search using Map */}
+          <TouchableOpacity className="border bg-sky-150 rounded-xl w-[48%] h-24 items-center p-4"
+            onPress={() => router.push('MapScreen')} >
+            <Ionicons name="map-outline" size={28} color="#111827" className="mb-2" />
+            <Text className="text-sky-950 text-lg">Search using Map</Text>
+          </TouchableOpacity>
+
+          {/* Search using Images */}
+          <TouchableOpacity
+            onPress={() => router.push('FloorMapScreen')}
+            className="border bg-sky-150 rounded-xl w-[48%] h-24 items-center p-4"
+          >
+            <Ionicons name="image-outline" size={28} color="#111827" className="mb-2" />
+            <Text className="text-sky-950 text-lg">Search using Images</Text>
+          </TouchableOpacity>
         </View>
 
 
-        <View className="h-80 mt-10 flex-row flex-wrap gap-3 justify-between border border-white">
 
-          <View className="w-[48%] h-36 bg-sky-950 justify-center items-center rounded-2xl ">
-            <Image
-              className="h-28 "
-              style={{ tintColor: "white" }}
-              source={require('../../assets/images/Untitled_design__10_-removebg-preview.png')}
-              resizeMode="contain"
-            />
-            <Text className="absolute bottom-1 font-semibold text-white">User</Text>
-          </View>
-          <View className="w-[48%] h-36 bg-sky-950 justify-center items-center rounded-2xl">
-            <Image
-              style={{ tintColor: "white" }}
-              className="h-24 "
-              source={require('../../assets/images/Untitled_design__12_-removebg-preview.png')}
-              resizeMode="contain"
-            />
-            <Text className="absolute bottom-1 font-semibold text-white">Contractor</Text>
-          </View>
-
-
-          <View className="w-[48%] h-36 bg-sky-950 justify-center items-center rounded-2xl">
-            <Image
-              style={{ tintColor: "white" }}
-              className="h-20 mt-3"
-              source={require('../../assets/images/Untitled_design__9_-removebg-preview.png')}
-              resizeMode="contain"
-            />
-            <Text className="absolute bottom-1 font-semibold text-center text-white">
-              Real Estate Developer
-            </Text>
-          </View>
-
-          <View className="w-[48%] h-36 bg-sky-950 justify-center items-center rounded-2xl">
-            <Image
-              style={{ tintColor: "white" }}
-              className="h-16 absolute"
-              source={require('../../assets/images/Untitled_design__11_-removebg-preview.png')}
-              resizeMode="contain"
-            />
-            <Text className="absolute bottom-1 font-semibold text-white">Skip</Text>
-          </View>
-
+        {/* Best Contractors */}
+        <View className="mt-5 mb-2">
+          <Text className="text-xl  mb-2 text-sky-950">Top Contractors</Text>
+          <CardSlider />
         </View>
+
+        {/* Best Estates */}
+        <View className="items-center">
+          <Text className="text-xl  mb-2 text-sky-950">Top Real Estate</Text>
+          <EsateSlider />
+        </View>
+
+
       </View>
     </ScrollView>
   );
