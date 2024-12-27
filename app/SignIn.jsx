@@ -15,11 +15,11 @@ export default function SignIn() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const token = useSelector((state) => state.auth.token);
 
-  // useEffect(() => {
-  //   if (isAuthenticated || token) {
-  //     router.replace("/(usertab)/Dashboard");
-  //   }
-  // }, [isAuthenticated, token]);
+  useEffect(() => {
+    if (isAuthenticated || token) {
+      router.replace("/(usertab)");
+    }
+  }, [isAuthenticated, token]);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -32,7 +32,7 @@ export default function SignIn() {
       const response = await API.post("auth/login", { email, password });
       const { token } = response.data;
       dispatch(setLogin({ token }));
-      router.replace("/(usertab)/Dashboard");
+      router.replace("/(usertab)");
     } catch (err) {
       let errorMessage = "An unexpected error occurred. Please try again.";
       if (!err.response) {
