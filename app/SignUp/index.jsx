@@ -37,7 +37,7 @@ export default function SignUp() {
 
     useEffect(() => {
         if (isAuthenticated || token) {
-            router.replace("/(usertab)/Dashboard");
+            router.replace("/(usertab)");
         }
     }, []);
 
@@ -60,7 +60,7 @@ export default function SignUp() {
             dispatch(setSignUp({ access_token }))
 
             Alert.alert("Success", "Account created successfully!");
-            router.replace("/(usertab)/Dashboard");
+            router.replace("/(usertab)");
         } catch (error) {
             const errorMessage = error.response?.data?.message || "An error occurred. Please try again.";
             Alert.alert("Error", errorMessage);
@@ -122,7 +122,6 @@ export default function SignUp() {
                                         marginBlock: 2,
                                     }}
                                     data={[
-                                        { key: 1, label: 'Admin' },
                                         { key: 2, label: 'User' },
                                         { key: 3, label: 'General Contractor' },
                                         { key: 4, label: 'Real Estate Contractor' },
