@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
     View,
@@ -14,21 +14,31 @@ import {
 import { FontAwesome, Feather } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Location from 'expo-location';
-import { router } from 'expo-router';
-
+import { useRouter } from 'expo-router';
+import { API } from '../../config/apiConfig';
+import { useSelector } from 'react-redux';
+import axios from "axios";
+import { useDispatch } from 'react-redux';
+import { setContractors } from '../../redux/slice/contractorsSlice';
 
 export default function FloorMapScreen() {
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
     const [floor_maps, setFloor_maps] = useState('');
     const [Input_area_details, setInput_area_details] = useState('');
-    const [description, setDescription] = useState('');
-    const [landmarks, setLandmarks] = useState('');
+    // const [description, setDescription] = useState('');
+    const [landmark, setlandmark] = useState('');
     const [lat, setLat] = useState("")
     const [lang, setLang] = useState("")
 
     const [fileName, setFileName] = useState(null);
     const [imageUri, setImageUri] = useState(null);
+    const token = useSelector((state) => state.auth.token);
+
+    const router = useRouter();
+
+    const dispatch = useDispatch()
+
 
     const handleFileUpload = async () => {
         let result = await DocumentPicker.getDocumentAsync({
@@ -47,17 +57,58 @@ export default function FloorMapScreen() {
         setFloor_maps('');
     };
 
-    const handleSubmit = () => {
-        if (!name || !address || !Input_area_details || !description || !landmarks || !floor_maps || !lat || !lang) {
+    const handleSubmit = async () => {
+        router.push('/Contractor')
+
+        if (!name || !address || !Input_area_details || !landmark || !floor_maps || !lat || !lang) {
             Alert.alert('Error', 'All fields are required');
             return;
         }
-        const data = { name, address, Input_area_details, description, landmarks, floor_maps, lat, lang }
-        console.log("full data", data)
-        router.push("/Contractor")
+
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("address", address);
+        formData.append("Input_area_details", Input_area_details);
+        formData.append("landmark", landmark);
+        formData.append("lat", lat);
+        formData.append("lang", lang);
+        formData.append("floor_maps", {
+            uri: floor_maps,
+            type: floor_maps.endsWith(".pdf") ? "application/pdf" : "image/jpeg",
+            name: fileName || "uploaded_file",
+        });
+
+        try {
+            const response = await API.post("floor_map_area/add", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const { data, message } = response.data;
+
+            Alert.alert('Success', message || 'Floor map added successfully!');
+
+            if (data?.nearby_contractors?.length > 0) {
+                console.log("contractorsData", JSON.stringify(data.nearby_contractors));
+                const contractorsParam = encodeURIComponent(JSON.stringify(data.nearby_contractors)); // Ensure the data is encoded correctly
+                dispatch(setContractors(data.nearby_contractors));
 
 
+
+            }
+        } catch (error) {
+            console.error("Error occurred:", error.message);
+            if (error.response) {
+                console.error("Server response:", error.response.data);
+                Alert.alert('Error', error.response.data.message || 'API Error occurred!');
+            } else {
+                Alert.alert('Error', 'Network or server issue occurred!');
+            }
+        }
     };
+
+
 
     const handleGetLocation = async () => {
         try {
@@ -179,7 +230,7 @@ export default function FloorMapScreen() {
                             </View>
                         </View>
 
-                        {/* Area and Landmarks */}
+                        {/* Area and landmark */}
                         <View className="flex-row space-x-4">
                             <View className="flex-1 mx-2">
                                 <Text className="text-gray-800 font-semibold mb-1 text-base">Area</Text>
@@ -191,18 +242,18 @@ export default function FloorMapScreen() {
                                 />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-gray-800 font-semibold mb-1 text-base">Landmarks</Text>
+                                <Text className="text-gray-800 font-semibold mb-1 text-base">landmark</Text>
                                 <TextInput
                                     className="border border-gray-300 bg-white rounded-xl p-4 text-gray-900 shadow-sm"
-                                    placeholder="Enter landmarks"
+                                    placeholder="Enter landmark"
                                     placeholderTextColor="#A0AEC0"
-                                    onChangeText={setLandmarks}
+                                    onChangeText={setlandmark}
                                 />
                             </View>
                         </View>
 
                         {/* Description */}
-                        <View>
+                        {/* <View>
                             <Text className="text-gray-800 font-semibold mb-1 text-base">Description</Text>
                             <TextInput
                                 className="border border-gray-300 bg-white rounded-xl p-4 text-gray-900 shadow-sm"
@@ -213,7 +264,7 @@ export default function FloorMapScreen() {
                                 textAlignVertical="top"
                                 onChangeText={setDescription}
                             />
-                        </View>
+                        </View> */}
                     </View>
 
                     {/* Get My Location Button */}

@@ -1,126 +1,64 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, Animated, PanResponder } from 'react-native';
+import React from "react";
+import { FlatList, View, Text, TouchableOpacity, Image } from "react-native";
+import { styled } from "nativewind";
+import { useSelector } from 'react-redux';
 
-const { width, height } = Dimensions.get('window');
 
-const data = [
-    { id: '1', image: 'https://via.placeholder.com/300', title: 'Card 1' },
-    { id: '2', image: 'https://via.placeholder.com/300', title: 'Card 2' },
-    { id: '3', image: 'https://via.placeholder.com/300', title: 'Card 3' },
-];
 
-const App = () => {
-    const [cards, setCards] = useState(data);
-    const position = new Animated.ValueXY(); 
+const ContractorList = () => {
+    const contractors = useSelector((state) => state.contractorsList.contractors);
+    // console.log("contractor", contractors)
+    const renderContractor = ({ item }) => (
+        <View className="mx-4">
 
-    // Tracks card position
+            <View className="bg-white rounded-xl shadow-md p-5 mt-8 border border-gray-200">
 
-    // PanResponder to detect gestures
-    const panResponder = PanResponder.create({
-        onMoveShouldSetPanResponder: () => true,
-        onPanResponderMove: (_, gesture) => {
-            position.setValue({ x: gesture.dx, y: gesture.dy });
-        },
-        onPanResponderRelease: (_, gesture) => {
-            if (gesture.dx > 120) {
-                // Swipe Right: Remove card
-                Animated.timing(position, {
-                    toValue: { x: width, y: gesture.dy },
-                    duration: 300,
-                    useNativeDriver: false,
-                }).start(() => {
-                    position.setValue({ x: 0, y: 0 });
-                    cycleCard(); // Cycle to the next card
-                });
-            } else if (gesture.dx < -120) {
-                // Swipe Left: Reset position
-                Animated.spring(position, {
-                    toValue: { x: 0, y: 0 },
-                    useNativeDriver: false,
-                }).start();
-            } else {
-                // Return to original position
-                Animated.spring(position, {
-                    toValue: { x: 0, y: 0 },
-                    useNativeDriver: false,
-                }).start();
-            }
-        },
-    });
+                <View className="flex-row items-center justify-between">
+                    <Image
+                        source={{ uri: `https://g32.iamdeveloper.in/public/${item.image}` }}
+                        className="w-14 h-14 rounded-full border-2 border-gray-600"
+                    />
 
-    // Function to cycle cards
-    const cycleCard = () => {
-        setCards((prev) => {
-            const [firstCard, ...rest] = prev;
-            return [...rest, firstCard]; // Move the first card to the end
-        });
-    };
+                    <Text className="text-xl  font-bold text-gray-800">{item.name}</Text>
+
+                    <TouchableOpacity className="bg-sky-900 px-5 py-3 rounded-full">
+                        <Text className="text-white text-sm font-medium">Choose</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View className="mt-4">
+                    <View className="flex-row items-center space-x-2">
+                        <Text className="font-bold text-gray-700 mr-1 text-sm">Email:</Text>
+                        <Text className="text-gray-600 text-sm">{item.email}</Text>
+                    </View>
+
+                    <View className="flex-row items-center space-x-2 mt-2">
+                        <Text className="font-bold text-gray-700 text-sm">Address:</Text>
+                        <Text className="text-gray-600 text-sm">{item.address}</Text>
+                    </View>
+
+                    <View className="flex-row items-center space-x-2 mt-2">
+                        <Text className="font-bold text-gray-700 text-sm">Location:</Text>
+                        <Text className="text-gray-600 text-sm">{item.location}</Text>
+                    </View>
+                </View>
+            </View>
+        </View>
+    );
 
     return (
-        <View
-        className=" flex-1 justify-center items-center "
-        // style={styles.container}
-        >
-            {cards.map((item, index) => {
-                // Show only the top card as swipeable
-                const isTopCard = index === 0;
-
-                return (
-                    <Animated.View
-                        key={item.id}
-                        style={[
-                            styles.card,
-                            isTopCard && { transform: position.getTranslateTransform() },
-                            { zIndex: cards.length - index },
-                        ]}
-                        {...(isTopCard ? panResponder.panHandlers : {})}
-                    >
-                        <Image source={{ uri: item.image }} style={styles.image} />
-                        <Text style={styles.title}>{item.title}</Text>
-                    </Animated.View>
-                );
-            })}
+        <View className="flex-1 bg-gray-100">
+            <View className="bg-sky-950 pt-8 pb-3">
+                <Text className="text-white ml-3 text-2xl font-bold">Choose Contractor</Text>
+            </View>
+            <FlatList
+                data={contractors}
+                keyExtractor={(item) => item.id}
+                renderItem={renderContractor}
+                showsVerticalScrollIndicator={false}
+            />
         </View>
     );
 };
 
-const styles = StyleSheet.create({
-    // container: {
-    //     flex: 1,
-    //     justifyContent: 'center',
-    //     alignItems: 'center',
-    //     backgroundColor: '#f8f8f8',
-    // },
-
-    card: {
-        position: 'absolute',
-        width: width * 0.8,
-        height: height * 0.6,
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 5,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-
-    image: {
-        width: '100%',
-        height: '80%',
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
-    },
-
-    title: {
-        padding: 10,
-        fontSize: 18,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-
-});
-
-export default App;
+export default ContractorList;
