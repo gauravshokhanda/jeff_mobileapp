@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { combineReducers } from 'redux';
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import authReducer from './slice/authSlice'; 
+import contractorReducer from "./slice/contractorsSlice"
 
 // Persist Config
 const persistConfig = {
@@ -14,8 +15,8 @@ const persistConfig = {
 // Root Reducer
 const rootReducer = combineReducers({
     auth: authReducer,
+    contractorsList: contractorReducer
 });
-
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 // Store Configuration
