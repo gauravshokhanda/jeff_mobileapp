@@ -1,26 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, View, Text, TouchableOpacity, Image } from "react-native";
-import { styled } from "nativewind";
-import { useSelector } from 'react-redux';
-
-
+import { useLocalSearchParams } from "expo-router";
 
 const ContractorList = () => {
-    const contractors = useSelector((state) => state.contractorsList.contractors);
-    // console.log("contractor", contractors)
+    const { contractors } = useLocalSearchParams();  
+    const [contractorList, setContractorList] = useState([]);
+
+    
+    useEffect(() => {
+        if (contractors) {
+            const decodedContractors = JSON.parse(decodeURIComponent(contractors));
+            setContractorList(decodedContractors);
+        }
+    }, [contractors]);
+
     const renderContractor = ({ item }) => (
         <View className="mx-4">
-
             <View className="bg-white rounded-xl shadow-md p-5 mt-8 border border-gray-200">
-
                 <View className="flex-row items-center justify-between">
                     <Image
                         source={{ uri: `https://g32.iamdeveloper.in/public/${item.image}` }}
                         className="w-14 h-14 rounded-full border-2 border-gray-600"
                     />
-
-                    <Text className="text-xl  font-bold text-gray-800">{item.name}</Text>
-
+                    <Text className="text-xl font-bold text-gray-800">{item.name}</Text>
                     <TouchableOpacity className="bg-sky-900 px-5 py-3 rounded-full">
                         <Text className="text-white text-sm font-medium">Choose</Text>
                     </TouchableOpacity>
@@ -52,8 +54,8 @@ const ContractorList = () => {
                 <Text className="text-white ml-3 text-2xl font-bold">Choose Contractor</Text>
             </View>
             <FlatList
-                data={contractors}
-                keyExtractor={(item) => item.id}
+                data={contractorList}
+                keyExtractor={(item) => item.id.toString()}  
                 renderItem={renderContractor}
                 showsVerticalScrollIndicator={false}
             />
