@@ -18,7 +18,6 @@ import { useRouter } from 'expo-router';
 import { API } from '../../config/apiConfig';
 import { useSelector } from 'react-redux';
 import axios from "axios";
-import { useDispatch } from 'react-redux';
 import { setContractors } from '../../redux/slice/contractorsSlice';
 
 export default function FloorMapScreen() {
@@ -36,9 +35,6 @@ export default function FloorMapScreen() {
     const token = useSelector((state) => state.auth.token);
 
     const router = useRouter();
-
-    const dispatch = useDispatch()
-
 
     const handleFileUpload = async () => {
         let result = await DocumentPicker.getDocumentAsync({
@@ -58,7 +54,6 @@ export default function FloorMapScreen() {
     };
 
     const handleSubmit = async () => {
-        router.push('/Contractor')
 
         if (!name || !address || !Input_area_details || !landmark || !floor_maps || !lat || !lang) {
             Alert.alert('Error', 'All fields are required');
@@ -90,12 +85,8 @@ export default function FloorMapScreen() {
             Alert.alert('Success', message || 'Floor map added successfully!');
 
             if (data?.nearby_contractors?.length > 0) {
-                console.log("contractorsData", JSON.stringify(data.nearby_contractors));
-                const contractorsParam = encodeURIComponent(JSON.stringify(data.nearby_contractors)); // Ensure the data is encoded correctly
-                dispatch(setContractors(data.nearby_contractors));
-
-
-
+                const contractorsParam = encodeURIComponent(JSON.stringify(data.nearby_contractors));
+                router.push(`/Contractor?contractors=${contractorsParam}`);
             }
         } catch (error) {
             console.error("Error occurred:", error.message);
@@ -185,6 +176,7 @@ export default function FloorMapScreen() {
                             )}
 
                             {/* Add Floormap Button (only shown if no imageUri exists) */}
+                            
                             {!imageUri && (
                                 <TouchableOpacity
                                     onPress={handleFileUpload}
