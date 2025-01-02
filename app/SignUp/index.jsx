@@ -18,28 +18,24 @@ import Logo from "../../assets/images/AC5D_Logo.jpg";
 import ModalSelector from 'react-native-modal-selector';
 import { useDispatch, useSelector } from "react-redux";
 import { setSignUp } from "../../redux/slice/authSlice";
-
-
 export default function SignUp() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirmation, setPasswordConfirmation] = useState("");
     const [role, setRole] = useState({ key: '', label: '' });
-
     const dispatch = useDispatch();
-
     const router = useRouter();
     const isToken = useSelector((state) => state.auth.token);
 
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
     const token = useSelector((state) => state.auth.token);
 
-    useEffect(() => {
-        if (isAuthenticated || token) {
-            router.replace("/(usertab)");
-        }
-    }, []);
+    // useEffect(() => {
+    //     if (isAuthenticated || token) {
+    //         router.replace("/(usertab)");
+    //     }
+    // }, [isAuthenticated, token, router]);
 
     const handleSignUp = async () => {
         if (!name || !email || !password || !passwordConfirmation || !role.key) {
@@ -56,8 +52,10 @@ export default function SignUp() {
         try {
 
             const response = await API.post("auth/register", data);
+            console.log("username", response.data.data.user)
             const { access_token } = response.data;
-            dispatch(setSignUp({ access_token }))
+            const user = response.data.data.user;
+            dispatch(setSignUp({ access_token, user }))
 
             Alert.alert("Success", "Account created successfully!");
             router.replace("/(usertab)");
