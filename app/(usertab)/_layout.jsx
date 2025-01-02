@@ -74,17 +74,26 @@ export default function TabRoot() {
                         }
                     }} />
 
-                {/* <Tabs.Screen name='FloorMapScreen' options={{
+                <Tabs.Screen
+                    name="MapScreen"
+                    options={{
+                        href: null,
+                    }}
+                />
 
-                    tabBarStyle: { display: 'none' },
-                    tabBarIconStyle: { display: 'none' },
+                <Tabs.Screen
+                    name="FloorMapScreen"
+                    options={{
+                        href: null,
+                    }}
+                />
 
-                }} />
-                <Tabs.Screen name='MapScreen' options={{
-
-                    tabBarStyle: { display: 'none' },
-                    tabBarIconStyle: { display: 'none' }
-                }} /> */}
+                <Tabs.Screen
+                    name="Contractor"
+                    options={{
+                        href: null,
+                    }}
+                />
             </Tabs>
         </ProtectedRoute>
     )
