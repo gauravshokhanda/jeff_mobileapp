@@ -5,9 +5,14 @@ import { FontAwesome } from '@expo/vector-icons';
 import CardSlider from '../../components/CardSlider';
 import EsateSlider from '../../components/Estateslider';
 import { useRouter } from "expo-router";
+import { useSelector } from 'react-redux';
+
+
 
 export default function Dashboard() {
   const router = useRouter();
+  const userName = useSelector((state) => state.auth.user);
+  // console.log("userName", userName.name)
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       {/* Header */}
@@ -40,7 +45,7 @@ export default function Dashboard() {
         <View className=" flex-row justify-center items-center mt-2">
           <Text className="text-black text-lg">Welcome,</Text>
           <Text className="text-sky-950 text-lg text-bold font-semibold">
-            Gaurav
+            {userName.name ? userName.name : "unknownconsole.loh"}
           </Text>
         </View>
 
