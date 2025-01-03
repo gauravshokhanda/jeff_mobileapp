@@ -19,6 +19,8 @@ import { API } from '../../config/apiConfig';
 import { useSelector } from 'react-redux';
 import axios from "axios";
 import { setContractors } from '../../redux/slice/contractorsSlice';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
 
 export default function FloorMapScreen() {
     const [name, setName] = useState('');
@@ -133,7 +135,13 @@ export default function FloorMapScreen() {
                 className="bg-gray-100"
             >
                 {/* Header Section */}
-                <View className="py-4 bg-sky-950">
+
+                <View className={`py-4 bg-sky-950 ${Platform.OS === 'ios' ? 'pt-14' : ''}`}>
+                    <TouchableOpacity
+                        onPress={() => router.back()}
+                        className={`absolute z-10 left-4 ${Platform.OS === 'ios' ? 'top-16' : 'top-5'}`}>
+                        <Ionicons name='arrow-back' size={24} color="white" />
+                    </TouchableOpacity>
                     <Text className="text-3xl font-bold text-center text-white">
                         Floor Map Details
                     </Text>
@@ -176,7 +184,7 @@ export default function FloorMapScreen() {
                             )}
 
                             {/* Add Floormap Button (only shown if no imageUri exists) */}
-                            
+
                             {!imageUri && (
                                 <TouchableOpacity
                                     onPress={handleFileUpload}
