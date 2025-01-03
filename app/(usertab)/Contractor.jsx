@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, View, Text, TouchableOpacity, Image } from "react-native";
+import { FlatList, View, Text, TouchableOpacity, Image, Platform } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
 const ContractorList = () => {
-    const { contractors } = useLocalSearchParams();  
+    const { contractors } = useLocalSearchParams();
     const [contractorList, setContractorList] = useState([]);
 
-    
+
     useEffect(() => {
         if (contractors) {
             const decodedContractors = JSON.parse(decodeURIComponent(contractors));
@@ -23,8 +23,8 @@ const ContractorList = () => {
                         className="w-14 h-14 rounded-full border-2 border-gray-600"
                     />
                     <Text className="text-xl font-bold text-gray-800">{item.name}</Text>
-                    <TouchableOpacity className="bg-sky-900 px-5 py-3 rounded-full">
-                        <Text className="text-white text-sm font-medium">Choose</Text>
+                    <TouchableOpacity className={`bg-sky-900 px-5  rounded-full `}>
+                        <Text className={`text-white text-lg font-medium p-1`}>Choose</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -51,11 +51,11 @@ const ContractorList = () => {
     return (
         <View className="flex-1 bg-gray-100">
             <View className="bg-sky-950 pt-8 pb-3">
-                <Text className="text-white ml-3 text-2xl font-bold">Choose Contractor</Text>
+                <Text className={`text-white ml-3 text-2xl font-bold ${Platform.OS === 'ios' ? 'py-4' : 'py-2'}`}>Choose Contractor</Text>
             </View>
             <FlatList
                 data={contractorList}
-                keyExtractor={(item) => item.id.toString()}  
+                keyExtractor={(item) => item.id.toString()}
                 renderItem={renderContractor}
                 showsVerticalScrollIndicator={false}
             />

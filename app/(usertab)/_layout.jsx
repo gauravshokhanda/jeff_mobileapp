@@ -78,7 +78,9 @@ export default function TabRoot() {
                     name="MapScreen"
                     options={{
                         href: null,
+                       
                     }}
+                    
                 />
 
                 <Tabs.Screen
@@ -92,6 +94,7 @@ export default function TabRoot() {
                     name="Contractor"
                     options={{
                         href: null,
+                       
                     }}
                 />
             </Tabs>
