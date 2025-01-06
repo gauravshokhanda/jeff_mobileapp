@@ -6,6 +6,8 @@ import { TouchableOpacity } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { getAreaOfPolygon } from 'geolib';
+import { useDispatch } from 'react-redux';
+import { setPolygonData, clearPolygonData } from '../../redux/slice/polygonSlice';
 
 export default function MapScreen() {
   const [location, setLocation] = useState(null);
@@ -13,6 +15,7 @@ export default function MapScreen() {
   const [polygonPoints, setPolygonPoints] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isLocationFetched, setIsLocationFetched] = useState(false);
+  const dispatch = useDispatch();
 
   const fetchLocation = async () => {
     try {
@@ -57,20 +60,31 @@ export default function MapScreen() {
   };
 
   const toggleDrawingModeOrCalculate = () => {
-    if (isDrawing && polygonPoints.length >= 3) {
-      // Calculate the area
-      const area = getAreaOfPolygon(polygonPoints);
-      const areaInSquareKm = (area / 1e6).toFixed(2);
-      Alert.alert('Polygon Area', `The area of the selected polygon is ${areaInSquareKm} km²`);
-      setIsDrawing(false); // End drawing mode after calculating area
-    } else {
-      // Toggle drawing mode
-      setIsDrawing(!isDrawing);
-      if (!isDrawing) {
+    if (isDrawing) {
+      if (polygonPoints.length >= 3) {
+        const area = getAreaOfPolygon(polygonPoints); // Area in square meters
+        const areaInSquareFeet = (area * 10.7639).toFixed(2); // Convert to square feet
+
+        dispatch(
+          setPolygonData({
+            coordinates: polygonPoints,
+            area: areaInSquareFeet,
+          })
+        );
+        router.push('/AreaDetailsScreen');
+
         setPolygonPoints([]);
+      } else {
+        Alert.alert('Error', 'A polygon requires at least 3 points.');
       }
+      setIsDrawing(false);
+    } else {
+      setIsDrawing(true);
+      setPolygonPoints([]);
     }
   };
+
+
 
   useEffect(() => {
     return () => {
@@ -94,6 +108,7 @@ export default function MapScreen() {
           className="flex-1"
           region={location}
           onPress={handleMapPress}
+          mapType="satellite"
         >
           {polygonPoints.length > 0 && (
             <Polygon

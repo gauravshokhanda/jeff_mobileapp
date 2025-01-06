@@ -97,6 +97,13 @@ export default function TabRoot() {
                        
                     }}
                 />
+                <Tabs.Screen
+                    name="AreaDetailsScreen"
+                    options={{
+                        href: null,
+                       
+                    }}
+                />
             </Tabs>
         </ProtectedRoute>
     )
