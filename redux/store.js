@@ -5,6 +5,7 @@ import { combineReducers } from 'redux';
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import authReducer from './slice/authSlice'; 
 import contractorReducer from "./slice/contractorsSlice"
+import polygonReducer from "./slice/polygonSlice"
 
 // Persist Config
 const persistConfig = {
@@ -15,7 +16,8 @@ const persistConfig = {
 // Root Reducer
 const rootReducer = combineReducers({
     auth: authReducer,
-    contractorsList: contractorReducer
+    contractorsList: contractorReducer,
+    polygon: polygonReducer
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
