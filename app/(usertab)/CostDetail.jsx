@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const data = [
     {
@@ -32,104 +33,50 @@ const data = [
 
 export default function ConstructionSchedule() {
     const renderTask = ({ item }) => (
-        <View style={styles.task}>
-            <Text style={styles.taskName}>{item.name}</Text>
-            <View style={styles.progressContainer}>
-                {/* Custom Progress Bar */}
-                <View style={styles.progressBarBackground}>
-                    <View
-                        style={[
-                            styles.progressBarFill,
-                            { width: `${item.percentage}%` }, // Dynamically adjust width based on percentage
-                        ]}
+        <View className="mb-4" key={item.name}>
+            <Text className="text-lg font-semibold text-gray-800">{item.name}</Text>
+            <View className="mt-2">
+               
+                <View className="h-3 w-full bg-gray-300 rounded-full overflow-hidden">
+                    <LinearGradient
+                        colors={['#22d3ee', '#075985']}
+                        start={[0, 0]}
+                        end={[1, 0]}
+                        style={{ width: `${item.percentage}%`, height: '100%' }}
                     />
                 </View>
-                <Text style={styles.taskDetails}>{`${item.days} Days (${item.percentage}%)`}</Text>
+                <Text className="text-sm text-gray-600 mt-2">{`${item.days} Days (${item.percentage}%)`}</Text>
             </View>
         </View>
     );
 
     const renderCategory = ({ item }) => (
-        <View style={styles.category}>
-            <Text style={styles.categoryTitle}>{item.category}</Text>
-            {item.tasks.map((task) => renderTask({ item: task }))}
+        <View className="mb-6 bg-white border-b border-b-sky-300 rounded-xl p-6 shadow-lg" key={item.category}>
+            <Text className="text-2xl font-semibold mb-1 text-sky-800">{item.category}</Text>
+            {item.tasks.map((task) => (
+                renderTask({ item: task })
+            ))}
         </View>
     );
 
     return (
-        <FlashList
-            data={data}
-            renderItem={renderCategory}
-            estimatedItemSize={200} // Estimated height for each item
-            ListHeaderComponent={() => (
-                <View>
-                    <Text style={styles.header}>Construction Schedule</Text>
-                    <Text style={styles.subHeader}>
-                        Total Duration: 142 Days (28.4 Weeks / 6.55 Months)
-                    </Text>
-                </View>
-            )}
-            contentContainerStyle={styles.container}
-            keyExtractor={(item) => item.category}
-        />
+        <View className="flex-1">
+           
+            <View className="bg-sky-950 p-6"
+            >
+                <Text className="text-3xl font-bold text-white">Construction Schedule</Text>
+                <Text className="text-base text-gray-200 mt-2">
+                    Total Duration: 142 Days (28.4 Weeks / 6.55 Months)
+                </Text>
+            </View>
+
+            <FlashList
+                data={data}
+                renderItem={renderCategory}
+                estimatedItemSize={200}
+                contentContainerStyle={{ padding: 16, backgroundColor: "#f9fafb" }} 
+                keyExtractor={(item) => item.category}
+            />
+        </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        padding: 16,
-        backgroundColor: "#f4f4f4",
-    },
-    header: {
-        fontSize: 24,
-        fontWeight: "bold",
-        color: "#333",
-        marginBottom: 8,
-    },
-    subHeader: {
-        fontSize: 16,
-        color: "#666",
-        marginBottom: 16,
-    },
-    category: {
-        marginBottom: 16,
-        backgroundColor: "#fff",
-        borderRadius: 8,
-        padding: 16,
-        shadowColor: "#000",
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
-        elevation: 3,
-    },
-    categoryTitle: {
-        fontSize: 18,
-        fontWeight: "600",
-        marginBottom: 8,
-    },
-    task: {
-        marginBottom: 8,
-    },
-    taskName: {
-        fontSize: 16,
-        color: "#333",
-    },
-    progressContainer: {
-        marginTop: 4,
-    },
-    progressBarBackground: {
-        height: 10,
-        width: '100%',
-        backgroundColor: '#e0e0e0',
-        borderRadius: 5,
-        overflow: 'hidden',
-    },
-    progressBarFill: {
-        height: '100%',
-        backgroundColor: '#3498db',
-    },
-    taskDetails: {
-        fontSize: 14,
-        color: "#666",
-        marginTop: 4,
-    },
-});
