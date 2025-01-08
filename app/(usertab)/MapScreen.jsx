@@ -1,56 +1,77 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Alert } from 'react-native';
+import { View, Text, Alert, TextInput, ActivityIndicator } from 'react-native';
 import MapView, { Marker, Polygon, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { TouchableOpacity } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { getAreaOfPolygon } from 'geolib';
 import { useDispatch } from 'react-redux';
-import { setPolygonData, clearPolygonData } from '../../redux/slice/polygonSlice';
+import { setPolygonData } from '../../redux/slice/polygonSlice';
 
 export default function MapScreen() {
   const [location, setLocation] = useState(null);
-  const [locationSubscription, setLocationSubscription] = useState(null);
-  const [polygonPoints, setPolygonPoints] = useState([]);
-  const [isDrawing, setIsDrawing] = useState(false);
   const [isLocationFetched, setIsLocationFetched] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [polygonPoints, setPolygonPoints] = useState([]);
+  const [isDrawing, setIsDrawing] = useState(false); // Drawing mode state
+  const [searchText, setSearchText] = useState('')
   const dispatch = useDispatch();
 
   const fetchLocation = async () => {
+    setIsLoading(true);
     try {
-      let { status } = await Location.requestForegroundPermissionsAsync();
+      const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission denied', 'Location permission is required');
+        Alert.alert('Permission Denied', 'Location permission is required');
         return;
       }
 
-      if (locationSubscription) {
-        locationSubscription.remove();
-        setLocationSubscription(null);
-      }
-      const subscription = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.High,
-          timeInterval: 5000,
-          distanceInterval: 10,
-        },
-        (loc) => {
-          setLocation({
-            latitude: loc.coords.latitude,
-            longitude: loc.coords.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          });
-          setIsLocationFetched(true);
-        }
-      );
-      setLocationSubscription(subscription);
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+
+      setLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+      setIsLocationFetched(true);
     } catch (error) {
-      console.error('Location error:', error);
       Alert.alert('Error', `Unable to fetch location: ${error.message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const searchLocation = async (locationName) => {
+    console.log('location name', locationName)
+    if (!locationName.trim()) {
+      Alert.alert('Error', 'Please enter a valid location name.');
+      return
+    }
+    try {
+      const results = await Location.geocodeAsync(locationName);
+      if (results.length > 0) {
+        const { latitude, longitude } = results[0];
+        setLocation({
+          latitude,
+          longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
+        console.log(latitude, longitude)
+        Alert.alert('Location Found', `Moved to: ${address}`);
+      }
+      else {
+        Alert.alert('Not Found', 'No matching location found.');
+      }
+    }
+    catch (error) {
+      Alert.alert('Error', `Unable to fetch location: ${error.message}`);
+    }
+  }
 
   const handleMapPress = (event) => {
     if (isDrawing) {
@@ -59,94 +80,124 @@ export default function MapScreen() {
     }
   };
 
-  const toggleDrawingModeOrCalculate = () => {
-    if (isDrawing) {
-      if (polygonPoints.length >= 3) {
-        const area = getAreaOfPolygon(polygonPoints); // Area in square meters
-        const areaInSquareFeet = (area * 10.7639).toFixed(2); // Convert to square feet
+  const handleClearPolygon = () => {
+    setPolygonPoints([]); // Clear the polygon points
+  };
 
-        dispatch(
-          setPolygonData({
-            coordinates: polygonPoints,
-            area: areaInSquareFeet,
-          })
-        );
-        router.push('/AreaDetailsScreen');
+  const handleCalculateArea = () => {
+    if (polygonPoints.length >= 3) {
+      const area = getAreaOfPolygon(polygonPoints); // Area in square meters
+      const areaInSquareFeet = (area * 10.7639).toFixed(2); // Convert to square feet
 
-        setPolygonPoints([]);
-      } else {
-        Alert.alert('Error', 'A polygon requires at least 3 points.');
-      }
-      setIsDrawing(false);
+      dispatch(
+        setPolygonData({
+          coordinates: polygonPoints,
+          area: areaInSquareFeet,
+        })
+      );
+      router.push('/AreaDetailsScreen');
+      setPolygonPoints([]); // Clear points after calculation
     } else {
-      setIsDrawing(true);
-      setPolygonPoints([]);
+      Alert.alert('Error', 'A polygon requires at least 3 points.');
     }
   };
 
-
+  const handleStartDrawing = () => {
+    setIsDrawing(true); // Enable drawing mode
+    setPolygonPoints([]); // Clear any previous points
+  };
 
   useEffect(() => {
-    return () => {
-      if (locationSubscription) {
-        locationSubscription.remove();
-      }
-    };
-  }, [locationSubscription]);
+    fetchLocation();
+  }, []);
 
   return (
     <View className="flex-1">
-      <TouchableOpacity
-        className="absolute top-6 z-10 left-5"
-        onPress={() => router.back()}
-      >
-        <Ionicons name="arrow-back" size={24} color="black" />
-      </TouchableOpacity>
-      {location ? (
-        <MapView
-          style={{ flex: 1 }}
-          className="flex-1"
-          region={location}
-          onPress={handleMapPress}
-          mapType="satellite"
-        >
-          {polygonPoints.length > 0 && (
-            <Polygon
-              coordinates={polygonPoints}
-              strokeColor="#000"
-              fillColor="rgba(0, 200, 0, 0.5)"
-              strokeWidth={2}
+      {isLoading ? (
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text>Fetching location...</Text>
+        </View>
+      ) : location ? (
+        <View className="flex-1 relative">
+          <TouchableOpacity
+            className="absolute top-8 z-10 left-2"
+            onPress={() => router.back()}
+          >
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+
+          <View className="bg-white w-[80%] h-12 absolute top-6 z-10 flex-row left-14 items-center rounded-2xl">
+            <TouchableOpacity className="px-3">
+              <Ionicons name="location" size={24} color="#172554" />
+            </TouchableOpacity>
+            <TextInput
+              className="text-slate-600 text-xl"
+              value={searchText}
+              onChangeText={setSearchText}
+              placeholder="Search by location name"
+              onSubmitEditing={() => searchLocation(searchText)}
             />
-          )}
-          <Circle
-            center={location}
-            radius={100}
-            fillColor="rgba(0, 100, 255, 0.2)"
-            strokeColor="rgba(0, 100, 255, 0.8)"
-          />
-          <Marker coordinate={location} title="You are here" />
-        </MapView>
+          </View>
+
+          <MapView
+            style={{ flex: 1 }}
+            className="flex-1"
+            region={location}
+            onPress={handleMapPress}
+            mapType="satellite"
+          >
+            {polygonPoints.length > 0 && (
+              <Polygon
+                coordinates={polygonPoints}
+                strokeColor="#000"
+                fillColor="rgba(0, 200, 0, 0.5)"
+                strokeWidth={2}
+              />
+            )}
+            <Circle
+              center={location}
+              radius={50}
+              fillColor="rgba(0, 100, 255, 0.2)"
+              strokeColor="rgba(0, 100, 255, 0.8)"
+            />
+            <Marker coordinate={location} title="You are here" />
+          </MapView>
+
+          <View>
+            <TouchableOpacity onPress={fetchLocation}>
+              <Ionicons
+                className="bg-white absolute bottom-32 right-4 p-4 rounded-full"
+                name="locate-outline"
+                size={30}
+                color="#172554"
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View className="flex-row justify-around w-[80%] absolute bottom-2 left-14 bg-white p-1 rounded-3xl">
+
+            <TouchableOpacity onPress={handleStartDrawing}
+              className="p-2 rounded-full bg-sky-500"
+            >
+              <Ionicons name="create-outline" size={28} color="white" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                className="p-2 rounded-full bg-sky-500"
+            onPress={handleClearPolygon}>
+              <Ionicons name="trash-outline" size={28} color="white" />
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+                className="p-2 rounded-full bg-sky-500"
+            onPress={handleCalculateArea}>
+              <Ionicons name="calculator-outline" size={28} color="white" />
+            </TouchableOpacity>
+          </View>
+        </View>
       ) : (
         <Text className="text-center text-lg mt-20">Click below to fetch your location</Text>
-      )}
-      <TouchableOpacity
-        onPress={fetchLocation}
-        className="bg-blue-500 py-3 mx-5 my-5 rounded-lg"
-      >
-        <Text className="text-white text-center text-lg font-bold">
-          Fetch My Location
-        </Text>
-      </TouchableOpacity>
-
-      {isLocationFetched && (
-        <TouchableOpacity
-          onPress={toggleDrawingModeOrCalculate}
-          className="bg-green-500 py-3 mx-5 my-2 rounded-lg"
-        >
-          <Text className="text-white text-center text-lg font-bold">
-            {isDrawing && polygonPoints.length >= 3 ? 'Calculate' : 'Select Area'}
-          </Text>
-        </TouchableOpacity>
       )}
     </View>
   );

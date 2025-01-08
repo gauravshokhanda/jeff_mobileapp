@@ -53,12 +53,14 @@ const ContractorList = () => {
             <View className="bg-sky-950 pt-8 pb-3">
                 <Text className={`text-white ml-3 text-2xl font-bold ${Platform.OS === 'ios' ? 'py-4' : 'py-2'}`}>Choose Contractor</Text>
             </View>
+
             <FlatList
                 data={contractorList}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={renderContractor}
                 showsVerticalScrollIndicator={false}
             />
+            
         </View>
     );
 };
