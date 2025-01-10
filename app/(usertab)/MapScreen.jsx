@@ -65,32 +65,61 @@ export default function MapScreen() {
     }
   };
 
-  const searchLocation = async (locationName) => {
-    console.log('Searching for location:', locationName);
-    if (!locationName.trim()) {
-      Alert.alert('Error', 'Please enter a valid location name.');
+  const searchLocation = async (input) => {
+    console.log('Input:', input);
+
+    if (!input.trim()) {
+      Alert.alert('Error', 'Please enter a valid location name or coordinates.');
       return;
     }
-    try {
-      const results = await Location.geocodeAsync(locationName);
-      if (results.length > 0) {
-        const { latitude, longitude } = results[0];
-        setLocation({
-          latitude,
-          longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        });
-        console.log('Latitude:', latitude, 'Longitude:', longitude);
-        Alert.alert('Location Found', `Moved to: ${locationName}`);
-        setSearchText(''); // Clear search input
-      } else {
-        Alert.alert('Not Found', 'No matching location found.');
+
+
+    const coordinatePattern = /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/;
+    if (coordinatePattern.test(input)) {
+
+      const [latitude, longitude] = input.split(',').map(Number);
+      try {
+        const results = await Location.reverseGeocodeAsync({ latitude, longitude });
+        if (results.length > 0) {
+          const location = results[0];
+          setLocation({
+            latitude,
+            longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          });
+          setSearchText("");
+          Alert.alert('Location Found', `Location Name: ${location.city || location.region || 'Unknown'}`);
+        } else {
+          Alert.alert('Not Found', 'No matching location found.');
+        }
+      } catch (error) {
+        console.log('Error', `Unable to fetch location: ${error.message}`);
       }
-    } catch (error) {
-      Alert.alert('Error', `Unable to fetch location: ${error.message}`);
+    } else {
+      // Handle location name input
+      try {
+        const results = await Location.geocodeAsync(input);
+        if (results.length > 0) {
+          const { latitude, longitude } = results[0];
+          setLocation({
+            latitude,
+            longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          });
+          // console.log(latitude, longitude);
+          // Alert.alert('Location Found', `Moved to: ${input}`);
+          setSearchText("");
+        } else {
+          Alert.alert('Not Found', 'No matching location found.');
+        }
+      } catch (error) {
+        console.log('Error', `Unable to fetch location: ${error.message}`);
+      }
     }
   };
+
 
   const handleMapPress = (event) => {
     if (isDrawing) {
@@ -129,6 +158,7 @@ export default function MapScreen() {
         });
 
         if (locationDetails) {
+          // console.log("full location detail", locationDetails)
           const { city, region, country } = locationDetails;
           console.log("City:", city);
           console.log("Region:", region);
@@ -180,13 +210,15 @@ export default function MapScreen() {
       ) : location ? (
         <View className="flex-1 relative">
           <TouchableOpacity
-            className="absolute top-8 z-10 left-2"
+            className="absolute top-7 z-10 left-2"
             onPress={() => router.back()}
           >
-            <Ionicons name="arrow-back" size={24} color="white" />
+            <Ionicons 
+            className="bg-white p-2 rounded-full"
+            name="arrow-back" size={24} color="black" />
           </TouchableOpacity>
 
-          <View className="bg-white w-[80%] h-12 absolute top-6 z-10 flex-row left-14 items-center rounded-2xl">
+          <View className="bg-white w-[80%] h-12 absolute top-6 z-10 flex-row-reverse left-14 items-center justify-around rounded-2xl">
             <TouchableOpacity className="px-3">
               <Ionicons name="search-outline" size={24} color="#172554" />
             </TouchableOpacity>
@@ -194,9 +226,10 @@ export default function MapScreen() {
               className="text-slate-600 text-xl"
               value={searchText}
               onChangeText={setSearchText}
-              placeholder="Search for a city"
+              placeholder="Search by location name or co."
               onSubmitEditing={() => searchLocation(searchText)}
             />
+
           </View>
 
           <MapView
@@ -230,23 +263,23 @@ export default function MapScreen() {
               <Ionicons name="remove-outline" size={30} color="#172554" />
             </TouchableOpacity>
             <TouchableOpacity
-    onPress={handleStartDrawing}
-    className="p-3 bg-white rounded-full"
-  >
-    <Ionicons name="create-outline" size={28} color="#0EA5E9" />
-  </TouchableOpacity>
-  <TouchableOpacity
-    onPress={handleClearPolygon}
-    className="p-3 bg-white rounded-full"
-  >
-    <Ionicons name="trash-outline" size={28} color="#0EA5E9" />
-  </TouchableOpacity>
-  <TouchableOpacity
-    onPress={handleCalculateArea}
-    className="p-3 bg-white rounded-full"
-  >
-    <Ionicons name="calculator-outline" size={28} color="#0EA5E9" />
-  </TouchableOpacity>
+              onPress={handleStartDrawing}
+              className="p-3 bg-white rounded-full my-2"
+            >
+              <Ionicons name="create-outline" size={28} color="#0EA5E9" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleClearPolygon}
+              className="p-3 bg-white rounded-full"
+            >
+              <Ionicons name="trash-outline" size={28} color="#0EA5E9" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleCalculateArea}
+              className="p-3 bg-white rounded-full my-2"
+            >
+                <Ionicons name="arrow-forward" size={28} color="#0EA5E9" />
+            </TouchableOpacity>
           </View>
 
         </View>
