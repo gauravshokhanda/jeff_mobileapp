@@ -29,7 +29,7 @@ export default function AreaDetailsScreen() {
             <View>
                 <TouchableOpacity
                     className="absolute top-6 z-10 left-5"
-                    onPress={() => router.back()}
+                    onPress={() => router.push("/MapScreen")}
                 >
                     <Ionicons name="arrow-back" size={24} color="white" />
                 </TouchableOpacity>
