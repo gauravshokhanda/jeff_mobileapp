@@ -111,6 +111,13 @@ export default function TabRoot() {
 
                     }}
                 />
+                <Tabs.Screen
+                    name="BreakdownCost"
+                    options={{
+                        href: null,
+
+                    }}
+                />
             </Tabs>
         </ProtectedRoute>
     )
