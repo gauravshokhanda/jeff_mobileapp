@@ -16,11 +16,11 @@ export default function SignIn() {
   const token = useSelector((state) => state.auth.token);
 
 
-  useEffect(() => {
-    if (isAuthenticated || token) {
-      router.replace("/(usertab)");
-    }
-  }, [isAuthenticated, token]);
+  // useEffect(() => {
+  //   if (isAuthenticated || token) {
+  //     router.replace("/(usertab)");
+  //   }
+  // }, [isAuthenticated, token]);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -31,7 +31,7 @@ export default function SignIn() {
 
     try {
       const response = await API.post("auth/login", { email, password });
-      // console.log("response", response.data.user)
+      // console.log("response", response.data)
       const { token, user } = response.data;
       dispatch(setLogin({ token, user }));
       router.replace("/(usertab)");

@@ -1,13 +1,15 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Animated, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Animated, Image, Alert } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from "expo-router"
+import { API } from '../../config/apiConfig';
 
 export default function AreaDetailsScreen() {
     const placeHolderImage = require('../../assets/images/Mapscreen/areaDetailBanner.png');
     const { area } = useSelector((state) => state.polygon);
     const fadeAnim = useRef(new Animated.Value(0)).current;
+    const token = useSelector((state) => state.auth.token);
 
 
     useEffect(() => {
@@ -17,6 +19,29 @@ export default function AreaDetailsScreen() {
             useNativeDriver: true,
         }).start();
     }, []);
+    const scheduleCost = async () => {
+        console.log("schedule cost function")
+        const data = '{"city":"ADJUNTAS","zip_code":"00601","area":1000}';
+        try {
+            const response = await API.post("regional_multipliers/details", data, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            console.log("response", response.data)
+            if (response.data.data) {
+                const scheduleCost = encodeURIComponent(JSON.stringify(response.data.data));
+                router.push(`/CostDetail?CostDetails=${scheduleCost}`);
+
+            }
+            else {
+                Alert.alert("error", "there is not response")
+            }
+        }
+        catch (error) {
+            console.log("error", error)
+        }
+    }
 
     return (
         <Animated.View
@@ -51,10 +76,11 @@ export default function AreaDetailsScreen() {
                     </Text>
 
                     <TouchableOpacity
-                        onPress={() => router.push('/CostDetail')}
+                        // onPress={() => router.push('/CostDetail')}
+                        onPress={scheduleCost}
                         className="bg-sky-700 px-8 py-4 rounded-full flex-row items-center justify-center"
                         style={{ elevation: 3 }}
-                        >
+                    >
                         <Text className="text-white text-lg font-semibold">Calculate Cost</Text>
                         <Ionicons name="arrow-forward" size={20} color="white" style={{ marginLeft: 10 }} />
                     </TouchableOpacity>
