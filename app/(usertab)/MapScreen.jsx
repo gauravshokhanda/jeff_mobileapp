@@ -159,14 +159,15 @@ export default function MapScreen() {
 
         if (locationDetails) {
           // console.log("full location detail", locationDetails)
-          const { city, region, country } = locationDetails;
+          const { city, region, country, postalCode } = locationDetails;
           console.log("City:", city);
           console.log("Region:", region);
           console.log("Country:", country);
+          console.log("postalCode:", postalCode);
 
           Alert.alert(
             "Area Details",
-            `Area: ${areaInSquareFeet} sq. ft.\nCity: ${city}\nRegion: ${region}\nCountry: ${country}`
+            `Area: ${areaInSquareFeet} sq. ft.\nCity: ${city}\nRegion: ${region}\nCountry: ${country}\npostalCode: ${postalCode}`
           );
         } else {
           console.log("Reverse geocoding returned no results.");
@@ -177,10 +178,13 @@ export default function MapScreen() {
             coordinates: polygonPoints,
             area: areaInSquareFeet,
             city: locationDetails?.city,
+            postalCode: locationDetails.postalCode
           })
         );
 
+
         router.push('/AreaDetailsScreen');
+
         setPolygonPoints([]);
       } catch (error) {
         console.error("Error calculating area or fetching location details:", error);
@@ -213,9 +217,9 @@ export default function MapScreen() {
             className="absolute top-7 z-10 left-2"
             onPress={() => router.back()}
           >
-            <Ionicons 
-            className="bg-white p-2 rounded-full"
-            name="arrow-back" size={24} color="black" />
+            <Ionicons
+              className="bg-white p-2 rounded-full"
+              name="arrow-back" size={24} color="black" />
           </TouchableOpacity>
 
           <View className="bg-white w-[80%] h-12 absolute top-6 z-10 flex-row-reverse left-14 items-center justify-around rounded-2xl">
@@ -255,13 +259,16 @@ export default function MapScreen() {
             <Marker coordinate={location} title="You are here" />
           </MapView>
 
-          <View className="absolute bottom-36 right-4 z-10 flex">
+          <View className="absolute bottom-80 right-4 z-10 flex">
+
             <TouchableOpacity onPress={handleZoomIn} className="p-3 bg-white mb-2 rounded-full">
               <Ionicons name="add-outline" size={30} color="#172554" />
             </TouchableOpacity>
             <TouchableOpacity onPress={handleZoomOut} className="p-3 bg-white rounded-full">
               <Ionicons name="remove-outline" size={30} color="#172554" />
             </TouchableOpacity>
+          </View>
+            <View className="absolute right-4 z-10 flex bottom-5">
             <TouchableOpacity
               onPress={handleStartDrawing}
               className="p-3 bg-white rounded-full my-2"
@@ -278,9 +285,10 @@ export default function MapScreen() {
               onPress={handleCalculateArea}
               className="p-3 bg-white rounded-full my-2"
             >
-                <Ionicons name="arrow-forward" size={28} color="#0EA5E9" />
+              <Ionicons name="arrow-forward" size={28} color="#0EA5E9" />
             </TouchableOpacity>
           </View>
+
 
         </View>
       ) : (

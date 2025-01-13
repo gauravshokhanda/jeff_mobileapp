@@ -10,6 +10,9 @@ export default function AreaDetailsScreen() {
     const { area } = useSelector((state) => state.polygon);
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const token = useSelector((state) => state.auth.token);
+    const areaDeatils = useSelector((state) => state.polygon)
+
+
 
 
     useEffect(() => {
@@ -20,28 +23,46 @@ export default function AreaDetailsScreen() {
         }).start();
     }, []);
     const scheduleCost = async () => {
-        console.log("schedule cost function")
-        const data = '{"city":"ADJUNTAS","zip_code":"00601","area":1000}';
+        console.log("schedule cost function");
+        console.log("city:", areaDeatils.city);
+        console.log("zipcode:", areaDeatils.zipCode);
+        console.log("area:", areaDeatils.area);
+
+        // Properly construct the data object
+        const data = {
+            city: "ADJUNTAS", // Ensure this is a string
+            zip_code: areaDeatils.zipCode, // Ensure this is a string or number as per API expectations
+            area: areaDeatils.area, // Ensure this is a string or number as per API expectations
+            project_type: "Basic",
+            square_fit: "1000"
+        };
+
+        console.log("formdata:", data);
+
         try {
-            const response = await API.post("regional_multipliers/details", data, {
+            // Send the request with serialized JSON data
+            const response = await API.post("regional_multipliers/details", JSON.stringify(data), {
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json", // Ensure proper header for JSON requests
                 },
-            })
-            console.log("response", response.data)
-            if (response.data.data) {
+            });
+
+            console.log("response:", response.data);
+
+            if (response.data && response.data.data) {
+                // Encode and navigate to the next route with cost details
                 const scheduleCost = encodeURIComponent(JSON.stringify(response.data.data));
                 router.push(`/CostDetail?CostDetails=${scheduleCost}`);
+            } else {
+                Alert.alert("Error", "No response data available");
+            }
+        } catch (error) {
+            console.error("error:", error.message);
+            Alert.alert("Error", "An error occurred while fetching schedule cost");
+        }
+    };
 
-            }
-            else {
-                Alert.alert("error", "there is not response")
-            }
-        }
-        catch (error) {
-            console.log("error", error)
-        }
-    }
 
     return (
         <Animated.View
