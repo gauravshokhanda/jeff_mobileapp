@@ -1,81 +1,77 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
+import { useLocalSearchParams } from "expo-router";
 import { LinearGradient } from 'expo-linear-gradient';
-
-const data = [
-    {
-        category: "General Conditions",
-        tasks: [
-            { name: "Plan Review/Permitting", days: 31, percentage: 21.8 },
-        ],
-    },
-    {
-        category: "Site Work",
-        tasks: [
-            { name: "Site Work", days: 3, percentage: 2.1 },
-        ],
-    },
-    {
-        category: "Foundation",
-        tasks: [
-            { name: "Foundation", days: 12, percentage: 8.5 },
-        ],
-    },
-    {
-        category: "Dry In",
-        tasks: [
-            { name: "Install Sheathing", days: 3, percentage: 2.1 },
-            { name: "Install Roofing", days: 3, percentage: 2.1 },
-        ],
-    },
-];
+import * as Animatable from 'react-native-animatable';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 export default function ConstructionSchedule() {
-    const renderTask = ({ item }) => (
-        <View className="mb-4" key={item.name}>
-            <Text className="text-lg font-semibold text-gray-800">{item.name}</Text>
-            <View className="mt-2">
-               
-                <View className="h-3 w-full bg-gray-300 rounded-full overflow-hidden">
-                    <LinearGradient
-                        colors={['#22d3ee', '#075985']}
-                        start={[0, 0]}
-                        end={[1, 0]}
-                        style={{ width: `${item.percentage}%`, height: '100%' }}
-                    />
-                </View>
-                <Text className="text-sm text-gray-600 mt-2">{`${item.days} Days (${item.percentage}%)`}</Text>
-            </View>
-        </View>
-    );
+    const { CostDetails } = useLocalSearchParams();
+    console.log("Cost details", CostDetails);
 
-    const renderCategory = ({ item }) => (
-        <View className="mb-6 bg-white border-b border-b-sky-300 rounded-xl p-6 shadow-lg" key={item.category}>
-            <Text className="text-2xl font-semibold mb-1 text-sky-800">{item.category}</Text>
-            {item.tasks.map((task) => (
-                renderTask({ item: task })
-            ))}
-        </View>
+    // Parse CostDetails as an object
+    const costDetails = JSON.parse(CostDetails || '{}');
+
+    // Transform cost details into array format
+    const costData = [
+        { label: "Area", value: `${costDetails.area} sqft`, icon: "ruler-combined" },
+        { label: "City", value: costDetails.city, icon: "city" },
+        { label: "State", value: costDetails.state, icon: "map-marked-alt" },
+        { label: "Zip Code", value: costDetails.zip_code, icon: "map-pin" },
+        { label: "Per Square Price", value: `$${costDetails.per_square_price}`, icon: "dollar-sign" },
+        { label: "Unit Price", value: `$${costDetails.unit_price}`, icon: "money-bill-wave" },
+        { label: "Total Cost", value: `$${costDetails.total_cost}`, icon: "calculator" },
+    ];
+
+    const renderCostDetail = ({ item, index }) => (
+        <Animatable.View
+            animation="fadeInUp"
+            delay={index * 100}
+            className="mb-4 bg-white p-4 rounded-lg shadow-lg flex-row items-center"
+        >
+            <FontAwesome5
+                name={item.icon}
+                size={24}
+                color="#0d9488"
+                style={{ marginRight: 12 }}
+            />
+            <View>
+                <Text className="text-lg font-bold text-gray-800">{item.label}</Text>
+                <Text
+                    className="text-base mt-1"
+                    style={{
+                        color: item.label.includes("Cost") ? "#ef4444" : "#047857", // Red for costs, green for other details
+                        fontWeight: "600",
+                    }}
+                >
+                    {item.value}
+                </Text>
+            </View>
+        </Animatable.View>
     );
 
     return (
         <View className="flex-1">
-           
-            <View className="bg-sky-950 p-6"
+            {/* Gradient Header */}
+            <LinearGradient
+                colors={['#0f172a', '#1e293b']}
+                style={{ padding: 20, paddingTop: 50 }}
             >
-                <Text className="text-3xl font-bold text-white">Construction Schedule</Text>
-                <Text className="text-base text-gray-200 mt-2">
-                    Total Duration: 142 Days (28.4 Weeks / 6.55 Months)
-                </Text>
-            </View>
+                <Text className="text-3xl font-bold text-white">Cost Details</Text>
+            </LinearGradient>
 
+            {/* FlashList for Cost Details */}
             <FlashList
-                data={data}
-                renderItem={renderCategory}
-                estimatedItemSize={200}
-                contentContainerStyle={{ padding: 16, backgroundColor: "#f9fafb" }} 
-                keyExtractor={(item) => item.category}
+                data={costData}
+                renderItem={renderCostDetail}
+                estimatedItemSize={50}
+                contentContainerStyle={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 20,
+                    backgroundColor: "#f3f4f6",
+                }}
+                keyExtractor={(item, index) => `${item.label}-${index}`}
             />
         </View>
     );
