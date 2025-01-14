@@ -37,7 +37,6 @@ export default function CostDetail() {
         router.push(`/BreakdownCost?breakdownCost=${breakdownCost}`)
     }
     const backButton = () => {
-        // console.log("back button")
         router.push("/AreaDetailsScreen")
     }
 

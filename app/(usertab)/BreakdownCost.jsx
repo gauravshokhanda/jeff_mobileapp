@@ -1,26 +1,32 @@
-import { View, Text, Dimensions } from 'react-native';
+import { View, Text, Dimensions, Touchable, TouchableOpacity } from 'react-native';
 import React from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { PieChart } from 'react-native-chart-kit';
 import { FlashList } from '@shopify/flash-list';
 import { Circle } from 'react-native-progress';
+import { Ionicons } from '@expo/vector-icons';
+
+
 
 export default function BreakdownCost() {
     const { breakdownCost } = useLocalSearchParams();
     const parsedData = JSON.parse(breakdownCost);
     const { estimated_time, project_type, square_fit, data } = parsedData;
 
- 
+
     const totalDays = Object.values(data).reduce((acc, day) => acc + day, 0);
     const categories = Object.entries(data);
 
-  
+
     const categoryColors = categories.map(() => `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`);
 
     return (
         <View className="flex-1 bg-gray-100">
             {/* Header */}
             <View className="flex-row justify-between items-center mb-1 bg-sky-100 p-5">
+                {/* <TouchableOpacity onPress={router.back()}>
+                    <Ionicons name="arrow-back" size={24} color="white" />
+                </TouchableOpacity> */}
                 <Text className="text-2xl font-bold text-gray-600">Category Report</Text>
                 <Text className="text-lg text-gray-500">{project_type}</Text>
             </View>
@@ -61,9 +67,9 @@ export default function BreakdownCost() {
                         className="flex-row justify-between items-center bg-white p-4 mx-5 rounded-lg mb-3 shadow-sm"
                         style={{ borderColor: categoryColors[index], borderWidth: 0.5 }}
                     >
-                        
+
                         <Circle
-                            size={50} 
+                            size={50}
                             progress={item[1] / totalDays} // Progress value (0-1)
                             color={categoryColors[index]} // Progress bar color
                             thickness={2} // Width of the progress line
