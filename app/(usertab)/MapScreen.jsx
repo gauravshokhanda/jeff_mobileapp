@@ -89,7 +89,7 @@ export default function MapScreen() {
             longitudeDelta: 0.01,
           });
           setSearchText("");
-          Alert.alert('Location Found', `Location Name: ${location.city || location.region || 'Unknown'}`);
+          // Alert.alert('Location Found', `Location Name: ${location.city || location.region || 'Unknown'}`);
         } else {
           Alert.alert('Not Found', 'No matching location found.');
         }
@@ -165,10 +165,10 @@ export default function MapScreen() {
           console.log("Country:", country);
           console.log("postalCode:", postalCode);
 
-          Alert.alert(
-            "Area Details",
-            `Area: ${areaInSquareFeet} sq. ft.\nCity: ${city}\nRegion: ${region}\nCountry: ${country}\npostalCode: ${postalCode}`
-          );
+          // Alert.alert(
+          //   "Area Details",
+          //   `Area: ${areaInSquareFeet} sq. ft.\nCity: ${city}\nRegion: ${region}\nCountry: ${country}\npostalCode: ${postalCode}`
+          // );
         } else {
           console.log("Reverse geocoding returned no results.");
         }
