@@ -11,7 +11,7 @@ export default function CostDetail() {
     const { CostDetails } = useLocalSearchParams();
 
     const costDetails = CostDetails ? JSON.parse(CostDetails) : null;
-    console.log("const details", costDetails.days)
+    // console.log("const details", costDetails.days)
 
     if (!costDetails) {
         return (
@@ -36,14 +36,18 @@ export default function CostDetail() {
         const breakdownCost = JSON.stringify(costDetails.days);
         router.push(`/BreakdownCost?breakdownCost=${breakdownCost}`)
     }
+    const backButton = () => {
+        // console.log("back button")
+        router.push("/AreaDetailsScreen")
+    }
 
     return (
         <View className="flex-1 bg-gray-100">
 
             <View className="bg-sky-950 p-5">
                 <TouchableOpacity
+                    onPress={backButton}
                     className="absolute top-6 left-4"
-                    onPress={() => router.back()}
                 >
                     <Ionicons name='arrow-back' size={24} color="white" />
                 </TouchableOpacity>
