@@ -34,7 +34,7 @@ export default function CostDetail() {
 
     const handleBreakdownCost = () => {
         const breakdownCost = JSON.stringify(costDetails.days);
-        router.push(`/BreakdownCost?breakdownCost=${breakdownCost}`)
+        router.push(`/BreakdownCost?breakdownCost=${breakdownCost}&screenName=MapScreen`)
     }
     const backButton = () => {
         router.push("/AreaDetailsScreen")

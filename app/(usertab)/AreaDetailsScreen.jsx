@@ -23,10 +23,10 @@ export default function AreaDetailsScreen() {
     }, []);
 
     const scheduleCost = async () => {
-        console.log("schedule cost function");
-        console.log("city:", areaDeatils.city);
-        console.log("zipcode:", areaDeatils.zipCode);
-        console.log("area:", areaDeatils.area);
+        // console.log("schedule cost function");
+        // console.log("city:", areaDeatils.city);
+        // console.log("zipcode:", areaDeatils.zipCode);
+        // console.log("area:", areaDeatils.area);
 
         const data = {
             city: "ADJUNTAS",
@@ -36,7 +36,7 @@ export default function AreaDetailsScreen() {
             square_fit: "1000"
         };
 
-        setLoading(true); // Start the loader
+        setLoading(true); 
         try {
             const response = await API.post("regional_multipliers/details", JSON.stringify(data), {
                 headers: {

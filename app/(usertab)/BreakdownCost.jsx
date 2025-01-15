@@ -1,6 +1,6 @@
 import { View, Text, Dimensions, Touchable, TouchableOpacity } from 'react-native';
 import React from 'react';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { PieChart } from 'react-native-chart-kit';
 import { FlashList } from '@shopify/flash-list';
 import { Circle } from 'react-native-progress';
@@ -9,7 +9,9 @@ import { Ionicons } from '@expo/vector-icons';
 
 
 export default function BreakdownCost() {
-    const { breakdownCost } = useLocalSearchParams();
+    const router = useRouter();
+    const { breakdownCost, screenName } = useLocalSearchParams();
+    console.log("screenName", screenName)
     const parsedData = JSON.parse(breakdownCost);
     const { estimated_time, project_type, square_fit, data } = parsedData;
 
@@ -24,9 +26,9 @@ export default function BreakdownCost() {
         <View className="flex-1 bg-gray-100">
             {/* Header */}
             <View className="flex-row justify-between items-center mb-1 bg-sky-100 p-5">
-                {/* <TouchableOpacity onPress={router.back()}>
-                    <Ionicons name="arrow-back" size={24} color="white" />
-                </TouchableOpacity> */}
+                <TouchableOpacity onPress={() => router.push(screenName)}>
+                    <Ionicons name="arrow-back" size={24} color="color" />
+                </TouchableOpacity>
                 <Text className="text-2xl font-bold text-gray-600">Category Report</Text>
                 <Text className="text-lg text-gray-500">{project_type}</Text>
             </View>
