@@ -50,7 +50,7 @@ export default function FloorMapScreen() {
     };
 
     const handleSubmit = async () => {
-        if (!city || !zipCode || !area || !projectType) {
+        if (!city || !zipCode || !area || !projectType || !imageUri) {
             Alert.alert('Error', 'All fields are required');
             return;
         }
@@ -62,12 +62,17 @@ export default function FloorMapScreen() {
         data.append("zip_code", zipCode);
         data.append("area", area);
         data.append("project_type", projectType);
+        data.append("floor_maps", {
+            uri: imageUri,
+            name: fileName || "uploaded_file",
+            type: "image/jpeg",
+        });
 
         try {
             const response = await API.post("regional_multipliers/details", data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
+                    "Content-Type": "multipart/form-data",
                 },
             });
             const breakdownCost = JSON.stringify(response.data.data);
@@ -160,7 +165,7 @@ export default function FloorMapScreen() {
                                 </>
                             )}
 
-                            {/* Add Floormap Button (only shown if no imageUri exists) */}
+                            
                             {!imageUri && (
                                 <TouchableOpacity
                                     onPress={handleFileUpload}
