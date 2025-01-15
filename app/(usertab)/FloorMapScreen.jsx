@@ -51,7 +51,7 @@ export default function FloorMapScreen() {
             console.log("response", response.data.data.days);
             Alert.alert('Success', 'Data submitted successfully!');
             const breakdownCost = JSON.stringify(response.data.data.days);
-            router.push(`/BreakdownCost?breakdownCost=${breakdownCost}`);
+            router.push(`/BreakdownCost?breakdownCost=${breakdownCost}&screenName=FloorMapScreen`);
 
             setName('');
             setCity('');
