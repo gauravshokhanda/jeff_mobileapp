@@ -68,6 +68,8 @@ export default function FloorMapScreen() {
             type: "image/jpeg",
         });
 
+        console.log("data", data.floor_maps)
+
         try {
             const response = await API.post("regional_multipliers/details", data, {
                 headers: {
@@ -86,10 +88,12 @@ export default function FloorMapScreen() {
             setImageUri('');
         } catch (error) {
             console.error("Error occurred:", error.message);
-            if (error.response) {
-                Alert.alert('Error', error.response.data.message || 'API Error occurred!');
+            if (error.response?.data?.errors) {
+                Alert.alert('Validation Error', Object.values(error.response.data.errors).join('\n'));
+            } else if (error.response?.data?.message) {
+                Alert.alert('Error', error.response.data.message);
             } else {
-                Alert.alert('Error', 'Network or server issue occurred!');
+                Alert.alert('Error', 'An unknown error occurred');
             }
         } finally {
             setLoading(false);
@@ -113,10 +117,10 @@ export default function FloorMapScreen() {
                 className="bg-gray-100"
             >
                 {/* Header Section */}
-                <View className={`py-4 bg-sky-950 ${Platform.OS === 'ios' ? 'pt-14' : ''}`}>
+                <View className={`py-4 bg-sky-950 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
                     <TouchableOpacity
                         onPress={() => router.back()}
-                        className={`absolute z-10 left-4 ${Platform.OS === 'ios' ? 'top-16' : 'top-5'}`} >
+                        className={`absolute z-10 left-4 ${Platform.OS === 'ios' ? 'top-5' : 'top-5'}`} >
                         <Ionicons name='arrow-back' size={24} color="white" />
                     </TouchableOpacity>
                     <Text className="text-3xl font-bold text-center text-white">
@@ -165,7 +169,7 @@ export default function FloorMapScreen() {
                                 </>
                             )}
 
-                            
+
                             {!imageUri && (
                                 <TouchableOpacity
                                     onPress={handleFileUpload}
@@ -187,7 +191,7 @@ export default function FloorMapScreen() {
                                 <Text className="text-gray-800 font-semibold mb-1 text-base">Name</Text>
                                 <TextInput
                                     className="border border-gray-300 bg-white rounded-xl p-4 text-gray-900 shadow-sm"
-                                    placeholder="Enter city"
+                                    placeholder="Enter Name"
                                     placeholderTextColor="#A0AEC0"
                                     onChangeText={setName}
                                     value={name}

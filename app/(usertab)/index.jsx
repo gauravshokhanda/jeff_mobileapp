@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, Image, ScrollView, TextInput, TouchableOpacity, Platform } from 'react-native';
 import React from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { FontAwesome } from '@expo/vector-icons';
@@ -14,7 +14,8 @@ export default function Dashboard() {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       {/* Header */}
-      <View className="flex-row justify-center items-center bg-sky-950 pt-12 p-10 pb-4">
+      <View
+        className={`flex-row justify-center items-center bg-sky-950 pt-12 p-10 pb-4 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
 
         {/* Home Icon */}
         <Ionicons name="home" size={24} color="#ffffff" className="mr-5 mt-2 " />
@@ -84,6 +85,6 @@ export default function Dashboard() {
 
 
       </View>
-    </ScrollView>
+    </ScrollView >
   );
 }

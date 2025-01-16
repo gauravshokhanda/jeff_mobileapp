@@ -1,14 +1,21 @@
-import { View, Text, TouchableOpacity } from 'react-native';
-import React from 'react';
+import { View, Text, TouchableOpacity,Platform } from 'react-native';
+import React, { useEffect } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Circle } from 'react-native-progress';
 import { Ionicons } from '@expo/vector-icons';
+import { useDispatch } from 'react-redux';
+import { setBreakdownCost } from '../../redux/slice/breakdownCostSlice';
 
 export default function BreakdownCost() {
     const router = useRouter();
+    const dispatch = useDispatch();
     const { breakdownCost, screenName } = useLocalSearchParams();
     const parsedData = JSON.parse(breakdownCost);
+
+    useEffect(() => {
+        dispatch(setBreakdownCost(parsedData));
+    }, [breakdownCost, dispatch])
     const { estimated_time, project_type, square_fit, data } = parsedData.days;
 
     const totalDays = Object.values(data).reduce((acc, day) => acc + day, 0);
@@ -24,7 +31,7 @@ export default function BreakdownCost() {
     };
 
     return (
-        <View className="flex-1 bg-white">
+        <View className={`flex-1 bg-white ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
             {/* Header Section */}
             <View className="flex-row justify-between items-center bg-sky-900 p-5 rounded-b-2xl shadow-lg">
                 <TouchableOpacity onPress={() => router.push(screenName)}>
@@ -35,7 +42,7 @@ export default function BreakdownCost() {
             </View>
 
             {/* Total Cost Section */}
-            <View className="px-6 py-4 mt-6 bg-gray-50 rounded-lg shadow-md">
+            <View className={`px-6 py-4 mt-6 bg-gray-50 rounded-lg shadow-md ${Platform.OS === 'ios' ? 'mx-3' : ''}`}>
                 <Text className="text-lg text-gray-600 font-semibold">Total Cost</Text>
                 <Text className="text-4xl font-extrabold text-gray-800">
                     ${new Intl.NumberFormat('en-US', { style: 'decimal' }).format(parsedData.total_cost)}
@@ -43,7 +50,7 @@ export default function BreakdownCost() {
             </View>
 
             {/* Total Days Section */}
-            <View className="px-6 py-4 mt-6 bg-gray-50 rounded-lg shadow-md mb-4">
+            <View className={`px-6 py-4 mt-6 bg-gray-50 rounded-lg shadow-md mb-4 ${Platform.OS === 'ios' ? 'mx-3' : ''}`}>
                 <Text className="text-lg text-gray-600 font-semibold">Total Days</Text>
                 <Text className="text-4xl font-extrabold text-gray-800">{totalDays}</Text>
             </View>
@@ -55,7 +62,7 @@ export default function BreakdownCost() {
                     renderItem={({ item, index }) => (
                         <View
                             key={item[0]}
-                            className="flex-row justify-between items-center bg-white p-4 mb-4 rounded-lg shadow-lg"
+                            className="flex-row justify-between items-center bg-white h-28 mb-4 rounded-lg shadow-lg px-2 w-[95%]"
                             style={{ borderColor: categoryColors[index], borderWidth: 1.5, borderRadius: 5 }}
                         >
                             <Circle

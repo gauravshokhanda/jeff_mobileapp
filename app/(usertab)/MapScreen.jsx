@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Alert, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, Alert, TextInput, ActivityIndicator, Platform } from 'react-native';
 import MapView, { Marker, Polygon, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { TouchableOpacity } from 'react-native';
@@ -205,7 +205,7 @@ export default function MapScreen() {
   }, []);
 
   return (
-    <View className="flex-1">
+    <View className={`flex-1 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
       {isLoading ? (
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#0000ff" />
@@ -214,7 +214,7 @@ export default function MapScreen() {
       ) : location ? (
         <View className="flex-1 relative">
           <TouchableOpacity
-            className="absolute top-7 z-10 left-2"
+            className={`absolute z-10 left-2 ${Platform.OS === 'ios' ? 'top-7' : 'top-7'}`}
             onPress={() => router.back()}
           >
             <Ionicons
@@ -268,7 +268,7 @@ export default function MapScreen() {
               <Ionicons name="remove-outline" size={30} color="#172554" />
             </TouchableOpacity>
           </View>
-            <View className="absolute right-4 z-10 flex bottom-5">
+          <View className="absolute right-4 z-10 flex bottom-5">
             <TouchableOpacity
               onPress={handleStartDrawing}
               className="p-3 bg-white rounded-full my-2"

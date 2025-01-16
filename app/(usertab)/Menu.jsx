@@ -1,46 +1,43 @@
-import { View, Text, ScrollView, Image } from 'react-native'
-import React from 'react'
+import React from "react";
+import { View, Text, Platform } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { useSelector } from 'react-redux';
 
-export default function Menu() {
+const Menu = () => {
+  const userName = useSelector((state) => state.auth.user);
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-      <View className="flex-1 p-10">
-        <View className="flex-1 items-center">
-          <View className="h-5 w-24 bg-slate-400 rounded-3xl">
-            <View className=" h-full w-[65%] bg-slate-900  rounded-3xl" />
-          </View>
-        </View>
-
-        <View className="flex-1 mb-10  items-center">
-          <View className="h-[60%] w-[60%]">
-            <Image
-              className="h-full w-full"
-              source={require("../../assets/images/AC5D_Logo.jpg")}
-              resizeMode="cover"
-            />
-
-          </View>
-          <View className="mt-2">
-            <Text className="text-2xl font-semibold text-sky-950">G32CORP</Text>
-          </View>
-        </View>
-
-        <View className="flex-1  justify-evenly">
-          <View className="items-center pt-5">
-            <Text className="text-2xl font-bold pb-4 text-sky-950">Welcome to G32corp.</Text>
-            <Text className="leading-5 text-center w-[80%] text-sky-900 text-md">Lorem ipsum, dolor sit amet consectetur adipisicing elit. At, esse deleniti similique id nulla quidem voluptatum odit eum labor and new !</Text>
-          </View>
-          <View className=" items-center">
-            <View className="border border-sky-950 h-5 w-40 mb-2 " />
-            <View>
-              <Text className="text-sky-950 font-semibold text-md">Loading...57%</Text>
-            </View>
-
-          </View>
-
-        </View>
-
+    <View className={`flex-1 bg-gray-900 px-5 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
+      <View className="mt-12 px-5">
+        <Text className="text-3xl font-semibold text-white">Hi  {userName.name ? userName.name : "unknown"}</Text>
+        <Text className="text-gray-400">Welcome to your personal space</Text>
       </View>
-    </ScrollView>
-  )
-}
+
+      <View className="flex-row flex-wrap mt-5 justify-between">
+        {menuItems.map((item, index) => (
+          <View
+            key={index}
+            className="w-[47%] h-24 my-2 bg-gray-800 rounded-lg p-3 justify-center"
+          >
+            <Icon name={item.icon} size={24} color="#FFFFFF" />
+            <Text className="text-white font-medium mt-1">{item.title}</Text>
+            {item.subtitle && <Text className="text-gray-400">{item.subtitle}</Text>}
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+};
+
+const menuItems = [
+  { icon: 'analytics', title: 'Discover Plus+', subtitle: 'Boost your chances' },
+  { icon: 'manage-search', title: 'Search Orders', subtitle: 'Saved Searches' },
+  { icon: 'favorite-border', title: 'Favorites' },
+  { icon: 'credit-card', title: 'Financing', subtitle: 'Interest & rates' },
+  { icon: 'notifications', title: 'Notifications', subtitle: '0 new' },
+  { icon: 'verified-user', title: 'Profile', subtitle: 'Applicant portfolios' },
+  { icon: 'house', title: 'ImmoKlub', subtitle: 'Insure your home' },
+  { icon: 'lock', title: 'Account', subtitle: 'Contracts & data' },
+  { icon: 'settings', title: 'Settings', subtitle: 'Language, design...' },
+];
+
+export default Menu;
