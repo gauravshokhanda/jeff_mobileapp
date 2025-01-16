@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity,Platform } from 'react-native';
 import React from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -41,7 +41,7 @@ export default function CostDetail() {
     }
 
     return (
-        <View className="flex-1 bg-gray-100">
+        <View className={`flex-1 bg-gray-100 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
 
             <View className="bg-sky-950 p-5">
                 <TouchableOpacity

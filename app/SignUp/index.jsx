@@ -120,7 +120,7 @@ export default function SignUp() {
                                         marginBlock: 2,
                                     }}
                                     data={[
-                                        { key: 2, label: 'User' },
+                                        { key: 2, label: 'Customer' },
                                         { key: 3, label: 'General Contractor' },
                                         { key: 4, label: 'Real Estate Contractor' },
                                     ]}

@@ -1,11 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
-import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { combineReducers } from 'redux';
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
-import authReducer from './slice/authSlice'; 
+import authReducer from './slice/authSlice';
 import contractorReducer from "./slice/contractorsSlice"
 import polygonReducer from "./slice/polygonSlice"
+import breakdownCostSlice from "./slice/breakdownCostSlice"
 
 // Persist Config
 const persistConfig = {
@@ -17,7 +18,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
     auth: authReducer,
     contractorsList: contractorReducer,
-    polygon: polygonReducer
+    polygon: polygonReducer,
+    breakdownCost: breakdownCostSlice,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

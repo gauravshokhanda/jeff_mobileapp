@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Animated, Image, Alert, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Animated, Image, Alert, ActivityIndicator, StyleSheet, Platform } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from "expo-router";
@@ -36,7 +36,7 @@ export default function AreaDetailsScreen() {
             square_fit: "1000"
         };
 
-        setLoading(true); 
+        setLoading(true);
         try {
             const response = await API.post("regional_multipliers/details", JSON.stringify(data), {
                 headers: {
@@ -63,7 +63,7 @@ export default function AreaDetailsScreen() {
 
     return (
         <Animated.View
-            className="flex-1"
+            className={`flex-1 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}
             style={{
                 opacity: fadeAnim,
                 backgroundColor: '#F0F4F8',
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         zIndex: 10,
     },
 });
