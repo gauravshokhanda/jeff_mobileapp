@@ -37,7 +37,7 @@ export default function BreakdownCost() {
                 <TouchableOpacity onPress={() => router.push(screenName)}>
                     <Ionicons name="arrow-back" size={28} color="white" />
                 </TouchableOpacity>
-                <Text className="text-2xl font-extrabold text-white">Category Report</Text>
+                <Text className="text-2xl font-extrabold text-white">Cost Breakdown</Text>
                 <Text className="text-lg text-white opacity-75">{project_type}</Text>
             </View>
 
