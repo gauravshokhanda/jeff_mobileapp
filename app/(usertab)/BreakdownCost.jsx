@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity,Platform } from 'react-native';
+import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import React, { useEffect } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
