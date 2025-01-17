@@ -1,124 +1,144 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Platform } from "react-native";
-import { evaluate } from "mathjs";
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import ModalSelector from 'react-native-modal-selector';
+import { useSelector } from 'react-redux';
+import { API } from '../../config/apiConfig';
 
-export default function Home() {
-  const [input, setInput] = useState("");
-  const [result, setResult] = useState("");
-  const [toggleBracket, setToggleBracket] = useState("(");
+export default function Dashboard() {
+  const [city, setCity] = useState('');
+  const [zipCode, setZipCode] = useState('');
+  const [area, setArea] = useState('');
+  const [projectType, setProjectType] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [totalCost, setTotalCost] = useState(null);
 
-  const handlePress = (value) => {
-    if (value === "=") {
-      if (input.trim() === "") {
-        setResult("0");
-        return;
-      }
-      try {
-        const inputWithPercent = input.replace(/(\d+)%(\d+)/g, (match, num1, num2) => `${num1}/100*${num2}`);
-        const inputWithPercentAndDivision = inputWithPercent.replace(/(\d+)%/g, (match, num) => `${num}/100`);
+  const token = useSelector((state) => state.auth.token);
 
-        const evaluation = evaluate(inputWithPercentAndDivision);
-        setResult(isNaN(evaluation) ? "0" : evaluation.toString());
-      } catch (error) {
-        setResult("0");
-      }
-    } else if (value === "AC") {
-      setInput("");
-      setResult("");
-    } else if (value === "DEL") {
-      setInput(input.slice(0, -1));
-    } else if (value === "()") {
-      // Logic to handle brackets
-      const lastChar = input.trim().slice(-1);
+  const handleSubmit = async () => {
+    console.log("handle function")
+    if (!city || !zipCode || !area || !projectType) {
+      Alert.alert('Error', 'All fields are required');
+      return;
+    }
 
-      if (toggleBracket === "(") {
-        // Add opening bracket only if the last character is not an operator or opening bracket
-        if (!["/", "*", "-", "+", "("].includes(lastChar)) {
-          setInput(input + "(");
-          setToggleBracket(")"); // Now we expect a closing bracket
-        }
-      } else {
-        // Add closing bracket only if there's an opening bracket without a pair
-        const openCount = (input.match(/\(/g) || []).length;
-        const closeCount = (input.match(/\)/g) || []).length;
+    setLoading(true);
 
-        if (openCount > closeCount) {
-          setInput(input + ")");
-          setToggleBracket("("); // Now we expect an opening bracket again
-        }
-      }
-    } else if (value === "%") {
-      if (input.trim() !== "") {
-        setInput(input + "%");
-      }
-    } else if (["/", "*", "-", "+"].includes(value)) {
-      const lastChar = input.trim().slice(-1);
-      if (["/", "*", "-", "+"].includes(lastChar)) {
-        setInput(input.slice(0, -1) + value);
-      } else {
-        setInput(input + value);
-      }
-    } else {
-      setInput(input + value);
+    const data = {
+      city,
+      zip_code: zipCode,
+      area,
+      project_type: projectType,
+    };
+
+    try {
+      console.time("API Call"); // Start timer for debugging
+      const response = await API.post("regional_multipliers/details", data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      console.timeEnd("API Call"); // End timer for debugging
+
+      const { total_cost } = response.data.data;
+      setTotalCost(total_cost);
+
+      // Batch state updates to avoid multiple re-renders
+      setCity('');
+      setZipCode('');
+      setArea('');
+      setProjectType('');
+    } catch (error) {
+      console.error("Error occurred:", error.message);
+      Alert.alert('Error', error.response?.data?.message || 'An unknown error occurred');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const buttons = [
-    ["AC", "()", "%", "/"],
-    ["1", "2", "3", "*"],
-    ["4", "5", "6", "+"],
-    ["7", "8", "9", "-"],
-    [".", "0", "DEL", "="],
+  const projectTypeOptions = [
+    { key: '1', label: 'Basic' },
+    { key: '2', label: 'Mid-range' },
+    { key: '3', label: 'Luxury' },
   ];
 
   return (
-    <View className={`flex-1 bg-gray-900 p-4 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
-      {/* Display */}
-      <View className="bg-gray-800 rounded-lg mb-4 h-[55%] w-full justify-end">
-        <Text className="text-gray-400 text-right text-3xl pr-3">{input || " "}</Text>
-        <Text className="text-gray-200 text-right text-6xl py-4 pr-3">{result || " "}</Text>
-      </View>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1 bg-gray-100">
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+        <View className="py-6 bg-sky-950 shadow-lg">
+          <Text className="text-3xl font-extrabold text-center text-white tracking-wide">Cost Calculator</Text>
+        </View>
 
-      {/* Buttons */}
-      <View className="flex-1">
-        {buttons.map((row, rowIndex) => (
-          <View key={rowIndex} className="flex-row justify-between mb-3">
-            {row.map((button) => (
-              <TouchableOpacity
-                key={button}
-                onPress={() => handlePress(button)}
-                className={`${button === "="
-                  ? "bg-orange-500"
-                  : button === "AC"
-                    ? "bg-orange-500"
-                    : button === "*" || button === "+" || button === "-" || button === "/"
-                      ? "bg-gray-700"
-                      : "bg-gray-700"
-                  } flex-1 mx-1 p-4 rounded-2xl`}
-                style={{
-                  elevation: 5,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.84,
-                }}
-              >
-                <Text
-                  style={{ fontSize: 20 }}
-                  className={`text-center ${button === "=" || button === "AC"
-                    ? "text-gray-300"
-                    : button === "*" || button === "+" || button === "-" || button === "/" || button === "DEL" || button === "%" || button === "()"
-                      ? "text-orange-500"
-                      : "text-gray-300"
-                    } text-xl font-bold`}
-                >
-                  {button}
-                </Text>
-              </TouchableOpacity>
-            ))}
+        <View className="p-6 bg-white m-4 rounded-lg shadow-md border border-gray-300">
+          <Text className="text-gray-700 mb-1 text-lg font-bold">City:</Text>
+          <TextInput
+            placeholder="Enter City"
+            value={city}
+            onChangeText={setCity}
+            className="border border-gray-300 rounded-md p-3 mb-4"
+          />
+
+          <Text className="text-gray-700 mb-1 text-lg font-bold">Zip Code:</Text>
+          <TextInput
+            placeholder="Enter Zip Code"
+            keyboardType="numeric"
+            value={zipCode}
+            onChangeText={setZipCode}
+            className="border border-gray-300 rounded-md p-3 mb-4"
+          />
+
+          <Text className="text-gray-700 mb-1 text-lg font-bold">Area in Square Feet:</Text>
+          <TextInput
+            placeholder="Enter Area"
+            value={area}
+            onChangeText={setArea}
+            className="border border-gray-300 rounded-md p-3 mb-4"
+          />
+
+          <Text className="text-gray-700 mb-2 text-lg font-bold">Construction Type:</Text>
+          <ModalSelector
+            data={projectTypeOptions}
+            initValue={projectType || "Select Project Type"}
+            onChange={(option) => setProjectType(option.label)}
+            style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 5, marginBottom: 16 }}
+            initValueTextStyle={{ padding: 10, color: '#555' }}
+          />
+
+          <TouchableOpacity
+            onPress={handleSubmit}
+            className="bg-sky-900 py-3 rounded-md shadow-md"
+            disabled={loading}
+          >
+            <Text className="text-white text-center text-lg font-bold">CALCULATE</Text>
+          </TouchableOpacity>
+
+          {totalCost && (
+            <View className="mt-4">
+              <Text className="text-gray-800 text-lg font-semibold">Result:</Text>
+              <Text className="mt-2 p-3 bg-gray-100 border border-gray-300 rounded-md">
+                ${totalCost}
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {loading && (
+          <View className="absolute inset-0 bg-gray-300 bg-opacity-50 flex justify-center items-center">
+            <ActivityIndicator size="large" color="#FFF" />
+            <Text className="text-sky-950 mt-3">Calculating...</Text>
           </View>
-        ))}
-      </View>
-    </View>
+        )}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

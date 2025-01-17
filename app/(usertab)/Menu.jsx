@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 const Menu = () => {
   const userName = useSelector((state) => state.auth.user);
   return (
-    <View className={`flex-1 bg-gray-900 px-5 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
+    <View className={`flex-1 bg-sky-950 px-5 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
       <View className="mt-12 px-5">
         <Text className="text-3xl font-semibold text-white">Hi  {userName.name ? userName.name : "unknown"}</Text>
         <Text className="text-gray-400">Welcome to your personal space</Text>
@@ -16,7 +16,7 @@ const Menu = () => {
         {menuItems.map((item, index) => (
           <View
             key={index}
-            className="w-[47%] h-24 my-2 bg-gray-800 rounded-lg p-3 justify-center"
+            className="w-[47%] h-24 my-2 bg-sky-900 rounded-xl p-3 justify-center border border-gray-500"
           >
             <Icon name={item.icon} size={24} color="#FFFFFF" />
             <Text className="text-white font-medium mt-1">{item.title}</Text>
