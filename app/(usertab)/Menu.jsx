@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 const Menu = () => {
   const userName = useSelector((state) => state.auth.user);
   return (
-    <View className={`flex-1 bg-sky-950 px-5 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
+    <View className={`flex-1 bg-sky-950 px-5 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
       <View className="mt-12 px-5">
         <Text className="text-3xl font-semibold text-white">Hi  {userName.name ? userName.name : "unknown"}</Text>
         <Text className="text-gray-400">Welcome to your personal space</Text>

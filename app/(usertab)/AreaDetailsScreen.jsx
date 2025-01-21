@@ -63,7 +63,7 @@ export default function AreaDetailsScreen() {
 
     return (
         <Animated.View
-            className={`flex-1 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}
+            className={`flex-1 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}
             style={{
                 opacity: fadeAnim,
                 backgroundColor: '#F0F4F8',

@@ -117,7 +117,7 @@ export default function FloorMapScreen() {
                 className="bg-gray-100"
             >
                 {/* Header Section */}
-                <View className={`py-4 bg-sky-950 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
+                <View className={`py-4 bg-sky-950 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
                     <TouchableOpacity
                         onPress={() => router.back()}
                         className={`absolute z-10 left-4 ${Platform.OS === 'ios' ? 'top-5' : 'top-5'}`} >

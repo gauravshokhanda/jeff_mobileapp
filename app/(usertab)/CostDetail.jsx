@@ -41,7 +41,7 @@ export default function CostDetail() {
     }
 
     return (
-        <View className={`flex-1 bg-gray-100 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
+        <View className={`flex-1 bg-gray-100 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
 
             <View className="bg-sky-950 p-5">
                 <TouchableOpacity
