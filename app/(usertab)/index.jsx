@@ -15,7 +15,7 @@ export default function Dashboard() {
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       {/* Header */}
       <View
-        className={`flex-row justify-center items-center bg-sky-950 pt-12 p-10 pb-4 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
+        className={`flex-row justify-center items-center bg-sky-950 pt-12 p-10 pb-4 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
 
         {/* Home Icon */}
         <Ionicons name="home" size={24} color="#ffffff" className="mr-5 mt-2 " />

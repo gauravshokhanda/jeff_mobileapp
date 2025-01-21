@@ -26,7 +26,7 @@ const ProfileScreen = () => {
   };
 
   return (
-    <View className={`flex-1 bg-sky-950 px-5 py-10 ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
+    <View className={`flex-1 bg-sky-950 px-5 py-10 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
       <View className="items-center mb-10">
         <Icon name="account-circle" size={100} color="#FFFFFF" />
         <Text className="text-2xl font-semibold text-white mt-3">{userData.name ? userData.name : "unknown"}</Text>

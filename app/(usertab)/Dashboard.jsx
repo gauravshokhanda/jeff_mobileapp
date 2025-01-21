@@ -75,7 +75,7 @@ export default function Dashboard() {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1 bg-gray-100">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-        <View className={`py-6 bg-sky-950 shadow-lg ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
+        <View className={`py-6 bg-sky-950 shadow-lg ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
           <Text className="text-3xl font-extrabold text-center text-white tracking-wide">Cost Calculator</Text>
         </View>
 

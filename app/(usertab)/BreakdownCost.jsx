@@ -31,7 +31,7 @@ export default function BreakdownCost() {
     };
 
     return (
-        <View className={`flex-1 bg-white ${Platform.OS === 'ios' ? 'mt-9' : ''}`}>
+        <View className={`flex-1 bg-white ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
             {/* Header Section */}
             <View className="flex-row justify-between items-center bg-sky-900 p-5 rounded-b-2xl shadow-lg">
                 <TouchableOpacity onPress={() => router.push(screenName)}>
