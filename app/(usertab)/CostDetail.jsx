@@ -27,7 +27,7 @@ export default function CostDetail() {
         { label: "City", value: costDetails.city, icon: "city" },
         { label: "State", value: costDetails.state, icon: "map-marker-alt" },
         { label: "Zip Code", value: costDetails.zip_code, icon: "map-pin" },
-        { label: "Per Square Price", value: `$${costDetails.per_square_price}`, icon: "dollar-sign" },
+        // { label: "Per Square Price", value: `$${costDetails.per_square_price}`, icon: "dollar-sign" },
         { label: "Unit Price", value: `$${costDetails.unit_price}`, icon: "money-bill-wave" },
         { label: "Total Cost", value: `$${costDetails.total_cost}`, icon: "calculator" },
     ];

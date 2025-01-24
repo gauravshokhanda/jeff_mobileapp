@@ -13,6 +13,7 @@ export default function AreaDetailsScreen() {
     const areaDeatils = useSelector((state) => state.polygon);
 
     const [loading, setLoading] = useState(false);
+    const [cityName, setCityName] = useState('')
 
     useEffect(() => {
         Animated.timing(fadeAnim, {
@@ -22,19 +23,37 @@ export default function AreaDetailsScreen() {
         }).start();
     }, []);
 
-    const scheduleCost = async () => {
-        // console.log("schedule cost function");
-        // console.log("city:", areaDeatils.city);
-        // console.log("zipcode:", areaDeatils.zipCode);
-        // console.log("area:", areaDeatils.area);
+    const fetchCityName = async () => {
+        try {
+            const response = await API.post(`get-cityname`, { zipcode: areaDeatils.zipCode });
+    
+            if (response.data && response.data.data.city) {
+                console.log("City name:", response.data.data.city);
+                setCityName(response.data.data.city);
+            } else {
+                // If no city is found, set the city to "Florida"
+                console.log("City not found, setting to Florida.");
+                setCityName("Florida");
+            }
+        } catch (error) {
+            // console.log("Error fetching city name:", error.message);
+            // Alert.alert("Error", "An error occurred while fetching city name.");
+            // Set city to "Florida" in case of an error
+            setCityName("Florida");
+        }
+    };
+    
 
+    const scheduleCost = async () => {
         const data = {
-            city: "ADJUNTAS",
+            city: cityName,
             zip_code: areaDeatils.zipCode,
             area: areaDeatils.area,
             project_type: "Basic",
             square_fit: "1000"
         };
+
+        console.log("data",data)
 
         setLoading(true);
         try {
@@ -60,6 +79,10 @@ export default function AreaDetailsScreen() {
             setLoading(false); // Stop the loader
         }
     };
+
+    useEffect(() => {
+        fetchCityName(); 
+    }, []);
 
     return (
         <Animated.View
