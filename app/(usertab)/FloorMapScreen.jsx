@@ -1,4 +1,4 @@
-import React, { useState,useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     View,
     Text,
@@ -42,12 +42,31 @@ export default function FloorMapScreen() {
     const token = useSelector((state) => state.auth.token);
     const router = useRouter();
 
+      const getCity = async (zip) => {
+        try {
+          const response = await API.post(
+            "get-cityname",
+            { zipcode: zip },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          const cityName = response.data.data.city; 
+          setCity(cityName); 
+        } catch (error) {
+          console.error("Error fetching city name:", error);
+          Alert.alert("Error", "Unable to fetch city name. Please check the zip code.");
+        }
+      };
+
 
     const handleCitySearch = useCallback(
         debounce(async (query, currentPage = 1) => {
             if (!query) return;
             setSearchLoading(true);
-            console.log("current page", currentPage)
             try {
                 const response = await API.post(
                     `/citie-search?page=${currentPage}`,
@@ -68,11 +87,9 @@ export default function FloorMapScreen() {
                 } else {
                     setCities((prevCities) => [...prevCities, ...cityData]);
                 }
-                console.log("next data", response.data.pagination.total)
                 setHasMoreCities(currentPage < response.data.pagination.last_page);
             } catch (error) {
-                console.log('City search error:', error);
-            
+
                 if (error.response?.data?.message) {
                     Alert.alert('Error', error.response.data.message);
                 } else {
@@ -80,7 +97,7 @@ export default function FloorMapScreen() {
                 }
             } finally {
                 setSearchLoading(false);
-                setLoadingMore(false); // Reset loadingMore when request finishes
+                setLoadingMore(false); 
             }
         }, 500),
         [token]
@@ -88,7 +105,7 @@ export default function FloorMapScreen() {
 
 
     const loadMoreCities = () => {
-        console.log("load more")
+       
         if (hasMoreCities && !searchLoading && !loadingMore) {
             setLoadingMore(true); // Mark loading as true
             setPage(prevPage => {
@@ -133,7 +150,7 @@ export default function FloorMapScreen() {
             type: "image/jpeg",
         });
 
-        console.log("data", data.floor_maps)
+        
 
         try {
             const response = await API.post("regional_multipliers/details", data, {
@@ -264,80 +281,80 @@ export default function FloorMapScreen() {
                             </View>
 
                             <View className="mx-2 relative">
-                                            <Text className="text-gray-800 font-semibold mb-1 text-base">City</Text>
-                                            <TextInput
-                                                className="border border-gray-300 bg-white rounded-xl p-4 text-gray-900 shadow-sm"
-                                                placeholder="Search city"
-                                                placeholderTextColor="#A0AEC0"
-                                                onChangeText={(text) => {
-                                                    setCity(text);
-                                                    setPage(1);
-                                                    handleCitySearch(text, 1);
+                                <Text className="text-gray-800 font-semibold mb-1 text-base">City</Text>
+                                <TextInput
+                                    className="border border-gray-300 bg-white rounded-xl p-4 text-gray-900 shadow-sm"
+                                    placeholder="Search city"
+                                    placeholderTextColor="#A0AEC0"
+                                    onChangeText={(text) => {
+                                        setCity(text);
+                                        setPage(1);
+                                        handleCitySearch(text, 1);
+                                    }}
+                                    value={city}
+                                />
+                                {searchLoading && (
+                                    <ActivityIndicator
+                                        size="small"
+                                        color="#0000ff"
+                                        style={{ marginTop: 5 }}
+                                    />
+                                )}
+                                {cities.length > 0 && (
+                                    <FlashList
+                                        data={cities}
+                                        keyExtractor={(item) => item.key}
+                                        renderItem={({ item }) => (
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    setCity(item.label);
+                                                    setZipCode(item.zip);
+                                                    setCities([]);
                                                 }}
-                                                value={city}
-                                            />
-                                            {searchLoading && (
-                                                <ActivityIndicator
-                                                    size="small"
-                                                    color="#0000ff"
-                                                    style={{ marginTop: 5 }}
-                                                />
-                                            )}
-                                            {cities.length > 0 && (
-                                                <FlashList
-                                                    data={cities}
-                                                    keyExtractor={(item) => item.key}
-                                                    renderItem={({ item }) => (
-                                                        <TouchableOpacity
-                                                            onPress={() => {
-                                                                setCity(item.label);
-                                                                setZipCode(item.zip);
-                                                                setCities([]);
-                                                            }}
-                                                            // style={{
-                                                            //     padding: 10,
-                                                            //     borderBottomWidth: 1,
-                                                            //     borderBottomColor: '#ccc',
-                                                            //     backgroundColor: '#f9f9f9',
-                                                            //     width:'20px',
-                                                            // }}
-                                                            className="p-2 border-b border-b-gray-400 bg-gray-100"
-                                                        >
-                                                            <Text>{item.label}</Text>
-                                                        </TouchableOpacity>
-                                                    )}
-                                                    estimatedItemSize={50}
-                                                    style={{
-                                                        maxHeight: 150,
-                                                        backgroundColor: 'white',
-                                                        borderWidth: 1,
-                                                        borderColor: '#ccc',
-                                                        borderRadius: 5,
-                                                        marginTop: 5,
-                                                    }}
+                                                style={{
+                                                    padding: 10,
+                                                    borderBottomWidth: 1,
+                                                    borderBottomColor: '#ccc',
+                                                    backgroundColor: '#f9f9f9',
                                                   
-                                                    ListFooterComponent={
-                                                        hasMoreCities && (
-                                                            <View style={{ alignItems: 'center', marginVertical: 10 }}>
-                                                                <TouchableOpacity
-                                                                    onPress={loadMoreCities}
-                                                                    style={{
-                                                                        backgroundColor: '#0284C7',
-                                                                        paddingVertical: 10,
-                                                                        paddingHorizontal: 20,
-                                                                        borderRadius: 5,
-                                                                    }}
-                                                                >
-                                                                    <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
-                                                                        Load More
-                                                                    </Text>
-                                                                </TouchableOpacity>
-                                                            </View>
-                                                        )
-                                                    }
-                                                />
-                                            )}
-                                        </View>
+                                                }}
+                                                // className="p-2 border-b border-b-gray-400 bg-gray-100"
+                                            >
+                                                <Text>{item.label}</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                        estimatedItemSize={50}
+                                        style={{
+                                            maxHeight: 150,
+                                            backgroundColor: 'white',
+                                            borderWidth: 1,
+                                            borderColor: '#ccc',
+                                            borderRadius: 5,
+                                            marginTop: 5,
+                                        }}
+
+                                        ListFooterComponent={
+                                            hasMoreCities && (
+                                                <View style={{ alignItems: 'center', marginVertical: 10 }}>
+                                                    <TouchableOpacity
+                                                        onPress={loadMoreCities}
+                                                        style={{
+                                                            backgroundColor: '#0284C7',
+                                                            paddingVertical: 10,
+                                                            paddingHorizontal: 20,
+                                                            borderRadius: 5,
+                                                        }}
+                                                    >
+                                                        <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
+                                                            Load More
+                                                        </Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            )
+                                        }
+                                    />
+                                )}
+                            </View>
                             {/* Zip Code */}
                             <View className="mx-2">
                                 <Text className="text-gray-800 font-semibold mb-1 text-base">Zip Code</Text>
@@ -346,7 +363,15 @@ export default function FloorMapScreen() {
                                     placeholder="Enter zip code"
                                     placeholderTextColor="#A0AEC0"
                                     keyboardType="numeric"
-                                    onChangeText={setZipCode}
+                                    onChangeText={(text) => {
+                                        setZipCode(text);
+                                        if (text.length >= 5) {
+                                          // Call getCity only if the zip code length is sufficient
+                                          getCity(text);
+                                        } else {
+                                          setCity(""); // Clear city name for incomplete zip codes
+                                        }
+                                      }}
                                     value={zipCode}
                                 />
                             </View>
