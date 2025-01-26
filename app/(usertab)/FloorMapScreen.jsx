@@ -39,7 +39,10 @@ export default function FloorMapScreen() {
     const [hasMoreCities, setHasMoreCities] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
 
+
     const token = useSelector((state) => state.auth.token);
+
+
     const router = useRouter();
 
       const getCity = async (zip) => {
@@ -62,7 +65,7 @@ export default function FloorMapScreen() {
         }
       };
 
-
+// -----------
     const handleCitySearch = useCallback(
         debounce(async (query, currentPage = 1) => {
             if (!query) return;
