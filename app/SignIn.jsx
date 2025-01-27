@@ -1,4 +1,4 @@
-import { Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform, ScrollView, Image, Alert } from "react-native";
+import { Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform, ScrollView, Image, Alert,ActivityIndicator  } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,6 +10,7 @@ import Logo from '../assets/images/AC5D_Logo.jpg';
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -28,7 +29,7 @@ export default function SignIn() {
       Alert.alert("Error", "Email and Password are required.");
       return;
     }
-
+    setLoading(true);
     try {
       const response = await API.post("auth/login", { email, password });
       // console.log("response", response.data)
@@ -45,8 +46,19 @@ export default function SignIn() {
         errorMessage = err.response.data.message;
       }
       Alert.alert("Error", errorMessage);
+    } finally {
+      setLoading(false); 
     }
   };
+  if (loading) {
+    
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text className="text-gray-700 mt-4 text-lg">Signing you in...</Text>
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
