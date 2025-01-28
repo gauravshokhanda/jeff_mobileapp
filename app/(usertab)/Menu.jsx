@@ -1,43 +1,49 @@
 import React from "react";
-import { View, Text, Platform } from "react-native";
+import { View, Text, Platform, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
+import { useRouter } from "expo-router";
 
 const Menu = () => {
+  const router = useRouter();
   const userName = useSelector((state) => state.auth.user);
+
+  const menuItems = [
+    { icon: "analytics", title: "Discover Plus+", subtitle: "Boost your chances", route: "/discover-plus" },
+    { icon: "manage-search", title: "Search Post", subtitle: "Saved Searches", route: "/SearchPost" },
+    { icon: "favorite-border", title: "Favorites", route: "/favorites" },
+    { icon: "credit-card", title: "Financing", subtitle: "Interest & rates", route: "/financing" },
+    { icon: "notifications", title: "Notifications", subtitle: "0 new", route: "/notifications" },
+    { icon: "verified-user", title: "Profile", subtitle: "Applicant portfolios", route: "/profile" },
+    { icon: "house", title: "ImmoKlub", subtitle: "Insure your home", route: "/immo-klub" },
+    { icon: "lock", title: "Account", subtitle: "Contracts & data", route: "/account" },
+    { icon: "settings", title: "Settings", subtitle: "Language, design...", route: "/settings" },
+  ];
+
   return (
-    <View className={`flex-1 bg-sky-950 px-5 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
+    <View className={`flex-1 bg-sky-950 px-5 ${Platform.OS === "ios" ? "mt-16" : ""}`}>
       <View className="mt-12 px-5">
-        <Text className="text-3xl font-semibold text-white">Hi  {userName.name ? userName.name : "unknown"}</Text>
+        <Text className="text-3xl font-semibold text-white">
+          Hi {userName.name ? userName.name : "unknown"}
+        </Text>
         <Text className="text-gray-400">Welcome to your personal space</Text>
       </View>
 
       <View className="flex-row flex-wrap mt-5 justify-between">
         {menuItems.map((item, index) => (
-          <View
+          <TouchableOpacity
             key={index}
             className="w-[47%] h-24 my-2 bg-sky-900 rounded-xl p-3 justify-center border border-gray-500"
+            onPress={() => router.push(item.route)}
           >
             <Icon name={item.icon} size={24} color="#FFFFFF" />
             <Text className="text-white font-medium mt-1">{item.title}</Text>
             {item.subtitle && <Text className="text-gray-400">{item.subtitle}</Text>}
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
     </View>
   );
 };
-
-const menuItems = [
-  { icon: 'analytics', title: 'Discover Plus+', subtitle: 'Boost your chances' },
-  { icon: 'manage-search', title: 'Search Orders', subtitle: 'Saved Searches' },
-  { icon: 'favorite-border', title: 'Favorites' },
-  { icon: 'credit-card', title: 'Financing', subtitle: 'Interest & rates' },
-  { icon: 'notifications', title: 'Notifications', subtitle: '0 new' },
-  { icon: 'verified-user', title: 'Profile', subtitle: 'Applicant portfolios' },
-  { icon: 'house', title: 'ImmoKlub', subtitle: 'Insure your home' },
-  { icon: 'lock', title: 'Account', subtitle: 'Contracts & data' },
-  { icon: 'settings', title: 'Settings', subtitle: 'Language, design...' },
-];
 
 export default Menu;
