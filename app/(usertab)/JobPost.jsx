@@ -89,7 +89,7 @@ const JobApplicationScreen = () => {
             });
         });
 
-        console.log("Form Data:", formData);
+        // console.log("Form Data:", formData);
 
         setLoading(true);
 
@@ -100,6 +100,8 @@ const JobApplicationScreen = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
+
+            console.log("response job post data",response.data)
 
             Alert.alert("Success", "Your job application has been posted successfully!");
 
