@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Image,ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector } from "react-redux";
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 
 const JobApplicationScreen = () => {
+    const [loading, setLoading] = useState(false);
     const breakdownCostDetail = useSelector((state) => state.breakdownCost.breakdownCost);
     const token = useSelector((state) => state.auth.token);
 
@@ -16,12 +17,11 @@ const JobApplicationScreen = () => {
         area: "",
         city: "",
         projectType: "",
-        designImage: null,
-        floorMapImage: null,
+        designImages: [],
+        floorMapImages: [],
         description: "",
     });
 
-    // Update form state when breakdownCostDetail changes
     useEffect(() => {
         if (breakdownCostDetail) {
             setForm((prevForm) => ({
@@ -32,25 +32,31 @@ const JobApplicationScreen = () => {
                 area: breakdownCostDetail?.area || "",
                 city: breakdownCostDetail?.city || "",
                 projectType: breakdownCostDetail?.days?.project_type || "",
-                floorMapImage: breakdownCostDetail?.floor_maps || null,
+                floorMapImages: breakdownCostDetail?.floor_maps ? [breakdownCostDetail.floor_maps] : [],
             }));
         }
     }, [breakdownCostDetail]);
 
     const handleImagePick = async (field) => {
         let result = await DocumentPicker.getDocumentAsync({
-            type: ["image/*", "application/pdf"],
+            type: ["image/*"],
+            multiple: true,
             copyToCacheDirectory: true,
         });
 
-        if (!result.canceled && result.assets && result.assets.length > 0) {
-
-            const selectedUri = result.assets[0]?.uri;
+        if (!result.canceled && result.assets?.length > 0) {
             setForm((prevForm) => ({
                 ...prevForm,
-                [field]: selectedUri,
+                [field]: [...prevForm[field], ...result.assets.map(asset => asset.uri)],
             }));
         }
+    };
+
+    const removeImage = (field, index) => {
+        setForm((prevForm) => ({
+            ...prevForm,
+            [field]: prevForm[field].filter((_, i) => i !== index),
+        }));
     };
 
     const handleInputChange = (field, value) => {
@@ -59,32 +65,34 @@ const JobApplicationScreen = () => {
 
     const handleSubmit = async () => {
         const formData = new FormData();
-        formData.append('number_of_days', form.numberOfDays);
+        formData.append('number_of_days', parseInt(form.numberOfDays, 10));
         formData.append('total_cost', form.totalCost);
         formData.append('zipcode', form.zipCode);
         formData.append('area', form.area);
         formData.append('city', form.city);
         formData.append('project_type', form.projectType);
         formData.append('description', form.description);
-    
-        if (form.floorMapImage) {
-            formData.append('floor_maps_image[]', {
-                uri: form.floorMapImage,
-                type: 'image/jpeg', // Adjust according to the image type
-                name: 'floor_map_image.jpg',
+
+        form.floorMapImages.forEach((uri, index) => {
+            formData.append(`floor_maps_image[]`, {
+                uri,
+                type: 'image/jpeg',
+                name: `floor_map_image_${index}.jpg`,
             });
-        }
-    
-        if (form.designImage) {
-            formData.append('design_image[]', {
-                uri: form.designImage,
-                type: 'image/jpeg', // Adjust according to the image type
-                name: 'design_image.jpg',
+        });
+
+        form.designImages.forEach((uri, index) => {
+            formData.append(`design_image[]`, {
+                uri,
+                type: 'image/jpeg',
+                name: `design_image_${index}.jpg`,
             });
-        }
-    
-        console.log("Form Data:", formData); // Check the form data before submitting
-    
+        });
+
+        console.log("Form Data:", formData);
+
+        setLoading(true);
+
         try {
             const response = await axios.post('https://g32.iamdeveloper.in/api/job-post', formData, {
                 headers: {
@@ -92,17 +100,41 @@ const JobApplicationScreen = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-    
-            console.log('Form submitted successfully:', response.data);
+
+            Alert.alert("Success", "Your job application has been posted successfully!");
+
+            setForm({
+                numberOfDays: "",
+                totalCost: "",
+                zipCode: "",
+                area: "",
+                city: "",
+                projectType: "",
+                designImages: [],
+                floorMapImages: [],
+                description: "",
+            });
+
         } catch (error) {
             if (error.response) {
-                console.error('Response error:', error.response.data);
+                Alert.alert('Error:', error.response.data);
             } else {
-                console.error('Error:', error.message);
+                console.log('Error:', error.message);
             }
+        } finally {
+            setLoading(false);
         }
     };
-    
+
+    if (loading) {
+        return (
+            <View className="flex-1 items-center justify-center bg-white">
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
+    }
+
+
 
     return (
         <ScrollView className="flex-1">
@@ -113,6 +145,7 @@ const JobApplicationScreen = () => {
             <View className="p-4">
                 <View className="flex-row mb-6 space-x-4">
                     <View className="flex-1">
+                        <Text className="pl-4 pb-2 text-gray-600">Number of Days</Text>
                         <TextInput
                             className="bg-white p-4 rounded-2xl text-sky-800 mx-1"
                             placeholder="Enter number of days"
@@ -129,6 +162,8 @@ const JobApplicationScreen = () => {
                         />
                     </View>
                     <View className="flex-1">
+                    <Text className="pl-4 pb-2 text-gray-600">Total cost</Text>
+
                         <TextInput
                             className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 mx-1"
                             placeholder="Enter total cost"
@@ -148,6 +183,8 @@ const JobApplicationScreen = () => {
 
                 <View className="flex-row mb-6 space-x-4">
                     <View className="flex-1">
+                    <Text className="pl-4 pb-2 text-gray-600">Zip code</Text>
+
                         <TextInput
                             className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 mx-1"
                             placeholder="Enter zip code"
@@ -165,6 +202,8 @@ const JobApplicationScreen = () => {
                     </View>
 
                     <View className="flex-1">
+                    <Text className="pl-4 pb-2 text-gray-600">Area </Text>
+
                         <TextInput
                             style={{
                                 elevation: 15,
@@ -183,6 +222,8 @@ const JobApplicationScreen = () => {
 
                 <View className="flex-row mb-6 space-x-4">
                     <View className="flex-1">
+                    <Text className="pl-4 pb-2 text-gray-600">City</Text>
+
                         <TextInput
                             className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 mx-1"
                             placeholder="Enter city"
@@ -199,6 +240,8 @@ const JobApplicationScreen = () => {
                     </View>
 
                     <View className="flex-1">
+                    <Text className="pl-4 pb-2 text-gray-600">Project type</Text>
+
                         <TextInput
                             className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 mx-1"
                             placeholder="Enter project type"
@@ -232,53 +275,78 @@ const JobApplicationScreen = () => {
                         onChangeText={(text) => handleInputChange('description', text)}
                     />
                 </View>
-
                 <View className="mb-6">
+                {form.designImages.length === 0 && (
                     <TouchableOpacity
                         className="bg-white p-4 rounded-2xl shadow-lg flex items-center justify-center"
-                        style={{
-                            elevation: 15,
-                            shadowColor: "#082f49",
-                            shadowOffset: { width: 0, height: 3 },
-                            shadowOpacity: 0.3,
-                            shadowRadius: 2,
-                        }}
-                        onPress={() => handleImagePick('designImage')}
+                        onPress={() => handleImagePick('designImages')}
                     >
-                        <Text className="text-sky-500">{form.designImage ? 'Change Design Image' : 'Upload Design Image'}</Text>
+                        <Text className="text-sky-500">Upload Design Images</Text>
                     </TouchableOpacity>
-                    {form.designImage && (
-                        <Image
-                            source={{ uri: form.designImage }}
-                            className="w-full h-40 mt-3 rounded-2xl"
-                        />
-                    )}
-                </View>
+                )}
+                <View className="flex-row flex-wrap mt-3 ">
 
-                <View className="mb-6">
-                    <TouchableOpacity
-                        className="bg-white p-4 rounded-2xl shadow-lg flex items-center justify-center "
-                        style={{
-                            elevation: 15,
-                            shadowColor: "#082f49",
-                            shadowOffset: { width: 0, height: 3 },
-                            shadowOpacity: 0.3,
-                            shadowRadius: 2,
-                        }}
-                        onPress={() => handleImagePick('floorMapImage')}
-                    >
-                        <Text className="text-sky-500">{form.floorMapImage ? 'Change Floor Map Image' : 'Upload Floor Map Image'}</Text>
-                    </TouchableOpacity>
-                    {form.floorMapImage && (
-                        <Image
-                            source={{ uri: form.floorMapImage }}
-                            className="w-full h-40 mt-3 rounded-2xl"
-                        />
-                    )}
+                    
+                {form.designImages.length > 0 && (
+                    <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3">
+                        <Text className="text-center text-sky-500">Design Images</Text>
+                        <View className="flex-row flex-wrap mt-2">
+                            {form.designImages.map((uri, index) => (
+                                <View key={index} className="relative w-24 h-24 m-1">
+                                    <Image source={{ uri }} className="w-full h-full rounded-2xl" />
+                                    <TouchableOpacity
+                                        onPress={() => removeImage('designImages', index)}
+                                        className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
+                                    >
+                                        <Ionicons name="close" size={16} color="white" />
+                                    </TouchableOpacity>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                )}
                 </View>
+                
+                
+            </View>
+
+            {/* Floor Map Images Upload */}
+            <View className="mb-6">
+                {form.floorMapImages.length === 0 && (
+                    <TouchableOpacity
+                        className="bg-white p-4 rounded-2xl shadow-lg flex items-center justify-center"
+                        onPress={() => handleImagePick('floorMapImages')}
+                    >
+                        <Text className="text-sky-500">Upload Floor Map Images</Text>
+                    </TouchableOpacity>
+                )}
+                <View className="">
+                <View className="flex-row flex-wrap mt-3">
+                {form.floorMapImages.length > 0 && (
+                    <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3">
+                        <Text className="text-center text-sky-500">Floor Map Images</Text>
+                        <View className="flex-row flex-wrap mt-2">
+                            {form.floorMapImages.map((uri, index) => (
+                                <View key={index} className="relative w-24 h-24 m-1">
+                                    <Image source={{ uri }} className="w-full h-full rounded-2xl" />
+                                    <TouchableOpacity
+                                        onPress={() => removeImage('floorMapImages', index)}
+                                        className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
+                                    >
+                                        <Ionicons name="close" size={16} color="white" />
+                                    </TouchableOpacity>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                )}
+                </View>
+                </View>
+            
+            </View>
 
                 <TouchableOpacity
-                    className="bg-sky-600 p-4 rounded-2xl shadow-lg flex items-center "
+                    className="bg-sky-600 p-2 rounded-2xl shadow-lg flex items-center w-[50%] text-center ml-[22%]"
                     style={{
                         elevation: 15,
                         shadowColor: "#082f49",

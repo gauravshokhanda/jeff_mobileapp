@@ -53,7 +53,7 @@ export default function AreaDetailsScreen() {
             square_fit: "1000"
         };
 
-        console.log("data",data)
+        // console.log("data",data)
 
         setLoading(true);
         try {
