@@ -5,7 +5,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { API } from '../../config/apiConfig';
 
-const BASE_URL = "https://g32.iamdeveloper.in/"; // Adjust base URL if needed
+const BASE_URL = "https://g32.iamdeveloper.in/public/"; 
 
 const SearchPost = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,20 +55,22 @@ const SearchPost = () => {
 
       {/* Render floor maps images */}
       {item.floor_maps_image && JSON.parse(item.floor_maps_image).length > 0 && (
-        <FlatList
-          data={JSON.parse(item.floor_maps_image)}
-          horizontal
-          keyExtractor={(image, index) => index.toString()}
-          renderItem={({ item: image }) => (
+      <FlatList
+        data={JSON.parse(item.floor_maps_image)}
+        horizontal
+        keyExtractor={(image, index) => index.toString()}
+        renderItem={({ item: image }) => {
+          const imageUrl = `${BASE_URL}${image}`;
+          // console.log("Floor Map Image URL:", imageUrl);
+          return (
             <Image
-              source={{ uri: `${BASE_URL}${image}` }}
-              style={{ width: 150, height: 150, marginRight: 10, borderRadius: 10,borderWidth:2, }}
-             
-
+              source={{ uri: imageUrl }}
+              style={{ width: 150, height: 150, marginRight: 10, borderRadius: 10, borderWidth: 2 }}
             />
-          )}
-        />
-      )}
+          );
+        }}
+      />
+    )}
 
       {/* Render design images */}
       {item.design_image && JSON.parse(item.design_image).length > 0 && (

@@ -64,7 +64,7 @@ export default function AreaDetailsScreen() {
                 },
             });
 
-            console.log("response:", response.data);
+            // console.log("response:", response.data);
 
             if (response.data && response.data.data) {
                 const scheduleCost = encodeURIComponent(JSON.stringify(response.data.data));

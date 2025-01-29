@@ -150,7 +150,7 @@ export default function MapScreen() {
         centroid.latitude /= polygonPoints.length;
         centroid.longitude /= polygonPoints.length;
 
-        console.log("Polygon Centroid:", centroid);
+        // console.log("Polygon Centroid:", centroid);
 
         const [locationDetails] = await Location.reverseGeocodeAsync({
           latitude: centroid.latitude,
@@ -160,10 +160,10 @@ export default function MapScreen() {
         if (locationDetails) {
           // console.log("full location detail", locationDetails)
           const { city, region, country, postalCode } = locationDetails;
-          console.log("City:", city);
-          console.log("Region:", region);
-          console.log("Country:", country);
-          console.log("postalCode:", postalCode);
+          // console.log("City:", city);
+          // console.log("Region:", region);
+          // console.log("Country:", country);
+          // console.log("postalCode:", postalCode);
 
           // Alert.alert(
           //   "Area Details",

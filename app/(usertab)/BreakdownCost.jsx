@@ -14,7 +14,7 @@ export default function BreakdownCost() {
     const parsedData = JSON.parse(breakdownCost);
 
     useEffect(() => {
-        console.log('parsedData',parsedData)
+
         dispatch(setBreakdownCost(parsedData));
     }, [breakdownCost, dispatch])
     const { estimated_time, project_type, square_fit, data } = parsedData.days;
@@ -27,9 +27,7 @@ export default function BreakdownCost() {
     );
 
     const handlePost = () => {
-        // Add your post handling logic here (e.g., API call, navigation, etc.)
-        // console.log("Post Button Pressed");
-        router.push("/JobPost")
+        router.push("/PropertyPost")
     };
 
     return (
