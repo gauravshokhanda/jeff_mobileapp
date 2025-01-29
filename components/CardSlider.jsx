@@ -46,10 +46,10 @@ const CardSlider = () => {
   };
 
   const renderCard = ({ item }) => (
-    <View className="bg-white rounded-lg shadow-md w-44 h-64 mr-4">
+    <View className="bg-white  shadow-md w-44 h-64 mr-4">
       <Image
         source={item.image}
-        className="w-full h-24 rounded-t-lg"
+        className="w-full h-24  mx-2"
         resizeMode="cover"
       />
       <View className="p-3">

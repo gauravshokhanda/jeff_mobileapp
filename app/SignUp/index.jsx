@@ -52,7 +52,7 @@ export default function SignUp() {
         try {
 
             const response = await API.post("auth/register", data);
-            console.log("username", response.data.data.user)
+            // console.log("username", response.data.data.user)
             const { access_token } = response.data;
             const user = response.data.data.user;
             dispatch(setSignUp({ access_token, user }))

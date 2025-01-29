@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Image,ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector } from "react-redux";
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
+import { router } from 'expo-router';
+import { API } from '../../config/apiConfig';
 
-const JobApplicationScreen = () => {
+
+
+
+const PropertyPost = () => {
     const [loading, setLoading] = useState(false);
     const breakdownCostDetail = useSelector((state) => state.breakdownCost.breakdownCost);
     const token = useSelector((state) => state.auth.token);
+    ;
 
     const [form, setForm] = useState({
         numberOfDays: "",
@@ -22,6 +28,7 @@ const JobApplicationScreen = () => {
         description: "",
     });
 
+
     useEffect(() => {
         if (breakdownCostDetail) {
             setForm((prevForm) => ({
@@ -32,7 +39,8 @@ const JobApplicationScreen = () => {
                 area: breakdownCostDetail?.area || "",
                 city: breakdownCostDetail?.city || "",
                 projectType: breakdownCostDetail?.days?.project_type || "",
-                floorMapImages: breakdownCostDetail?.floor_maps ? [breakdownCostDetail.floor_maps] : [],
+                floorMapImages: [],
+                // floorMapImages: breakdownCostDetail?.floor_maps ? [breakdownCostDetail.floor_maps] : [],
             }));
         }
     }, [breakdownCostDetail]);
@@ -101,9 +109,16 @@ const JobApplicationScreen = () => {
                 },
             });
 
-            console.log("response job post data",response.data)
+            // console.log("response job post data",response.data)
 
-            Alert.alert("Success", "Your job application has been posted successfully!");
+            Alert.alert("Success", "Your job application has been posted successfully!", [
+                {
+                    text: "Ok",
+                    onPress: () => {
+                        router.replace("/")
+                    }
+                }
+            ]);
 
             setForm({
                 numberOfDays: "",
@@ -141,9 +156,12 @@ const JobApplicationScreen = () => {
     return (
         <ScrollView className="flex-1">
             <TouchableOpacity className="absolute top-4 left-3 z-10">
-                <Ionicons name="arrow-back" size={25} color="white" />
+                <Ionicons
+                    name="arrow-back" size={25} color="white"
+                    onPress={() => router.back()}
+                />
             </TouchableOpacity>
-            <Text className="text-3xl font-extrabold text-center mb-6 bg-sky-950 text-white p-3">Job Application</Text>
+            <Text className="text-3xl font-extrabold text-center mb-6 bg-sky-950 text-white p-3">Property Post</Text>
             <View className="p-4">
                 <View className="flex-row mb-6 space-x-4">
                     <View className="flex-1">
@@ -164,7 +182,7 @@ const JobApplicationScreen = () => {
                         />
                     </View>
                     <View className="flex-1">
-                    <Text className="pl-4 pb-2 text-gray-600">Total cost</Text>
+                        <Text className="pl-4 pb-2 text-gray-600">Total cost</Text>
 
                         <TextInput
                             className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 mx-1"
@@ -185,7 +203,7 @@ const JobApplicationScreen = () => {
 
                 <View className="flex-row mb-6 space-x-4">
                     <View className="flex-1">
-                    <Text className="pl-4 pb-2 text-gray-600">Zip code</Text>
+                        <Text className="pl-4 pb-2 text-gray-600">Zip code</Text>
 
                         <TextInput
                             className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 mx-1"
@@ -204,7 +222,7 @@ const JobApplicationScreen = () => {
                     </View>
 
                     <View className="flex-1">
-                    <Text className="pl-4 pb-2 text-gray-600">Area </Text>
+                        <Text className="pl-4 pb-2 text-gray-600">Area </Text>
 
                         <TextInput
                             style={{
@@ -224,7 +242,7 @@ const JobApplicationScreen = () => {
 
                 <View className="flex-row mb-6 space-x-4">
                     <View className="flex-1">
-                    <Text className="pl-4 pb-2 text-gray-600">City</Text>
+                        <Text className="pl-4 pb-2 text-gray-600">City</Text>
 
                         <TextInput
                             className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 mx-1"
@@ -242,7 +260,7 @@ const JobApplicationScreen = () => {
                     </View>
 
                     <View className="flex-1">
-                    <Text className="pl-4 pb-2 text-gray-600">Project type</Text>
+                        <Text className="pl-4 pb-2 text-gray-600">Project type</Text>
 
                         <TextInput
                             className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 mx-1"
@@ -262,7 +280,7 @@ const JobApplicationScreen = () => {
 
                 <View className="mb-6">
                     <TextInput
-                        className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 h-48 justify-start align-top"
+                        className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 h-40 justify-start align-top"
                         placeholder="Enter project description"
                         value={form.description}
                         multiline
@@ -278,74 +296,74 @@ const JobApplicationScreen = () => {
                     />
                 </View>
                 <View className="mb-6">
-                {form.designImages.length === 0 && (
-                    <TouchableOpacity
-                        className="bg-white p-4 rounded-2xl shadow-lg flex items-center justify-center"
-                        onPress={() => handleImagePick('designImages')}
-                    >
-                        <Text className="text-sky-500">Upload Design Images</Text>
-                    </TouchableOpacity>
-                )}
-                <View className="flex-row flex-wrap mt-3 ">
+                    {form.designImages.length === 0 && (
+                        <TouchableOpacity
+                            className="bg-white p-4 rounded-2xl shadow-lg flex items-center justify-center"
+                            onPress={() => handleImagePick('designImages')}
+                        >
+                            <Text className="text-sky-500">Upload Design Images</Text>
+                        </TouchableOpacity>
+                    )}
+                    <View className="flex-row flex-wrap mt-3 ">
 
-                    
-                {form.designImages.length > 0 && (
-                    <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3">
-                        <Text className="text-center text-sky-500">Design Images</Text>
-                        <View className="flex-row flex-wrap mt-2">
-                            {form.designImages.map((uri, index) => (
-                                <View key={index} className="relative w-24 h-24 m-1">
-                                    <Image source={{ uri }} className="w-full h-full rounded-2xl" />
-                                    <TouchableOpacity
-                                        onPress={() => removeImage('designImages', index)}
-                                        className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
-                                    >
-                                        <Ionicons name="close" size={16} color="white" />
-                                    </TouchableOpacity>
+
+                        {form.designImages.length > 0 && (
+                            <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3">
+                                <Text className="text-center text-sky-500">Design Images</Text>
+                                <View className="flex-row flex-wrap mt-2">
+                                    {form.designImages.map((uri, index) => (
+                                        <View key={index} className="relative w-24 h-24 m-1">
+                                            <Image source={{ uri }} className="w-full h-full rounded-2xl" />
+                                            <TouchableOpacity
+                                                onPress={() => removeImage('designImages', index)}
+                                                className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
+                                            >
+                                                <Ionicons name="close" size={16} color="white" />
+                                            </TouchableOpacity>
+                                        </View>
+                                    ))}
                                 </View>
-                            ))}
+                            </View>
+                        )}
+                    </View>
+
+
+                </View>
+
+                {/* Floor Map Images Upload */}
+                <View className="mb-6">
+                    {form.floorMapImages.length === 0 && (
+                        <TouchableOpacity
+                            className="bg-white p-4 rounded-2xl shadow-lg flex items-center justify-center"
+                            onPress={() => handleImagePick('floorMapImages')}
+                        >
+                            <Text className="text-sky-500">Upload Floor Map Images</Text>
+                        </TouchableOpacity>
+                    )}
+                    <View className="">
+                        <View className="flex-row flex-wrap mt-3">
+                            {form.floorMapImages.length > 0 && (
+                                <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3">
+                                    <Text className="text-center text-sky-500">Floor Map Images</Text>
+                                    <View className="flex-row flex-wrap mt-2">
+                                        {form.floorMapImages.map((uri, index) => (
+                                            <View key={index} className="relative w-24 h-24 m-1">
+                                                <Image source={{ uri }} className="w-full h-full rounded-2xl" />
+                                                <TouchableOpacity
+                                                    onPress={() => removeImage('floorMapImages', index)}
+                                                    className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
+                                                >
+                                                    <Ionicons name="close" size={16} color="white" />
+                                                </TouchableOpacity>
+                                            </View>
+                                        ))}
+                                    </View>
+                                </View>
+                            )}
                         </View>
                     </View>
-                )}
-                </View>
-                
-                
-            </View>
 
-            {/* Floor Map Images Upload */}
-            <View className="mb-6">
-                {form.floorMapImages.length === 0 && (
-                    <TouchableOpacity
-                        className="bg-white p-4 rounded-2xl shadow-lg flex items-center justify-center"
-                        onPress={() => handleImagePick('floorMapImages')}
-                    >
-                        <Text className="text-sky-500">Upload Floor Map Images</Text>
-                    </TouchableOpacity>
-                )}
-                <View className="">
-                <View className="flex-row flex-wrap mt-3">
-                {form.floorMapImages.length > 0 && (
-                    <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3">
-                        <Text className="text-center text-sky-500">Floor Map Images</Text>
-                        <View className="flex-row flex-wrap mt-2">
-                            {form.floorMapImages.map((uri, index) => (
-                                <View key={index} className="relative w-24 h-24 m-1">
-                                    <Image source={{ uri }} className="w-full h-full rounded-2xl" />
-                                    <TouchableOpacity
-                                        onPress={() => removeImage('floorMapImages', index)}
-                                        className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
-                                    >
-                                        <Ionicons name="close" size={16} color="white" />
-                                    </TouchableOpacity>
-                                </View>
-                            ))}
-                        </View>
-                    </View>
-                )}
                 </View>
-                </View>
-            
-            </View>
 
                 <TouchableOpacity
                     className="bg-sky-600 p-2 rounded-2xl shadow-lg flex items-center w-[50%] text-center ml-[22%]"
@@ -365,4 +383,4 @@ const JobApplicationScreen = () => {
     );
 };
 
-export default JobApplicationScreen;
+export default PropertyPost;

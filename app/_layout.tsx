@@ -1,3 +1,5 @@
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { Stack } from "expo-router";
 import '../global.css';
 import { Provider } from 'react-redux';

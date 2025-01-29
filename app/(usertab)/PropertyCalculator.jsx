@@ -17,7 +17,7 @@ import { API } from '../../config/apiConfig';
 import debounce from 'lodash.debounce';
 import { FlashList } from '@shopify/flash-list';
 
-export default function Dashboard() {
+export default function PropertyCalculator() {
   const [city, setCity] = useState('');
   const [zipCode, setZipCode] = useState('');
   const [area, setArea] = useState('');
@@ -118,7 +118,7 @@ export default function Dashboard() {
       return;
     }
 
-    setLoading(true);
+    // setLoading(true);
 
     const data = {
       city,
@@ -128,29 +128,22 @@ export default function Dashboard() {
     };
 
     try {
-      console.time("API Call"); // Start timer for debugging
+      
       const response = await API.post("regional_multipliers/details", data, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
-      console.timeEnd("API Call"); // End timer for debugging
+  
 
       const { total_cost } = response.data.data;
       setTotalCost(total_cost);
 
-      // Batch state updates to avoid multiple re-renders
-      setCity('');
-      setZipCode('');
-      setArea('');
-      setProjectType('');
     } catch (error) {
-      console.error("Error occurred:", error.message);
+      console.log("Error occurred:", error.message);
       Alert.alert('Error', error.response?.data?.message || 'An unknown error occurred');
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   const projectTypeOptions = [
