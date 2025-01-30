@@ -17,11 +17,11 @@ export default function SignIn() {
   const token = useSelector((state) => state.auth.token);
 
 
-  useEffect(() => {
-    if (isAuthenticated || token) {
-      router.replace("/(usertab)");
-    }
-  }, [isAuthenticated, token]);
+  // useEffect(() => {
+  //   if (isAuthenticated || token) {
+  //     router.replace("/(usertab)");
+  //   }
+  // }, [isAuthenticated, token]);
 
   const handleSignIn = async (e) => {
     e.preventDefault();

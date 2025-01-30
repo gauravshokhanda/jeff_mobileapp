@@ -21,7 +21,9 @@ export default function RootLayout() {
             
             />
           <Stack.Screen name="SignUp/index" options={{ title: 'Sign up', headerShown: false }} />
+          <Stack.Screen name="ContractorProfileComplete/index" options={{ title: 'ContractorProfileComplete', headerShown: false }} />
           <Stack.Screen name='(usertab)' options={{ headerShown: false }} />
+          <Stack.Screen name='(generalContractorTab)' options={{ headerShown: false }} />
         </Stack>
       </PersistGate>
     </Provider>
