@@ -32,11 +32,16 @@ export default function SignIn() {
     setLoading(true);
     try {
       const response = await API.post("auth/login", { email, password });
-      // console.log("response", response.data)
+      console.log("response", response.data)
       const { token, user } = response.data;
+     
       dispatch(setLogin({ token, user }));
-      router.replace("/(usertab)");
-    } catch (err) {
+      if(user.role == 3 ){
+        router.replace("/(generalContractorTab)");
+      }
+      else{
+        router.replace("/(usertab)");
+      }    } catch (err) {
       let errorMessage = "An unexpected error occurred. Please try again.";
       if (!err.response) {
         errorMessage = "Network error. Please check your internet connection.";
