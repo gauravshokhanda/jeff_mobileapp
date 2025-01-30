@@ -1,25 +1,27 @@
-import { View, Text, TouchableOpacity, TextInput, Modal, Image } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Modal, Image,ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 export default function UploadOrganizationModal({ visible, onClose, setPortfolioData }) {
     const [projectName, setProjectName] = useState('');
     const [cityName, setCityName] = useState('');
     const [address, setAddress] = useState('');
     const [description, setDescription] = useState('');
-    const [imageUri, setImageUri] = useState(null);
+    const [selectedImages, setSelectedImages] = useState([]);
 
     const pickImage = async () => {
-        let result = await DocumentPicker.getDocumentAsync({
-            type: 'image/*',
-            copyToCacheDirectory: true,
-        });
-
-        console.log(result); // Debugging: Check the result structure
-
-        if (result.assets && result.assets.length > 0) {
-            setImageUri(result.assets[0].uri);
+        let result = await DocumentPicker.getDocumentAsync({ type: 'image/*', copyToCacheDirectory: true });
+    
+        if (!result.canceled) {
+            const compressedImage = await ImageManipulator.manipulateAsync(
+                result.assets[0].uri,
+                [{ resize: { width: 800 } }],
+                { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+            );
+    
+            setSelectedImages([...selectedImages, compressedImage.uri]);
         }
     };
 
@@ -31,7 +33,7 @@ export default function UploadOrganizationModal({ visible, onClose, setPortfolio
             cityName,
             address,
             description,
-            imageUri, // Ensure imageUri is included
+            images: selectedImages,
         }));
         onClose();
     };
@@ -58,13 +60,21 @@ export default function UploadOrganizationModal({ visible, onClose, setPortfolio
                         <TextInput className="border border-gray-400 rounded-lg p-3 bg-white" placeholder='Enter Description' placeholderTextColor={'gray'} value={description} onChangeText={setDescription} />
 
                         <Text className="text-gray-600 mt-4 mb-2">Add Images</Text>
-                        <TouchableOpacity onPress={pickImage} className="bg-gray-200 rounded-xl p-6 items-center justify-center w-[60%]">
-                            {imageUri ? (
-                                <Image source={{ uri: imageUri }} className="w-20 h-20 rounded-xl" />
-                            ) : (
-                                <Image source={require('../assets/images/uploadOrganization.png')} className="w-5 h-5" />
-                            )}
-                        </TouchableOpacity>
+                    <TouchableOpacity onPress={pickImage} className="bg-gray-200 rounded-xl p-6 items-center justify-center w-[60%]">
+                        <Text>Select Images</Text>
+                    </TouchableOpacity>
+
+                    {/* Image Preview */}
+                    <ScrollView horizontal className="mt-4">
+                        {selectedImages.map((uri, index) => (
+                            <View key={index} className="relative mx-2">
+                                <Image source={{ uri }} className="w-20 h-20 rounded-lg" />
+                                <TouchableOpacity className="absolute top-0 right-0 bg-red-500 rounded-full p-1" onPress={() => setSelectedImages(selectedImages.filter((_, i) => i !== index))}>
+                                    <Ionicons name="close" size={16} color="white" />
+                                </TouchableOpacity>
+                            </View>
+                        ))}
+                    </ScrollView>
 
                         <TouchableOpacity className="bg-sky-950 mt-6 rounded-2xl p-3" onPress={handleUpload}>
                             <Text className="text-white text-center">Upload</Text>
