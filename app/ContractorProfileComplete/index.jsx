@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import PortfolioModal from "../../components/PortfolioModal"
 import * as DocumentPicker from 'expo-document-picker';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { API } from '../../config/apiConfig';
 
@@ -12,7 +11,7 @@ import { API } from '../../config/apiConfig';
 
 
 
-export default function ContractorProfileEdit() {
+export default function ContractorProfileComplete() {
 
     const token = useSelector((state) => state.auth.token);
     const user = useSelector((state) => state.auth.user);
@@ -20,7 +19,7 @@ export default function ContractorProfileEdit() {
         if (user?.email) {
             setUserEmail(user.email);
         }
-    }, [user]); // Runs when `user` changes
+    }, [user]); 
 
 
     const [userEmail, setUserEmail] = useState('');
@@ -58,7 +57,6 @@ export default function ContractorProfileEdit() {
 
 
     const handleSubmit = async () => {
-        const apiUrl = "https://g32.iamdeveloper.in/api/setup-profile"; // Replace with your actual API URL
 
         // Prepare the form data
         const formData = new FormData();
@@ -120,7 +118,7 @@ export default function ContractorProfileEdit() {
 
             console.log("Profile submitted successfully:", response.data);
             console.log("Profile submitted successfully:", response.data.message);
-            Alert.alert('Success',response.data.message)
+            // Alert.alert('Success',response.data.message)
 
             setFullName('');
             setCompanyName('');
@@ -135,6 +133,7 @@ export default function ContractorProfileEdit() {
                 description: '',
                 images: [],
             });
+            router.replace("/(generalContractorTab)")
         } catch (error) {
             console.error("Error submitting profile:", error.response?.data || error.message);
         }finally {
