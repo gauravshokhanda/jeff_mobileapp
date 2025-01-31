@@ -46,10 +46,10 @@ const CardSlider = () => {
   };
 
   const renderCard = ({ item }) => (
-    <View className="bg-white rounded-lg shadow-md w-44 h-64 mr-4">
+    <View className="bg-white  shadow-md w-44 h-64 mr-4">
       <Image
         source={item.image}
-        className="w-full h-24 rounded-t-lg"
+        className="w-full h-24  mx-2"
         resizeMode="cover"
       />
       <View className="p-3">
@@ -88,13 +88,13 @@ const CardSlider = () => {
         contentContainerStyle={{ paddingHorizontal: 10 }}
       />
       {/* View All Button */}
-      <TouchableOpacity
+      {/* <TouchableOpacity
         className="mt-4 bg-sky-600 rounded-md px-4 py-2 mx-auto flex-row items-center"
         onPress={handleViewAll}
       >
         <Ionicons name="eye" size={20} color="white" className="mr-2" />
         <Text className="text-white text-base font-semibold">View All</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };
