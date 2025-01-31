@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, FlatList, ImageBackground, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { API } from '../../config/apiConfig';
 import { useEffect, useState } from "react";
@@ -63,8 +63,6 @@ const DashboardScreen = () => {
 
       {/* Info Text */}
       <View className="absolute bottom-3 right-3  ">
-
-
         <Text className="text-white font-bold text-lg tracking-widest">{item.project_type}</Text>
         <Text className="text-white font-semibold tracking-widest">${item.total_cost}</Text>
       </View>
@@ -73,7 +71,7 @@ const DashboardScreen = () => {
 
 
   return (
-    <View className="bg-white flex-1">
+    <SafeAreaView className="bg-white flex-1">
       {/* Header */}
       <View className="bg-sky-950 py-4 px-4 flex-row items-center justify-center">
         <Text className="text-white text-2xl font-bold">Dashboard</Text>
@@ -83,7 +81,11 @@ const DashboardScreen = () => {
         <View className="justify-around items-center flex-row  pb-4">
           <View>
             <Text className="text-gray-700 text-lg font-bold flex-row">Welcome, Jhon 👋</Text>
-            <Text className="text-gray-500">📍 Florida, USA</Text>
+            <View className="flex-row">
+              <Ionicons name="location-outline" size={20} color="#0EA5E9" />
+              <Text className="text-gray-500 text-sm ml-1">Florida, USA</Text>
+
+            </View>
           </View>
           <Image
             className='h-16 w-16 rounded-full'
@@ -107,15 +109,58 @@ const DashboardScreen = () => {
 
       <View className="mx-10">
         <View >
-          <Text className="text-xl tracking-widest font-semibold">Listenings</Text>
+          <Text className="text-xl tracking-widest font-semibold mb-2">Listenings</Text>
         </View>
-        <View className="flex-row justify-between">
-          <View className="border h-24 w-[45%]"></View>
-          <View className="border h-24 w-[45%]"></View>
-         
+        <View className="flex-row justify-around flex-wrap rounded-xl overflow-hidden">
+          <View className="h-24 w-[45%] rounded-2xl overflow-hidden">
+            <ImageBackground
+              source={require('../../assets/images/listeningImage1.png')}
+              className="h-full w-full justify-center"
+              resizeMode="cover"
+            >
+              <Text className="text-white font-bold tracking-wider text-center text-vertical-center">New Listening</Text>
+            </ImageBackground>
+          </View>
+          <View className="h-24 w-[45%] mb-3 rounded-2xl overflow-hidden">
+            <ImageBackground
+              source={require('../../assets/images/listeningImage2.png')}
+              className="h-full w-full rounded-xl justify-center"
+              resizeMode="cover"
+            >
+              <Text className="text-white font-bold tracking-wider text-center text-vertical-center">New Apartment</Text>
+
+            </ImageBackground>
+
+
+          </View>
+          <View className="h-24 w-[45%] rounded-2xl overflow-hidden">
+            <ImageBackground
+              source={require('../../assets/images/listeningImage3.png')}
+              className="h-full w-full justify-center"
+              resizeMode="cover"
+            >
+              <Text className="text-white font-bold tracking-wider text-center text-vertical-center">New House</Text>
+
+            </ImageBackground>
+
+
+          </View>
+          <View className="h-24 w-[45%] rounded-2xl overflow-hidden">
+            <ImageBackground source={require('../../assets/images/listeningImage4.png')}
+              className="h-full w-full justify-center"
+              resizeMode="cover"
+            >
+              <Text className="text-white font-bold tracking-wider text-center text-vertical-center">Sold House</Text>
+
+            </ImageBackground>
+
+
+          </View>
+
+
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
