@@ -3,7 +3,7 @@ import React from 'react'
 
 export default function AuthInput({ placeholder, secureTextEntry, onChangeText }) {
     return (
-        <TextInput className=' text-gray-700 rounded-lg mb-8 px-5 py-5 bg-slate-200'
+        <TextInput className=' text-gray-700  rounded-lg mb-8 px-5 py-5 bg-slate-200'
             placeholder={placeholder}
             secureTextEntry={secureTextEntry}
             onChangeText={onChangeText}

@@ -43,15 +43,48 @@ export default function TabRoot() {
                     }}
                 />
                 <Tabs.Screen
-                    name='Dashboard'
+                    name='PropertyCalculator'
                     options={{
-                        title: "Dashboard", tabBarIcon: ({ color, focused }) => (
-                            <Ionicons name={focused ? 'grid' : 'grid-outline'} size={30} color={'white'} />
+                        title: "PropertyCalculator", tabBarIcon: ({ color, focused }) => (
+                            <Ionicons name={focused ? 'calculator' : 'calculator-outline'} size={30} color={'white'} />
 
                         ),
                         tabBarLabelStyle: {
                             display: 'none', // Hides the label text
                         },
+                    }} />
+
+                <Tabs.Screen
+                    name='AllPropertyPost'
+                    options={{
+                        title: "AllPropertyPost", tabBarIcon: ({ color, focused }) => (
+                            <Ionicons name={focused ? 'newspaper' : 'newspaper-outline'}
+                                size={30}
+                                color={'#082f49'}
+                                style={{
+                                    position: "absolute",
+                                    alignItems: "center",
+                                    backgroundColor: "white",
+                                    bottom: 1,
+                                    width: 60,
+                                    height: 60,
+                                    borderRadius: 30,
+                                    textAlign: 'center',
+                                    textAlignVertical: 'center',
+                                    shadowColor: "black",
+                                    shadowOpacity: 0.2,
+                                    shadowRadius: 4,
+                                    elevation: 5,
+                                    borderWidth: 1,
+                                    borderColor: "#082f49"
+
+                                }}
+
+                            />
+                        ),
+                        tabBarLabelStyle: {
+                            display: 'none'
+                        }
                     }} />
 
                 <Tabs.Screen
@@ -74,6 +107,64 @@ export default function TabRoot() {
                         }
                     }} />
 
+                <Tabs.Screen
+                    name="MapScreen"
+                    options={{
+                        href: null,
+
+                    }}
+
+                />
+
+                <Tabs.Screen
+                    name="FloorMapScreen"
+                    options={{
+                        href: null,
+                    }}
+                />
+
+                <Tabs.Screen
+                    name="Contractor"
+                    options={{
+                        href: null,
+
+                    }}
+                />
+                <Tabs.Screen
+                    name="AreaDetailsScreen"
+                    options={{
+                        href: null,
+
+                    }}
+                />
+                <Tabs.Screen
+                    name="CostDetail"
+                    options={{
+                        href: null,
+
+                    }}
+                />
+                <Tabs.Screen
+                    name="BreakdownCost"
+                    options={{
+                        href: null,
+
+                    }}
+                />
+                <Tabs.Screen
+                    name="PropertyPost"
+                    options={{
+                        href: null,
+
+                    }}
+                />
+                <Tabs.Screen
+                    name="SearchPost"
+                    options={{
+                        href: null,
+
+                    }}
+                />
             </Tabs>
         </ProtectedRoute>
     )

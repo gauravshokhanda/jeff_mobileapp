@@ -1,38 +1,59 @@
-import { Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform, ScrollView, Image, Alert } from "react-native";
-import { Link, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { View, ActivityIndicator, Alert } from 'react-native';
 import { setLogin } from "../redux/slice/authSlice";
 import { API } from "../config/apiConfig";
-import AuthInput from "../components/AuthInput";
-import Logo from '../assets/images/AC5D_Logo.jpg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(true); // Set to true initially
   const router = useRouter();
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const token = useSelector((state) => state.auth.token);
 
-  // useEffect(() => {
-  //   if (isAuthenticated || token) {
-  //     router.replace("/(usertab)/Dashboard");
-  //   }
-  // }, [isAuthenticated, token]);
+  useEffect(() => {
+    // Check AsyncStorage for persisted token before proceeding
+    const checkAuthStatus = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem('persist:root');
+        if (storedToken) {
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error checking persisted token:", error);
+        setLoading(false);
+      }
+    };
 
-  const handleSignIn = async (e) => {
-    e.preventDefault();
+    checkAuthStatus();
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      router.replace("/(usertab)");
+    }
+  }, [isAuthenticated, token]);
+
+  const handleSignIn = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Email and Password are required.");
       return;
     }
-
+    setLoading(true);
     try {
       const response = await API.post("auth/login", { email, password });
-      const { token } = response.data;
-      dispatch(setLogin({ token }));
-      router.replace("/(usertab)/Dashboard");
+      const { token, user } = response.data;
+
+      // Save token in Redux
+      dispatch(setLogin({ token, user }));
+
+      router.replace("/(usertab)");
     } catch (err) {
       let errorMessage = "An unexpected error occurred. Please try again.";
       if (!err.response) {
@@ -43,8 +64,18 @@ export default function SignIn() {
         errorMessage = err.response.data.message;
       }
       Alert.alert("Error", errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
