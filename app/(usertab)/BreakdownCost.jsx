@@ -32,7 +32,7 @@ export default function BreakdownCost() {
     }
 
     const { estimated_time, project_type, square_fit } = parsedData;
-    console.log("new datas", parsedData.days.data);
+    // console.log("new datas", parsedData.days.data);
     const data = parsedData.days.data;
     if (!data) {
         console.log("Data is missing or undefined");
