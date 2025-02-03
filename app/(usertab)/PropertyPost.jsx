@@ -322,6 +322,9 @@ const PropertyPost = () => {
                                             </TouchableOpacity>
                                         </View>
                                     ))}
+                                    <TouchableOpacity onPress={() => handleImagePick('designImages')}>
+                                        <Text className="text-4xl text-gray-600 mt-6 ml-2">+</Text>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
                         )}
@@ -357,6 +360,9 @@ const PropertyPost = () => {
                                                 </TouchableOpacity>
                                             </View>
                                         ))}
+                                        <TouchableOpacity onPress={() => handleImagePick('floorMapImages')}>
+                                            <Text className="text-4xl text-gray-600 mt-6 ml-2">+</Text>
+                                        </TouchableOpacity>
                                     </View>
                                 </View>
                             )}
