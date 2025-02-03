@@ -53,7 +53,12 @@ export default function SignIn() {
       // Save token in Redux
       dispatch(setLogin({ token, user }));
 
-      router.replace("/(usertab)");
+      if(user.role == 3 ){
+        router.replace("/(generalContractorTab)");
+      }
+      else{
+        router.replace("/(usertab)");
+      } 
     } catch (err) {
       let errorMessage = "An unexpected error occurred. Please try again.";
       if (!err.response) {
