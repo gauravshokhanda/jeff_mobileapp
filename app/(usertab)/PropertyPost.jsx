@@ -13,8 +13,9 @@ import { API } from '../../config/apiConfig';
 const PropertyPost = () => {
     const [loading, setLoading] = useState(false);
     const breakdownCostDetail = useSelector((state) => state.breakdownCost.breakdownCost);
+    // console.log("breakdownCostDetail",breakdownCostDetail)
     const token = useSelector((state) => state.auth.token);
-    ;
+    
 
     const [form, setForm] = useState({
         numberOfDays: "",
@@ -30,7 +31,10 @@ const PropertyPost = () => {
 
 
     useEffect(() => {
-        if (breakdownCostDetail) {
+        console.log("breakdownCostDetail changed", breakdownCostDetail);
+        console.log("new data",breakdownCostDetail.area)
+       
+        if (breakdownCostDetail && breakdownCostDetail.days) {
             setForm((prevForm) => ({
                 ...prevForm,
                 numberOfDays: breakdownCostDetail?.days?.estimated_time?.toString() || "",
@@ -40,10 +44,10 @@ const PropertyPost = () => {
                 city: breakdownCostDetail?.city || "",
                 projectType: breakdownCostDetail?.days?.project_type || "",
                 floorMapImages: [],
-                // floorMapImages: breakdownCostDetail?.floor_maps ? [breakdownCostDetail.floor_maps] : [],
             }));
         }
     }, [breakdownCostDetail]);
+    
 
     const handleImagePick = async (field) => {
         let result = await DocumentPicker.getDocumentAsync({
@@ -102,7 +106,7 @@ const PropertyPost = () => {
         setLoading(true);
 
         try {
-            const response = await axios.post('https://g32.iamdeveloper.in/api/job-post', formData, {
+            const response = await API.post('job-post', formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
@@ -158,7 +162,7 @@ const PropertyPost = () => {
             <TouchableOpacity className="absolute top-4 left-3 z-10">
                 <Ionicons
                     name="arrow-back" size={25} color="white"
-                    onPress={() => router.back()}
+                    onPress={() => router.push('BreakdownCost')}
                 />
             </TouchableOpacity>
             <Text className="text-3xl font-extrabold text-center mb-6 bg-sky-950 text-white p-3">Property Post</Text>

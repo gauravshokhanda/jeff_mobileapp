@@ -1,23 +1,43 @@
 import { View, Text, TouchableOpacity, Platform } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Circle } from 'react-native-progress';
 import { Ionicons } from '@expo/vector-icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setBreakdownCost } from '../../redux/slice/breakdownCostSlice';
 
 export default function BreakdownCost() {
     const router = useRouter();
     const dispatch = useDispatch();
-    const { breakdownCost, screenName } = useLocalSearchParams();
-    const parsedData = JSON.parse(breakdownCost);
+    const { screenName } = useLocalSearchParams();
+    const costData = useSelector((state) => state.breakdownCost);
+    const [parsedData, setParsedData] = useState(null);
 
     useEffect(() => {
+        if (costData && costData.breakdownCost) {
+            try {
+                const parsed = JSON.parse(costData.breakdownCost);
+                setParsedData(parsed);
+            } catch (error) {
+                console.error("Error parsing breakdownCost:", error);
+            }
+        } else {
+            console.error("breakdownCost is missing.");
+        }
+    }, [costData]);
 
-        dispatch(setBreakdownCost(parsedData));
-    }, [breakdownCost, dispatch])
-    const { estimated_time, project_type, square_fit, data } = parsedData.days;
+    if (!parsedData) {
+        return null; 
+    }
+
+    const { estimated_time, project_type, square_fit } = parsedData;
+    console.log("new datas", parsedData.days.data);
+    const data = parsedData.days.data;
+    if (!data) {
+        console.log("Data is missing or undefined");
+        return null; 
+    }
 
     const totalDays = Object.values(data).reduce((acc, day) => acc + day, 0);
     const categories = Object.entries(data);
@@ -27,7 +47,7 @@ export default function BreakdownCost() {
     );
 
     const handlePost = () => {
-        router.push("/PropertyPost")
+        router.push("/PropertyPost");
     };
 
     return (
