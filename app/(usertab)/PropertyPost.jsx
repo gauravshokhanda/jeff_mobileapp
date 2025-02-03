@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert, BackHandler } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector } from "react-redux";
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { API } from '../../config/apiConfig';
 
 
@@ -12,11 +12,13 @@ import { API } from '../../config/apiConfig';
 
 const PropertyPost = () => {
     const [loading, setLoading] = useState(false);
-    const breakdownCostDetail = useSelector((state) => state.breakdownCost.breakdownCost);
+    const costData = useSelector((state) => state.breakdownCost);
     // console.log("breakdownCostDetail",breakdownCostDetail)
     const token = useSelector((state) => state.auth.token);
-    
 
+    const breakdownCostDetail = JSON.parse(costData.breakdownCost);
+    console.log(breakdownCostDetail)
+    console.log("area parsed", breakdownCostDetail.area)
     const [form, setForm] = useState({
         numberOfDays: "",
         totalCost: "",
@@ -32,8 +34,8 @@ const PropertyPost = () => {
 
     useEffect(() => {
         console.log("breakdownCostDetail changed", breakdownCostDetail);
-        console.log("new data",breakdownCostDetail.area)
-       
+        console.log("new data", breakdownCostDetail.area)
+
         if (breakdownCostDetail && breakdownCostDetail.days) {
             setForm((prevForm) => ({
                 ...prevForm,
@@ -46,8 +48,29 @@ const PropertyPost = () => {
                 floorMapImages: [],
             }));
         }
-    }, [breakdownCostDetail]);
+    }, [costData]);
+
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                Alert.alert(
+                    "Confirm Exit",
+                    "Are you sure you want to leave this page?",
+                    [
+                        { text: "Cancel", style: "cancel", onPress: () => null },
+                        { text: "Yes", onPress: () => router.back() }
+                    ]
+                );
+                return true; // Prevent default behavior
+            };
     
+            BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    
+            return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+        }, [])
+    );
+    
+
 
     const handleImagePick = async (field) => {
         let result = await DocumentPicker.getDocumentAsync({
