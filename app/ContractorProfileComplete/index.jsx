@@ -24,8 +24,9 @@ export default function ContractorProfileComplete() {
   const user = useSelector((state) => state.auth.user);
   
   const [userEmail, setUserEmail] = useState('');
+  const [userName,setUserFullName]=useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const [fullName, setFullName] = useState('');
+  const [companyContactNumber, setCompanyContactNumber] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [registrationNo, setRegistrationNo] = useState('');
   const [companyAddress, setCompanyAddress] = useState('');
@@ -45,6 +46,9 @@ export default function ContractorProfileComplete() {
     if (user?.email) {
       setUserEmail(user.email);
     }
+    if (user?.name) {
+      setUserFullName(user.name);
+    }
   }, [user]);
 
   const pickImage = async (setImage) => {
@@ -61,10 +65,12 @@ export default function ContractorProfileComplete() {
   const handleSubmit = async () => {
     const formData = new FormData();
 
-    formData.append("name", fullName);
+    formData.append("name", userName);
     formData.append("email", userEmail);
     formData.append("address", portfolioData.address);
     formData.append("company_name", companyName);
+    formData.append("number", companyContactNumber);
+
     formData.append("company_registered_number", registrationNo);
     formData.append("company_address", companyAddress);
     formData.append("project_name", portfolioData.projectName);
@@ -156,7 +162,7 @@ export default function ContractorProfileComplete() {
 
         {/* Form Content */}
         <View className="flex-1 m-6">
-          <View>
+          {/* <View>
             <Text className="text-gray-600 mb-1 ml-3 text-sm">Full Name</Text>
             <TextInput
               className="border border-gray-400 rounded-2xl pl-3 bg-white py-4"
@@ -165,7 +171,7 @@ export default function ContractorProfileComplete() {
               value={fullName}
               onChangeText={setFullName}
             />
-          </View>
+          </View> */}
 
           <View className="mt-6">
             <Text className="text-gray-600 mb-1 ml-3 text-sm">Company Name</Text>
@@ -175,6 +181,17 @@ export default function ContractorProfileComplete() {
               placeholderTextColor="gray"
               value={companyName}
               onChangeText={setCompanyName}
+            />
+          </View>
+          
+          <View className="mt-6">
+            <Text className="text-gray-600 mb-1 ml-3 text-sm">Company Contact Number</Text>
+            <TextInput
+              className="border border-gray-400 rounded-2xl pl-3 bg-white py-4"
+              placeholder="Enter Your Company Name"
+              placeholderTextColor="gray"
+              value={companyContactNumber}
+              onChangeText={setCompanyContactNumber}
             />
           </View>
 
@@ -264,7 +281,7 @@ export default function ContractorProfileComplete() {
               className="bg-sky-950 w-[45%] rounded-2xl" 
               onPress={handleSubmit}
             >
-              <Text className="p-3 text-white text-center">Next</Text>
+              <Text className="p-3 text-white text-center">Save Profile</Text>
             </TouchableOpacity>
           </View>
         </View>
