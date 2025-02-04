@@ -165,6 +165,13 @@ export default function TabRoot() {
 
                     }}
                 />
+                <Tabs.Screen
+                    name="MyPosts"
+                    options={{
+                        href: null,
+
+                    }}
+                />
             </Tabs>
         </ProtectedRoute>
     )

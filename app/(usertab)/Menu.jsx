@@ -9,7 +9,7 @@ const Menu = () => {
   const userName = useSelector((state) => state.auth.user);
 
   const menuItems = [
-    { icon: "analytics", title: "Discover Plus+", subtitle: "Boost your chances", route: "/discover-plus" },
+    { icon: "analytics", title: "My posts", subtitle: "See Your Posts", route: "/MyPosts" },
     { icon: "manage-search", title: "Search Post", subtitle: "Saved Searches", route: "/SearchPost" },
     { icon: "favorite-border", title: "Favorites", route: "/favorites" },
     { icon: "credit-card", title: "Financing", subtitle: "Interest & rates", route: "/financing" },

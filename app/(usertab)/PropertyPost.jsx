@@ -63,13 +63,13 @@ const PropertyPost = () => {
                 );
                 return true; // Prevent default behavior
             };
-    
+
             BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    
+
             return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
         }, [])
     );
-    
+
 
 
     const handleImagePick = async (field) => {
@@ -201,7 +201,7 @@ const PropertyPost = () => {
                             onChangeText={(text) => handleInputChange('numberOfDays', text)}
                             style={{
                                 elevation: 15,
-                                shadowColor: "blue",
+                                shadowColor: "#082f49",
                                 shadowOffset: { width: 0, height: 3 },
                                 shadowOpacity: 0.3,
                                 shadowRadius: 2,
@@ -218,7 +218,7 @@ const PropertyPost = () => {
                             value={form.totalCost}
                             style={{
                                 elevation: 15,
-                                shadowColor: "blue",
+                                shadowColor: "#082f49",
                                 shadowOffset: { width: 0, height: 3 },
                                 shadowOpacity: 0.3,
                                 shadowRadius: 2,
@@ -239,7 +239,7 @@ const PropertyPost = () => {
                             value={form.zipCode}
                             style={{
                                 elevation: 15,
-                                shadowColor: "blue",
+                                shadowColor: "#082f49",
                                 shadowOffset: { width: 0, height: 3 },
                                 shadowOpacity: 0.3,
                                 shadowRadius: 2,
@@ -254,7 +254,7 @@ const PropertyPost = () => {
                         <TextInput
                             style={{
                                 elevation: 15,
-                                shadowColor: "blue",
+                                shadowColor: "#082f49",
                                 shadowOffset: { width: 0, height: 3 },
                                 shadowOpacity: 0.3,
                                 shadowRadius: 2,
@@ -277,7 +277,7 @@ const PropertyPost = () => {
                             value={form.city}
                             style={{
                                 elevation: 15,
-                                shadowColor: "blue",
+                                shadowColor: "#082f49",
                                 shadowOffset: { width: 0, height: 3 },
                                 shadowOpacity: 0.3,
                                 shadowRadius: 2,
@@ -295,7 +295,7 @@ const PropertyPost = () => {
                             value={form.projectType}
                             style={{
                                 elevation: 15,
-                                shadowColor: "blue",
+                                shadowColor: "#082f49",
                                 shadowOffset: { width: 0, height: 3 },
                                 shadowOpacity: 0.3,
                                 shadowRadius: 2,
@@ -306,6 +306,7 @@ const PropertyPost = () => {
                 </View>
 
                 <View className="mb-6">
+                    <Text className="pl-4 pb-2 text-gray-600">Description</Text>
                     <TextInput
                         className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 h-40 justify-start align-top"
                         placeholder="Enter project description"
@@ -314,7 +315,7 @@ const PropertyPost = () => {
                         numberOfLines={10}
                         style={{
                             elevation: 15,
-                            shadowColor: "blue",
+                            shadowColor: "#082f49",
                             shadowOffset: { width: 0, height: 3 },
                             shadowOpacity: 0.3,
                             shadowRadius: 2,
@@ -331,13 +332,14 @@ const PropertyPost = () => {
                             <Text className="text-sky-500">Upload Design Images</Text>
                         </TouchableOpacity>
                     )}
-                    <View className="flex-row flex-wrap mt-3 ">
+                    <View className="flex-row flex-wrap m-3 ">
 
 
                         {form.designImages.length > 0 && (
-                            <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3">
-                                <Text className="text-center text-sky-500">Design Images</Text>
-                                <View className="flex-row flex-wrap mt-2">
+                            <View>
+                                <Text className="ml-4 text-gray-600">Design Images</Text>
+                                <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3 bg-white">
+                                <View className="flex-row items-center flex-wrap mt-2">
                                     {form.designImages.map((uri, index) => (
                                         <View key={index} className="relative w-24 h-24 m-1">
                                             <Image source={{ uri }} className="w-full h-full rounded-2xl" />
@@ -349,11 +351,15 @@ const PropertyPost = () => {
                                             </TouchableOpacity>
                                         </View>
                                     ))}
-                                    <TouchableOpacity onPress={() => handleImagePick('designImages')}>
-                                        <Text className="text-4xl text-gray-600 mt-6 ml-2">+</Text>
+                                    <TouchableOpacity onPress={() => handleImagePick('designImages')} className="w-24 h-24 m-1 flex items-center justify-center bg-gray-200 rounded-2xl">
+                                        <Text className="text-4xl text-gray-600">+</Text>
                                     </TouchableOpacity>
                                 </View>
+
                             </View>
+
+                            </View>
+                            
                         )}
                     </View>
 
@@ -371,29 +377,36 @@ const PropertyPost = () => {
                         </TouchableOpacity>
                     )}
                     <View className="">
-                        <View className="flex-row flex-wrap mt-3">
+                        <View className="flex-row flex-wrap m-3">
                             {form.floorMapImages.length > 0 && (
-                                <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3">
-                                    <Text className="text-center text-sky-500">Floor Map Images</Text>
-                                    <View className="flex-row flex-wrap mt-2">
-                                        {form.floorMapImages.map((uri, index) => (
-                                            <View key={index} className="relative w-24 h-24 m-1">
-                                                <Image source={{ uri }} className="w-full h-full rounded-2xl" />
-                                                <TouchableOpacity
-                                                    onPress={() => removeImage('floorMapImages', index)}
-                                                    className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
-                                                >
-                                                    <Ionicons name="close" size={16} color="white" />
-                                                </TouchableOpacity>
-                                            </View>
-                                        ))}
-                                        <TouchableOpacity onPress={() => handleImagePick('floorMapImages')}>
-                                            <Text className="text-4xl text-gray-600 mt-6 ml-2">+</Text>
-                                        </TouchableOpacity>
+                                <View>
+                                    <Text className="text-gray-600 ml-5">Floor Map Images</Text>
+                                    <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3 bg-white">
+                                        <View className="flex-row items-center flex-wrap mt-2">
+                                            {form.floorMapImages.map((uri, index) => (
+                                                <View key={index} className="relative w-24 h-24 m-1">
+                                                    <Image source={{ uri }} className="w-full h-full rounded-2xl" />
+                                                    <TouchableOpacity
+                                                        onPress={() => removeImage('floorMapImages', index)}
+                                                        className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
+                                                    >
+                                                        <Ionicons name="close" size={16} color="white" />
+                                                    </TouchableOpacity>
+                                                </View>
+                                            ))}
+
+                                            <TouchableOpacity
+                                                onPress={() => handleImagePick('floorMapImages')}
+                                                className="w-24 h-24 m-1 flex items-center justify-center bg-gray-200 rounded-2xl"
+                                            >
+                                                <Text className="text-4xl text-gray-600">+</Text>
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
                                 </View>
                             )}
                         </View>
+
                     </View>
 
                 </View>
