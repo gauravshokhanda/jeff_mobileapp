@@ -3,44 +3,36 @@ import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useSelector } from "react-redux";
-import { useRouter } from "expo-router";
-import axios from "axios"; 
+import axios from "axios";
 
 export default function PropertyDetails() {
-  const { id } = useLocalSearchParams(); 
-  const router = useRouter(); 
-  const [property, setProperty] = useState(null); 
+  const { id } = useLocalSearchParams();
+  const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
-  const token = useSelector((state) => state.auth.token); 
+  const token = useSelector((state) => state.auth.token);
 
-  console.log("Received Property ID:", id);
-
-  // Fetch property details based on the dynamic ID
   const fetchProperty = async () => {
-    const apiUrl = `https://g32.iamdeveloper.in/api/job-posts/${id}`;
+    const apiUrl = `https://g32.iamdeveloper.in/api/job-post/listing/${id}`;
 
     try {
       const response = await axios.get(apiUrl, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.status === 200) {
-        console.log("API Response Data:", response.data.data);
         setProperty(response.data.data);
-      } else {
-        console.error(`Unexpected status code: ${response.status}`);
       }
     } catch (error) {
-      console.error("Error fetching property:", error.response ? error.response.data : error.message);
-      setProperty(null); // Reset property on error
+      console.error("Error fetching property:", error.response?.data || error.message);
+      setProperty(null);
     } finally {
-      setLoading(false); // Stop loading after fetch is complete
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (id) {
-      fetchProperty(); // Call the fetch function when the component mounts
+      fetchProperty();
     }
   }, [id]);
 
@@ -60,82 +52,96 @@ export default function PropertyDetails() {
     );
   }
 
-  // Destructure the property data with default fallbacks
-  const {
-    imageUrl = "https://via.placeholder.com/600x400",
-    name = "Property Name",
-    price = "N/A",
-    days = "0",
-    thumbnailUrl = "https://via.placeholder.com/300x150",
-    type = "N/A",
-    yearBuilt = "Unknown",
-    daysOnMarket = "0",
-    priceRange = "N/A",
-    squareFootage = "N/A",
-    address = "N/A",
-    description = "No description available."
-  } = property;
+  const { total_cost, number_of_days, area, city, project_type, description, floor_maps_image, design_image } = property;
+
+  const baseUrl = "https://g32.iamdeveloper.in/public/";
+  let floorMap = "https://via.placeholder.com/600x400";
+  let designImages = [];
+
+  try {
+    const parsedFloorMaps = JSON.parse(floor_maps_image || "[]");
+    if (parsedFloorMaps.length > 0) {
+      floorMap = `${baseUrl}${parsedFloorMaps[0]}`;
+    }
+
+    const parsedDesignImages = JSON.parse(design_image || "[]");
+    designImages = parsedDesignImages.map((img) => `${baseUrl}${img}`);
+  } catch (error) {
+    console.error("Error parsing image data:", error);
+  }
 
   return (
-    <ScrollView className="bg-white flex-1">
+    <ScrollView className="bg-white flex-1 mt-8 p-4">
+      {/* Image with Floating Icons */}
       <View className="relative">
-        <TouchableOpacity
-          onPress={() => router.back()} // Go back to previous page
-          className="absolute top-5 left-5 bg-white p-2 rounded-full"
-        >
-          <FontAwesome name="arrow-left" size={20} color="black" />
-        </TouchableOpacity>
+        {/* Floating Icons (Back and Share) */}
+        <View className="absolute top-5 gap-2 left-5 right-5 flex-row justify-between z-10">
+          <View className="bg-white p-2 rounded-full shadow-md">
+            <FontAwesome name="arrow-left" size={20} color="black" />
+          </View>
 
-        <Image
-          source={{ uri: imageUrl }} // Use dynamic image URL with fallback
-          className="w-full h-60 rounded-b-lg"
-        />
+          <View className="bg-white p-2 rounded-full shadow-md">
+            <FontAwesome name="share-alt" size={20} color="black" />
+          </View>
+        </View>
+
+        {/* Property Image */}
+        <Image source={{ uri: floorMap }} className="w-full h-60 rounded-lg" />
       </View>
 
-      <View className="p-4">
-        <Text className="text-gray-600 text-lg mt-2">
-          Viewing details for property ID: {id}
-        </Text>
-        <Text className="text-xl font-bold">{name}</Text>
+      {/* Property Details Section */}
+      <View className="mt-4 bg-white p-4 rounded-lg shadow-md">
+        <Text className="text-xl font-bold">Property Type : {project_type} </Text>
+
         <View className="flex-row items-center justify-between mt-2">
-          <Text className="bg-purple-500 text-white px-3 py-1 rounded-lg">
-            For Sale
+          <Text className="bg-sky-950 text-white px-3 py-1 rounded-lg">For Sale</Text>
+          <Text className="text-lg font-bold">${total_cost}</Text>
+          <Text className="text-gray-500">Days: {number_of_days}</Text>
+        </View>
+
+        <Text className="text-gray-700 mt-2">Area: {area} sqft</Text>
+
+        {/* Design Images */}
+        <ScrollView horizontal className="mt-4">
+          {designImages.length > 0 ? (
+            designImages.map((img, index) => (
+              <Image key={index} source={{ uri: img }} className="w-40 h-32 mr-2 rounded-lg" />
+            ))
+          ) : (
+            <Text className="text-gray-500">No design images available</Text>
+          )}
+        </ScrollView>
+      </View>
+
+      {/* Property Information */}
+      <View className="mt-4 bg-white p-4 rounded-lg shadow-md">
+        <Text className="text-xl font-semibold">Property Information</Text>
+        <View className="mt-2 gap-2">
+          <Text className="text-gray-700">
+            <Text className="font-semibold">Property Type:</Text> {project_type}
           </Text>
-          <Text className="text-lg font-bold">${price}</Text>
-          <Text className="text-gray-500">Days: {days}</Text>
-        </View>
-
-        <Image
-          source={{ uri: thumbnailUrl }} // Use dynamic thumbnail URL with fallback
-          className="w-full h-32 mt-4 rounded-lg"
-        />
-
-        <View className="flex-row justify-between items-center mt-2">
-          <TouchableOpacity className="bg-blue-500 px-4 py-2 rounded-lg">
-            <Text className="text-white text-center">Get Direction</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity>
-            <FontAwesome name="share" size={24} color="black" />
-          </TouchableOpacity>
+          <Text className="text-gray-700">
+            <Text className="font-semibold">Location:</Text> {city}
+          </Text>
+          <Text className="text-gray-700">
+            <Text className="font-semibold">Built In:</Text> 2020
+          </Text>
+          <Text className="text-gray-700">
+            <Text className="font-semibold">Days:</Text> {number_of_days}
+          </Text>
+          <Text className="text-gray-700">
+            <Text className="font-semibold">Square Footage:</Text> {area} sqft
+          </Text>
+          <Text className="text-gray-700">
+            <Text className="font-semibold">Total Cost:</Text> ${total_cost}
+          </Text>
         </View>
       </View>
 
-      <View className="p-4 border-t border-gray-300">
-        <Text className="text-lg font-semibold">Property Information</Text>
-        <Text className="mt-2">Property Type: {type}</Text>
-        <Text>Built In: {yearBuilt}</Text>
-        <Text>Days on Market: {daysOnMarket}</Text>
-        <Text>Price Range: {priceRange}</Text>
-        <Text>Square Footage: {squareFootage} sqft</Text>
-        <Text>Full Address: {address}</Text>
-      </View>
-
-      <View className="p-4 border-t border-gray-300">
+      {/* Property Description */}
+      <View className="mt-4 bg-white p-4 rounded-lg shadow-md">
         <Text className="text-lg font-semibold">Property Description</Text>
-        <Text className="mt-2 text-gray-700">
-          {description}
-        </Text>
+        <Text className="mt-2 text-gray-700">{description}</Text>
       </View>
     </ScrollView>
   );
