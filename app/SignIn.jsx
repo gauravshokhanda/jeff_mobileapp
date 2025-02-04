@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { View, ActivityIndicator, Alert } from 'react-native';
+import { View, ActivityIndicator, Alert,KeyboardAvoidingView,Platform,ScrollView,Image,TouchableOpacity,Text } from 'react-native';
 import { setLogin } from "../redux/slice/authSlice";
 import { API } from "../config/apiConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AuthInput from "../components/AuthInput"
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -91,7 +92,7 @@ export default function SignIn() {
         <View className="flex-1 bg-sky-10 p-12 border items-center justify-center">
           <View className="mb-8 items-center justify-center">
             <View className="w-44 h-44 rounded-full border-4 border-sky-950 overflow-hidden items-center justify-center">
-              <Image source={Logo} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
+              <Image source={require("../assets/images/AC5D_Logo.jpg")} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
             </View>
           </View>
           <View className="w-full max-w-md">
