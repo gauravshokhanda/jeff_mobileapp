@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Image, Platform } from "react-native";
+import { View, Text,TextInput,TouchableOpacity, Image, Platform } from "react-native";
 import { useSelector } from "react-redux";
 
 const MenuHeader = () => {
@@ -16,12 +16,37 @@ const MenuHeader = () => {
         </View>
       </View>
 
-      {/* Container to push content down */}
-      <View className="flex-1 pt-28 mt-20">
-        <View className="w-full p-2 h-24 bg-red-500">
-          <Text>Hello</Text>
-        </View>
-      </View>
+      {/* Adjusted Content Section */}
+    <View className="w-full px-6 pt-28 mt-20">
+  <View className="p-6 rounded-lg mt-5 ">
+
+    <TextInput
+      className="border border-gray-300 rounded-lg px-4 py-3 text-gray-700 mb-3"
+      placeholder="Full Name"
+        placeholderTextColor="black"
+      value=""
+    />
+    <TextInput
+      className="border border-gray-300 rounded-lg px-4 py-3 text-gray-700 mb-3"
+      placeholder="Email"
+      keyboardType="email-address"
+        placeholderTextColor="black"
+      value=""
+    />
+   
+    <TextInput
+      className="border border-gray-300 rounded-lg px-4 py-3 text-gray-700 mb-5"
+      placeholder="City"
+      placeholderTextColor="black"
+      value=""
+    />
+
+    <TouchableOpacity className="bg-sky-950 py-3 mt-5 rounded-lg shadow-md active:bg-sky-800">
+      <Text className="text-center text-white text-lg font-semibold">Save Changes</Text>
+    </TouchableOpacity>
+  </View>
+</View>
+
     </View>
   );
 };
