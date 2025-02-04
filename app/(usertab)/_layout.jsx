@@ -165,6 +165,12 @@ export default function TabRoot() {
             href: null,
           }}
         />
+         <Tabs.Screen
+          name="UserProfile"
+          options={{
+            href: null,
+          }}
+        />
       </Tabs>
     </ProtectedRoute>
   );
