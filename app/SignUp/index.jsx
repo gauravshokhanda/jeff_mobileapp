@@ -58,6 +58,7 @@ export default function SignUp() {
             dispatch(setSignUp({ access_token, user }))
 
             Alert.alert("Success", "Account created successfully!");
+            console.log("User Role After API Call:", role.key);
             if (role.key === 3) { // General Contractor
                 router.replace("/ContractorProfileComplete");
             } else {

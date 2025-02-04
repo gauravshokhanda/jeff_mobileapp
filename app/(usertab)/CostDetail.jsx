@@ -5,9 +5,11 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-
+import { useDispatch } from 'react-redux';
+import { setBreakdownCost } from '../../redux/slice/breakdownCostSlice';
 
 export default function CostDetail() {
+    const dispatch = useDispatch();
     const { CostDetails } = useLocalSearchParams();
 
     const costDetails = CostDetails ? JSON.parse(CostDetails) : null;
@@ -34,6 +36,7 @@ export default function CostDetail() {
 
     const handleBreakdownCost = () => {
         const breakdownCost = JSON.stringify(costDetails);
+        dispatch(setBreakdownCost(breakdownCost));
         router.push(`/BreakdownCost?breakdownCost=${breakdownCost}&screenName=MapScreen`)
     }
     const backButton = () => {
