@@ -2,23 +2,25 @@ import { View, Text, Image, FlatList, TouchableOpacity, Dimensions, ActivityIndi
 import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
 import { API, baseUrl } from '../../config/apiConfig';
+import { router } from 'expo-router';
 
 export default function MyPosts() {
     const { width: screenWidth } = Dimensions.get('window');
-    const postContentWidth = screenWidth - 20; // Account for 10+10 margin
+    const postContentWidth = screenWidth - 20; 
 
     const userId = useSelector((state) => state.auth.user.id);
+    console.log("user", userId)
     const token = useSelector((state) => state.auth.token);
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const getMyPosts = async () => {
+           
             try {
                 const response = await API.get(`job-posts/${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
                     },
                 });
 
@@ -92,7 +94,10 @@ export default function MyPosts() {
                         <TouchableOpacity
                             className="bg-sky-950 w-20 rounded-xl ml-14"
 
-                            onPress={() => console.log(`Edit post ${item.id}`)}
+                            onPress={() =>
+                                router.push(`/EditPost?id=${item.id}`)
+                              }
+
                         >
                             <Text className="text-white text-center py-2">Edit</Text>
                         </TouchableOpacity>
@@ -100,7 +105,7 @@ export default function MyPosts() {
 
                     </View>
                 </View>
-            </View>
+            </View >
         );
     };
 

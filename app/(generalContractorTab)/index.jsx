@@ -22,7 +22,7 @@ const DashboardScreen = () => {
   }, []);
 
   const fetchPosts = async () => {
-    console.log("fetch post functin");
+    
     try {
       const response = await API.get("job-post/listing", {
         headers: {
