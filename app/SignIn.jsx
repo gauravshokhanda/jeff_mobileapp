@@ -56,6 +56,7 @@ export default function SignIn() {
   const handleSignIn = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Email and Password are required.");
+      
       return;
     }
     setLoading(true);
