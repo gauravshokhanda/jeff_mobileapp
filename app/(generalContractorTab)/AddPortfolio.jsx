@@ -1,66 +1,51 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, Image } from "react-native";
-import { Ionicons, Entypo } from "@expo/vector-icons"; // Entypo for emoji icon
-
-const ChatScreen = () => {
-  const [messages, setMessages] = useState([
-    { id: "1", text: "Hey, how are you?", sender: "other", image: "https://randomuser.me/api/portraits/men/1.jpg" },
-    { id: "2", text: "I'm good! What about you?", sender: "me", image: "https://randomuser.me/api/portraits/men/2.jpg" },
-    { id: "3", text: "Same here, just working on some projects.", sender: "other", image: "https://randomuser.me/api/portraits/men/1.jpg" },
+import { View, Text, TouchableOpacity, FlatList, Image } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+const ChatListScreen = ({ navigation }) => {
+  const router = useRouter();
+  const [chats, setChats] = useState([
+    { id: "1", name: "John Doe", lastMessage: "Hey, how are you?", image: "https://randomuser.me/api/portraits/men/1.jpg" },
+    { id: "2", name: "Alice Smith", lastMessage: "See you tomorrow!", image: "https://randomuser.me/api/portraits/women/2.jpg" },
+    { id: "3", name: "Michael Johnson", lastMessage: "Can we reschedule?", image: "https://randomuser.me/api/portraits/men/3.jpg" },
+    { id: "4", name: "John Doe", lastMessage: "Hey, how are you?", image: "https://randomuser.me/api/portraits/men/1.jpg" },
+    { id: "5", name: "Alice Smith", lastMessage: "See you tomorrow!", image: "https://randomuser.me/api/portraits/women/2.jpg" },
+    { id: "6", name: "Michael Johnson", lastMessage: "Can we reschedule?", image: "https://randomuser.me/api/portraits/men/3.jpg" },
+    { id: "7", name: "John Doe", lastMessage: "Hey, how are you?", image: "https://randomuser.me/api/portraits/men/1.jpg" },
+    { id: "8", name: "Alice Smith", lastMessage: "See you tomorrow!", image: "https://randomuser.me/api/portraits/women/2.jpg" },
+    { id: "9", name: "Michael Johnson", lastMessage: "Can we reschedule?", image: "https://randomuser.me/api/portraits/men/3.jpg" },
+    { id: "10", name: "John Doe", lastMessage: "Hey, how are you?", image: "https://randomuser.me/api/portraits/men/1.jpg" },
+    { id: "11", name: "Alice Smith", lastMessage: "See you tomorrow!", image: "https://randomuser.me/api/portraits/women/2.jpg" },
+    { id: "12", name: "Michael Johnson", lastMessage: "Can we reschedule?", image: "https://randomuser.me/api/portraits/men/3.jpg" },
   ]);
 
-  const [inputText, setInputText] = useState("");
-
-  const sendMessage = () => {
-    if (inputText.trim() === "") return;
-    setMessages([{ id: Date.now().toString(), text: inputText, sender: "me", image: "https://randomuser.me/api/portraits/men/2.jpg" }, ...messages]);
-    setInputText("");
-  };
-
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1 bg-gray-100">
+    <View className="flex-1 bg-gray-100">
       {/* Header */}
-      <View className="bg-sky-950 mt-12 flex-row items-center p-4">
-        <TouchableOpacity className="mr-3">
-          <Ionicons name="arrow-back" size={28} color="white" />
-        </TouchableOpacity>
-        <Image source={{ uri: "https://randomuser.me/api/portraits/men/1.jpg" }} className="w-10 h-10 rounded-full mr-3" />
-        <Text className="text-white text-lg font-bold">John Doe</Text>
+      <View className="bg-sky-950 p-4 mt-10 flex-row items-center">
+        <Text className="text-white text-2xl font-bold">Chats</Text>
       </View>
 
-      {/* Chat Messages */}
+      {/* Chat List */}
       <FlatList
-        data={messages}
+        data={chats}
         keyExtractor={(item) => item.id}
-        inverted  // Messages start from bottom
         renderItem={({ item }) => (
-          <View className={`flex-row items-end mx-3 my-2 ${item.sender === "me" ? "self-end flex-row-reverse" : "self-start"}`}>
-            <Image source={{ uri: item.image }} className="w-8 h-8 rounded-full mx-2" />
-            <View className={`p-3 max-w-[75%] rounded-lg ${item.sender === "me" ? "bg-sky-950" : "bg-white border border-gray-300"}`}>
-              <Text className={`${item.sender === "me" ? "text-white" : "text-gray-900"} text-lg`}>{item.text}</Text>
+          <TouchableOpacity
+            onPress={() => router.push("ChatScreen", { name: item.name, image: item.image })}
+            className="flex-row items-center p-4 border-b border-gray-300 bg-white"
+          >
+            <Image source={{ uri: item.image }} className="w-12 h-12 rounded-full mr-3" />
+            <View className="flex-1">
+              <Text className="text-lg font-bold text-gray-900">{item.name}</Text>
+              <Text className="text-gray-500">{item.lastMessage}</Text>
             </View>
-          </View>
+            <Ionicons name="chevron-forward" size={20} color="gray" />
+          </TouchableOpacity>
         )}
-        contentContainerStyle={{ paddingVertical: 10 }}
       />
-
-      {/* Chat Input Box */}
-      <View className="flex-row items-center p-4 bg-white border-t border-gray-300">
-        <TouchableOpacity className="mr-2">
-          <Entypo name="emoji-happy" size={28} color="gray" /> 
-        </TouchableOpacity>
-        <TextInput
-          value={inputText}
-          onChangeText={setInputText}
-          placeholder="Type a message..."
-          className="flex-1 p-3 bg-gray-200 rounded-full text-gray-900"
-        />
-        <TouchableOpacity onPress={sendMessage} className="ml-3 bg-sky-950 p-3 rounded-full">
-          <Ionicons name="send" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
-export default ChatScreen;
+export default ChatListScreen;
