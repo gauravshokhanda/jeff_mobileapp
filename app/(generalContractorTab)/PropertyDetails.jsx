@@ -146,7 +146,7 @@ export default function PropertyDetails() {
       {/* Buttons */}
       <View className="mt-4 bg-white p-4 flex flex-row items-center justify-center gap-5">
         <TouchableOpacity className="bg-sky-950 p-3 rounded-lg shadow-md active:bg-sky-800">
-          <Text className="text-center text-white text-lg font-semibold">Contractor Profile</Text>
+          <Text className="text-center text-white text-lg font-semibold">User Profile</Text>
         </TouchableOpacity>
         <TouchableOpacity className="bg-sky-950 p-3 rounded-lg shadow-md active:bg-sky-800">
           <Text className="text-center text-white text-lg font-semibold">Chat Contractor</Text>

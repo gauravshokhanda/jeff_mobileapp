@@ -64,7 +64,6 @@ export default function PropertyList() {
 
   return (
     <View className="flex-1 bg-gray-100 py-4">
-
       {/* Header Section */}
       <View className="h-20 flex-row items-center bg-sky-950 px-4 mt-8">
         {/* Notification Icon */}

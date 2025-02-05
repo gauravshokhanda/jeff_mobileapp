@@ -102,6 +102,18 @@ export default function TabRoot() {
             href: null,
           }}
         />
+         <Tabs.Screen
+          name="ChatScreen"
+          options={{
+            href: null,
+          }}
+        />
+         <Tabs.Screen
+          name="chat"
+          options={{
+            href: null,
+          }}
+        />
       </Tabs>
     </ProtectedRoute>
   );

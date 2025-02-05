@@ -2,25 +2,22 @@ import React from "react";
 import { View, Text, Image, Platform, TouchableOpacity } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useSelector } from "react-redux";
-import { useRouter } from "expo-router"; // ✅ Use router for navigation
+import { useRouter } from "expo-router"; 
 import Icon from "react-native-vector-icons/FontAwesome5";
 import Box from "../../assets/images/MD.png";
 
 // Object Array for menu items
 const imageData = [
-  { id: 1, label: "Posts", icon: "arrow-up", screen: null, source: Box },
-  { id: 2, label: "Feeds", icon: "rss", screen: "ContractorFeed", source: Box },
-  { id: 3, label: "Favorites", icon: "heart", screen: null, source: Box },
-  { id: 4, label: "Profile", icon: "user", screen: null, source: Box }, // ✅ Profile navigation
-  { id: 5, label: "Notifications", icon: "bell", screen: null, source: Box },
-  { id: 6, label: "Calculator", icon: "calculator", screen: null, source: Box },
-  { id: 7, label: "Contractor Lists", icon: "list", screen: null, source: Box },
+  { id: 1, label: "Portfolio", icon: "arrow-up", screen: null, source: Box },
+  { id: 2, label: "Feeds", icon: "rss", screen: "ContractorFeed", source: Box },  
+  { id: 4, label: "Profile", icon: "user", screen: null, source: Box }, 
+  { id: 6, label: "Chat", icon: "chat", screen: null, source: Box },
   { id: 8, label: "Log Out", icon: "sign-out-alt", screen: null, source: Box },
 ];
 
 const MenuHeader = () => {
   const userName = useSelector((state) => state.auth.user);
-  const router = useRouter(); // ✅ Use router for navigation
+  const router = useRouter(); 
 
   const handlePress = (screen) => {
     if (screen) {
