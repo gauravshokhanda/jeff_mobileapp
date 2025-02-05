@@ -1,22 +1,24 @@
-import { View, Text, Image, FlatList, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
+import { View, Text, Image, FlatList, TouchableOpacity, Dimensions, ActivityIndicator, Platform, TextInput } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
 import { API, baseUrl } from '../../config/apiConfig';
 import { router } from 'expo-router';
+import Ionicons from "@expo/vector-icons/Ionicons";
+
 
 export default function MyPosts() {
     const { width: screenWidth } = Dimensions.get('window');
-    const postContentWidth = screenWidth - 20; 
+    const postContentWidth = screenWidth - 20;
 
     const userId = useSelector((state) => state.auth.user.id);
-    console.log("user", userId)
+    // console.log("user", userId)
     const token = useSelector((state) => state.auth.token);
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const getMyPosts = async () => {
-           
+
             try {
                 const response = await API.get(`job-posts/${userId}`, {
                     headers: {
@@ -24,7 +26,7 @@ export default function MyPosts() {
                     },
                 });
 
-                console.log("Post Data:", response.data.data.data);
+                // console.log("Post Data:", response.data.data.data);
                 setResults(response.data.data.data || []);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -96,7 +98,7 @@ export default function MyPosts() {
 
                             onPress={() =>
                                 router.push(`/EditPost?id=${item.id}`)
-                              }
+                            }
 
                         >
                             <Text className="text-white text-center py-2">Edit</Text>
@@ -112,11 +114,21 @@ export default function MyPosts() {
     // Keep the rest of your component the same
     return (
         <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
-            <Text
-                className="text-2xl font-bold text-center my-2 bg-sky-950 text-white p-3"
-            >
-                My Posts
-            </Text>
+            <View
+                className={`flex-row justify-center items-center bg-sky-950 py-3 px-10  pb-4 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
+
+                {/* Search Bar */}
+                <View className="flex-row items-center border border-white rounded-full px-4 mt-2 bg-white">
+                    <Ionicons name="search" size={24} color="#000000" />
+                    <TextInput
+                        className="flex-1 ml-2 text-black"
+                        placeholder="Start Search"
+                        placeholderTextColor="#000000"
+                    />
+                    {/* Filter Icon */}
+                    <Ionicons name="filter" size={24} color="#000000" className="ml-4" />
+                </View>
+            </View>
             {loading ? (
                 <View className="flex-1 justify-center items-center">
                     <ActivityIndicator size="large" color="#007AFF" />
