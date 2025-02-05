@@ -15,7 +15,7 @@ export default function Dashboard() {
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       {/* Header */}
       <View
-        className={`flex-row justify-center items-center bg-sky-950 pt-12 p-10 pb-4 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
+        className={`flex-row justify-center items-center bg-sky-950 py-3 px-10  pb-4 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
 
         {/* Home Icon */}
         <Ionicons name="home" size={24} color="#ffffff" className="mr-5 mt-2 " />
@@ -51,7 +51,7 @@ export default function Dashboard() {
         {/* Search Bar */}
 
         {/* Search using Map & Images */}
-        <View className="flex-row justify-between mt-10">
+        <View className="flex-row justify-between mt-5">
           {/* Search using Map */}
           <TouchableOpacity className="border bg-sky-150 rounded-xl w-[48%] h-24 items-center p-4"
             onPress={() => router.push('MapScreen')} >
@@ -72,17 +72,16 @@ export default function Dashboard() {
 
 
         {/* Best Contractors */}
-        <View className="mt-5 mb-2">
-          <Text className="text-xl  mb-2 text-sky-950">Top Contractors</Text>
+        <View className="mt-4 mb-12 h-72">
+          <Text className="text-xl text-sky-950 text-center">Top Contractors</Text>
           <CardSlider />
         </View>
 
         {/* Best Estates */}
-        <View className="items-center">
+        {/* <View className="items-center h-72">
           <Text className="text-xl  mb-2 text-sky-950">Top Real Estate</Text>
           <EsateSlider />
-        </View>
-
+        </View> */}
 
       </View>
     </ScrollView >

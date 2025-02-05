@@ -121,7 +121,7 @@ export default function TabRoot() {
             href: null,
           }}
         />
-      
+
         <Tabs.Screen
           name="FloorMapScreen"
           options={{
@@ -165,8 +165,39 @@ export default function TabRoot() {
             href: null,
           }}
         />
-         <Tabs.Screen
+        <Tabs.Screen
+          name="MyPosts"
+          options={{
+            href: null,
+
+          }}
+        />
+        <Tabs.Screen
           name="UserProfile"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="EditPost"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="ContractorLists"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="ChatScreen"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="ContractorProfile"
           options={{
             href: null,
           }}
