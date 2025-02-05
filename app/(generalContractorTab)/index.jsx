@@ -29,7 +29,7 @@ const DashboardScreen = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("fetch post", response.data.data.data);
+      // console.log("fetch post", response.data.data.data);
       if (response.data.success && Array.isArray(response.data.data.data)) {
         setPosts(response.data.data.data.slice(0, 2));
       }
