@@ -8,13 +8,13 @@ import Box from "../../assets/images/MD.png";
 
 // Object Array for menu items
 const imageData = [
-  { id: 1, label: "My Posts", icon: "arrow-up", screen: "/MyPosts", source: Box },
-  { id: 2, label: "Feeds", icon: "rss", screen: "/Feeds", source: Box },
-  { id: 3, label: "Favorites", icon: "heart", screen: "/Favorites", source: Box },
-  { id: 4, label: "Profile", icon: "user", screen: "/UserProfile", source: Box },
-  { id: 5, label: "Notifications", icon: "bell", screen: "/Notifications", source: Box },
-  { id: 6, label: "Calculator", icon: "calculator", screen: "/Calculator", source: Box },
-  { id: 7, label: "Contractor Lists", icon: "list", screen: "/ContractorLists", source: Box },
+  { id: 1, label: "Contractor Lists", icon: "list", screen: "/ContractorLists", source: Box },
+  { id: 2, label: "My Posts", icon: "arrow-up", screen: "/MyPosts", source: Box },
+  // { id: 3, label: "Feeds", icon: "rss", screen: "/Feeds", source: Box },
+  // { id: 4, label: "Favorites", icon: "heart", screen: "/Favorites", source: Box },
+  { id: 5, label: "Profile", icon: "user", screen: "/UserProfile", source: Box },
+  { id: 6, label: "Chats", icon: "comments", screen: "/ChatScreen", source: Box },
+  { id: 7, label: "Calculator", icon: "calculator", screen: "/Calculator", source: Box },
   { id: 8, label: "Log Out", icon: "sign-out-alt", screen: null, source: Box },
 ];
 
@@ -30,17 +30,7 @@ const MenuHeader = () => {
     }
   };
 
-  const menuItems = [
-    { icon: "analytics", title: "My posts", subtitle: "See Your Posts", route: "/MyPosts" },
-    { icon: "manage-search", title: "Search Post", subtitle: "Saved Searches", route: "/SearchPost" },
-    { icon: "favorite-border", title: "Favorites", route: "/favorites" },
-    { icon: "credit-card", title: "Financing", subtitle: "Interest & rates", route: "/financing" },
-    { icon: "notifications", title: "Notifications", subtitle: "0 new", route: "/notifications" },
-    { icon: "verified-user", title: "Profile", subtitle: "Applicant portfolios", route: "/profile" },
-    { icon: "house", title: "ImmoKlub", subtitle: "Insure your home", route: "/immo-klub" },
-    { icon: "lock", title: "Account", subtitle: "Contracts & data", route: "/account" },
-    { icon: "settings", title: "Settings", subtitle: "Language, design...", route: "/settings" },
-  ];
+
 
   return (
     <View className={`bg-white h-full relative ${Platform.OS === "ios" ? "mt-16" : ""}`}>

@@ -50,25 +50,7 @@ const PropertyPost = () => {
         }
     }, [costData]);
 
-    useFocusEffect(
-        useCallback(() => {
-            const onBackPress = () => {
-                Alert.alert(
-                    "Confirm Exit",
-                    "Are you sure you want to leave this page?",
-                    [
-                        { text: "Cancel", style: "cancel", onPress: () => null },
-                        { text: "Yes", onPress: () => router.back() }
-                    ]
-                );
-                return true; // Prevent default behavior
-            };
 
-            BackHandler.addEventListener('hardwareBackPress', onBackPress);
-
-            return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-        }, [])
-    );
 
 
 
@@ -179,13 +161,25 @@ const PropertyPost = () => {
     }
 
 
+    const handleBackPress = () => {
+        Alert.alert(
+            "Confirmation",
+            "Are you sure you want to leave this page?",
+            [
+                { text: "Cancel", style: "cancel" },
+                { text: "Yes", onPress: () => router.push('BreakdownCost') }
+            ]
+        );
+    };
+
+
 
     return (
         <ScrollView className="flex-1">
             <TouchableOpacity className="absolute top-4 left-3 z-10">
                 <Ionicons
                     name="arrow-back" size={25} color="white"
-                    onPress={() => router.push('BreakdownCost')}
+                    onPress={handleBackPress}
                 />
             </TouchableOpacity>
             <Text className="text-3xl font-extrabold text-center mb-6 bg-sky-950 text-white p-3">Property Post</Text>
