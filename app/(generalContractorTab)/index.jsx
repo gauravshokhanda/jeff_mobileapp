@@ -84,7 +84,7 @@ const DashboardScreen = () => {
   return (
     <SafeAreaView className="bg-white flex-1">
       {/* Header */}
-      <View className="bg-sky-950 py-4 px-4 flex-row items-center justify-between">
+      <View className="bg-sky-950 py-4 px-10 flex-row items-center justify-between">
         <View>
         <Text className="text-white text-xl font-bold flex-row">
           Welcome, Jhon 👋
@@ -104,7 +104,7 @@ const DashboardScreen = () => {
 
       {/* new propert section */}
       <View className="mx-9 mt-5">
-        <Text className="text-2xl font-bold text-gray-800  ml-2 tracking-widest">
+        <Text className="text-2xl font-bold text-gray-800  ml-2 underline">
           New Property Openings
         </Text>
         <FlatList
@@ -119,56 +119,13 @@ const DashboardScreen = () => {
       </View>
 
       <View className="mx-10">
-        <View>
-          <Text className="text-xl tracking-widest font-semibold mb-2">
-            Listenings
-          </Text>
-        </View>
-        <View className="flex-row justify-around flex-wrap rounded-xl overflow-hidden">
-          <View className="h-24 w-[45%] rounded-2xl overflow-hidden">
-            <ImageBackground
-              source={require("../../assets/images/listeningImage1.png")}
-              className="h-full w-full justify-center"
-              resizeMode="cover"
-            >
-              <Text className="text-white font-bold tracking-wider text-center text-vertical-center">
-                New Listening
-              </Text>
-            </ImageBackground>
-          </View>
-          <View className="h-24 w-[45%] mb-3 rounded-2xl overflow-hidden">
-            <ImageBackground
-              source={require("../../assets/images/listeningImage2.png")}
-              className="h-full w-full rounded-xl justify-center"
-              resizeMode="cover"
-            >
-              <Text className="text-white font-bold tracking-wider text-center text-vertical-center">
-                New Apartment
-              </Text>
-            </ImageBackground>
-          </View>
-          <View className="h-24 w-[45%] rounded-2xl overflow-hidden">
-            <ImageBackground
-              source={require("../../assets/images/listeningImage3.png")}
-              className="h-full w-full justify-center"
-              resizeMode="cover"
-            >
-              <Text className="text-white font-bold tracking-wider text-center text-vertical-center">
-                New House
-              </Text>
-            </ImageBackground>
-          </View>
-          <View className="h-24 w-[45%] rounded-2xl overflow-hidden">
-            <ImageBackground
-              source={require("../../assets/images/listeningImage4.png")}
-              className="h-full w-full justify-center"
-              resizeMode="cover"
-            >
-              <Text className="text-white font-bold tracking-wider text-center text-vertical-center">
-                Sold House
-              </Text>
-            </ImageBackground>
-          </View>
+        <View className="flex-col mt-10 justify-center items-center gap-3">
+        <TouchableOpacity className=" bg-sky-950 w-96 rounded-lg flex justify-center items-center p-2 h-20">
+          <Text className="text-white font-bold text-xl">My Portfolio</Text>
+        </TouchableOpacity>
+        <TouchableOpacity className=" bg-sky-950 w-96 rounded-lg flex justify-center items-center p-2 h-20">
+          <Text className="text-white font-bold text-xl">Add City</Text>
+        </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>

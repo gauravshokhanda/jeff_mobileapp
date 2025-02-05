@@ -64,11 +64,9 @@ export default function PropertyList() {
 
   return (
     <View className="flex-1 bg-gray-100 py-4">
-      {/* Location */}
-      <Text className="text-gray-500 font-bold text-sm mt-8 ml-4">📍 Florida, USA</Text>
 
       {/* Header Section */}
-      <View className="h-20 flex-row items-center bg-sky-950 px-4 mt-2">
+      <View className="h-20 flex-row items-center bg-sky-950 px-4 mt-8">
         {/* Notification Icon */}
         <TouchableOpacity className="mr-4">
           <Ionicons name="notifications" size={24} color="white" />
@@ -89,6 +87,8 @@ export default function PropertyList() {
           </TouchableOpacity>
         </View>
       </View>
+      <Text className="text-gray-500 font-bold text-sm p-2 ">📍 Florida, USA</Text>
+
 
      
       {/* Property List */}
