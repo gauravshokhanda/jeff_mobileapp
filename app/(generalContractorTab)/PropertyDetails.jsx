@@ -9,32 +9,54 @@ export default function PropertyDetails() {
   const { id } = useLocalSearchParams();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [mainImage, setMainImage] = useState("https://via.placeholder.com/600x400"); // ✅ Ensuring a fixed initial state
+  const [designImages, setDesignImages] = useState([]); // ✅ Fixed hook order
   const token = useSelector((state) => state.auth.token);
-
-  const fetchProperty = async () => {
-    const apiUrl = `https://g32.iamdeveloper.in/api/job-post/listing/${id}`;
-
-    try {
-      const response = await axios.get(apiUrl, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (response.status === 200) {
-        setProperty(response.data.data);
-      }
-    } catch (error) {
-      console.error("Error fetching property:", error.response?.data || error.message);
-      setProperty(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const baseUrl = "https://g32.iamdeveloper.in/public/";
 
   useEffect(() => {
-    if (id) {
-      fetchProperty();
-    }
-  }, [id]);
+    if (!id) return;
+
+    const fetchProperty = async () => {
+      try {
+        const response = await axios.get(
+          `https://g32.iamdeveloper.in/api/job-post/listing/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (response.status === 200) {
+          const propertyData = response.data.data;
+
+          let floorMapImage = "https://via.placeholder.com/600x400";
+          let designImageArray = [];
+
+          try {
+            const parsedFloorMaps = JSON.parse(propertyData.floor_maps_image || "[]");
+            if (parsedFloorMaps.length > 0) {
+              floorMapImage = `${baseUrl}${parsedFloorMaps[0]}`;
+            }
+
+            const parsedDesignImages = JSON.parse(propertyData.design_image || "[]");
+            designImageArray = parsedDesignImages.map((img) => `${baseUrl}${img}`);
+          } catch (error) {
+            console.error("Error parsing images:", error);
+          }
+
+          setProperty(propertyData);
+          setMainImage(floorMapImage); // ✅ Ensuring this is always set
+          setDesignImages(designImageArray); // ✅ Ensuring hook order consistency
+        }
+      } catch (error) {
+        console.error("Error fetching property:", error.response?.data || error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperty();
+  }, [id, token]);
 
   if (loading) {
     return (
@@ -52,65 +74,44 @@ export default function PropertyDetails() {
     );
   }
 
-  const { total_cost, number_of_days, area, city, project_type, description, floor_maps_image, design_image } = property;
-
-  const baseUrl = "https://g32.iamdeveloper.in/public/";
-  let floorMap = "https://via.placeholder.com/600x400";
-  let designImages = [];
-
-  try {
-    const parsedFloorMaps = JSON.parse(floor_maps_image || "[]");
-    if (parsedFloorMaps.length > 0) {
-      floorMap = `${baseUrl}${parsedFloorMaps[0]}`;
-    }
-
-    const parsedDesignImages = JSON.parse(design_image || "[]");
-    designImages = parsedDesignImages.map((img) => `${baseUrl}${img}`);
-  } catch (error) {
-    console.error("Error parsing image data:", error);
-  }
+  const { total_cost, number_of_days, area, city, project_type, description } = property;
 
   return (
     <ScrollView className="bg-white flex-1 mt-8 p-4">
-      {/* Image with Floating Icons */}
-      <View className="relative">
-        {/* Floating Icons (Back and Share) */}
-        <View className="absolute top-5 gap-2 left-5 right-5 flex-row justify-between z-10">
-          <View className="bg-white p-2 rounded-full shadow-md">
-            <FontAwesome name="arrow-left" size={20} color="black" />
-          </View>
-
-          <View className="bg-white p-2 rounded-full shadow-md">
-            <FontAwesome name="share-alt" size={20} color="black" />
-          </View>
+      <View className="w-full h-20 bg-sky-950 mb-2 flex justify-center flex-row items-center rounded-lg">
+        <View className="absolute left-2 p-2 rounded-full shadow-md">
+          <FontAwesome name="arrow-left" size={20} color="white" />
         </View>
-
-        {/* Property Image */}
-        <Image source={{ uri: floorMap }} className="w-full h-60 rounded-lg" />
+        <Text className="text-white text-2xl font-bold">Property Details</Text>
       </View>
 
-      {/* Property Details Section */}
-      <View className="mt-4 bg-white p-4 rounded-lg shadow-md">
-        <Text className="text-xl font-bold">Property Type : {project_type} </Text>
+      {/* Main Image */}
+      <View className="relative">
+        <Image source={{ uri: mainImage }} className="w-full h-60 rounded-lg" />
+      </View>
 
+      {/* Scrollable Design Images */}
+      <ScrollView horizontal className="mt-4">
+        {designImages.length > 0 ? (
+          designImages.map((img, index) => (
+            <TouchableOpacity key={index} onPress={() => setMainImage(img)}>
+              <Image source={{ uri: img }} className="w-40 h-32 mr-2 rounded-lg" />
+            </TouchableOpacity>
+          ))
+        ) : (
+          <Text className="text-gray-500">No design images available</Text>
+        )}
+      </ScrollView>
+
+      {/* Property Details */}
+      <View className="mt-4 bg-white p-4 rounded-lg shadow-md">
+        <Text className="text-xl font-bold">Property Type: {project_type}</Text>
         <View className="flex-row items-center justify-between mt-2">
           <Text className="bg-sky-950 text-white px-3 py-1 rounded-lg">For Sale</Text>
           <Text className="text-lg font-bold">${total_cost}</Text>
           <Text className="text-gray-500">Days: {number_of_days}</Text>
         </View>
-
         <Text className="text-gray-700 mt-2">Area: {area} sqft</Text>
-
-        {/* Design Images */}
-        <ScrollView horizontal className="mt-4">
-          {designImages.length > 0 ? (
-            designImages.map((img, index) => (
-              <Image key={index} source={{ uri: img }} className="w-40 h-32 mr-2 rounded-lg" />
-            ))
-          ) : (
-            <Text className="text-gray-500">No design images available</Text>
-          )}
-        </ScrollView>
       </View>
 
       {/* Property Information */}
@@ -135,13 +136,21 @@ export default function PropertyDetails() {
           <Text className="text-gray-700">
             <Text className="font-semibold">Total Cost:</Text> ${total_cost}
           </Text>
+          <View>
+            <Text className="text-lg mt-4 font-semibold">Property Description</Text>
+            <Text className="text-gray-700">{description}</Text>
+          </View>
         </View>
       </View>
 
-      {/* Property Description */}
-      <View className="mt-4 bg-white p-4 rounded-lg shadow-md">
-        <Text className="text-lg font-semibold">Property Description</Text>
-        <Text className="mt-2 text-gray-700">{description}</Text>
+      {/* Buttons */}
+      <View className="mt-4 bg-white p-4 flex flex-row items-center justify-center gap-5">
+        <TouchableOpacity className="bg-sky-950 p-3 rounded-lg shadow-md active:bg-sky-800">
+          <Text className="text-center text-white text-lg font-semibold">Contractor Profile</Text>
+        </TouchableOpacity>
+        <TouchableOpacity className="bg-sky-950 p-3 rounded-lg shadow-md active:bg-sky-800">
+          <Text className="text-center text-white text-lg font-semibold">Chat Contractor</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );

@@ -70,7 +70,7 @@ export default function TabRoot() {
             title: "AddPortfolio",
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
-                name={focused ? "add-circle" : "add-circle-outline"}
+                name={focused ? "chatbubble" : "chatbubble-outline"}
                 color="white"
                 size={30}
               />

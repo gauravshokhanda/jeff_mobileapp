@@ -1,64 +1,137 @@
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
+import { View, Text, Image, FlatList, ScrollView } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-export default function CompanyProfileScreen() {
-  const router = useRouter();
+const featuredImages = [
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLbTGWnADS-iYHrvrCjM5BmmJ4RIDr_mx0Xg&s",
+  "https://hips.hearstapps.com/hmg-prod/images/west-virginia-gray-cottage-64dd6bb056057.jpg?crop=0.943xw:0.817xh;0.0224xw,0.0932xh&resize=980:*",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3SIpT7hb926rQB-DdtdK7Bux2wdiP0E-3jQ&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK4JT2eQPj74PG1l7FkEQG45IZtZvAHytFqjgYqwhyW0nAQGDYWK07n9OtzFhucfn61xc&usqp=CAU",
+];
 
+const portfolioItems = [
+  {
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4-8i8ejrhTnFN_U8bXBp9ScKOCBC8RgXznw&s",
+    name: "Luxury Apartment",
+    description: "A high-end apartment project with modern architecture.",
+    year: "2023",
+  },
+  {
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROgXiFhkkB5TvwexXNLwtynFxkSk7H0sAD2A&s",
+    name: "Skyline Towers",
+    description: "A commercial skyscraper with innovative design.",
+    year: "2022",
+  },
+  {
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiOMrpqAgKRzH6-gTPFQZm2BvxkM9nt4HAIg&s",
+    name: "Green Villas",
+    description: "Eco-friendly villas surrounded by greenery.",
+    year: "2024",
+  },
+  {
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4-8i8ejrhTnFN_U8bXBp9ScKOCBC8RgXznw&s",
+    name: "Ocean View Resort",
+    description: "A beachfront resort with luxury amenities.",
+    year: "2021",
+  },
+];
+
+const ProfileCard = () => {
   return (
-    <ScrollView className="bg-white flex-1">
-      {/* Header Section */}
-      <View className="relative">
+    <ScrollView className="bg-white p-4 shadow-lg rounded-lg">
+      {/* Background Image with Overlay */}
+      <View className="mt-5 relative w-full h-52">
         <Image
-          source={{ uri: "https://via.placeholder.com/400" }} // Replace with actual image
-          className="w-full h-40"
+          source={{
+            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSswljNNKdxbQZIBtYopmLIsKPIs5NTUOksHQ&s",
+          }}
+          className="w-full h-full rounded-lg"
         />
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md"
-        >
-          <Text className="text-lg">←</Text>
-        </TouchableOpacity>
-        <View className="absolute bottom-2 left-2 bg-black bg-opacity-50 p-1 rounded">
-          <Text className="text-white font-bold">Sky Team Constructions</Text>
-        </View>
+        <Text className="absolute bottom-4 right-4 text-black font-bold text-lg">
+          SkyTeam Constructions
+        </Text>
+        {/* Circular Profile Image */}
+        <Image
+          source={{
+            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoq0f1tSU2b8opZaApGh5tl2FreFb52dyo6Q&s",
+          }}
+          className="absolute -bottom-9 left-4 w-28 h-28 rounded-full border-2 border-white"
+        />
       </View>
 
-      {/* Profile Section */}
-      <View className="flex-row items-center p-4">
-        <Image
-          source={{ uri: "https://via.placeholder.com/100" }}
-          className="w-16 h-16 rounded-full border-4 border-yellow-500"
-        />
-        <View className="ml-4">
-          <Text className="text-lg font-semibold">Name - SkyTeam</Text>
-          <Text className="text-gray-600">Company Name - SkyTeam Constructions</Text>
-        </View>
+      {/* Info Section */}
+      <View className="mt-16 p-4 w-full gap-3 bg-gray-100 rounded-lg">
+        <Text className="text-xl font-semibold tracking-widest">
+          Name - SkyTeam
+        </Text>
+        <Text className="text-xl font-semibold mt-1 tracking-wider">
+          Company Name - SkyTeam Constructions
+        </Text>
+        <Text className="text-xl font-semibold mt-1 tracking-wider">
+          City - Florida, USA
+        </Text>
       </View>
 
       {/* Recent Featured Section */}
-      <Text className="text-lg font-semibold px-4">Recent Featured</Text>
-      <ScrollView horizontal className="px-4 py-2">
-        {[1, 2, 3].map((item, index) => (
-          <View key={index} className="mr-2">
+      <View className="mt-10 px-4 w-full">
+        <Text className="font-bold text-xl text-sky-950 tracking-widest">
+          Recent Featured
+        </Text>
+        <FlatList
+          data={featuredImages}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
             <Image
-              source={{ uri: "https://via.placeholder.com/100" }}
-              className="w-24 h-24 rounded-lg"
+              source={{ uri: item }}
+              className="w-32 h-32 m-2 rounded-lg"
             />
-            <Text className="text-xs mt-1 text-center font-semibold">Daniel</Text>
-            <View className="absolute bottom-1 left-1 bg-green-500 px-1 rounded">
-              <Text className="text-white text-xs">Add Unit</Text>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
+          )}
+        />
+      </View>
 
-      {/* Portfolio Section */}
-      <Text className="text-lg font-semibold px-4">Portfolio</Text>
-      <View className="flex-row px-4 py-2">
-        {[1, 2, 3].map((_, index) => (
-          <View key={index} className="w-24 h-24 bg-gray-300 rounded-lg mr-2" />
-        ))}
+      {/* Portfolio Section (Vertical Layout) */}
+      <View className="mt-10 px-2 w-full">
+        <View className="flex-row gap-1 items-center">
+          <Text className="font-bold text-xl text-sky-950 tracking-widest">
+            Portfolio
+          </Text>
+          <Ionicons name="add-circle" size={30} color="gray" />
+        </View>
+
+        <FlatList
+          data={portfolioItems}
+          scrollEnabled={false}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View className=" flex-row p-4 my-3 gap-3 items-center bg-gray-100">
+              {/* Portfolio Image */}
+              <Image
+                source={{ uri: item.image }}
+                className="w-40 h-36 rounded-lg"
+              />
+
+              {/* Portfolio Details */}
+              <View className="ml-4 flex-1">
+                <Text className="text-lg font-bold text-gray-900">
+                  {item.name}
+                </Text>
+                <Text className="text-gray-700 mt-1 w-full flex-wrap">
+                  {item.description}
+                </Text>
+                <Text className="text-black rounded-3xl p-1 mt-1 text-lg font-bold w-auto">
+                 Year: {item.year}
+                </Text>
+              </View>
+            </View>
+          )}
+        />
       </View>
     </ScrollView>
   );
-}
+};
+export default ProfileCard;
