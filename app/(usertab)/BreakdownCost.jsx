@@ -6,6 +6,7 @@ import { Circle } from 'react-native-progress';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { setBreakdownCost } from '../../redux/slice/breakdownCostSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function BreakdownCost() {
     const router = useRouter();
@@ -13,6 +14,39 @@ export default function BreakdownCost() {
     const { screenName } = useLocalSearchParams();
     const costData = useSelector((state) => state.breakdownCost);
     const [parsedData, setParsedData] = useState(null);
+    const [savedScreenName, setSavedScreenName] = useState(null);
+
+    console.log("screen name",screenName)
+
+    useEffect(() => {
+        // Load saved screenName from storage
+        const loadScreenName = async () => {
+            try {
+                const storedName = await AsyncStorage.getItem('screenName');
+                if (storedName) {
+                    setSavedScreenName(storedName);
+                }
+            } catch (error) {
+                console.error("Error loading screenName:", error);
+            }
+        };
+        loadScreenName();
+    }, []);
+
+    useEffect(() => {
+        // Save new screenName if it's provided
+        const saveScreenName = async () => {
+            if (screenName && screenName !== savedScreenName) {
+                try {
+                    await AsyncStorage.setItem('screenName', screenName);
+                    setSavedScreenName(screenName);
+                } catch (error) {
+                    console.error("Error saving screenName:", error);
+                }
+            }
+        };
+        saveScreenName();
+    }, [screenName]);
 
     useEffect(() => {
         if (costData && costData.breakdownCost) {

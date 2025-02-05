@@ -10,11 +10,12 @@ import AuthInput from "../components/AuthInput"
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(true); // Set to true initially
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const token = useSelector((state) => state.auth.token);
+  const userRole = useSelector((state) => state.auth.user.role);
 
   useEffect(() => {
     // Check AsyncStorage for persisted token before proceeding
@@ -37,7 +38,13 @@ export default function SignIn() {
 
   useEffect(() => {
     if (isAuthenticated && token) {
-      router.replace("/(usertab)");
+
+      if(userRole == 3 ){
+        router.replace("/(generalContractorTab)");
+      }
+      else{
+        router.replace("/(usertab)");
+      } 
     }
   }, [isAuthenticated, token]);
 
@@ -50,6 +57,7 @@ export default function SignIn() {
     try {
       const response = await API.post("auth/login", { email, password });
       const { token, user } = response.data;
+      console.log("userRole",userRole)
 
       // Save token in Redux
       dispatch(setLogin({ token, user }));
