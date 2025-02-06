@@ -66,9 +66,9 @@ export default function TabRoot() {
         />
 
         <Tabs.Screen
-          name="AllPropertyPost"
+          name="ContractorLists"
           options={{
-            title: "AllPropertyPost",
+            title: "ContractorLists",
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "newspaper" : "newspaper-outline"}
@@ -185,7 +185,7 @@ export default function TabRoot() {
           }}
         />
         <Tabs.Screen
-          name="ContractorLists"
+          name="AllPropertyPost"
           options={{
             href: null,
           }}

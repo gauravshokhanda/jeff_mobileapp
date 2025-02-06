@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,36 +9,74 @@ import {
   TextInput,
   TouchableOpacity,
   Button,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
-const featuredImages = [
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLbTGWnADS-iYHrvrCjM5BmmJ4RIDr_mx0Xg&s",
-  "https://hips.hearstapps.com/hmg-prod/images/west-virginia-gray-cottage-64dd6bb056057.jpg?crop=0.943xw:0.817xh;0.0224xw,0.0932xh&resize=980:*",
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3SIpT7hb926rQB-DdtdK7Bux2wdiP0E-3jQ&s",
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK4JT2eQPj74PG1l7FkEQG45IZtZvAHytFqjgYqwhyW0nAQGDYWK07n9OtzFhucfn61xc&usqp=CAU",
-];
+import axios from "axios";
+import { useSelector } from "react-redux";
 
 const ProfileCard = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [portfolioItems, setPortfolioItems] = useState([
-    {
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4-8i8ejrhTnFN_U8bXBp9ScKOCBC8RgXznw&s",
-      name: "Luxury Apartment",
-      description: "A high-end apartment project with modern architecture.",
-      year: "2023",
-    },
-    {
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROgXiFhkkB5TvwexXNLwtynFxkSk7H0sAD2A&s",
-      name: "Skyline Towers",
-      description: "A commercial skyscraper with innovative design.",
-      year: "2022",
-    },
-  ]);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const token = useSelector((state) => state.auth.token);
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        console.log("Fetching user data with token:", token);
+        const response = await axios.post(
+          "https://g32.iamdeveloper.in/api/user-detail",
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+          }
+        );
 
+        if (response.status === 200) {
+          console.log("User data received:", response.data);
+          setUserData(response.data);
+        } else {
+          console.error("Unexpected Response:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error.response?.data || error.message);
+        Alert.alert("API Error", "Failed to fetch user data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (token) {
+      fetchUserData();
+    }
+  }, [token]);
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="skyblue" />
+      </View>
+    );
+  }
+
+  if (!userData) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text className="text-red-500 text-lg">Failed to load user data.</Text>
+      </View>
+    );
+  }
+
+  const portfolioImages = JSON.parse(userData.portfolio || "[]");
+  const portfolioItems = portfolioImages.map((image, index) => ({
+    id: index.toString(),
+    image: `https://g32.iamdeveloper.in/${image}`,
+    name: userData.project_name || `Project ${index + 1}`,
+    description: userData.description || "No description available.",
+    year: new Date(userData.created_at).getFullYear().toString(),
+  }));
 
   return (
     <ScrollView className="bg-white p-4 shadow-lg rounded-lg">
@@ -46,17 +84,17 @@ const ProfileCard = () => {
       <View className="mt-5 relative w-full h-52">
         <Image
           source={{
-            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSswljNNKdxbQZIBtYopmLIsKPIs5NTUOksHQ&s",
+            uri: `https://g32.iamdeveloper.in/${userData.upload_organisation}`,
           }}
           className="w-full h-full rounded-lg"
         />
         <Text className="absolute bottom-4 right-4 text-black font-bold text-lg">
-          SkyTeam Constructions
+          {userData.company_name}
         </Text>
         {/* Circular Profile Image */}
         <Image
           source={{
-            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoq0f1tSU2b8opZaApGh5tl2FreFb52dyo6Q&s",
+            uri: `https://g32.iamdeveloper.in/${userData.image}`,
           }}
           className="absolute -bottom-9 left-4 w-28 h-28 rounded-full border-2 border-white"
         />
@@ -65,33 +103,17 @@ const ProfileCard = () => {
       {/* Info Section */}
       <View className="mt-16 p-4 w-full gap-3 bg-gray-100 rounded-lg">
         <Text className="text-xl font-semibold tracking-widest">
-          Name - SkyTeam
+          Name - {userData.name}
         </Text>
         <Text className="text-xl font-semibold mt-1 tracking-wider">
-          Company Name - SkyTeam Constructions
+          Company - {userData.company_name}
         </Text>
         <Text className="text-xl font-semibold mt-1 tracking-wider">
-          City - Florida, USA
+          City - {userData.city}, {userData.zip_code}
         </Text>
-      </View>
-
-      {/* Recent Featured Section */}
-      <View className="mt-10 px-4 w-full">
-        <Text className="font-bold text-xl text-sky-950 tracking-widest">
-          Recent Featured
+        <Text className="text-xl font-semibold mt-1 tracking-wider">
+          Address - {userData.company_address}
         </Text>
-        <FlatList
-          data={featuredImages}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <Image
-              source={{ uri: item }}
-              className="w-32 h-32 m-2 rounded-lg"
-            />
-          )}
-        />
       </View>
 
       {/* Portfolio Section */}
@@ -108,7 +130,7 @@ const ProfileCard = () => {
         <FlatList
           data={portfolioItems}
           scrollEnabled={false}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View className="flex-row p-4 my-3 gap-3 items-center bg-gray-100">
               <Image source={{ uri: item.image }} className="w-40 h-36 rounded-lg" />
@@ -130,33 +152,14 @@ const ProfileCard = () => {
           <View className="bg-white p-6 w-4/5 rounded-lg shadow-lg">
             <Text className="text-lg font-bold mb-2">Add New Portfolio</Text>
 
-            <TextInput
-              placeholder="Project Name"
-              className="border p-2 mb-2 rounded"
-            />
-
-            <TextInput
-              placeholder="Description"
-              className="border p-2 mb-2 rounded"
-              multiline
-            />
-
-            <TextInput
-              placeholder="Year"
-              className="border p-2 mb-2 rounded"
-              keyboardType="numeric"
-           
-             
-            />
-
-            <TextInput
-              placeholder="Image URL (optional)"
-              className="border p-2 mb-2 rounded"
-            />
+            <TextInput placeholder="Project Name" className="border p-2 mb-2 rounded" />
+            <TextInput placeholder="Description" className="border p-2 mb-2 rounded" multiline />
+            <TextInput placeholder="Year" className="border p-2 mb-2 rounded" keyboardType="numeric" />
+            <TextInput placeholder="Image URL (optional)" className="border p-2 mb-2 rounded" />
 
             <View className="flex-row justify-between mt-2">
               <Button title="Cancel" color="gray" onPress={() => setModalVisible(false)} />
-              <Button title="Add Portfolio"  />
+              <Button title="Add Portfolio" />
             </View>
           </View>
         </View>
