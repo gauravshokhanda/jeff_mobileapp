@@ -149,12 +149,12 @@ export default function ContractorProfileComplete() {
       >
         {/* Header */}
         <View className="p-4 bg-sky-950">
-          <TouchableOpacity
+          {/* <TouchableOpacity
             className="absolute z-10 left-4 top-4"
             onPress={() => router.back()}
           >
             <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <Text className="text-gray-100 text-xl font-bold text-center">
             Complete Your Profile
           </Text>
