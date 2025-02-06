@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { API, baseUrl } from "../../config/apiConfig";
 import moment from "moment";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { router } from "expo-router";
 
 
 const ContractorScreen = () => {
@@ -22,6 +23,7 @@ const ContractorScreen = () => {
                     image: { uri: `${baseUrl}${item.image}` },
                     name: item.name,
                     email: item.email,
+                    city: item.city,
                     contactNumber: item.company_registered_number,
                     company: item.company_name,
                     address: item.company_address,
@@ -38,42 +40,71 @@ const ContractorScreen = () => {
         fetchContractors();
     }, []);
 
+  
+
     const renderContractor = ({ item }) => (
         <View className="bg-white shadow-lg rounded-2xl p-4 mb-4">
-            <View className="flex-row items-center bg-gray-200 rounded-full">
+            {/* Contractor Info */}
+            <View className="flex-row items-center bg-gray-300  rounded-full p-2">
                 <Image
                     source={item.image}
                     className="w-20 h-20 rounded-full border-2 border-sky-900"
                     resizeMode="cover"
                 />
-                <View className="ml-12 flex-1">
+                <View className="ml-4 flex-1">
                     <Text className="text-xl font-semibold text-sky-950">{item.name}</Text>
                     <Text className="text-gray-600">{item.company}</Text>
                 </View>
             </View>
-
+    
+            {/* Contact Details */}
             <View className="mt-3 border-t border-gray-200 pt-3">
                 <View className="flex-row">
-                    <Text className="font-semibold text-sky-950 text-lg">Email : </Text>
+                    <Text className="font-semibold text-sky-950 text-lg">Email: </Text>
                     <Text className="text-gray-600 pt-1">{item.email}</Text>
                 </View>
                 <View className="flex-row">
-                    <Text className="font-semibold text-sky-950 text-lg">phone : </Text>
+                    <Text className="font-semibold text-sky-950 text-lg">Phone: </Text>
                     <Text className="text-gray-600 pt-1">{item.contactNumber}</Text>
                 </View>
                 <View className="flex-row">
-                    <Text className="font-semibold text-sky-950 text-lg">address : </Text>
+                    <Text className="font-semibold text-sky-950 text-lg">City: </Text>
+                    <Text className="text-gray-600 pt-1">{item.city}</Text>
+                </View>
+                <View className="flex-row">
+                    <Text className="font-semibold text-sky-950 text-lg">Address: </Text>
                     <Text className="text-gray-600 pt-1">{item.address}</Text>
                 </View>
-
+                
+               
+    
                 <Text className="text-gray-700 mt-1 italic">{item.description}</Text>
                 <View className="flex-row items-center mt-2 rounded-xl pl-3">
                     <View className="w-2 h-2 bg-blue-500 rounded-full mr-2" />
                     <Text className="text-gray-500 text-xs p-1">{item.createdAt}</Text>
                 </View>
             </View>
+    
+            {/* Profile & Chat Buttons */}
+            <View className="flex-row justify-between items-center mt-4">
+                {/* View Profile Button */}
+                <TouchableOpacity
+                    className="bg-sky-900 px-4 py-2 rounded-lg"
+                    onPress={() => router.push(`/ContractorProfile?id=${item.id}`)}
+                >
+                    <Text className="text-white font-semibold">View Profile</Text>
+                </TouchableOpacity>
+    
+                {/* Chat Icon */}
+                <TouchableOpacity onPress={() => router.push(`/ChatScreen?id=${item.id}`)}>
+                    <Ionicons name="chatbubble-ellipses-outline" size={28} color="black" />
+                </TouchableOpacity>
+            </View>
         </View>
     );
+    
+   
+    
 
     return (
         <View className="flex-1">
