@@ -102,7 +102,7 @@ const PropertyPost = () => {
         if (!result.canceled && result.assets?.length > 0) {
             setForm((prevForm) => ({
                 ...prevForm,
-                [field]: [...prevForm[field], ...result.assets.map(asset => asset.uri)],
+                [field]: result.assets.map(asset => asset.uri), // Clears previous images and adds new ones
             }));
         }
     };
@@ -159,7 +159,7 @@ const PropertyPost = () => {
     
             console.log("response job post data", response.data);
     
-            Alert.alert("Success", "Your job application has been posted successfully!", [
+            Alert.alert("Success", "Your job application has been Updated successfully!", [
                 {
                     text: "Ok",
                     onPress: () => {
@@ -207,7 +207,7 @@ const PropertyPost = () => {
 
 
     const handleBackPress = () => {
-        router.replace('AddPosts')
+        router.replace('MyPosts')
     };
     return (
         <ScrollView className="flex-1">
@@ -217,7 +217,7 @@ const PropertyPost = () => {
                     onPress={handleBackPress}
                 />
             </TouchableOpacity>
-            <Text className="text-3xl font-extrabold text-center mb-6 bg-sky-950 text-white p-3">Property Post</Text>
+            <Text className="text-3xl font-extrabold text-center mb-6 bg-sky-950 text-white p-3">Edit Property Post</Text>
             <View className="p-4">
                 <View className="flex-row mb-6 space-x-4">
                     <View className="flex-1">
