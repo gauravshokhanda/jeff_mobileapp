@@ -5,20 +5,22 @@ import { useSelector } from "react-redux";
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 import { router, useFocusEffect } from 'expo-router';
-import { API } from '../../config/apiConfig';
+import { API, baseUrl } from '../../config/apiConfig';
+import { useLocalSearchParams, useRouter } from "expo-router";
+
 
 
 
 
 const PropertyPost = () => {
+    const { id } = useLocalSearchParams();
     const [loading, setLoading] = useState(false);
-    const costData = useSelector((state) => state.breakdownCost);
-    // console.log("breakdownCostDetail",breakdownCostDetail)
     const token = useSelector((state) => state.auth.token);
 
-    const breakdownCostDetail = JSON.parse(costData.breakdownCost);
-    console.log(breakdownCostDetail)
-    console.log("area parsed", breakdownCostDetail.area)
+
+
+
+
     const [form, setForm] = useState({
         numberOfDays: "",
         totalCost: "",
@@ -33,22 +35,54 @@ const PropertyPost = () => {
 
 
     useEffect(() => {
-        console.log("breakdownCostDetail changed", breakdownCostDetail);
-        console.log("new data", breakdownCostDetail.area)
+        const fetchPost = async () => {
+            try {
+                const response = await API.get(`job-post/listing/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const responseData = response.data.data
 
-        if (breakdownCostDetail && breakdownCostDetail.days) {
-            setForm((prevForm) => ({
-                ...prevForm,
-                numberOfDays: breakdownCostDetail?.days?.estimated_time?.toString() || "",
-                totalCost: breakdownCostDetail?.total_cost?.toString() || "",
-                zipCode: breakdownCostDetail?.zip_code || "",
-                area: breakdownCostDetail?.area || "",
-                city: breakdownCostDetail?.city || "",
-                projectType: breakdownCostDetail?.days?.project_type || "",
-                floorMapImages: [],
-            }));
+                const newdesignImages = JSON.parse(responseData.design_image);
+                const newFloorMapImage = JSON.parse(responseData.floor_maps_image);
+
+                if (responseData) {
+                    setForm((prevForm) => ({
+                        ...prevForm,
+                        numberOfDays: responseData.number_of_days?.toString() || 5,
+                        totalCost: responseData.total_cost || "",
+                        zipCode: responseData?.zipcode || "",
+                        area: responseData?.area || "",
+                        city: responseData?.city || "",
+                        projectType: responseData?.project_type || "",
+                        designImages: newdesignImages || [],
+                        floorMapImages: newFloorMapImage || [],
+                        description: responseData.description,
+                    }));
+
+                }
+
+
+
+
+                // const getImages=newdesignImages.map((items)=>{
+                //     return `${baseUrl}${items}`
+                // })
+                // console.log("getImages",getImages)
+
+
+
+
+                //    const imageData= form.designImages.map((items)=>{
+                //         return items;
+                //     })
+
+            }
+            catch (error) {
+                console.log("error", error)
+            }
         }
-    }, [costData]);
+        fetchPost()
+    }, []);
 
 
 
@@ -61,10 +95,14 @@ const PropertyPost = () => {
             copyToCacheDirectory: true,
         });
 
+        // console.log("handleImage", form.floorMapImages)
+
+
+
         if (!result.canceled && result.assets?.length > 0) {
             setForm((prevForm) => ({
                 ...prevForm,
-                [field]: [...prevForm[field], ...result.assets.map(asset => asset.uri)],
+                [field]: result.assets.map(asset => asset.uri), // Clears previous images and adds new ones
             }));
         }
     };
@@ -89,46 +127,48 @@ const PropertyPost = () => {
         formData.append('city', form.city);
         formData.append('project_type', form.projectType);
         formData.append('description', form.description);
-
+    
         form.floorMapImages.forEach((uri, index) => {
-            formData.append(`floor_maps_image[]`, {
-                uri,
+            formData.append('floor_maps_image[]', {
+                uri: uri.startsWith('file://') ? uri : 'file://' + uri,
                 type: 'image/jpeg',
                 name: `floor_map_image_${index}.jpg`,
             });
         });
-
+        
         form.designImages.forEach((uri, index) => {
-            formData.append(`design_image[]`, {
-                uri,
+            formData.append('design_image[]', {
+                uri: uri.startsWith('file://') ? uri : 'file://' + uri,
                 type: 'image/jpeg',
                 name: `design_image_${index}.jpg`,
             });
         });
-
-        // console.log("Form Data:", formData);
-
+        
+    
+        console.log("Form Data:", formData);
+    
         setLoading(true);
-
+    
         try {
-            const response = await API.post('job-post', formData, {
+            const response = await API.post(`job-post/update/${id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
                 },
             });
-
-            // console.log("response job post data",response.data)
-
-            Alert.alert("Success", "Your job application has been posted successfully!", [
+    
+            console.log("response job post data", response.data);
+    
+            Alert.alert("Success", "Your job application has been Updated successfully!", [
                 {
                     text: "Ok",
                     onPress: () => {
-                        router.replace("/")
+                        router.replace("/MyPosts");
                     }
                 }
             ]);
-
+    
+            // Reset form after successful submission
             setForm({
                 numberOfDays: "",
                 totalCost: "",
@@ -140,7 +180,7 @@ const PropertyPost = () => {
                 floorMapImages: [],
                 description: "",
             });
-
+    
         } catch (error) {
             if (error.response) {
                 Alert.alert('Error:', error.response.data);
@@ -151,6 +191,11 @@ const PropertyPost = () => {
             setLoading(false);
         }
     };
+    
+    
+    
+    
+    
 
     if (loading) {
         return (
@@ -162,18 +207,8 @@ const PropertyPost = () => {
 
 
     const handleBackPress = () => {
-        Alert.alert(
-            "Confirmation",
-            "Are you sure you want to leave this page?",
-            [
-                { text: "Cancel", style: "cancel" },
-                { text: "Yes", onPress: () => router.push('BreakdownCost') }
-            ]
-        );
+        router.replace('MyPosts')
     };
-
-
-
     return (
         <ScrollView className="flex-1">
             <TouchableOpacity className="absolute top-4 left-3 z-10">
@@ -182,7 +217,7 @@ const PropertyPost = () => {
                     onPress={handleBackPress}
                 />
             </TouchableOpacity>
-            <Text className="text-3xl font-extrabold text-center mb-6 bg-sky-950 text-white p-3">Property Post</Text>
+            <Text className="text-3xl font-extrabold text-center mb-6 bg-sky-950 text-white p-3">Edit Property Post</Text>
             <View className="p-4">
                 <View className="flex-row mb-6 space-x-4">
                     <View className="flex-1">
@@ -331,29 +366,29 @@ const PropertyPost = () => {
 
                         {form.designImages.length > 0 && (
                             <View>
-                                <Text className="ml-4 text-gray-600">Design Images</Text>
+                                <Text className="ml-4 text-gray-600">Update Design Images</Text>
                                 <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3 bg-white">
-                                <View className="flex-row items-center flex-wrap mt-2">
-                                    {form.designImages.map((uri, index) => (
-                                        <View key={index} className="relative w-24 h-24 m-1">
-                                            <Image source={{ uri }} className="w-full h-full rounded-2xl" />
-                                            <TouchableOpacity
-                                                onPress={() => removeImage('designImages', index)}
-                                                className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
-                                            >
-                                                <Ionicons name="close" size={16} color="white" />
-                                            </TouchableOpacity>
-                                        </View>
-                                    ))}
-                                    <TouchableOpacity onPress={() => handleImagePick('designImages')} className="w-24 h-24 m-1 flex items-center justify-center bg-gray-200 rounded-2xl">
-                                        <Text className="text-4xl text-gray-600">+</Text>
-                                    </TouchableOpacity>
+                                    <View className="flex-row items-center flex-wrap mt-2">
+                                        {form.designImages.map((uri, index) => (
+                                            <View key={index} className="relative w-24 h-24 m-1">
+                                                <Image source={{ uri: uri.startsWith('file') ? uri : `${baseUrl}${uri}` }} className="w-full h-full rounded-2xl" />
+                                                <TouchableOpacity
+                                                    onPress={() => removeImage('designImages', index)}
+                                                    className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
+                                                >
+                                                    <Ionicons name="close" size={16} color="white" />
+                                                </TouchableOpacity>
+                                            </View>
+                                        ))}
+                                        <TouchableOpacity onPress={() => handleImagePick('designImages')} className="w-24 h-24 m-1 flex items-center justify-center bg-gray-200 rounded-2xl">
+                                            <Text className="text-4xl text-gray-600">+</Text>
+                                        </TouchableOpacity>
+                                    </View>
+
                                 </View>
 
                             </View>
 
-                            </View>
-                            
                         )}
                     </View>
 
@@ -374,12 +409,12 @@ const PropertyPost = () => {
                         <View className="flex-row flex-wrap m-3">
                             {form.floorMapImages.length > 0 && (
                                 <View>
-                                    <Text className="text-gray-600 ml-5">Floor Map Images</Text>
+                                    <Text className="text-gray-600 ml-5"> Update Floor Map Images</Text>
                                     <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3 bg-white">
                                         <View className="flex-row items-center flex-wrap mt-2">
                                             {form.floorMapImages.map((uri, index) => (
                                                 <View key={index} className="relative w-24 h-24 m-1">
-                                                    <Image source={{ uri }} className="w-full h-full rounded-2xl" />
+                                                    <Image source={{ uri: uri.startsWith("file") ? uri : `${baseUrl}${uri}` }} className="w-full h-full rounded-2xl" />
                                                     <TouchableOpacity
                                                         onPress={() => removeImage('floorMapImages', index)}
                                                         className="absolute top-0 right-0 bg-red-500 rounded-full p-1"

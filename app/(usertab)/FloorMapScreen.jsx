@@ -21,8 +21,11 @@ import { FontAwesome } from "@expo/vector-icons";
 import * as DocumentPicker from 'expo-document-picker';
 import debounce from 'lodash.debounce';
 import { FlashList } from '@shopify/flash-list';
+import { useDispatch } from 'react-redux';
+import { setBreakdownCost } from '../../redux/slice/breakdownCostSlice';
 
 export default function FloorMapScreen() {
+    const dispatch = useDispatch();
     const [name, setName] = useState('');
     const [city, setCity] = useState('');
     const [zipCode, setZipCode] = useState('');
@@ -163,7 +166,8 @@ export default function FloorMapScreen() {
                 },
             });
             const breakdownCost = JSON.stringify(response.data.data);
-            router.push(`/BreakdownCost?breakdownCost=${breakdownCost}&screenName=FloorMapScreen`);
+            dispatch(setBreakdownCost(breakdownCost));
+            router.push(`/BreakdownCost?screenName=FloorMapScreen`);
 
             setName('');
             setCity('');
