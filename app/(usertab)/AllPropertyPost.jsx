@@ -17,14 +17,14 @@ const AllPropertyPost = () => {
   }, []);
 
   const fetchPosts = async () => {
-    console.log("fetch post functin")
+    // console.log("fetch post functin")
     try {
       const response = await API.get("job-post/listing",{
         headers: {
             Authorization: `Bearer ${token}`,
           },
       });
-      console.log("fetch post",response.data.data.data)
+      // console.log("fetch post",response.data.data.data)
       if (response.data.success) {
         setPosts(response.data.data.data);
       }

@@ -1,23 +1,77 @@
 import { View, Text, TouchableOpacity, Platform } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Circle } from 'react-native-progress';
 import { Ionicons } from '@expo/vector-icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setBreakdownCost } from '../../redux/slice/breakdownCostSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function BreakdownCost() {
     const router = useRouter();
     const dispatch = useDispatch();
-    const { breakdownCost, screenName } = useLocalSearchParams();
-    const parsedData = JSON.parse(breakdownCost);
+    const { screenName } = useLocalSearchParams();
+    const costData = useSelector((state) => state.breakdownCost);
+    const [parsedData, setParsedData] = useState(null);
+    const [savedScreenName, setSavedScreenName] = useState(null);
+
+    console.log("screen name",screenName)
 
     useEffect(() => {
+        // Load saved screenName from storage
+        const loadScreenName = async () => {
+            try {
+                const storedName = await AsyncStorage.getItem('screenName');
+                if (storedName) {
+                    setSavedScreenName(storedName);
+                }
+            } catch (error) {
+                console.error("Error loading screenName:", error);
+            }
+        };
+        loadScreenName();
+    }, []);
 
-        dispatch(setBreakdownCost(parsedData));
-    }, [breakdownCost, dispatch])
-    const { estimated_time, project_type, square_fit, data } = parsedData.days;
+    useEffect(() => {
+        // Save new screenName if it's provided
+        const saveScreenName = async () => {
+            if (screenName && screenName !== savedScreenName) {
+                try {
+                    await AsyncStorage.setItem('screenName', screenName);
+                    setSavedScreenName(screenName);
+                } catch (error) {
+                    console.error("Error saving screenName:", error);
+                }
+            }
+        };
+        saveScreenName();
+    }, [screenName]);
+
+    useEffect(() => {
+        if (costData && costData.breakdownCost) {
+            try {
+                const parsed = JSON.parse(costData.breakdownCost);
+                setParsedData(parsed);
+            } catch (error) {
+                console.error("Error parsing breakdownCost:", error);
+            }
+        } else {
+            console.error("breakdownCost is missing.");
+        }
+    }, [costData]);
+
+    if (!parsedData) {
+        return null; 
+    }
+
+    const { estimated_time, project_type, square_fit } = parsedData;
+    // console.log("new datas", parsedData.days.data);
+    const data = parsedData.days.data;
+    if (!data) {
+        console.log("Data is missing or undefined");
+        return null; 
+    }
 
     const totalDays = Object.values(data).reduce((acc, day) => acc + day, 0);
     const categories = Object.entries(data);
@@ -27,7 +81,7 @@ export default function BreakdownCost() {
     );
 
     const handlePost = () => {
-        router.push("/PropertyPost")
+        router.push("/PropertyPost");
     };
 
     return (
