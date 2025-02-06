@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Ionicons from '@expo/vector-icons/Ionicons'; // Import Ionicons for the icon
+import Ionicons from '@expo/vector-icons/Ionicons'; 
 
 const contractors = [
   {

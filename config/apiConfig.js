@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "https://g32.iamdeveloper.in/api/";
+const baseUrl = "https://g32.iamdeveloper.in/public/";
 
 const API = axios.create({
     baseURL: "https://g32.iamdeveloper.in/api/",

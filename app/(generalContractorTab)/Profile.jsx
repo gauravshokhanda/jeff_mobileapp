@@ -1,31 +1,51 @@
 import React from "react";
-import { View, Text, Image, Platform, TouchableOpacity } from "react-native";
+import { View, Text, Image, Platform, TouchableOpacity,Alert } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useSelector } from "react-redux";
-import { useRouter } from "expo-router"; 
+import { useRouter } from "expo-router";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import Box from "../../assets/images/MD.png";
+import { useDispatch } from 'react-redux';
+import { setLogout } from "../../redux/slice/authSlice";
+import { useNavigation } from '@react-navigation/native';
+
 
 // Object Array for menu items
 const imageData = [
   { id: 1, label: "Portfolio", icon: "arrow-up", screen: null, source: Box },
-  { id: 2, label: "Feeds", icon: "rss", screen: "ContractorFeed", source: Box },  
-  { id: 4, label: "Profile", icon: "user", screen: null, source: Box }, 
-  { id: 6, label: "Chat", icon: "chat", screen: null, source: Box },
-  { id: 8, label: "Log Out", icon: "sign-out-alt", screen: null, source: Box },
+  { id: 2, label: "Feeds", icon: "rss", screen: "ContractorFeed", source: Box },
+  { id: 4, label: "Profile", icon: "user", screen: null, source: Box },
+  { id: 6, label: "Chat", icon: "comments", screen: null, source: Box },
+  { id: 8, label: "Log Out", icon: "sign-out-alt", screen: 'logout', source: Box },
 ];
 
 const MenuHeader = () => {
+  const dispatch=useDispatch();
   const userName = useSelector((state) => state.auth.user);
-  const router = useRouter(); 
+  const router = useRouter();
+
+
 
   const handlePress = (screen) => {
-    if (screen) {
+    if (screen === "logout") {
+      Alert.alert("Logout", "Are you sure you want to log out?", [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Logout",
+          onPress: () => {
+            dispatch(setLogout());
+            router.replace('SignIn');
+          },
+        },
+      ]);
+    } else if (screen) {
       console.log(`Navigating to ${screen}`);
-      router.push(screen); // ✅ Navigate using router.push
+      router.push(screen);
     }
   };
-
   return (
     <View className={`bg-white h-full relative ${Platform.OS === "ios" ? "mt-16" : ""}`}>
       {/* Header with User Info */}
@@ -58,7 +78,7 @@ const MenuHeader = () => {
           <TouchableOpacity
             key={item.id}
             activeOpacity={0.7}
-            className="relative w-52 h-28 flex items-center justify-center"
+            className="relative w-48 h-28 flex items-center justify-center"
             onPress={() => handlePress(item.screen)}
           >
             <Image source={item.source} className="w-full h-full absolute" />
