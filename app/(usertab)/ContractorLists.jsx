@@ -23,6 +23,7 @@ const ContractorScreen = () => {
                     image: { uri: `${baseUrl}${item.image}` },
                     name: item.name,
                     email: item.email,
+                    city: item.city,
                     contactNumber: item.company_registered_number,
                     company: item.company_name,
                     address: item.company_address,
@@ -67,9 +68,15 @@ const ContractorScreen = () => {
                     <Text className="text-gray-600 pt-1">{item.contactNumber}</Text>
                 </View>
                 <View className="flex-row">
+                    <Text className="font-semibold text-sky-950 text-lg">City: </Text>
+                    <Text className="text-gray-600 pt-1">{item.city}</Text>
+                </View>
+                <View className="flex-row">
                     <Text className="font-semibold text-sky-950 text-lg">Address: </Text>
                     <Text className="text-gray-600 pt-1">{item.address}</Text>
                 </View>
+                
+               
     
                 <Text className="text-gray-700 mt-1 italic">{item.description}</Text>
                 <View className="flex-row items-center mt-2 rounded-xl pl-3">
