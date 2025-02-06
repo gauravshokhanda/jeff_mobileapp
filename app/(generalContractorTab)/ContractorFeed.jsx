@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
@@ -63,9 +64,9 @@ export default function PropertyList() {
   };
 
   return (
-    <View className="flex-1 bg-gray-100 py-4">
+    <View className="flex-1 bg-gray-100">
       {/* Header Section */}
-      <View className="h-20 flex-row items-center bg-sky-950 px-4 mt-8">
+      <View className={`h-20 flex-row items-center bg-sky-950 px-4 ${Platform.OS === "ios" ? "mt-10" : ""}`}>
         {/* Notification Icon */}
         <TouchableOpacity className="mr-4">
           <Ionicons name="notifications" size={24} color="white" />
