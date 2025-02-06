@@ -29,10 +29,7 @@ const MenuHeader = () => {
   const handlePress = (screen) => {
     if (screen === "logout") {
       Alert.alert("Logout", "Are you sure you want to log out?", [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
+        { text: "Cancel", style: "cancel" },
         {
           text: "Logout",
           onPress: () => {
@@ -41,11 +38,13 @@ const MenuHeader = () => {
           },
         },
       ]);
+    } else if (screen === "ContractorPortfolio") {  // Profile screen
+      router.push({ pathname: screen, params: { edit: "true" } });
     } else if (screen) {
-      console.log(`Navigating to ${screen}`);
       router.push(screen);
     }
   };
+  
   return (
     <View className={`bg-white h-full relative ${Platform.OS === "ios" ? "mt-16" : ""}`}>
       {/* Header with User Info */}
