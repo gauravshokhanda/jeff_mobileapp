@@ -3,10 +3,10 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  ScrollView,
   FlatList,
-  ImageBackground,
   SafeAreaView,
+  ScrollView,
+  ImageBackground,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { API } from "../../config/apiConfig";
@@ -15,28 +15,44 @@ import { useSelector } from "react-redux";
 
 const DashboardScreen = () => {
   const [posts, setPosts] = useState([]);
+  const [user, setUser] = useState(null);
   const token = useSelector((state) => state.auth.token);
 
   useEffect(() => {
     fetchPosts();
+    fetchUserDetails();
   }, []);
 
   const fetchPosts = async () => {
-    
     try {
       const response = await API.get("job-post/listing", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      // console.log("fetch post", response.data.data.data);
       if (response.data.success && Array.isArray(response.data.data.data)) {
         setPosts(response.data.data.data.slice(0, 2));
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
-    } finally {
-      setLoading(false);
+    }
+  };
+  const fetchUserDetails = async () => {
+    try {
+      const response = await API.post(
+        "user-detail",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data) {
+        setUser(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
     }
   };
 
@@ -81,30 +97,50 @@ const DashboardScreen = () => {
     </View>
   );
 
+  if (!user) {
+    return <Text>Loading...</Text>;
+  }
+
   return (
     <SafeAreaView className="bg-white flex-1">
-      {/* Header */}
-      <View className="bg-sky-950 py-4 px-10 flex-row items-center justify-between">
-        <View>
-        <Text className="text-white text-xl font-bold flex-row">
-          Welcome, Jhon 👋
-        </Text>
-        <View className="flex-row mt-1">
-        <Ionicons name="location-outline" size={20} color="#0EA5E9" />
-        <Text className="text-white ml-1 font-semibold text-sm">
-          Florida, USA
-        </Text>
+      <View className="w-full h-20 bg-sky-950 justify-center items-start px-4 ">
+        <View className="">
+          <Text className="text-white text-2xl font-bold">
+            Welcome , {user.name}
+          </Text>
+          <Text className="text-white text-sm">{user.city}</Text>
         </View>
       </View>
-        <Image
-          className="h-16 w-16 rounded-full"
-          source={require("../../assets/images/AC5D_Logo.jpg")}
-        />
+      {/* Header */}
+      <View className="relative p-2">
+        <ImageBackground
+          source={{
+            uri: `https://g32.iamdeveloper.in/public/${user.upload_organisation}`,
+          }}
+          className="w-full h-40 bg-cover bg-center"
+        >
+          <View className="absolute inset-0 bg-black/40"></View>
+
+          {/* Circle at bottom corner, half inside and half outside */}
+          <View
+            className="absolute w-24 h-24 border border-black bg-white rounded-full"
+            style={{
+              bottom: -30,
+              left: 10,
+            }}
+          >
+            <Image
+              source={{
+                uri: user.image,
+              }}
+            />
+          </View>
+        </ImageBackground>
       </View>
 
-      {/* new propert section */}
-      <View className="mx-9 mt-5">
-        <Text className="text-2xl font-bold text-gray-800  ml-2 underline">
+      {/* New Property Openings */}
+      <View className="mx-9 mt-12">
+        <Text className="text-2xl font-bold text-gray-800  ml-2 ">
           New Property Openings
         </Text>
         <FlatList
@@ -113,21 +149,31 @@ const DashboardScreen = () => {
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
         />
-        <TouchableOpacity className="items-end ">
+        <TouchableOpacity className="items-end">
           <Text className="text-gray-500">See all</Text>
         </TouchableOpacity>
       </View>
 
-      <View className="mx-10">
-        <View className="flex-col mt-10 justify-center items-center gap-3">
-        <TouchableOpacity className=" bg-sky-950 w-96 rounded-lg flex justify-center items-center p-2 h-20">
-          <Text className="text-white font-bold text-xl">My Portfolio</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className=" bg-sky-950 w-96 rounded-lg flex justify-center items-center p-2 h-20">
-          <Text className="text-white font-bold text-xl">Add City</Text>
-        </TouchableOpacity>
-        </View>
-      </View>
+      {/* Portfolio & Add City */}
+      <View className="">
+  <View className="flex-col mt-8 justify-center items-center gap-3">
+    <TouchableOpacity
+      className="w-60 h-16"
+      onPress={() => {
+        /* Add action here */
+      }}
+    >
+      <ImageBackground
+        source={require("../../assets/images/myportfoliobtn.png")}
+        className="w-full h-full justify-center items-center"
+        imageStyle={{ borderRadius: 12 }} // Apply borderRadius to the image itself
+      >
+        <Text className="text-white font-bold text-xl">My Portfolio</Text>
+      </ImageBackground>
+    </TouchableOpacity>
+  </View>
+</View>
+
     </SafeAreaView>
   );
 };
