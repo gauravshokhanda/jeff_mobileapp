@@ -45,7 +45,6 @@ const MenuHeader = () => {
             <Text className="text-3xl font-semibold text-white">
               Welcome! {userName?.name || "User"}
             </Text>
-            <Text className="text-gray-400">📍 Florida, USA</Text>
           </View>
         </View>
 

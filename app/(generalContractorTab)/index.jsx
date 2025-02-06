@@ -12,8 +12,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { API } from "../../config/apiConfig";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useRouter } from "expo-router";
 
 const DashboardScreen = () => {
+  const router = useRouter();
   const [posts, setPosts] = useState([]);
   const [user, setUser] = useState(null);
   const token = useSelector((state) => state.auth.token);
@@ -149,7 +151,7 @@ const DashboardScreen = () => {
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
         />
-        <TouchableOpacity className="items-end">
+        <TouchableOpacity className="items-end" onPress={()=>{router.push('ContractorFeed')}}>
           <Text className="text-gray-500">See all</Text>
         </TouchableOpacity>
       </View>
@@ -160,13 +162,13 @@ const DashboardScreen = () => {
     <TouchableOpacity
       className="w-60 h-16"
       onPress={() => {
-        /* Add action here */
+        router.push("Portfolio");
       }}
     >
       <ImageBackground
         source={require("../../assets/images/myportfoliobtn.png")}
         className="w-full h-full justify-center items-center"
-        imageStyle={{ borderRadius: 12 }} // Apply borderRadius to the image itself
+        imageStyle={{ borderRadius: 12 }} 
       >
         <Text className="text-white font-bold text-xl">My Portfolio</Text>
       </ImageBackground>

@@ -15,12 +15,15 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { useRouter, useLocalSearchParams } from "expo-router"; // Import hooks
 
 const ProfileCard = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const token = useSelector((state) => state.auth.token);
+  const { edit } = useLocalSearchParams(); // Get 'edit' param from navigation
+  const isEditMode = edit === "true"; // Check if edit mode is enabled
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -80,51 +83,48 @@ const ProfileCard = () => {
 
   return (
     <ScrollView className="bg-white p-4 shadow-lg rounded-lg">
-      {/* Background Image with Overlay */}
+      {/* Profile Header */}
       <View className="mt-5 relative w-full h-52">
         <Image
-          source={{
-            uri: `https://g32.iamdeveloper.in/${userData.upload_organisation}`,
-          }}
+          source={{ uri: `https://g32.iamdeveloper.in/${userData.upload_organisation}` }}
           className="w-full h-full rounded-lg"
         />
         <Text className="absolute bottom-4 right-4 text-black font-bold text-lg">
           {userData.company_name}
         </Text>
-        {/* Circular Profile Image */}
         <Image
-          source={{
-            uri: `https://g32.iamdeveloper.in/${userData.image}`,
-          }}
+          source={{ uri: `https://g32.iamdeveloper.in/${userData.image}` }}
           className="absolute -bottom-9 left-4 w-28 h-28 rounded-full border-2 border-white"
         />
       </View>
 
       {/* Info Section */}
       <View className="mt-16 p-4 w-full gap-3 bg-gray-100 rounded-lg">
-        <Text className="text-xl font-semibold tracking-widest">
-          Name - {userData.name}
-        </Text>
-        <Text className="text-xl font-semibold mt-1 tracking-wider">
-          Company - {userData.company_name}
-        </Text>
-        <Text className="text-xl font-semibold mt-1 tracking-wider">
-          City - {userData.city}, {userData.zip_code}
-        </Text>
-        <Text className="text-xl font-semibold mt-1 tracking-wider">
-          Address - {userData.company_address}
-        </Text>
+        <Text className="text-xl font-semibold tracking-widest">Name - {userData.name}</Text>
+        <Text className="text-xl font-semibold mt-1 tracking-wider">Company - {userData.company_name}</Text>
+        <Text className="text-xl font-semibold mt-1 tracking-wider">City - {userData.city}, {userData.zip_code}</Text>
+        <Text className="text-xl font-semibold mt-1 tracking-wider">Address - {userData.company_address}</Text>
       </View>
+
+      {/* Edit Button (Only Show if in Edit Mode) */}
+      {isEditMode && (
+        <TouchableOpacity
+          className="bg-sky-950 p-3 rounded mt-4"
+          onPress={() => Alert.alert("Edit Profile", "Editing enabled!")}
+        >
+          <Text className="text-white text-center font-bold">Edit Profile</Text>
+        </TouchableOpacity>
+      )}
 
       {/* Portfolio Section */}
       <View className="mt-10 px-2 w-full">
         <View className="flex-row gap-1 items-center">
-          <Text className="font-bold text-xl text-sky-950 tracking-widest">
-            Portfolio
-          </Text>
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
-            <Ionicons name="add-circle" size={30} color="gray" />
-          </TouchableOpacity>
+          <Text className="font-bold text-xl text-sky-950 tracking-widest">Portfolio</Text>
+          {isEditMode && ( // Show Add button only if in edit mode
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <Ionicons name="add-circle" size={30} color="gray" />
+            </TouchableOpacity>
+          )}
         </View>
 
         <FlatList
@@ -137,9 +137,7 @@ const ProfileCard = () => {
               <View className="ml-4 flex-1">
                 <Text className="text-lg font-bold text-gray-900">{item.name}</Text>
                 <Text className="text-gray-700 mt-1 w-full flex-wrap">{item.description}</Text>
-                <Text className="text-black rounded-3xl p-1 mt-1 text-lg font-bold w-auto">
-                  Year: {item.year}
-                </Text>
+                <Text className="text-black rounded-3xl p-1 mt-1 text-lg font-bold w-auto">Year: {item.year}</Text>
               </View>
             </View>
           )}
