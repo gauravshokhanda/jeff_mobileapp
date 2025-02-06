@@ -149,7 +149,7 @@ export default function PropertyDetails() {
           <Text className="text-center text-white text-lg font-semibold">User Profile</Text>
         </TouchableOpacity>
         <TouchableOpacity className="bg-sky-950 p-3 rounded-lg shadow-md active:bg-sky-800">
-          <Text className="text-center text-white text-lg font-semibold">Chat Contractor</Text>
+          <Text className="text-center text-white text-lg font-semibold">Chat User</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
