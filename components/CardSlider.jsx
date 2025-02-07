@@ -71,8 +71,9 @@ const CardSlider = () => {
         {item.title}
       </Text>
       <Text className="text-xs text-gray-600 text-center mt-1 mb-3" numberOfLines={2}>
-        {item.description}
+        {item.description.split(" ").slice(0, 5).join(" ") + (item.description.split(" ").length > 5 ? "..." : "")}
       </Text>
+
       <View className="flex-row space-x-2">
         <TouchableOpacity className="bg-blue-600 rounded-md px-2 bg-sky-950 justify-center" onPress={() => handleVisitProfile(item.id)}>
           <Text className="text-white text-xs font-medium">Visit Profile</Text>
@@ -99,14 +100,14 @@ const CardSlider = () => {
             contentContainerStyle={{ paddingHorizontal: 10 }}
           />
 
-           <View className="flex-row justify-center mt-5">
-                   <TouchableOpacity
-                     onPress={() => router.push('ContractorLists')} // Adjust route name as needed
-                     className="bg-sky-950 rounded-full py-3 px-8 items-center"
-                   >
-                     <Text className="text-white font-bold">View All Contractors</Text>
-                   </TouchableOpacity>
-                 </View>
+          <View className="flex-row justify-center mt-5">
+            <TouchableOpacity
+              onPress={() => router.push('ContractorLists')} // Adjust route name as needed
+              className="bg-sky-950 rounded-full py-3 px-8 items-center"
+            >
+              <Text className="text-white font-bold">View All Contractors</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
 
