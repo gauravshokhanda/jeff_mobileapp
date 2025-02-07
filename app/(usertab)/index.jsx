@@ -69,20 +69,20 @@ export default function Dashboard() {
         </View>
 
         {/* Best Contractors */}
-        <View className="mt-4 mb-12 h-72">
+        <View className="mt-4 h-72">
           <Text className="text-xl text-sky-950 text-center">Top Contractors</Text>
           <CardSlider />
         </View>
 
         {/* View All Button */}
-        <View className="flex-row justify-center mt-4">
+        {/* <View className="flex-row justify-center mt-5">
           <TouchableOpacity
-            onPress={() => router.push('ContractorListScreen')} // Adjust route name as needed
+            onPress={() => router.push('ContractorLists')} // Adjust route name as needed
             className="bg-sky-950 rounded-full py-3 px-8 items-center"
           >
             <Text className="text-white font-bold">View All Contractors</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         {/* Best Estates */}
         {/* <View className="items-center h-72">
