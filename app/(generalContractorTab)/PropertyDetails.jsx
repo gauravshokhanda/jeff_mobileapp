@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity, Linking, Alert } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import axios from "axios";
 
 export default function PropertyDetails() {
   const { id } = useLocalSearchParams();
+  const router = useRouter();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [mainImage, setMainImage] = useState("https://via.placeholder.com/600x400"); // ✅ Ensuring a fixed initial state
-  const [designImages, setDesignImages] = useState([]); // ✅ Fixed hook order
+  const [mainImage, setMainImage] = useState("https://via.placeholder.com/600x400");
+  const [designImages, setDesignImages] = useState([]);
   const token = useSelector((state) => state.auth.token);
   const baseUrl = "https://g32.iamdeveloper.in/public/";
 
@@ -28,7 +29,6 @@ export default function PropertyDetails() {
 
         if (response.status === 200) {
           const propertyData = response.data.data;
-
           let floorMapImage = "https://via.placeholder.com/600x400";
           let designImageArray = [];
 
@@ -45,8 +45,8 @@ export default function PropertyDetails() {
           }
 
           setProperty(propertyData);
-          setMainImage(floorMapImage); // ✅ Ensuring this is always set
-          setDesignImages(designImageArray); // ✅ Ensuring hook order consistency
+          setMainImage(floorMapImage);
+          setDesignImages(designImageArray);
         }
       } catch (error) {
         console.error("Error fetching property:", error.response?.data || error.message);
@@ -74,7 +74,33 @@ export default function PropertyDetails() {
     );
   }
 
-  const { total_cost, number_of_days, area, city, project_type, description } = property;
+  const { total_cost, number_of_days, area, city, project_type, description, user_id } = property;
+
+  const handleCall = async () => {
+    if (!user_id) {
+      Alert.alert("Error", "User ID not available.");
+      return;
+    }
+
+    try {
+      const response = await axios.get(`https://g32.iamdeveloper.in/api/user/show/${user_id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200) {
+        const phoneNumber = response.data.data.number;
+
+        if (phoneNumber) {
+          Linking.openURL(`tel:${phoneNumber}`);
+        } else {
+          Alert.alert("Error", "Phone number not available.");
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching phone number:", error.response?.data || error.message);
+      Alert.alert("Error", "Failed to fetch phone number.");
+    }
+  };
 
   return (
     <ScrollView className="bg-white flex-1 mt-8 p-4">
@@ -145,11 +171,19 @@ export default function PropertyDetails() {
 
       {/* Buttons */}
       <View className="mt-4 bg-white p-4 flex flex-row items-center justify-center gap-5">
-        <TouchableOpacity className="bg-sky-950 p-3 rounded-lg shadow-md active:bg-sky-800">
-          <Text className="text-center text-white text-lg font-semibold">User Profile</Text>
+        <TouchableOpacity
+          className="bg-sky-950 p-3 w-48 rounded-lg justify-center items-center flex-row gap-2 shadow-md active:bg-sky-800"
+          onPress={handleCall}
+        >
+          <FontAwesome name="phone" size={20} color="white" />
+          <Text className="text-center text-white text-lg font-semibold">Call to Number</Text>
         </TouchableOpacity>
-        <TouchableOpacity className="bg-sky-950 p-3 rounded-lg shadow-md active:bg-sky-800">
-          <Text className="text-center text-white text-lg font-semibold">Chat User</Text>
+        <TouchableOpacity
+          className="bg-sky-950 p-3 flex-row w-48 gap-1 justify-center items-center rounded-lg shadow-md active:bg-sky-800"
+          onPress={() => router.push(`/ChatScreen?user_id=${user_id}`)}
+        >
+          <FontAwesome name="comment" size={20} color="white" />
+          <Text className="text-center text-white text-lg font-semibold">Chat</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

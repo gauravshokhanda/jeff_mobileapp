@@ -1,5 +1,5 @@
 import { View, Text, Image, ScrollView, TextInput, TouchableOpacity, Platform } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { FontAwesome } from '@expo/vector-icons';
 import CardSlider from '../../components/CardSlider';
@@ -10,13 +10,19 @@ import { useSelector } from 'react-redux';
 export default function Dashboard() {
   const router = useRouter();
   const userName = useSelector((state) => state.auth.user);
-  // console.log("userName", userName.name)
+  const [avatarLetter, setAvatarLetter] = useState("");
+
+  // Ensure user name is available and set the first letter for avatar
+  useEffect(() => {
+    if (userName && userName.name) {
+      setAvatarLetter(userName.name[0].toUpperCase());
+    }
+  }, [userName]);
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       {/* Header */}
-      <View
-        className={`flex-row justify-center items-center bg-sky-950 py-3 px-10  pb-4 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
-
+      <View className={`flex-row justify-center items-center bg-sky-950 py-3 px-10 pb-4 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
         {/* Home Icon */}
         <Ionicons name="home" size={24} color="#ffffff" className="mr-5 mt-2 " />
 
@@ -33,24 +39,17 @@ export default function Dashboard() {
         </View>
       </View>
 
-
       {/* Main Content */}
-
-
       <View className="bg-white border border-b-white p-2">
-
-
         {/* Welcome Message */}
-        <View className=" flex-row justify-center items-center mt-2">
+        <View className="flex-row justify-center items-center mt-2">
           <Text className="text-black text-lg">Welcome,</Text>
-          <Text className="text-sky-950 text-lg text-bold font-semibold">
-            {userName.name ? userName.name : "unknown"}
+          <Text className="text-sky-950 text-lg font-semibold">
+            {userName && userName.name ? userName.name : "Unknown"}
           </Text>
         </View>
 
-        {/* Search Bar */}
-
-        {/* Search using Map & Images */}
+        {/* Action Buttons (Search) */}
         <View className="flex-row justify-between mt-5">
           {/* Search using Map */}
           <TouchableOpacity className="border bg-sky-150 rounded-xl w-[48%] h-24 items-center p-4"
@@ -69,21 +68,28 @@ export default function Dashboard() {
           </TouchableOpacity>
         </View>
 
-
-
         {/* Best Contractors */}
-        <View className="mt-4 mb-12 h-72">
+        <View className="mt-4 h-72">
           <Text className="text-xl text-sky-950 text-center">Top Contractors</Text>
           <CardSlider />
         </View>
 
-        {/* Best Estates */}
-        {/* <View className="items-center h-72">
-          <Text className="text-xl  mb-2 text-sky-950">Top Real Estate</Text>
-          <EsateSlider />
+        {/* View All Button */}
+        {/* <View className="flex-row justify-center mt-5">
+          <TouchableOpacity
+            onPress={() => router.push('ContractorLists')} // Adjust route name as needed
+            className="bg-sky-950 rounded-full py-3 px-8 items-center"
+          >
+            <Text className="text-white font-bold">View All Contractors</Text>
+          </TouchableOpacity>
         </View> */}
 
+        {/* Best Estates */}
+        {/* <View className="items-center h-72">
+          <Text className="text-xl mb-2 text-sky-950">Top Real Estate</Text>
+          <EsateSlider />
+        </View> */}
       </View>
-    </ScrollView >
+    </ScrollView>
   );
 }

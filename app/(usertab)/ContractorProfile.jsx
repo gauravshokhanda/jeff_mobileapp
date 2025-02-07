@@ -1,133 +1,105 @@
-import { View, Text, Image, FlatList, ScrollView } from "react-native";
+import { View, Text, Image, FlatList, ScrollView, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
-const featuredImages = [
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLbTGWnADS-iYHrvrCjM5BmmJ4RIDr_mx0Xg&s",
-  "https://hips.hearstapps.com/hmg-prod/images/west-virginia-gray-cottage-64dd6bb056057.jpg?crop=0.943xw:0.817xh;0.0224xw,0.0932xh&resize=980:*",
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3SIpT7hb926rQB-DdtdK7Bux2wdiP0E-3jQ&s",
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK4JT2eQPj74PG1l7FkEQG45IZtZvAHytFqjgYqwhyW0nAQGDYWK07n9OtzFhucfn61xc&usqp=CAU",
-];
-
-const portfolioItems = [
-  {
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4-8i8ejrhTnFN_U8bXBp9ScKOCBC8RgXznw&s",
-    name: "Luxury Apartment",
-    description: "A high-end apartment project with modern architecture.",
-    year: "2023",
-  },
-  {
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROgXiFhkkB5TvwexXNLwtynFxkSk7H0sAD2A&s",
-    name: "Skyline Towers",
-    description: "A commercial skyscraper with innovative design.",
-    year: "2022",
-  },
-  {
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiOMrpqAgKRzH6-gTPFQZm2BvxkM9nt4HAIg&s",
-    name: "Green Villas",
-    description: "Eco-friendly villas surrounded by greenery.",
-    year: "2024",
-  },
-  {
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4-8i8ejrhTnFN_U8bXBp9ScKOCBC8RgXznw&s",
-    name: "Ocean View Resort",
-    description: "A beachfront resort with luxury amenities.",
-    year: "2021",
-  },
-];
+import { useLocalSearchParams } from "expo-router";
+import { API, baseUrl } from "../../config/apiConfig";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const ContractorProfile = () => {
+  const { id } = useLocalSearchParams();
+  const [contractor, setContractor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const token = useSelector((state) => state.auth.token);
+
+  useEffect(() => {
+    const fetchContractorDetails = async () => {
+      setLoading(true);
+      try {
+        const response = await API.get(`contractors/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const contractorData = response.data.data;
+        
+        // Parse portfolio images if it's a JSON string
+        let portfolioImages = [];
+        try {
+          portfolioImages = JSON.parse(contractorData.portfolio.replace(/\\/g, ""));
+        } catch (error) {
+          console.log("Error parsing portfolio:", error);
+        }
+
+        setContractor({
+          ...contractorData,
+          image: `${baseUrl}${contractorData.image}`,
+          upload_organisation: `${baseUrl}${contractorData.upload_organisation}`,
+          portfolio: portfolioImages.map((img) => `${baseUrl}${img}`),
+        });
+
+      } catch (error) {
+        console.log("Error fetching contractor details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchContractorDetails();
+    }
+  }, [id]);
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#000" />;
+  }
+
+  if (!contractor) {
+    return <Text className="text-center text-red-500">Contractor not found</Text>;
+  }
+
   return (
-    <ScrollView className={`bg-white p-4 shadow-lg rounded-lg`}>
+    <ScrollView className="bg-white p-4 shadow-lg rounded-lg">
+      {/* Header with Company Image */}
       <View className="mt-5 relative w-full h-52">
-        <Image
-          source={{
-            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSswljNNKdxbQZIBtYopmLIsKPIs5NTUOksHQ&s",
-          }}
-          className="w-full h-full rounded-lg"
-        />
+        <Image source={{ uri: contractor.upload_organisation }} className="w-full h-full rounded-lg" />
         <Text className="absolute bottom-4 right-4 text-black font-bold text-lg">
-          SkyTeam Constructions
+          {contractor.company_name}
         </Text>
-        <Image
-          source={{
-            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoq0f1tSU2b8opZaApGh5tl2FreFb52dyo6Q&s",
-          }}
-          className="absolute -bottom-9 left-4 w-28 h-28 rounded-full border-2 border-white"
-        />
+        <Image source={{ uri: contractor.image }} className="absolute -bottom-9 left-4 w-28 h-28 rounded-full border-2 border-white" />
       </View>
 
+      {/* Contractor Details */}
       <View className="mt-16 p-4 w-full gap-3 bg-gray-100 rounded-lg">
-        <Text className="text-xl font-semibold tracking-widest">
-          Name - SkyTeam
-        </Text>
-        <Text className="text-xl font-semibold mt-1 tracking-wider">
-          Company Name - SkyTeam Constructions
-        </Text>
-        <Text className="text-xl font-semibold mt-1 tracking-wider">
-          City - Florida, USA
-        </Text>
+        <Text className="text-xl font-semibold tracking-widest">Name - {contractor.name}</Text>
+        <Text className="text-xl font-semibold mt-1 tracking-wider">Company - {contractor.company_name}</Text>
+        <Text className="text-xl font-semibold mt-1 tracking-wider">City - {contractor.city}</Text>
+        <Text className="text-xl font-semibold mt-1 tracking-wider">Address - {contractor.company_address}</Text>
+        <Text className="text-xl font-semibold mt-1 tracking-wider">Zip Code - {contractor.zip_code}</Text>
+        <Text className="text-xl font-semibold mt-1 tracking-wider">Description - {contractor.description}</Text>
       </View>
 
-      <View className="mt-10 px-4 w-full">
-        <Text className="font-bold text-xl text-sky-950 tracking-widest">
-          Recent Featured
-        </Text>
-        <FlatList
-          data={featuredImages}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <Image
-              source={{ uri: item }}
-              className="w-32 h-32 m-2 rounded-lg"
-            />
-          )}
-        />
-      </View>
-
- 
+      {/* Portfolio Section */}
       <View className="mt-10 px-2 w-full">
         <View className="flex-row gap-1 items-center">
-          <Text className="font-bold text-xl text-sky-950 tracking-widest">
-            Portfolio
-          </Text>
-          <Ionicons name="add-circle" size={30} color="gray" />
+          <Text className="font-bold text-xl text-sky-950 tracking-widest">Portfolio</Text>
+          <Ionicons name="images" size={30} color="gray" />
         </View>
 
-        <FlatList
-          data={portfolioItems}
-          scrollEnabled={false}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <View className=" flex-row p-4 my-3 gap-3 items-center bg-gray-100">
-             
-              <Image
-                source={{ uri: item.image }}
-                className="w-40 h-36 rounded-lg"
-              />
-
-            
-              <View className="ml-4 flex-1">
-                <Text className="text-lg font-bold text-gray-900">
-                  {item.name}
-                </Text>
-                <Text className="text-gray-700 mt-1 w-full flex-wrap">
-                  {item.description}
-                </Text>
-                <Text className="text-black rounded-3xl p-1 mt-1 text-lg font-bold w-auto">
-                 Year: {item.year}
-                </Text>
-              </View>
-            </View>
-          )}
-        />
+        {contractor.portfolio.length > 0 ? (
+          <FlatList
+            data={contractor.portfolio}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <Image source={{ uri: item }} className="w-32 h-32 m-2 rounded-lg" />
+            )}
+          />
+        ) : (
+          <Text className="text-gray-500 mt-3">No portfolio images available.</Text>
+        )}
       </View>
     </ScrollView>
   );
 };
+
 export default ContractorProfile;
