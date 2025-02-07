@@ -66,9 +66,9 @@ export default function TabRoot() {
         />
 
         <Tabs.Screen
-          name="AllPropertyPost"
+          name="ContractorLists"
           options={{
-            title: "AllPropertyPost",
+            title: "ContractorLists",
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "newspaper" : "newspaper-outline"}
@@ -83,12 +83,12 @@ export default function TabRoot() {
         />
 
         <Tabs.Screen
-          name="User"
+          name="ChatList"
           options={{
-            title: "User",
+            title: "ChatList",
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
-                name={focused ? "person" : "person-outline"}
+                name={focused ? "chatbubble" : "chatbubble-outline"}
                 size={30}
                 color={"white"}
               />
@@ -185,7 +185,7 @@ export default function TabRoot() {
           }}
         />
         <Tabs.Screen
-          name="ContractorLists"
+          name="AllPropertyPost"
           options={{
             href: null,
           }}
@@ -198,6 +198,12 @@ export default function TabRoot() {
         />
         <Tabs.Screen
           name="ContractorProfile"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="User"
           options={{
             href: null,
           }}

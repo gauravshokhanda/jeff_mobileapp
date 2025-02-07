@@ -1,10 +1,11 @@
 import React from "react";
-import { View, Text, Image, Platform, TouchableOpacity } from "react-native";
+import { View, Text, Image, Platform, TouchableOpacity,Alert } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { useSelector } from "react-redux";
+import { useSelector ,useDispatch} from "react-redux";
 import { useRouter } from "expo-router"; // ✅ Use router for navigation
 import Icon from "react-native-vector-icons/FontAwesome5";
 import Box from "../../assets/images/MD.png";
+import { setLogout } from "../../redux/slice/authSlice";
 
 // Object Array for menu items
 const imageData = [
@@ -12,23 +13,41 @@ const imageData = [
   { id: 2, label: "My Posts", icon: "arrow-up", screen: "/MyPosts", source: Box },
   // { id: 3, label: "Feeds", icon: "rss", screen: "/Feeds", source: Box },
   // { id: 4, label: "Favorites", icon: "heart", screen: "/Favorites", source: Box },
-  { id: 5, label: "Profile", icon: "user", screen: "/UserProfile", source: Box },
+  { id: 5, label: "Profile", icon: "user", screen: "/User", source: Box },
   { id: 6, label: "Chats", icon: "comments", screen: "/ChatScreen", source: Box },
   { id: 7, label: "Calculator", icon: "calculator", screen: "/Calculator", source: Box },
-  { id: 8, label: "Log Out", icon: "sign-out-alt", screen: null, source: Box },
+  { id: 8, label: "Log Out", icon: "sign-out-alt", screen: "logout", source: Box },
 ];
 
 
 const MenuHeader = () => {
   const userName = useSelector((state) => state.auth.user);
   const router = useRouter(); // ✅ Use router for navigation
+  const dispatch=useDispatch();
 
+  // const handlePress = (screen) => {
+  //   if (screen) {
+  //     console.log(`Navigating to ${screen}`);
+  //     router.push(screen); // ✅ Navigate using router.push
+  //   }
+  // };
   const handlePress = (screen) => {
-    if (screen) {
-      console.log(`Navigating to ${screen}`);
-      router.push(screen); // ✅ Navigate using router.push
+    if (screen === "logout") {
+      Alert.alert("Logout", "Are you sure you want to log out?", [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Logout",
+          onPress: () => {
+            dispatch(setLogout());
+            router.replace("SignIn");
+          },
+        },
+      ]);
+    } else {
+      router.push(screen);
     }
   };
+  
 
 
 
@@ -45,7 +64,6 @@ const MenuHeader = () => {
             <Text className="text-3xl font-semibold text-white">
               Welcome! {userName?.name || "User"}
             </Text>
-            <Text className="text-gray-400">📍 Florida, USA</Text>
           </View>
         </View>
 

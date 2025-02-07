@@ -87,8 +87,6 @@ export default function PropertyList() {
           </TouchableOpacity>
         </View>
       </View>
-      <Text className="text-gray-500 font-bold text-sm p-2 ">📍 Florida, USA</Text>
-
 
      
       {/* Property List */}
@@ -185,7 +183,6 @@ export default function PropertyList() {
                       </View>
                     </View>
 
-                    {/* Timestamp */}
                   
                   </View>
                 );

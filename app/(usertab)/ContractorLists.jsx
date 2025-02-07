@@ -6,7 +6,6 @@ import moment from "moment";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 
-
 const ContractorScreen = () => {
     const token = useSelector((state) => state.auth.token);
     const [contractors, setContractors] = useState([]);
@@ -21,13 +20,13 @@ const ContractorScreen = () => {
                 const formattedData = response.data.data.map((item) => ({
                     id: item.id.toString(),
                     image: { uri: `${baseUrl}${item.image}` },
+                    banner: { uri: `${baseUrl}${item.upload_organisation}` },
                     name: item.name,
                     email: item.email,
                     city: item.city,
                     contactNumber: item.company_registered_number,
                     company: item.company_name,
                     address: item.company_address,
-                    description: item.description,
                     createdAt: moment(item.created_at).fromNow(),
                 }));
 
@@ -40,100 +39,70 @@ const ContractorScreen = () => {
         fetchContractors();
     }, []);
 
-  
-
     const renderContractor = ({ item }) => (
-        <View className="bg-white shadow-lg rounded-2xl p-4 mb-4">
-            {/* Contractor Info */}
-            <View className="flex-row items-center bg-gray-300  rounded-full p-2">
-                <Image
-                    source={item.image}
-                    className="w-20 h-20 rounded-full border-2 border-sky-900"
-                    resizeMode="cover"
-                />
-                <View className="ml-4 flex-1">
-                    <Text className="text-xl font-semibold text-sky-950">{item.name}</Text>
-                    <Text className="text-gray-600">{item.company}</Text>
+        <View className="bg-white shadow-lg rounded-2xl mb-4 overflow-hidden">
+            {/* Banner Section */}
+            <View className="relative">
+                <Image source={item.banner} className="w-full h-24" resizeMode="cover" />
+                <View className="absolute bottom-0 left-4 flex-row items-center">
+                    <Image source={item.image} className="w-16 h-16 rounded-full border-2 border-white" />
+                    <View className="ml-4">
+                        <Text className="text-lg font-bold text-white">{item.name}</Text>
+                        <Text className="text-white text-sm">{item.company}</Text>
+                    </View>
                 </View>
             </View>
-    
+
             {/* Contact Details */}
-            <View className="mt-3 border-t border-gray-200 pt-3">
-                <View className="flex-row">
-                    <Text className="font-semibold text-sky-950 text-lg">Email: </Text>
-                    <Text className="text-gray-600 pt-1">{item.email}</Text>
+            <View className="p-4">
+                <View className="flex-row items-center mb-1">
+                    <Text className="font-semibold text-gray-700">Email: </Text>
+                    <Text className="text-gray-600">{item.email}</Text>
                 </View>
-                <View className="flex-row">
-                    <Text className="font-semibold text-sky-950 text-lg">Phone: </Text>
-                    <Text className="text-gray-600 pt-1">{item.contactNumber}</Text>
+                <View className="flex-row items-center mb-1">
+                    <Text className="font-semibold text-gray-700">Phone: </Text>
+                    <Text className="text-gray-600">{item.contactNumber}</Text>
                 </View>
-                <View className="flex-row">
-                    <Text className="font-semibold text-sky-950 text-lg">City: </Text>
-                    <Text className="text-gray-600 pt-1">{item.city}</Text>
+                <View className="flex-row items-center mb-1">
+                    <Text className="font-semibold text-gray-700">City: </Text>
+                    <Text className="text-gray-600">{item.city}</Text>
                 </View>
-                <View className="flex-row">
-                    <Text className="font-semibold text-sky-950 text-lg">Address: </Text>
-                    <Text className="text-gray-600 pt-1">{item.address}</Text>
-                </View>
-                
-               
-    
-                <Text className="text-gray-700 mt-1 italic">{item.description}</Text>
-                <View className="flex-row items-center mt-2 rounded-xl pl-3">
-                    <View className="w-2 h-2 bg-blue-500 rounded-full mr-2" />
-                    <Text className="text-gray-500 text-xs p-1">{item.createdAt}</Text>
+                <View className="flex-row items-center mb-2">
+                    <Text className="font-semibold text-gray-700">Address: </Text>
+                    <Text className="text-gray-600">{item.address}</Text>
                 </View>
             </View>
-    
-            {/* Profile & Chat Buttons */}
-            <View className="flex-row justify-between items-center mt-4">
-                {/* View Profile Button */}
-                <TouchableOpacity
-                    className="bg-sky-900 px-4 py-2 rounded-lg"
-                    onPress={() => router.push(`/ContractorProfile?id=${item.id}`)}
-                >
-                    <Text className="text-white font-semibold">View Profile</Text>
-                </TouchableOpacity>
-    
-                {/* Chat Icon */}
+
+            {/* Contact Icons */}
+            <View className="flex-row justify-between items-center px-4 pb-4">
                 <TouchableOpacity onPress={() => router.push(`/ChatScreen?id=${item.id}`)}>
-                    <Ionicons name="chatbubble-ellipses-outline" size={28} color="black" />
+                    <Ionicons name="mail-outline" size={24} color="black" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push(`/ChatScreen?id=${item.id}`)}>
+                    <Ionicons name="call-outline" size={24} color="black" />
                 </TouchableOpacity>
             </View>
         </View>
     );
-    
-   
-    
 
     return (
-        <View className="flex-1">
-            <View
-                className={`flex-row justify-center items-center bg-sky-950 py-3 px-10  pb-4 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
-
-
-                {/* Search Bar */}
-                <View className="flex-row items-center border border-white rounded-full px-4 mt-2 bg-white">
-                    <Ionicons name="search" size={24} color="#000000" />
-                    <TextInput
-                        className="flex-1 ml-2 text-black"
-                        placeholder="Start Search"
-                        placeholderTextColor="#000000"
-                    />
-                    {/* Filter Icon */}
-                    <Ionicons name="filter" size={24} color="#000000" className="ml-4" />
+        <View className="flex-1 bg-gray-100 ">
+            {/* Search Bar */}
+            <View className={`bg-sky-950 flex-row justify-center items-center gap-1 px-8 p-4 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
+            <Ionicons name="arrow-back" size={25} color="white" />
+                <View className="flex-row items-center bg-white rounded-full px-4 py-2">
+                    <Ionicons name="search" size={20} color="black" />
+                    <TextInput className="flex-1 ml-2 p-2 text-black" placeholder="Search" placeholderTextColor="#000000" />
                 </View>
             </View>
-            <View className="flex-1 bg-gradient-to-b from-blue-100 to-gray-100 p-4">
 
-
-                <FlatList
-                    data={contractors}
-                    renderItem={renderContractor}
-                    keyExtractor={(item) => item.id}
-                    showsVerticalScrollIndicator={false}
-                />
-            </View>
+            {/* Contractor List */}
+            <FlatList
+                data={contractors}
+                renderItem={renderContractor}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={{ padding: 10 }}
+            />
         </View>
     );
 };

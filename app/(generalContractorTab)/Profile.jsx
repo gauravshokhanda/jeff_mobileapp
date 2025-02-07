@@ -12,10 +12,10 @@ import { useNavigation } from '@react-navigation/native';
 
 // Object Array for menu items
 const imageData = [
-  { id: 1, label: "Portfolio", icon: "arrow-up", screen: null, source: Box },
+  { id: 1, label: "Portfolio", icon: "arrow-up", screen: "Portfolio", source: Box },
   { id: 2, label: "Feeds", icon: "rss", screen: "ContractorFeed", source: Box },
-  { id: 4, label: "Profile", icon: "user", screen: null, source: Box },
-  { id: 6, label: "Chat", icon: "comments", screen: null, source: Box },
+  { id: 4, label: "Profile", icon: "user", screen: "ContractorPortfolio", source: Box },
+  { id: 6, label: "Chat", icon: "comments", screen: "ChatList", source: Box },
   { id: 8, label: "Log Out", icon: "sign-out-alt", screen: 'logout', source: Box },
 ];
 
@@ -29,10 +29,7 @@ const MenuHeader = () => {
   const handlePress = (screen) => {
     if (screen === "logout") {
       Alert.alert("Logout", "Are you sure you want to log out?", [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
+        { text: "Cancel", style: "cancel" },
         {
           text: "Logout",
           onPress: () => {
@@ -41,18 +38,20 @@ const MenuHeader = () => {
           },
         },
       ]);
+    } else if (screen === "ContractorPortfolio") {  // Profile screen
+      router.push({ pathname: screen, params: { edit: "true" } });
     } else if (screen) {
-      console.log(`Navigating to ${screen}`);
       router.push(screen);
     }
   };
+  
   return (
     <View className={`bg-white h-full relative ${Platform.OS === "ios" ? "mt-16" : ""}`}>
       {/* Header with User Info */}
       <View className="bg-sky-950 h-56">
         <View className="mt-10 px-4 gap-2 flex-row items-center">
           <Image
-            source={{ uri: "https://via.placeholder.com/50" }}
+            source={{ uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg" }}
             className="w-14 h-14 border-2 border-white rounded-full"
           />
           <View className="gap-1">
