@@ -17,8 +17,8 @@ const PropertyPost = () => {
     const token = useSelector((state) => state.auth.token);
 
     const breakdownCostDetail = JSON.parse(costData.breakdownCost);
-    console.log(breakdownCostDetail)
-    console.log("area parsed", breakdownCostDetail.area)
+    // console.log(breakdownCostDetail)
+    // console.log("area parsed", breakdownCostDetail.area)
     const [form, setForm] = useState({
         numberOfDays: "",
         totalCost: "",
@@ -106,7 +106,7 @@ const PropertyPost = () => {
             });
         });
 
-        // console.log("Form Data:", formData);
+        console.log("Form Data:", formData);
 
         setLoading(true);
 
@@ -115,10 +115,11 @@ const PropertyPost = () => {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
+                    'Accept': 'application/json',
                 },
             });
 
-            // console.log("response job post data",response.data)
+            console.log("response job post data",response.data)
 
             Alert.alert("Success", "Your job application has been posted successfully!", [
                 {
