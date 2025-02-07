@@ -71,8 +71,11 @@ const CardSlider = () => {
         {item.title}
       </Text>
       <Text className="text-xs text-gray-600 text-center mt-1 mb-3" numberOfLines={2}>
-        {item.description.split(" ").slice(0, 5).join(" ") + (item.description.split(" ").length > 5 ? "..." : "")}
+        {item.description
+          ? item.description.split(" ").slice(0, 5).join(" ") + (item.description.split(" ").length > 5 ? "..." : "")
+          : ""}
       </Text>
+
 
       <View className="flex-row space-x-2">
         <TouchableOpacity className="bg-blue-600 rounded-md px-2 bg-sky-950 justify-center" onPress={() => handleVisitProfile(item.id)}>
