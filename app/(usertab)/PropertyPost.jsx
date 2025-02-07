@@ -92,15 +92,15 @@ const PropertyPost = () => {
 
         form.floorMapImages.forEach((uri, index) => {
             formData.append(`floor_maps_image[]`, {
-                uri,
+                uri: uri, // Correct the URI format
                 type: 'image/jpeg',
-                name: `floor_map_image_${index}.jpg`,
+                name: `floor_map_${index}.jpg`,
             });
         });
-
+    
         form.designImages.forEach((uri, index) => {
             formData.append(`design_image[]`, {
-                uri,
+                uri: uri,
                 type: 'image/jpeg',
                 name: `design_image_${index}.jpg`,
             });
