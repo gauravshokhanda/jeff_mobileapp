@@ -149,6 +149,11 @@ const PropertyPost = () => {
         }
     };
     
+    console.log("Form Data Entries:");
+for (let pair of formData.entries()) {
+    console.log(pair[0], pair[1]);
+}
+
 
     if (loading) {
         return (
