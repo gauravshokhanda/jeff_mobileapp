@@ -44,9 +44,9 @@ const CardSlider = () => {
     getContractors();
   }, []);
 
-  const handleVisitProfile = (profileLink) => {
+  const handleVisitProfile = (id) => {
     // Alert.alert("Visit Profile", `Redirecting to: ${profileLink}`);
-    router.push('/ContractorProfile')
+    router.push(`/ContractorProfile?id=${id}`)
   };
 
   const handleCall = (phone) => {
@@ -74,7 +74,7 @@ const CardSlider = () => {
         {item.description}
       </Text>
       <View className="flex-row space-x-2">
-        <TouchableOpacity className="bg-blue-600 rounded-md px-2 bg-sky-950 justify-center" onPress={() => handleVisitProfile()}>
+        <TouchableOpacity className="bg-blue-600 rounded-md px-2 bg-sky-950 justify-center" onPress={() => handleVisitProfile(item.id)}>
           <Text className="text-white text-xs font-medium">Visit Profile</Text>
         </TouchableOpacity>
         <TouchableOpacity className="bg-green-600 rounded-md px-3 py-2 bg-sky-950 justify-center ml-1" onPress={() => handleCall(item.contact)}>
@@ -99,15 +99,14 @@ const CardSlider = () => {
             contentContainerStyle={{ paddingHorizontal: 10 }}
           />
 
-          <View className="mt-2 items-center">
-            <TouchableOpacity
-            onPress={() => router.push("/ContractorLists")}
-              className="bg-sky-600 rounded-md px-6 py-1 flex-row items-center"
-            >
-              <Ionicons name="eye" size={20} color="white" className="mr-2" />
-              <Text className="text-white text-base font-semibold">View All</Text>
-            </TouchableOpacity>
-          </View>
+           <View className="flex-row justify-center mt-5">
+                   <TouchableOpacity
+                     onPress={() => router.push('ContractorLists')} // Adjust route name as needed
+                     className="bg-sky-950 rounded-full py-3 px-8 items-center"
+                   >
+                     <Text className="text-white font-bold">View All Contractors</Text>
+                   </TouchableOpacity>
+                 </View>
         </View>
 
 
