@@ -82,54 +82,50 @@ const PropertyPost = () => {
 
     const handleSubmit = async () => {
         const formData = new FormData();
-        formData.append('number_of_days', parseInt(form.numberOfDays, 10));
+        formData.append('number_of_days', form.numberOfDays);
         formData.append('total_cost', form.totalCost);
         formData.append('zipcode', form.zipCode);
         formData.append('area', form.area);
         formData.append('city', form.city);
         formData.append('project_type', form.projectType);
         formData.append('description', form.description);
-
+    
+        // ✅ Correct way to append multiple images
         form.floorMapImages.forEach((uri, index) => {
-            formData.append(`floor_maps_image[]`, {
-                uri: uri, // Correct the URI format
-                type: 'image/jpeg',
-                name: `floor_map_${index}.jpg`,
+            formData.append('floor_maps_image[]', {
+                uri: uri,
+                type: 'image/jpeg',  // Ensure correct type
+                name: `floor_map_${index}.jpg`
             });
         });
     
         form.designImages.forEach((uri, index) => {
-            formData.append(`design_image[]`, {
+            formData.append('design_image[]', {
                 uri: uri,
                 type: 'image/jpeg',
-                name: `design_image_${index}.jpg`,
+                name: `design_image_${index}.jpg`
             });
         });
-
+    
         console.log("Form Data:", formData);
-
+    
         setLoading(true);
-
+    
         try {
-            const response = await API.post('job-post', formData, {
+            const response = await axios.post('https://g32.iamdeveloper.in/api/job-post', formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
-                    'Accept': 'application/json',
+                    Accept: 'application/json',
                 },
             });
-
-            console.log("response job post data",response.data)
-
+    
+            console.log("Response:", response.data);
+    
             Alert.alert("Success", "Your job application has been posted successfully!", [
-                {
-                    text: "Ok",
-                    onPress: () => {
-                        router.replace("/")
-                    }
-                }
+                { text: "Ok", onPress: () => router.replace("/") }
             ]);
-
+    
             setForm({
                 numberOfDays: "",
                 totalCost: "",
@@ -141,10 +137,10 @@ const PropertyPost = () => {
                 floorMapImages: [],
                 description: "",
             });
-
+    
         } catch (error) {
             if (error.response) {
-                Alert.alert('Error:', error.response.data);
+                Alert.alert('Error:', error.response.data.message || "Something went wrong!");
             } else {
                 console.log('Error:', error.message);
             }
@@ -152,6 +148,7 @@ const PropertyPost = () => {
             setLoading(false);
         }
     };
+    
 
     if (loading) {
         return (
