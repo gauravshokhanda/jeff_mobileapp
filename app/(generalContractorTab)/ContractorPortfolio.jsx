@@ -24,6 +24,7 @@ const ProfileCard = () => {
   const [editableData, setEditableData] = useState({});
   const [profileImage, setProfileImage] = useState(null);
   const [organizationImage, setOrganizationImage] = useState(null);
+  const [updating, setUpdating] = useState(false);
 
   const token = useSelector((state) => state.auth.token);
 
@@ -76,6 +77,35 @@ const ProfileCard = () => {
     }
   };
 
+  const handleSaveChanges = async () => {
+    if (!userData) return;
+
+    setUpdating(true);
+
+    try {
+      const response = await axios.post(
+        `https://g32.iamdeveloper.in/api/user/update/${userData.id}`,
+        editableData,
+        {
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.status === 200) {
+        setUserData(editableData);
+        Alert.alert("Success", "Profile updated successfully.");
+        setEditModalVisible(false);
+      } else {
+        Alert.alert("Error", "Failed to update profile.");
+      }
+    } catch (error) {
+      console.error("Error updating user data:", error.response?.data || error.message);
+      Alert.alert("API Error", "Failed to update profile.");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -103,7 +133,6 @@ const ProfileCard = () => {
 
   return (
     <ScrollView className="bg-white p-4 shadow-lg rounded-lg">
-      {/* Profile Header */}
       <View className="mt-5 relative w-full h-52">
         <Image source={{ uri: organizationImage }} className="w-full h-full rounded-lg" />
         <View className="absolute inset-0 bg-black/30 rounded-lg" />
@@ -113,12 +142,10 @@ const ProfileCard = () => {
         <Image source={{ uri: profileImage }} className="absolute -bottom-9 left-4 w-28 h-28 rounded-full border-2 border-white" />
       </View>
 
-      {/* Edit Profile Button (Always Visible) */}
       <TouchableOpacity className="absolute top-5 right-2" onPress={() => setEditModalVisible(true)}>
         <Ionicons name="create" size={40} color="black" />
       </TouchableOpacity>
 
-      {/* Info Section */}
       <View className="mt-16 p-4 w-full gap-3 bg-gray-100 rounded-lg">
         <Text className="text-xl font-semibold tracking-widest">Name - {userData.name}</Text>
         <Text className="text-xl font-semibold mt-1 tracking-wider">Company - {userData.company_name}</Text>
@@ -126,8 +153,8 @@ const ProfileCard = () => {
         <Text className="text-xl font-semibold mt-1 tracking-wider">Address - {userData.company_address}</Text>
       </View>
 
-      {/* Portfolio Section */}
-      <View className="mt-10 px-2 w-full">
+     
+   <View className="mt-10 px-2 w-full">
         <View className="flex-row gap-1 items-center">
           <Text className="font-bold text-xl text-sky-950 tracking-widest">Portfolio</Text>
           <TouchableOpacity onPress={() => setModalVisible(true)}>
@@ -152,7 +179,6 @@ const ProfileCard = () => {
         />
       </View>
 
-      {/* Edit Profile Modal */}
       <Modal visible={editModalVisible} transparent={true} animationType="fade">
         <View className="flex-1 justify-center items-center bg-black/50 p-5">
           <View className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
@@ -216,6 +242,19 @@ const ProfileCard = () => {
                 value={editableData.name}
                 onChangeText={(text) =>
                   setEditableData({ ...editableData, name: text })
+                }
+                className="border border-gray-300 rounded-lg p-3"
+              />
+            </View>
+            <View className="mb-4">
+              <Text className="text-gray-700 font-semibold mb-1">
+                Email
+              </Text>
+              <TextInput
+                placeholder="Enter your email"
+                value={editableData.email}
+                onChangeText={(text) =>
+                  setEditableData({ ...editableData, email: text })
                 }
                 className="border border-gray-300 rounded-lg p-3"
               />
