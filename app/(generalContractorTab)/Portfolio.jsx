@@ -26,8 +26,8 @@ const PortfolioScreen = ({ navigation }) => {
     city: "",
     address: "",
     description: "",
-    image: null,
-    imageName: "",
+    images: [], // Ensure images is always an array
+    imageNames: [],
   });
 
   const token = useSelector((state) => state.auth.token);
@@ -77,17 +77,27 @@ const PortfolioScreen = ({ navigation }) => {
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true, // iOS supports this, Android may not
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
 
-    if (!result.canceled && result.assets.length > 0) {
-      console.log("Selected Image:", result.assets[0]);
+    if (!result.canceled && result.assets?.length > 0) {
+      console.log("Selected Images:", result.assets);
+
       setNewPortfolio((prev) => ({
         ...prev,
-        image: result.assets[0].uri,
-        imageName: result.assets[0].fileName || `image_${Date.now()}.jpg`,
+        images: [
+          ...(prev.images || []),
+          ...result.assets.map((asset) => asset.uri),
+        ], // Ensure it's always an array
+        imageNames: [
+          ...(prev.imageNames || []),
+          ...result.assets.map(
+            (asset) => asset.fileName || `image_${Date.now()}.jpg`
+          ),
+        ],
       }));
     }
   };
@@ -100,7 +110,7 @@ const PortfolioScreen = ({ navigation }) => {
       !newPortfolio.city.trim() ||
       !newPortfolio.address.trim() ||
       !newPortfolio.description.trim() ||
-      !newPortfolio.image
+      newPortfolio.images.length === 0
     ) {
       Alert.alert("Error", "All fields are required");
       return;
@@ -114,9 +124,14 @@ const PortfolioScreen = ({ navigation }) => {
       formData.append("address", newPortfolio.address);
       formData.append("description", newPortfolio.description);
 
-      // **Fix: Convert imageName to JSON Array**
-      const portfolioImagesArray = JSON.stringify([newPortfolio.imageName]);
-      formData.append("portfolio_images", portfolioImagesArray);
+      // Append each image separately with the same key name
+      newPortfolio.images.forEach((uri, index) => {
+        formData.append(`portfolio_images[]`, {
+          uri,
+          name: newPortfolio.imageNames[index] || `image_${index}.jpg`,
+          type: "image/jpeg", // Adjust as needed
+        });
+      });
 
       console.log("Form Data being sent:", formData);
 
@@ -130,6 +145,9 @@ const PortfolioScreen = ({ navigation }) => {
           },
         }
       );
+
+      console.log("API Response:", response.data); // Log the response
+      Alert.alert("Success", JSON.stringify(response.data, null, 2)); // Show response in an alert
 
       if (response.status === 200) {
         setPortfolioItems([
@@ -146,11 +164,12 @@ const PortfolioScreen = ({ navigation }) => {
           city: "",
           address: "",
           description: "",
-          image: null,
-          imageName: "",
+          images: [],
+          portfolio_images: [],
         });
       }
     } catch (error) {
+      console.error("API Error:", error.response?.data || error);
       Alert.alert(
         "API Error",
         error.response?.data?.message || "An error occurred"
@@ -214,71 +233,95 @@ const PortfolioScreen = ({ navigation }) => {
 
       {/* Add Portfolio Modal */}
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
-  <View className="flex-1 bg-white p-6">
-    <ScrollView>
-      {/* Close Button */}
-      <TouchableOpacity
-        onPress={() => setModalVisible(false)}
-        className="absolute right-4 top-4 p-2"
-      >
-        <Ionicons name="close-circle" size={30} color="black" />
-      </TouchableOpacity>
+        <View className="flex-1 bg-white p-6">
+          <ScrollView>
+            {/* Close Button */}
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              className="absolute right-4 top-4 p-2"
+            >
+              <Ionicons name="close-circle" size={30} color="black" />
+            </TouchableOpacity>
 
-      <Text className="text-xl font-bold text-gray-900 mb-4 mt-10 text-center">
-        Add Portfolio Item
-      </Text>
+            <Text className="text-xl font-bold text-gray-900 mb-4 mt-10 text-center">
+              Add Portfolio Item
+            </Text>
 
-      <TextInput
-        placeholder="Project Name"
-        placeholderTextColor="gray"
-        value={newPortfolio.project_name}
-        onChangeText={(text) =>
-          setNewPortfolio({ ...newPortfolio, project_name: text })
-        }
-        className="border p-2 rounded-lg mb-3"
-      />
+            <TextInput
+              placeholder="Project Name"
+              placeholderTextColor="gray"
+              value={newPortfolio.project_name}
+              onChangeText={(text) =>
+                setNewPortfolio({ ...newPortfolio, project_name: text })
+              }
+              className="border p-2 rounded-lg mb-3"
+            />
 
-      <TextInput
-        placeholder="City"
-         placeholderTextColor="gray"
-        value={newPortfolio.city}
-        onChangeText={(text) =>
-          setNewPortfolio({ ...newPortfolio, city: text })
-        }
-        className="border p-2 rounded-lg mb-3"
-      />
+            <TextInput
+              placeholder="City"
+              placeholderTextColor="gray"
+              value={newPortfolio.city}
+              onChangeText={(text) =>
+                setNewPortfolio({ ...newPortfolio, city: text })
+              }
+              className="border p-2 rounded-lg mb-3"
+            />
 
-      <TextInput
-        placeholder="Address"
-         placeholderTextColor="gray"
-        value={newPortfolio.address}
-        onChangeText={(text) =>
-          setNewPortfolio({ ...newPortfolio, address: text })
-        }
-        className="border p-2 rounded-lg mb-3"
-      />
+            <TextInput
+              placeholder="Address"
+              placeholderTextColor="gray"
+              value={newPortfolio.address}
+              onChangeText={(text) =>
+                setNewPortfolio({ ...newPortfolio, address: text })
+              }
+              className="border p-2 rounded-lg mb-3"
+            />
 
-      <TextInput
-        placeholder="Description"
-         placeholderTextColor="gray"
-        value={newPortfolio.description}
-        onChangeText={(text) =>
-          setNewPortfolio({ ...newPortfolio, description: text })
-        }
-        className="border p-2 rounded-lg mb-3"
-      />
+            <TextInput
+              placeholder="Description"
+              placeholderTextColor="gray"
+              value={newPortfolio.description}
+              onChangeText={(text) =>
+                setNewPortfolio({ ...newPortfolio, description: text })
+              }
+              className="border p-2 rounded-lg mb-3"
+            />
 
-      <TouchableOpacity onPress={pickImage} className="p-3 bg-sky-950 rounded-lg">
-        <Text className="text-white text-center">Pick an Image</Text>
-      </TouchableOpacity>
+            <TouchableOpacity
+              onPress={pickImage}
+              className="p-3 bg-sky-950 rounded-lg"
+            >
+              <Text className="text-white text-center">Pick an Image</Text>
+            </TouchableOpacity>
 
-      <TouchableOpacity onPress={addPortfolioItem} className="p-3 bg-sky-950 mt-3 rounded-lg">
-        <Text className="text-white text-center">Add Portfolio</Text>
-      </TouchableOpacity>
-    </ScrollView>
-  </View>
-</Modal>
+            <TouchableOpacity
+              onPress={addPortfolioItem}
+              className="p-3 bg-sky-950 mt-3 rounded-lg"
+            >
+              <Text className="text-white text-center">Add Portfolio</Text>
+            </TouchableOpacity>
+          </ScrollView>
 
+          <View className="mt-3">
+            <Text className="text-gray-900 font-semibold">
+              Selected Images:
+            </Text>
+            <ScrollView horizontal className="mt-2">
+              {newPortfolio.images && newPortfolio.images.length > 0 ? (
+                newPortfolio.images.map((image, index) => (
+                  <Image
+                    key={index}
+                    source={{ uri: image }}
+                    className="w-24 h-24 m-2 rounded-lg"
+                  />
+                ))
+              ) : (
+                <Text className="text-gray-500">No images selected</Text>
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
