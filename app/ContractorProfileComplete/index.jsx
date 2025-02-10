@@ -15,11 +15,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import PortfolioModal from "../../components/PortfolioModal";
 import * as DocumentPicker from 'expo-document-picker';
-import { useSelector } from 'react-redux';
+import { useSelector,dispatch, useDispatch } from 'react-redux';
 import { API } from '../../config/apiConfig';
 import { BlurView } from 'expo-blur';
+import { updateUserProfile } from "../../redux/slice/authSlice"; 
 
 export default function ContractorProfileComplete() {
+  const dispatch=useDispatch();
   const token = useSelector((state) => state.auth.token);
   const user = useSelector((state) => state.auth.user);
   
@@ -63,6 +65,7 @@ export default function ContractorProfileComplete() {
   };
 
   const handleSubmit = async () => {
+    console.log("contractor profile complete")
     const formData = new FormData();
 
     formData.append("name", userName);
@@ -111,7 +114,8 @@ export default function ContractorProfileComplete() {
         },
       });
 
-      console.log("Profile submitted successfully:", response.data);
+      // console.log("Profile submitted successfully:", response.data);
+      dispatch(updateUserProfile(response.data));
       router.replace("/(generalContractorTab)");
     } catch (error) {
       console.error("Error submitting profile:", error.response?.data || error.message);

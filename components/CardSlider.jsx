@@ -103,9 +103,9 @@ const CardSlider = () => {
             contentContainerStyle={{ paddingHorizontal: 10 }}
           />
 
-          <View className="flex-row justify-center mt-5">
+          <View className="flex-row justify-center mt-10">
             <TouchableOpacity
-              onPress={() => router.push('ContractorLists')} // Adjust route name as needed
+              onPress={() => router.push('ContractorLists')} 
               className="bg-sky-950 rounded-full py-3 px-8 items-center"
             >
               <Text className="text-white font-bold">View All Contractors</Text>

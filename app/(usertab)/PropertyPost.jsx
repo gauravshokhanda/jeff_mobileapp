@@ -33,8 +33,8 @@ const PropertyPost = () => {
 
 
     useEffect(() => {
-        console.log("breakdownCostDetail changed", breakdownCostDetail);
-        console.log("new data", breakdownCostDetail.area)
+        // console.log("breakdownCostDetail changed", breakdownCostDetail);
+        // console.log("new data", breakdownCostDetail.area)
 
         if (breakdownCostDetail && breakdownCostDetail.days) {
             setForm((prevForm) => ({
@@ -92,6 +92,7 @@ const PropertyPost = () => {
     
         // ✅ Correct way to append multiple images
         form.floorMapImages.forEach((uri, index) => {
+            console.log("add floormap images",uri)
             formData.append('floor_maps_image[]', {
                 uri: uri,
                 type: 'image/jpeg',  // Ensure correct type
@@ -149,11 +150,6 @@ const PropertyPost = () => {
         }
     };
     
-    console.log("Form Data Entries:");
-for (let pair of formData.entries()) {
-    console.log(pair[0], pair[1]);
-}
-
 
     if (loading) {
         return (
