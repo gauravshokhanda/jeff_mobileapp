@@ -9,6 +9,7 @@ import {
   ImageBackground,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import Swiper from "react-native-swiper";
 import { API } from "../../config/apiConfig";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -39,6 +40,7 @@ const DashboardScreen = () => {
       console.error("Error fetching posts:", error);
     }
   };
+
   const fetchUserDetails = async () => {
     try {
       const response = await API.post(
@@ -80,7 +82,7 @@ const DashboardScreen = () => {
       </View>
 
       {/* Info Text */}
-      <View className="absolute bottom-3 left-3  bg-white px-2 py-1 rounded-full flex-row items-center">
+      <View className="absolute bottom-3 left-3 bg-white px-2 py-1 rounded-full flex-row items-center">
         <Ionicons name="location-outline" size={14} color="green" />
         <Text className="text-xs font-bold text-green-600 ml-1 tracking-widest">
           {item.city}
@@ -88,7 +90,7 @@ const DashboardScreen = () => {
       </View>
 
       {/* Info Text */}
-      <View className="absolute bottom-3 right-3  ">
+      <View className="absolute bottom-3 right-3">
         <Text className="text-white font-bold text-lg tracking-widest">
           {item.project_type}
         </Text>
@@ -105,44 +107,70 @@ const DashboardScreen = () => {
 
   return (
     <SafeAreaView className="bg-white flex-1">
-      <View className="w-full h-20 bg-sky-950 justify-center items-start px-4 ">
-        <View className="">
+      <View className="w-full h-20 bg-sky-950 justify-center items-start px-4">
+        <View>
           <Text className="text-white text-2xl font-bold">
-            Welcome , {user.name}
+            Welcome, {user.name}
           </Text>
           <Text className="text-white text-sm">{user.city}</Text>
         </View>
       </View>
-      {/* Header */}
-      <View className="relative p-2">
-        <ImageBackground
-          source={{
-            uri: `https://g32.iamdeveloper.in/public/${user.upload_organisation}`,
-          }}
-          className="w-full h-40 bg-cover bg-center"
-        >
-          <View className="absolute inset-0 bg-black/40"></View>
 
-          {/* Circle at bottom corner, half inside and half outside */}
-          <View
-            className="absolute w-24 h-24 border border-black bg-white rounded-full"
-            style={{
-              bottom: -30,
-              left: 10,
-            }}
-          >
-            <Image
-              source={{
-                uri: user.image,
-              }}
-            />
-          </View>
-        </ImageBackground>
-      </View>
+      {/* Swiper Section */}
+      {/* Swiper Section */}
+<View className="h-56 p-2 mt-2">
+  <Swiper autoplay loop className="rounded-xl">
+    <View className="relative w-full h-full">
+      <ImageBackground
+        source={{
+          uri: "https://media.istockphoto.com/id/1420678520/photo/building-site-at-sunset.jpg?s=612x612&w=0&k=20&c=HoDUK1RxsH78Fj9D34nao_MUTbf-vR3G97zUWMtES4k=",
+        }}
+        className="w-full h-full justify-center items-center"
+        resizeMode="cover"
+      >
+        <View className="absolute inset-0 bg-black/30 rounded-xl" />
+        <Text className="text-white font-bold text-3xl absolute top-5 left-5">
+          Building the Future
+        </Text>
+      </ImageBackground>
+    </View>
+
+    <View className="relative w-full h-full">
+      <ImageBackground
+        source={{
+          uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6fIA0SdlaGgrMPZ_BS9Z5WnM42HPF71iGkw&s",
+        }}
+        className="w-full h-full justify-center items-center"
+        resizeMode="cover"
+      >
+        <View className="absolute inset-0 bg-black/30 rounded-xl" />
+        <Text className="text-white font-bold text-3xl absolute top-5 left-5">
+          Strength in Every Brick
+        </Text>
+      </ImageBackground>
+    </View>
+
+    <View className="relative w-full h-full">
+      <ImageBackground
+        source={{
+          uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKTccCO8EfR28FeusyZdoh8lZs_u63vxo3-Q&s",
+        }}
+        className="w-full h-full justify-center items-center"
+        resizeMode="cover"
+      >
+        <View className="absolute inset-0 bg-black/30 rounded-xl" />
+        <Text className="text-white font-bold text-3xl absolute top-5 left-5">
+          Engineering Excellence
+        </Text>
+      </ImageBackground>
+    </View>
+  </Swiper>
+</View>
+
 
       {/* New Property Openings */}
-      <View className="mx-9 mt-12">
-        <Text className="text-2xl font-bold text-gray-800  ml-2 ">
+      <View className="mx-9 mt-4">
+        <Text className="text-2xl text-center font-bold text-gray-800 ml-2">
           New Property Openings
         </Text>
         <FlatList
@@ -151,31 +179,33 @@ const DashboardScreen = () => {
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
         />
-        <TouchableOpacity className="items-end" onPress={()=>{router.push('ContractorFeed')}}>
+        <TouchableOpacity
+          className="items-end"
+          onPress={() => {
+            router.push("ContractorFeed");
+          }}
+        >
           <Text className="text-gray-500">See all</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Portfolio & Add City */}
-      <View className="">
-  <View className="flex-col mt-8 justify-center items-center gap-3">
-    <TouchableOpacity
-      className="w-60 h-16"
-      onPress={() => {
-        router.push("Portfolio");
-      }}
-    >
-      <ImageBackground
-        source={require("../../assets/images/myportfoliobtn.png")}
-        className="w-full h-full justify-center items-center"
-        imageStyle={{ borderRadius: 12 }} 
-      >
-        <Text className="text-white font-bold text-xl">My Portfolio</Text>
-      </ImageBackground>
-    </TouchableOpacity>
-  </View>
-</View>
-
+      {/* Portfolio Button */}
+      <View className="flex-col mt-5 justify-center items-center gap-3">
+        <TouchableOpacity
+          className="w-60 h-16"
+          onPress={() => {
+            router.push("Portfolio");
+          }}
+        >
+          <ImageBackground
+            source={require("../../assets/images/myportfoliobtn.png")}
+            className="w-full h-full justify-center items-center"
+            imageStyle={{ borderRadius: 12 }}
+          >
+            <Text className="text-white font-bold text-xl">My Portfolio</Text>
+          </ImageBackground>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };

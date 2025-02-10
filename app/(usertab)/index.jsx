@@ -77,12 +77,12 @@ export default function Dashboard() {
         {/* View All Button */}
         {/* <View className="flex-row justify-center mt-5">
           <TouchableOpacity
-            onPress={() => router.push('ContractorLists')} // Adjust route name as needed
+            onPress={() => router.push('ContractorListScreen')} // Adjust route name as needed
             className="bg-sky-950 rounded-full py-3 px-8 items-center"
           >
             <Text className="text-white font-bold">View All Contractors</Text>
           </TouchableOpacity>
-        </View> */}
+        </View>
 
         {/* Best Estates */}
         {/* <View className="items-center h-72">
