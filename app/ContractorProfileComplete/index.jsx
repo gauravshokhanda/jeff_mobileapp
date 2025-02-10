@@ -192,7 +192,7 @@ export default function ContractorProfileComplete() {
             <Text className="text-gray-600 mb-1 ml-3 text-sm">Company Contact Number</Text>
             <TextInput
               className="border border-gray-400 rounded-2xl pl-3 bg-white py-4"
-              placeholder="Enter Your Company Name"
+              placeholder="Enter Your Company Number"
               placeholderTextColor="gray"
               value={companyContactNumber}
               onChangeText={setCompanyContactNumber}
