@@ -47,5 +47,4 @@ const ChatListScreen = ({ navigation }) => {
     </View>
   );
 };
-
 export default ChatListScreen;
