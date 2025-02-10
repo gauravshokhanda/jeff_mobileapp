@@ -82,7 +82,7 @@ const PropertyPost = () => {
             }
         }
         fetchPost()
-    }, []);
+    }, [id]);
 
 
 
@@ -95,14 +95,14 @@ const PropertyPost = () => {
             copyToCacheDirectory: true,
         });
 
-        // console.log("handleImage", form.floorMapImages)
+        console.log("result", result)
 
 
 
         if (!result.canceled && result.assets?.length > 0) {
             setForm((prevForm) => ({
                 ...prevForm,
-                [field]: result.assets.map(asset => asset.uri), // Clears previous images and adds new ones
+                [field]: [...(prevForm[field] || []), ...result.assets.map(asset => asset.uri)], // Append new images
             }));
         }
     };
@@ -127,28 +127,33 @@ const PropertyPost = () => {
         formData.append('city', form.city);
         formData.append('project_type', form.projectType);
         formData.append('description', form.description);
-    
+
         form.floorMapImages.forEach((uri, index) => {
             formData.append('floor_maps_image[]', {
-                uri: uri.startsWith('file://') ? uri : 'file://' + uri,
+                uri: uri,
                 type: 'image/jpeg',
                 name: `floor_map_image_${index}.jpg`,
             });
         });
-        
+
         form.designImages.forEach((uri, index) => {
             formData.append('design_image[]', {
-                uri: uri.startsWith('file://') ? uri : 'file://' + uri,
+                uri: uri,
                 type: 'image/jpeg',
                 name: `design_image_${index}.jpg`,
             });
         });
-        
-    
-        console.log("Form Data:", formData);
-    
+
+
+        // console.log("Form Data:", formData);
+        if (formData.has("floor_maps_image[]")) {
+            console.log(formData.getAll("floor_maps_image[]"));
+        } else {
+            console.log("No floor_maps_image[] found in FormData");
+        }
+
         setLoading(true);
-    
+
         try {
             const response = await API.post(`job-post/update/${id}`, formData, {
                 headers: {
@@ -156,9 +161,9 @@ const PropertyPost = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-    
+
             console.log("response job post data", response.data);
-    
+
             Alert.alert("Success", "Your job application has been Updated successfully!", [
                 {
                     text: "Ok",
@@ -167,7 +172,7 @@ const PropertyPost = () => {
                     }
                 }
             ]);
-    
+
             // Reset form after successful submission
             setForm({
                 numberOfDays: "",
@@ -180,7 +185,7 @@ const PropertyPost = () => {
                 floorMapImages: [],
                 description: "",
             });
-    
+
         } catch (error) {
             if (error.response) {
                 Alert.alert('Error:', error.response.data);
@@ -191,11 +196,11 @@ const PropertyPost = () => {
             setLoading(false);
         }
     };
-    
-    
-    
-    
-    
+
+
+
+
+
 
     if (loading) {
         return (
