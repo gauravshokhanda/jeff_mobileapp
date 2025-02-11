@@ -22,7 +22,7 @@ const ChatListScreen = ({ navigation }) => {
   return (
     <View className="flex-1 bg-gray-100">
       {/* Header */}
-      <View className="bg-sky-950 p-4 mt-10 flex-row items-center">
+      <View className="bg-sky-950 p-4 flex-row items-center">
         <Text className="text-white text-2xl font-bold">Chats</Text>
       </View>
 
@@ -47,5 +47,4 @@ const ChatListScreen = ({ navigation }) => {
     </View>
   );
 };
-
 export default ChatListScreen;

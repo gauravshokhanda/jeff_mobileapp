@@ -6,26 +6,23 @@ import { API, baseUrl } from "../config/apiConfig";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from "expo-router";
 
-
 const CardSlider = () => {
   const token = useSelector((state) => state.auth.token);
   const navigation = useNavigation();
   const [contractors, setContractors] = useState([]);
   const [loading, setLoading] = useState(true);
 
-
   useEffect(() => {
     const getContractors = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
         const response = await API.get("contractors/listing", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-
         const formattedData = response.data.data.map((item) => ({
           id: item.id.toString(),
-          image: { uri: `${baseUrl}${item.image}` },
+          image: item.image ? { uri: `${baseUrl}${item.image}` } : null,
           name: item.name,
           title: item.company_name,
           description: item.description,
@@ -63,7 +60,16 @@ const CardSlider = () => {
         shadowRadius: 2,
       }}>
 
-      <Image source={item.image} className="w-20 h-20 rounded-full mb-3" resizeMode="cover" />
+      {item.image ? (
+        <Image source={item.image} className="w-20 h-20 rounded-full mb-3" resizeMode="cover" />
+      ) : (
+        <View className="w-20 h-20 border rounded-full bg-gray-400 flex items-center justify-center mb-3">
+          <Text className="text-black text-3xl font-bold">
+            {item.name ? item.name.charAt(0).toUpperCase() : "?"}
+          </Text>
+        </View>
+      )}
+      
       <Text className="text-lg font-semibold text-gray-900 text-center" numberOfLines={1}>
         {item.name}
       </Text>
@@ -71,13 +77,17 @@ const CardSlider = () => {
         {item.title}
       </Text>
       <Text className="text-xs text-gray-600 text-center mt-1 mb-3" numberOfLines={2}>
-        {item.description}
+        {item.description
+          ? item.description.split(" ").slice(0, 5).join(" ") + (item.description.split(" ").length > 5 ? "..." : "")
+          : ""}
       </Text>
+
+
       <View className="flex-row space-x-2">
         <TouchableOpacity className="bg-blue-600 rounded-md px-2 bg-sky-950 justify-center" onPress={() => handleVisitProfile(item.id)}>
           <Text className="text-white text-xs font-medium">Visit Profile</Text>
         </TouchableOpacity>
-        <TouchableOpacity className="bg-green-600 rounded-md px-3 py-2 bg-sky-950 justify-center ml-1" onPress={() => handleCall(item.contact)}>
+        <TouchableOpacity className=" rounded-md px-3 py-2 bg-sky-950 justify-center ml-1" onPress={() => handleCall(item.contact)}>
           <Text className="text-white text-xs font-medium">Call Now</Text>
         </TouchableOpacity>
       </View>
@@ -99,23 +109,21 @@ const CardSlider = () => {
             contentContainerStyle={{ paddingHorizontal: 10 }}
           />
 
-           <View className="flex-row justify-center mt-5">
-                   <TouchableOpacity
-                     onPress={() => router.push('ContractorLists')} // Adjust route name as needed
-                     className="bg-sky-950 rounded-full py-3 px-8 items-center"
-                   >
-                     <Text className="text-white font-bold">View All Contractors</Text>
-                   </TouchableOpacity>
-                 </View>
+          <View className="flex-row justify-center mt-10">
+            <TouchableOpacity
+              onPress={() => router.push('ContractorLists')} 
+              className="bg-sky-950 rounded-full py-3 px-8 items-center"
+            >
+              <Text className="text-white font-bold">View All Contractors</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
 
 
       )}
-
     </View>
   );
 };
 
 export default CardSlider;
-

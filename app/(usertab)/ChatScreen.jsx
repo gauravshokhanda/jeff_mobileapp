@@ -28,7 +28,7 @@ const ChatScreen = () => {
           setUser(response.data.data);
         }
       } catch (error) {
-        console.error("Error fetching user details:", error.response?.data || error.message);
+        console.log("Error fetching user details:", error.response?.data || error.message);
       }
     };
 
@@ -46,17 +46,17 @@ const ChatScreen = () => {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1 bg-gray-100">
       {/* Header */}
-      <View className="bg-sky-950 mt-12 flex-row items-center p-4">
+      <View className="bg-sky-950 flex-row items-center p-4">
         <TouchableOpacity onPress={() => router.back()} className="mr-3">
           <Ionicons name="arrow-back" size={28} color="white" />
         </TouchableOpacity>
         {user ? (
           <>
             <Image source={{ uri: user.profile_photo || "https://via.placeholder.com/50" }} className="w-10 h-10 rounded-full mr-3" />
-            <Text className="text-white text-lg font-bold">{user.name}</Text>
+            <Text className="text-white text-lg font-bold">John Doe</Text>
           </>
         ) : (
-          <Text className="text-white text-lg font-bold">Loading...</Text>
+          <Text className="text-white text-lg font-bold">John Doe</Text>
         )}
       </View>
 

@@ -38,10 +38,10 @@ export default function SignIn() {
 
   useEffect(() => {
     if (isAuthenticated && token) {
-
+// console.log("Image userdata",userData)
       if (userData?.role == 3) {
         if (userData?.image === null) {
-          console.log("userData?.image",userData?.image)
+          // console.log("userData?.image",userData?.image)
           router.replace('/ContractorProfileComplete')
         }else{
           router.replace("/(generalContractorTab)");

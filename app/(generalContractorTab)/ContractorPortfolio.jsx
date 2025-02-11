@@ -8,27 +8,29 @@ import {
   Modal,
   TextInput,
   TouchableOpacity,
-  Button,
   Alert,
   ActivityIndicator,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useRouter, useLocalSearchParams } from "expo-router"; // Import hooks
 
 const ProfileCard = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [editableData, setEditableData] = useState({});
+  const [profileImage, setProfileImage] = useState(null);
+  const [organizationImage, setOrganizationImage] = useState(null);
+  const [updating, setUpdating] = useState(false);
+
   const token = useSelector((state) => state.auth.token);
-  const { edit } = useLocalSearchParams(); // Get 'edit' param from navigation
-  const isEditMode = edit === "true"; // Check if edit mode is enabled
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        console.log("Fetching user data with token:", token);
         const response = await axios.post(
           "https://g32.iamdeveloper.in/api/user-detail",
           {},
@@ -38,8 +40,10 @@ const ProfileCard = () => {
         );
 
         if (response.status === 200) {
-          console.log("User data received:", response.data);
           setUserData(response.data);
+          setEditableData(response.data);
+          setProfileImage(`https://g32.iamdeveloper.in/public/${response.data.image}`);
+          setOrganizationImage(`https://g32.iamdeveloper.in/public/${response.data.upload_organisation}`);
         } else {
           console.error("Unexpected Response:", response.status);
         }
@@ -55,6 +59,52 @@ const ProfileCard = () => {
       fetchUserData();
     }
   }, [token]);
+
+  const pickImage = async (type) => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      if (type === "profile") {
+        setProfileImage(result.assets[0].uri);
+      } else {
+        setOrganizationImage(result.assets[0].uri);
+      }
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    if (!userData) return;
+
+    setUpdating(true);
+
+    try {
+      const response = await axios.post(
+        `https://g32.iamdeveloper.in/api/user/update/${userData.id}`,
+        editableData,
+        {
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.status === 200) {
+        setUserData(editableData);
+        Alert.alert("Success", "Profile updated successfully.");
+        setEditModalVisible(false);
+      } else {
+        Alert.alert("Error", "Failed to update profile.");
+      }
+    } catch (error) {
+      console.error("Error updating user data:", error.response?.data || error.message);
+      Alert.alert("API Error", "Failed to update profile.");
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -75,7 +125,7 @@ const ProfileCard = () => {
   const portfolioImages = JSON.parse(userData.portfolio || "[]");
   const portfolioItems = portfolioImages.map((image, index) => ({
     id: index.toString(),
-    image: `https://g32.iamdeveloper.in/${image}`,
+    image: `https://g32.iamdeveloper.in/public/${image}`,
     name: userData.project_name || `Project ${index + 1}`,
     description: userData.description || "No description available.",
     year: new Date(userData.created_at).getFullYear().toString(),
@@ -83,22 +133,19 @@ const ProfileCard = () => {
 
   return (
     <ScrollView className="bg-white p-4 shadow-lg rounded-lg">
-      {/* Profile Header */}
       <View className="mt-5 relative w-full h-52">
-        <Image
-          source={{ uri: `https://g32.iamdeveloper.in/${userData.upload_organisation}` }}
-          className="w-full h-full rounded-lg"
-        />
+        <Image source={{ uri: organizationImage }} className="w-full h-full rounded-lg" />
+        <View className="absolute inset-0 bg-black/30 rounded-lg" />
         <Text className="absolute bottom-4 right-4 text-black font-bold text-lg">
           {userData.company_name}
         </Text>
-        <Image
-          source={{ uri: `https://g32.iamdeveloper.in/${userData.image}` }}
-          className="absolute -bottom-9 left-4 w-28 h-28 rounded-full border-2 border-white"
-        />
+        <Image source={{ uri: profileImage }} className="absolute -bottom-9 left-4 w-28 h-28 rounded-full border-2 border-white" />
       </View>
 
-      {/* Info Section */}
+      <TouchableOpacity className="absolute top-5 right-2" onPress={() => setEditModalVisible(true)}>
+        <Ionicons name="create" size={40} color="black" />
+      </TouchableOpacity>
+
       <View className="mt-16 p-4 w-full gap-3 bg-gray-100 rounded-lg">
         <Text className="text-xl font-semibold tracking-widest">Name - {userData.name}</Text>
         <Text className="text-xl font-semibold mt-1 tracking-wider">Company - {userData.company_name}</Text>
@@ -106,25 +153,13 @@ const ProfileCard = () => {
         <Text className="text-xl font-semibold mt-1 tracking-wider">Address - {userData.company_address}</Text>
       </View>
 
-      {/* Edit Button (Only Show if in Edit Mode) */}
-      {isEditMode && (
-        <TouchableOpacity
-          className="bg-sky-950 p-3 rounded mt-4"
-          onPress={() => Alert.alert("Edit Profile", "Editing enabled!")}
-        >
-          <Text className="text-white text-center font-bold">Edit Profile</Text>
-        </TouchableOpacity>
-      )}
-
-      {/* Portfolio Section */}
-      <View className="mt-10 px-2 w-full">
+     
+   <View className="mt-10 px-2 w-full">
         <View className="flex-row gap-1 items-center">
           <Text className="font-bold text-xl text-sky-950 tracking-widest">Portfolio</Text>
-          {isEditMode && ( // Show Add button only if in edit mode
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
-              <Ionicons name="add-circle" size={30} color="gray" />
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <Ionicons name="add-circle" size={30} color="gray" />
+          </TouchableOpacity>
         </View>
 
         <FlatList
@@ -144,21 +179,132 @@ const ProfileCard = () => {
         />
       </View>
 
-      {/* Modal for Adding Portfolio */}
-      <Modal visible={modalVisible} transparent animationType="slide">
-        <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
-          <View className="bg-white p-6 w-4/5 rounded-lg shadow-lg">
-            <Text className="text-lg font-bold mb-2">Add New Portfolio</Text>
+      <Modal visible={editModalVisible} transparent={true} animationType="fade">
+        <View className="flex-1 justify-center items-center bg-black/50 p-5">
+          <View className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
+            {/* Close Button */}
+            <TouchableOpacity
+              className="absolute top-3 right-3"
+              onPress={() => setEditModalVisible(false)}
+            >
+              <Ionicons name="close" size={24} color="black" />
+            </TouchableOpacity>
 
-            <TextInput placeholder="Project Name" className="border p-2 mb-2 rounded" />
-            <TextInput placeholder="Description" className="border p-2 mb-2 rounded" multiline />
-            <TextInput placeholder="Year" className="border p-2 mb-2 rounded" keyboardType="numeric" />
-            <TextInput placeholder="Image URL (optional)" className="border p-2 mb-2 rounded" />
+            <Text className="text-xl font-bold text-center mb-5">
+              Edit Profile
+            </Text>
 
-            <View className="flex-row justify-between mt-2">
-              <Button title="Cancel" color="gray" onPress={() => setModalVisible(false)} />
-              <Button title="Add Portfolio" />
+            {/* Profile Image Upload */}
+            <View className="mb-4">
+              <Text className="text-gray-700 font-semibold mb-1">
+                Profile Image
+              </Text>
+              <TouchableOpacity
+                onPress={() => pickImage("profile")}
+                className="items-center"
+              >
+                <Image
+                  source={{ uri: profileImage }}
+                  className="w-24 h-24 rounded-full border-2 border-gray-400"
+                />
+                <Text className="bg-gray-300 p-1 rounded-xl font-bold text-sky-950 mt-2">
+                  Change Profile Image
+                </Text>
+              </TouchableOpacity>
             </View>
+
+            {/* Organization Image Upload */}
+            <View className="mb-4">
+              <Text className="text-gray-700 font-semibold mb-1">
+                Organization Image
+              </Text>
+              <TouchableOpacity
+                onPress={() => pickImage("organization")}
+                className="items-center"
+              >
+                <Image
+                  source={{ uri: organizationImage }}
+                  className="w-32 h-20 rounded-lg border-2 border-gray-400"
+                />
+                <Text className="bg-gray-300 p-1 rounded-xl font-bold text-sky-950 mt-2">
+                  Change Organization Image
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Input Fields */}
+            <View className="mb-4">
+              <Text className="text-gray-700 font-semibold mb-1">
+                Full Name
+              </Text>
+              <TextInput
+                placeholder="Enter your name"
+                value={editableData.name}
+                onChangeText={(text) =>
+                  setEditableData({ ...editableData, name: text })
+                }
+                className="border border-gray-300 rounded-lg p-3"
+              />
+            </View>
+            <View className="mb-4">
+              <Text className="text-gray-700 font-semibold mb-1">
+                Email
+              </Text>
+              <TextInput
+                placeholder="Enter your email"
+                value={editableData.email}
+                onChangeText={(text) =>
+                  setEditableData({ ...editableData, email: text })
+                }
+                className="border border-gray-300 rounded-lg p-3"
+              />
+            </View>
+
+            <View className="mb-4">
+              <Text className="text-gray-700 font-semibold mb-1">Company</Text>
+              <TextInput
+                placeholder="Enter company name"
+                value={editableData.company_name}
+                onChangeText={(text) =>
+                  setEditableData({ ...editableData, company_name: text })
+                }
+                className="border border-gray-300 rounded-lg p-3"
+              />
+            </View>
+
+            <View className="mb-4">
+              <Text className="text-gray-700 font-semibold mb-1">City</Text>
+              <TextInput
+                placeholder="Enter city"
+                value={editableData.city}
+                onChangeText={(text) =>
+                  setEditableData({ ...editableData, city: text })
+                }
+                className="border border-gray-300 rounded-lg p-3"
+              />
+            </View>
+
+            <View className="mb-6">
+              <Text className="text-gray-700 font-semibold mb-1">Address</Text>
+              <TextInput
+                placeholder="Enter address"
+                value={editableData.company_address}
+                onChangeText={(text) =>
+                  setEditableData({ ...editableData, company_address: text })
+                }
+                className="border border-gray-300 rounded-lg p-3"
+              />
+            </View>
+
+            {/* Save Button */}
+            <TouchableOpacity
+              className="bg-sky-950 p-3 rounded-lg"
+              onPress={() => setEditModalVisible(false)}
+            >
+              <Text className="text-white text-center font-bold">
+                Save Changes
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
