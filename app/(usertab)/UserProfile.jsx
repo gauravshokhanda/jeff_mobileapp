@@ -1,52 +1,126 @@
-import React from "react";
-import { View, Text,TextInput,TouchableOpacity, Image, Platform } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, ActivityIndicator, Alert, FlatList } from "react-native";
 import { useSelector } from "react-redux";
+import { API, baseUrl } from "../../config/apiConfig";
+import Svg, { Path ,Circle, Rect} from "react-native-svg";
+import { FontAwesome,Ionicons } from "@expo/vector-icons";
 
 const MenuHeader = () => {
-  const userName = useSelector((state) => state.auth.user);
+
+
+  const userId = useSelector((state) => state.auth.user.id);
+
+  const token = useSelector((state) => state.auth.token);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    const getMyPosts = async () => {
+      try {
+        const response = await API.get(`job-posts/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setPosts(response.data.data.data || []);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+        setPosts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getMyPosts();
+  }, [userId, token]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await API.get(`user/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUserData(response.data.data);
+      } catch (error) {
+        Alert.alert("API Error", "Failed to fetch user data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (token) fetchUserData();
+  }, [token]);
+
+  if (loading) return <ActivityIndicator size="large" color="#000" />;
+  if (!userData) return <Text className="text-center text-red-500">User not found</Text>;
 
   return (
-    <View className={`bg-white h-full relative ${Platform.OS === "ios" ? "mt-16" : ""}`}>
-      {/* Header Background */}
-      <View className="bg-sky-950 h-60 flex justify-end items-center" style={{ borderBottomLeftRadius: 70, borderBottomRightRadius: 70 }}>
-        <View className="absolute flex items-center" style={{ bottom: -80 }}>
-          <Image source={{ uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg" }} className="w-24 h-24 border-4 border-black rounded-full" />
-          <Text className="text-lg font-semibold mt-2 text-black">Jhon Clay</Text>
-          <Text className="text-gray-500">Florida, USA</Text>
+    <View className="bg-white p-4 shadow-lg rounded-lg">
+      {/* Header Section */}
+      <View className="bg-sky-950 h-56">
+        <View className="mt-10 px-4 gap-2 flex-row items-center justify-center">
+        <Image
+            source={require('../../assets/images/AC5D_Logo.jpg')}
+            className="w-14 h-14 border-2 border-white rounded-full"
+          />
+          <View className="gap-1">
+            <Text className="text-3xl font-semibold text-white">
+              Welcome! {userData?.name || "User"}
+            </Text>
+          </View>
         </View>
+
+        {/* Wave Effect */}
+        <Svg className="absolute bottom-0 left-0 w-full h-16" viewBox="0 0 1440 360">
+          <Path
+            fill="#ffffff"
+            d="M0,200L80,190C160,180,320,160,480,170C640,180,800,220,960,220C1120,220,1280,180,1360,160L1440,140V320H0Z"
+          />
+        </Svg>
       </View>
 
-      {/* Adjusted Content Section */}
-    <View className="w-full px-6 pt-28 mt-20">
-  <View className="p-6 rounded-lg mt-5 ">
+      {/* User Info */}
+      <View className="p-4  rounded-lg gap-3">
+        <Text className="text-xl font-semibold tracking-widest">Name - {userData.name}</Text>
+        <Text className="text-xl font-semibold tracking-wider">Email - {userData.email}</Text>
+        <Text className="text-xl font-semibold tracking-wider">Company - {userData.company_name || ""}</Text>
+        <Text className="text-xl font-semibold tracking-wider">City - {userData.city || ""}</Text>
+        <Text className="text-xl font-semibold tracking-wider">Address - {userData.company_address || ""}</Text>
+        <Text className="text-xl font-semibold tracking-wider">Zip Code - {userData.zip_code || ""}</Text>
+      </View>
 
-    <TextInput
-      className="border border-gray-300 rounded-lg px-4 py-3 text-gray-700 mb-3"
-      placeholder="Full Name"
-        placeholderTextColor="black"
-      value=""
-    />
-    <TextInput
-      className="border border-gray-300 rounded-lg px-4 py-3 text-gray-700 mb-3"
-      placeholder="Email"
-      keyboardType="email-address"
-        placeholderTextColor="black"
-      value=""
-    />
-   
-    <TextInput
-      className="border border-gray-300 rounded-lg px-4 py-3 text-gray-700 mb-5"
-      placeholder="City"
-      placeholderTextColor="black"
-      value=""
-    />
+      {/* My Posts */}
+      <View className="mt-5  w-full">
+        <View className="flex-row gap-2 items-center">
+          <Text className="font-bold text-xl text-sky-950 tracking-widest pl-5">My Posts</Text>
+          <Ionicons name="images" size={30} color="gray" />
+        </View>
 
-    <TouchableOpacity className="bg-sky-950 py-3 mt-5 rounded-lg shadow-md active:bg-sky-800">
-      <Text className="text-center text-white text-lg font-semibold">Save Changes</Text>
-    </TouchableOpacity>
-  </View>
-</View>
-
+        {posts.length > 0 ? (
+          <FlatList
+            data={posts}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <View className="m-2 p-3 bg-white rounded-lg shadow-md w-full flex-row">
+                {item.design_image && JSON.parse(item.design_image).length > 0 && (
+                  <Image
+                    source={{ uri: `${baseUrl}/${JSON.parse(item.design_image)[0]}` }}
+                    className="w-32 h-32 rounded-lg mr-4"
+                  />
+                )}
+                <View className="flex-1">
+                  <Text className="text-lg font-semibold">{item.description}</Text>
+                  <Text className="text-gray-600">Project Type: {item.project_type}</Text>
+                  <Text className="text-gray-600">City: {item.city}</Text>
+                  <Text className="text-gray-600">Total Cost: ${item.total_cost}</Text>
+                </View>
+              </View>
+            )}
+          />
+        ) : (
+          <Text className="text-gray-500 mt-3">No job posts available.</Text>
+        )}
+      </View>
     </View>
   );
 };
