@@ -26,7 +26,7 @@ const PortfolioScreen = ({ navigation }) => {
     city: "",
     address: "",
     description: "",
-    images: [], // Ensure images is always an array
+    images: [], 
     imageNames: [],
   });
 
@@ -48,16 +48,35 @@ const PortfolioScreen = ({ navigation }) => {
         );
 
         if (response.status === 200) {
-          const userData = response.data;
-          const portfolioImages = JSON.parse(userData.portfolio || "[]");
-          const portfolioData = portfolioImages.map((image, index) => ({
-            id: index.toString(),
-            image: `https://g32.iamdeveloper.in/public/${image}`,
-            name: userData.project_name || `Project ${index + 1}`,
-            description: userData.description || "No description available.",
-            year: new Date(userData.created_at).getFullYear().toString(),
-          }));
-          setPortfolioItems(portfolioData);
+          console.log("api working");
+          const contractorId = response.data.id;
+          console.log(contractorId);
+          const portfolioResponse = await axios.get(
+            `https://g32.iamdeveloper.in/api/portfolios/contractor/${contractorId}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          if(portfolioResponse.status === 200){
+            console.log("second api working");
+            console.log(portfolioResponse.data)
+            const formattedData = portfolioResponse.data.portfolios.map(
+              (item) => ({
+                id: item.id.toString(),
+                name: item.project_name,
+                description: item.description,
+                image:
+                  JSON.parse(item.portfolio_images || "[]")[0] // Extract first image
+                    ? `https://g32.iamdeveloper.in/public/${JSON.parse(item.portfolio_images || "[]")[0]}`
+                    : "https://via.placeholder.com/150", 
+                year: new Date(item.created_at).getFullYear(),
+              })
+            );
+  
+            setPortfolioItems(formattedData);
+          
+          }
         }
       } catch (error) {
         Alert.alert(
@@ -77,7 +96,7 @@ const PortfolioScreen = ({ navigation }) => {
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: true, // iOS supports this, Android may not
+      allowsMultipleSelection: true,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
@@ -91,7 +110,7 @@ const PortfolioScreen = ({ navigation }) => {
         images: [
           ...(prev.images || []),
           ...result.assets.map((asset) => asset.uri),
-        ], // Ensure it's always an array
+        ], 
         imageNames: [
           ...(prev.imageNames || []),
           ...result.assets.map(
@@ -124,12 +143,11 @@ const PortfolioScreen = ({ navigation }) => {
       formData.append("address", newPortfolio.address);
       formData.append("description", newPortfolio.description);
 
-      // Append each image separately with the same key name
       newPortfolio.images.forEach((uri, index) => {
         formData.append(`portfolio_images[]`, {
           uri,
           name: newPortfolio.imageNames[index] || `image_${index}.jpg`,
-          type: "image/jpeg", // Adjust as needed
+          type: "image/jpeg", 
         });
       });
 
@@ -205,7 +223,7 @@ const PortfolioScreen = ({ navigation }) => {
         {loading ? (
           <ActivityIndicator size="large" color="skyblue" className="mt-10" />
         ) : (
-          <FlatList
+          <FlatList className="mb-48"
             data={portfolioItems.filter((item) =>
               item.name.toLowerCase().includes(searchText.toLowerCase())
             )}
