@@ -15,18 +15,20 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import * as ImagePicker from "expo-image-picker";
+import { useRouter } from "expo-router";
 
 const PortfolioScreen = ({ navigation }) => {
   const [portfolioItems, setPortfolioItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const router = useRouter();
   const [newPortfolio, setNewPortfolio] = useState({
     project_name: "",
     city: "",
     address: "",
     description: "",
-    images: [], 
+    images: [],
     imageNames: [],
   });
 
@@ -58,24 +60,24 @@ const PortfolioScreen = ({ navigation }) => {
             }
           );
 
-          if(portfolioResponse.status === 200){
+          if (portfolioResponse.status === 200) {
             console.log("second api working");
-            console.log(portfolioResponse.data)
+            console.log(portfolioResponse.data);
             const formattedData = portfolioResponse.data.portfolios.map(
               (item) => ({
                 id: item.id.toString(),
                 name: item.project_name,
                 description: item.description,
-                image:
-                  JSON.parse(item.portfolio_images || "[]")[0] // Extract first image
-                    ? `https://g32.iamdeveloper.in/public/${JSON.parse(item.portfolio_images || "[]")[0]}`
-                    : "https://via.placeholder.com/150", 
+                image: JSON.parse(item.portfolio_images || "[]")[0] // Extract first image
+                  ? `https://g32.iamdeveloper.in/public/${
+                      JSON.parse(item.portfolio_images || "[]")[0]
+                    }`
+                  : "https://via.placeholder.com/150",
                 year: new Date(item.created_at).getFullYear(),
               })
             );
-  
+
             setPortfolioItems(formattedData);
-          
           }
         }
       } catch (error) {
@@ -110,7 +112,7 @@ const PortfolioScreen = ({ navigation }) => {
         images: [
           ...(prev.images || []),
           ...result.assets.map((asset) => asset.uri),
-        ], 
+        ],
         imageNames: [
           ...(prev.imageNames || []),
           ...result.assets.map(
@@ -147,7 +149,7 @@ const PortfolioScreen = ({ navigation }) => {
         formData.append(`portfolio_images[]`, {
           uri,
           name: newPortfolio.imageNames[index] || `image_${index}.jpg`,
-          type: "image/jpeg", 
+          type: "image/jpeg",
         });
       });
 
@@ -211,7 +213,7 @@ const PortfolioScreen = ({ navigation }) => {
       </View>
 
       <View className="mt-6 px-4 w-full">
-        <View className="flex-row gap-2 items-center">
+        <View className="flex-row gap-2 mb-2 items-center">
           <Text className="font-bold text-xl text-sky-950 tracking-widest">
             Portfolio
           </Text>
@@ -223,27 +225,34 @@ const PortfolioScreen = ({ navigation }) => {
         {loading ? (
           <ActivityIndicator size="large" color="skyblue" className="mt-10" />
         ) : (
-          <FlatList className="mb-48"
+          <FlatList
+            className="mb-48"
             data={portfolioItems.filter((item) =>
               item.name.toLowerCase().includes(searchText.toLowerCase())
             )}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View className="flex-row p-4 my-3 gap-3 items-center bg-gray-100 rounded-lg shadow-sm">
-                <Image
-                  source={{ uri: item.image }}
-                  className="w-32 h-32 rounded-lg"
-                />
-                <View className="ml-4 flex-1">
-                  <Text className="text-lg font-bold text-gray-900">
-                    {item.name}
-                  </Text>
-                  <Text className="text-gray-700 mt-1">{item.description}</Text>
-                  <Text className="text-black font-semibold mt-2">
-                    Year: {item.year}
-                  </Text>
+              <TouchableOpacity onPress={() =>
+                router.push(`/PortfolioDetail?id=${item.id}`)
+              } >
+                <View className="flex-row p-4 my-3 gap-3 items-center bg-gray-200 rounded-lg shadow-sm">
+                  <Image
+                    source={{ uri: item.image }}
+                    className="w-32 h-32 rounded-lg"
+                  />
+                  <View className="ml-4 flex-1">
+                    <Text className="text-lg font-bold text-gray-900">
+                      {item.name}
+                    </Text>
+                    <Text className="text-gray-700 mt-1">
+                      {item.description}
+                    </Text>
+                    <Text className="text-black font-semibold mt-2">
+                      Year: {item.year}
+                    </Text>
+                  </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             )}
           />
         )}
@@ -258,7 +267,7 @@ const PortfolioScreen = ({ navigation }) => {
               onPress={() => setModalVisible(false)}
               className="absolute right-4 top-4 p-2"
             >
-              <Ionicons name="close-circle" size={30} color="black" />
+              <Ionicons name="close-circle" size={40} color="black" />
             </TouchableOpacity>
 
             <Text className="text-xl font-bold text-gray-900 mb-4 mt-10 text-center">
