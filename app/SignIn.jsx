@@ -38,14 +38,19 @@ export default function SignIn() {
 
   useEffect(() => {
     if (isAuthenticated && token) {
-// console.log("Image userdata",userData)
+      // console.log("Image userdata",userData)
       if (userData?.role == 3) {
         if (userData?.image === null) {
           // console.log("userData?.image",userData?.image)
           router.replace('/ContractorProfileComplete')
-        }else{
+        }
+        else {
           router.replace("/(generalContractorTab)");
         }
+      }
+      else if (userData?.role == 4) {
+        console.log("real state contractor")
+        router.replace('/RealstateSelector')
       }
       else {
         router.replace("/(usertab)");
@@ -56,7 +61,7 @@ export default function SignIn() {
   const handleSignIn = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Email and Password are required.");
-      
+
       return;
     }
     setLoading(true);

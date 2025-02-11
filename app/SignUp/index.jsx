@@ -54,15 +54,19 @@ export default function SignUp() {
             const response = await API.post("auth/register", data);
             // console.log("username", response.data.data.user)
             const { access_token } = response.data;
-            console.log("access token",access_token)
+            console.log("access token", access_token)
             const user = response.data.data.user;
             dispatch(setSignUp({ access_token, user }))
 
             Alert.alert("Success", "Account created successfully!");
             console.log("User Role After API Call:", role.key);
-            if (role.key == 3) { // General Contractor
+            if (role.key == 3) {
                 router.replace("/ContractorProfileComplete");
-            } else {
+            }
+            else if (role.key == 4) {
+                router.replace("/RealstateSelector")
+            }
+            else {
                 router.replace("/(usertab)");
             }
         } catch (error) {
