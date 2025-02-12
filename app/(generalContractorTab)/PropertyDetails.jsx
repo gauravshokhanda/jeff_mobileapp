@@ -88,6 +88,7 @@ export default function PropertyDetails() {
       });
 
       if (response.status === 200) {
+        console.log(response);
         const phoneNumber = response.data.number;
 
         if (phoneNumber) {
