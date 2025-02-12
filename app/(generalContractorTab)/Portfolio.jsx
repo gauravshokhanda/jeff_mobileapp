@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 
 const PortfolioScreen = ({ navigation }) => {
   const [portfolioItems, setPortfolioItems] = useState([]);
@@ -34,95 +35,62 @@ const PortfolioScreen = ({ navigation }) => {
 
   const token = useSelector((state) => state.auth.token);
 
-  useEffect(() => {
-    const fetchPortfolio = async () => {
-      try {
-        console.log("Token being sent:", token);
-        const response = await axios.post(
-          "https://g32.iamdeveloper.in/api/user-detail",
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (response.status === 200) {
-          console.log("api working");
-          const contractorId = response.data.id;
-          console.log(contractorId);
-          const portfolioResponse = await axios.get(
-            `https://g32.iamdeveloper.in/api/portfolios/contractor/${contractorId}`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-
-          if (portfolioResponse.status === 200) {
-            console.log("second api working");
-            console.log(portfolioResponse.data);
-            const formattedData = portfolioResponse.data.portfolios.map(
-              (item) => ({
-                id: item.id.toString(),
-                name: item.project_name,
-                description: item.description,
-                image: JSON.parse(item.portfolio_images || "[]")[0] // Extract first image
-                  ? `https://g32.iamdeveloper.in/public/${
-                      JSON.parse(item.portfolio_images || "[]")[0]
-                    }`
-                  : "https://via.placeholder.com/150",
-                year: new Date(item.created_at).getFullYear(),
-              })
-            );
-
-            setPortfolioItems(formattedData);
-          }
+  // Fetch Portfolio Function
+  const fetchPortfolio = async () => {
+    try {
+      console.log("Fetching portfolio...");
+      const response = await axios.post(
+        "https://g32.iamdeveloper.in/api/user-detail",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      } catch (error) {
-        Alert.alert(
-          "API Error",
-          error.response?.data?.message || "An error occurred"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+      );
 
+      if (response.status === 200) {
+        const contractorId = response.data.id;
+        const portfolioResponse = await axios.get(
+          `https://g32.iamdeveloper.in/api/portfolios/contractor/${contractorId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (portfolioResponse.status === 200) {
+          console.log("Fetched portfolio:", portfolioResponse.data);
+          const formattedData = portfolioResponse.data.portfolios.map((item) => ({
+            id: item.id.toString(),
+            name: item.project_name,
+            description: item.description,
+            image: JSON.parse(item.portfolio_images || "[]")[0]
+              ? `https://g32.iamdeveloper.in/public/${JSON.parse(item.portfolio_images || "[]")[0]}`
+              : "https://via.placeholder.com/150",
+            year: new Date(item.created_at).getFullYear(),
+          }));
+
+          setPortfolioItems(formattedData);
+        }
+      }
+    } catch (error) {
+      Alert.alert(
+        "API Error",
+        error.response?.data?.message || "An error occurred"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (token) {
       fetchPortfolio();
     }
   }, [token]);
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: true,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled && result.assets?.length > 0) {
-      console.log("Selected Images:", result.assets);
-
-      setNewPortfolio((prev) => ({
-        ...prev,
-        images: [
-          ...(prev.images || []),
-          ...result.assets.map((asset) => asset.uri),
-        ],
-        imageNames: [
-          ...(prev.imageNames || []),
-          ...result.assets.map(
-            (asset) => asset.fileName || `image_${Date.now()}.jpg`
-          ),
-        ],
-      }));
-    }
-  };
-
+  // Add Portfolio Item Function
   const addPortfolioItem = async () => {
     console.log("New Portfolio Data:", newPortfolio);
 
@@ -166,18 +134,27 @@ const PortfolioScreen = ({ navigation }) => {
         }
       );
 
-      console.log("API Response:", response.data); // Log the response
-      Alert.alert("Success", JSON.stringify(response.data, null, 2)); // Show response in an alert
+      console.log("API Response:", response.data);
+      Alert.alert("Success", "Portfolio added successfully!", [
+        {
+          text: "OK",
+          onPress: () => {
+            setModalVisible(false); // Close modal
+            fetchPortfolio();
+            setNewPortfolio({ // Reset input fields
+              project_name: "",
+              city: "",
+              address: "",
+              description: "",
+              images: [],
+              imageNames: [],
+            });
+          },
+        },
+      ]);
 
       if (response.status === 200) {
-        setPortfolioItems([
-          ...portfolioItems,
-          {
-            id: Date.now().toString(),
-            ...newPortfolio,
-            year: new Date().getFullYear().toString(),
-          },
-        ]);
+        fetchPortfolio(); // Fetch updated data from API
         setModalVisible(false);
         setNewPortfolio({
           project_name: "",
@@ -185,7 +162,7 @@ const PortfolioScreen = ({ navigation }) => {
           address: "",
           description: "",
           images: [],
-          portfolio_images: [],
+          imageNames: [],
         });
       }
     } catch (error) {
@@ -197,6 +174,32 @@ const PortfolioScreen = ({ navigation }) => {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchPortfolio();
+    }, [])
+  );
+
+  // Pick Image Function
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets) {
+      console.log("Selected Images:", result.assets);
+
+      setNewPortfolio((prev) => ({
+        ...prev,
+        images: [...prev.images, ...result.assets.map((asset) => asset.uri)],
+        imageNames: [...prev.imageNames, ...result.assets.map((asset) => asset.fileName || `image_${Date.now()}.jpg`)],
+      }));
+    }
+  };
   return (
     <View className="flex-1 bg-white">
       <View className="bg-sky-950 p-4 h-24 mt-12 flex-row items-center">
@@ -264,7 +267,10 @@ const PortfolioScreen = ({ navigation }) => {
           <ScrollView>
             {/* Close Button */}
             <TouchableOpacity
-              onPress={() => setModalVisible(false)}
+              onPress={() => {  
+                fetchPortfolio();
+                setModalVisible(false);
+              }}
               className="absolute right-4 top-4 p-2"
             >
               <Ionicons name="close-circle" size={40} color="black" />
