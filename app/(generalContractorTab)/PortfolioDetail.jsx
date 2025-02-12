@@ -153,7 +153,6 @@ const PortfolioDetail = () => {
             {/* Form Fields */}
             <TextInputField label="Project Name" value={formData.project_name} onChange={(text) => setFormData({ ...formData, project_name: text })} />
             <TextInputField label="Description" value={formData.description} onChange={(text) => setFormData({ ...formData, description: text })} />
-            <TextInputField label="Type" value={formData.type} onChange={(text) => setFormData({ ...formData, type: text })} />
             <TextInputField label="Address" value={formData.address} onChange={(text) => setFormData({ ...formData, address: text })} />
             <TextInputField label="City" value={formData.city} onChange={(text) => setFormData({ ...formData, city: text })} />
 
