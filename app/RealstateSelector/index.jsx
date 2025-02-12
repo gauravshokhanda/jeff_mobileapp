@@ -1,5 +1,5 @@
 
-import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import React, { useState } from 'react';
 import RadioGroup from "react-native-radio-buttons-group";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -8,16 +8,21 @@ import CustomTextInput from "../../components/CustomTextInput"
 import CustomDatePicker from "../../components/CustomDatePicker"
 import API from "../../config/apiConfig"
 import { useSelector } from 'react-redux';
+import CitySearch from '../../components/CitySearch';
+import axios from 'axios';
+import { router } from 'expo-router';
 
 
 
 export default function Index() {
     const { width: screenWidth } = Dimensions.get('window');
-    const postContentWidth = screenWidth * 0.90;
+    const postContentWidth = screenWidth * 0.95;
     const [selectedBHK, setSelectedBHK] = useState(null);
     const [selectedType, setSelectedType] = useState(null);
     const [selectedPropertyType, setSelectedPropertyType] = useState(null);
     const [selectedHomeType, setSelectedHomeType] = useState(null);
+
+    const [selectedCity, setSelectedCity] = useState(null);
 
 
     const [city, setCity] = useState('');
@@ -76,12 +81,21 @@ export default function Index() {
 
         return (
             <TouchableOpacity
-                className={`border border-gray-400 rounded-full justify-center items-center mx-2 ${isSelected ? "bg-sky-200" : "bg-white"}`}
+                className="mx-2 rounded-full overflow-hidden"
                 style={{ width: 100, height: 100 }}
                 onPress={() => setSelectedHomeType(item.name)}
             >
-                <Image source={item.image} style={{ width: 50, height: 50 }} resizeMode="contain" />
-                <Text className="text-sm font-medium mt-2 text-center">{item.name}</Text>
+                <LinearGradient
+                    colors={isSelected ? ['#93C5FD', '#1E3A8A'] : ['#F3F4F6', '#D1D5DB']} // Blue gradient when selected, Gray otherwise
+                    start={{ x: 0.5, y: 0 }}
+                    end={{ x: 0.5, y: 1 }}
+                    className="flex items-center justify-center rounded-full w-full h-full"
+                >
+                    <Image source={item.image} style={{ width: 50, height: 50 }} resizeMode="contain" />
+                    <Text className={`text-sm font-medium mt-2 mx-1 text-center ${isSelected ? "text-white" : "text-gray-900"}`}>
+                        {item.name}
+                    </Text>
+                </LinearGradient>
             </TouchableOpacity>
         );
     };
@@ -93,8 +107,18 @@ export default function Index() {
         return (
             <TouchableOpacity
                 onPress={() => setSelectedBHK(item)}
-                className={`border border-gray-300 rounded-lg px-6 py-4 mx-2 ${isSelected ? "bg-gray-300" : "bg-white"}`}>
-                <Text className="text-lg font-medium">{item}</Text>
+                className="mx-2 rounded-lg overflow-hidden" // Ensures gradient stays within the border
+            >
+                <LinearGradient
+                    colors={isSelected ? ['#93C5FD', '#1E3A8A'] : ['#F3F4F6', '#D1D5DB']} // Blue when selected, Gray otherwise
+                    start={{ x: 0.5, y: 0 }}
+                    end={{ x: 0.5, y: 1 }}
+                    className="px-6 py-4 flex items-center justify-center rounded-lg border border-gray-300"
+                >
+                    <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-900"}`}>
+                        {item}
+                    </Text>
+                </LinearGradient>
             </TouchableOpacity>
         )
     }
@@ -111,12 +135,20 @@ export default function Index() {
         const isSelected = selectedType === item.id;
         return (
             <TouchableOpacity
-                className={`border border-gray-300 rounded-lg px-6 py-4 mx-2 flex-row items-center ${isSelected ? "bg-blue-200" : ""
-                    }`}
+                className="mx-2 rounded-lg overflow-hidden" // Ensures gradient stays within the border
                 onPress={() => setSelectedType(item.id)}
             >
-                <Image source={item.icon ? item.icon : ""} className="w-6 h-6 mr-3" />
-                <Text className="text-lg">{item.label}</Text>
+                <LinearGradient
+                    colors={isSelected ? ['#93C5FD', '#1E3A8A'] : ['#F3F4F6', '#D1D5DB']} // Blue when selected, Gray otherwise
+                    start={{ x: 0.5, y: 0 }}
+                    end={{ x: 0.5, y: 1 }}
+                    className="px-6 py-4 flex-row items-center rounded-lg border border-gray-300"
+                >
+                    {item.icon && <Image source={item.icon} className="w-6 h-6 mr-3" />}
+                    <Text className={`text-lg ${isSelected ? "text-white" : "text-gray-900"}`}>
+                        {item.label}
+                    </Text>
+                </LinearGradient>
             </TouchableOpacity>
         );
     };
@@ -126,32 +158,68 @@ export default function Index() {
     const token = useSelector((state) => state.auth.token);
     const handleSubmit = async () => {
         const formData = new FormData();
-        formData.append("property-type", selectedPropertyType);
-        formData.append("City", city);
-        formData.append("house-type", selectedHomeType);
+        formData.append("property_type", selectedPropertyType);
+        formData.append("city", city);
+        formData.append("house_type", selectedHomeType);
         formData.append("address", address);
         formData.append("locale", locality);
         formData.append("bhk", selectedBHK);
         formData.append("area", area);
         formData.append("furnish_type", selectedType);
         formData.append("price", price);
-        formData.append("available_from", availableFrom);
+        formData.append("available_from", availableFrom.toISOString());
         console.log("form data", formData)
-        const response = await API.post("/realstate-detail", {
-            headers:
-            {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-        })
+        
+        try {
+            const response = await axios.post("https://g32.iamdeveloper.in/api/realstate-property", formData, {
+                headers:
+                {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+
+                },
+            })
+            // console.log("response",response.data.message)
+            Alert.alert(
+                "Success",
+                "Property details added successfully!",
+                [
+                    {
+                        text: "OK",
+                        onPress: () => {
+                            // Reset form fields
+                            setSelectedPropertyType("");
+                            setCity("");
+                            setSelectedHomeType("");
+                            setAddress("");
+                            setLocality("");
+                            setSelectedBHK("");
+                            setArea("");
+                            setSelectedType("");
+                            setPrice("");
+                            setAvailableFrom("");
+
+                           
+                            router.replace("/RealstateContractorTab");
+                        },
+                    },
+                ],
+                { cancelable: false }
+            );
+
+
+        } catch (error) {
+            console.log(error, "error")
+        }
+
     };
 
     return (
         <View className="flex-1 bg-gray-200">
-            <View className="h-[40%] bg-sky-950" >
-                <View className="bg-sky-950 p-10">
+            <View className="h-[40%] bg-sky-950">
+                <View className="bg-sky-950 p-5">
                     <TouchableOpacity
-                        className="absolute top-10 left-4"
+                        className="absolute top-5 left-4"
                     >
                         <Ionicons name='arrow-back' size={24} color="white" />
                     </TouchableOpacity>
@@ -159,6 +227,7 @@ export default function Index() {
                 </View>
 
             </View>
+            
             <View className="rounded-3xl border border-gray-400"
                 style={{
                     position: 'absolute',
@@ -179,7 +248,7 @@ export default function Index() {
                     <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
 
 
-                        <View className=" flex-1">
+                        <View className="flex-1">
 
                             <View className="mb-8">
                                 <Text className="text-xl font-medium mb-3 tracking-widest">Property Type</Text>
@@ -194,16 +263,16 @@ export default function Index() {
                                 />
 
                                 <View className="flex-row items-center border-b border-gray-300 mt-5">
-
-                                    <Ionicons name="search" size={18} color="black" />
-                                    <TextInput
+                                    <CitySearch city={city} setCity={setCity} />
+                                    {/* <Ionicons name="search" size={18} color="black" />
+                                     <TextInput
                                         value={city}
                                         onChangeText={(text) => setCity(text)}
                                         placeholder="Search City"
                                         placeholderTextColor="gray"
                                         className="flex-1 text-lg text-gray-800 ml-5"
                                     />
-                                    <MaterialCommunityIcons name="crosshairs-gps" size={25} color="#0C4A6E" />
+                                    //  <MaterialCommunityIcons name="crosshairs-gps" size={25} color="#0C4A6E" />  */}
                                 </View>
 
                                 {/* House Type */}
