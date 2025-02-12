@@ -50,7 +50,7 @@ export default function SignIn() {
       }
       else if (userData?.role == 4) {
         console.log("real state contractor")
-        router.replace('/RealstateSelector')
+        router.replace('/(RealstateContractorTab)')
       }
       else {
         router.replace("/(usertab)");
@@ -75,6 +75,9 @@ export default function SignIn() {
 
       if (user.role == 3) {
         router.replace("/(generalContractorTab)");
+      }
+      else if (user.role == 4) {
+        router.replace("/(RealstateContractorTab)");
       }
       else {
         router.replace("/(usertab)");
