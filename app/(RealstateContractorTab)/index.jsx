@@ -15,14 +15,18 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-gray-200">
-      <View className="h-[40%] bg-sky-950">
+
+      <LinearGradient
+        colors={['#082f49', 'transparent']}
+        className="h-[40%]"
+      >
         <View className="mt-10 px-4 gap-2 flex-row items-center">
           <Image
             source={{ uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg" }}
             className="w-14 h-14 border-2 border-white rounded-full"
           />
           <View className="gap-1">
-            <Text className="text-3xl font-semibold text-white">
+            <Text className="text-2xl font-semibold text-white">
               Welcome! {userName?.name || "User"}
             </Text>
             <Text className="text-gray-400">📍 Florida, USA</Text>
@@ -30,7 +34,7 @@ export default function Index() {
         </View>
 
         <View className="mt-2 items-end">
-          <View className="border bg-gray-100 w-52 h-12 mr-5 rounded-full px-3 flex-row items-center justify-between">
+          <View className="bg-gray-100 w-52 h-12 mr-5 rounded-full px-3 flex-row items-center justify-between">
             <Ionicons name="search" size={18} color="black" />
             <TextInput
               placeholder="Home Search"
@@ -40,10 +44,10 @@ export default function Index() {
             />
           </View>
         </View>
+      </LinearGradient>
 
-      </View>
 
-      <View className="rounded-3xl border border-gray-400"
+      <View className="rounded-3xl "
         style={{
           position: 'absolute',
           top: '27%',
@@ -65,7 +69,7 @@ export default function Index() {
             contentContainerStyle={{ paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
           >
-
+if()
 
             <View className="m-5">
               <View className="flex-row items-center justify-between h-32 px-4 ">
@@ -85,10 +89,10 @@ export default function Index() {
                 />
               </View>
 
-              <View className="bg-gray-200 rounded-2xl mt-10 p-2">
+              <View className=" rounded-2xl mt-10 p-2">
                 <Text className="text-2xl font-semibold tracking-widest mb-4 text-black">Checkout your properties.</Text>
 
-                <View className="bg-sky-950 rounded-xl p-3 w-full">
+                <View className="bg-sky-950 rounded-t-xl p-3 w-full">
                   {/* Top Section */}
                   <View className="flex-row justify-between">
                     {/* Left - Image */}
@@ -126,7 +130,12 @@ export default function Index() {
                       Your Listing Score: 35%
                     </Text>
                     <View className="bg-gray-300 h-2 rounded-full w-full mt-1">
-                      <View className="bg-red-950 h-2 rounded-full" style={{ width: "35%" }} />
+                      <LinearGradient className="bg-red-950 h-2"
+                        colors={['#0f0f0f', '#4b5563']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={{ width: "35%", borderRadius: 10 }}
+                      ></LinearGradient>
                     </View>
                   </View>
 
@@ -138,10 +147,10 @@ export default function Index() {
                     <Ionicons name="chevron-forward" size={16} color="white" />
                   </TouchableOpacity>
                 </View>
-                <View className="bg-indigo-300 rounded-2xl p-8 mt-3 shadow-lg w-full flex-row justify-between items-center">
+                <View className="bg-gray-200 rounded-b-2xl p-5 shadow-lg w-full flex-row justify-between items-center">
 
                   <View className="flex-1">
-                    <Text className="text-lg font-semibold text-white">
+                    <Text className="text-lg font-semibold text-gray-600">
                       Get ready list of buyers
                     </Text>
                   </View>
@@ -188,8 +197,8 @@ export default function Index() {
                       ‘armyman’ or ‘Public Service’ & asking to transfer money.
                     </Text>
                     <TouchableOpacity
-                    onPress={() => router.push("/KnowMore")}
-                    className="mt-2">
+                      onPress={() => router.push("/KnowMore")}
+                      className="mt-2">
                       <Text className="text-black font-bold">Know more &gt;</Text>
                     </TouchableOpacity>
                   </View>
@@ -205,7 +214,7 @@ export default function Index() {
                     <Text className="text-black font-semibold text-xl tracking-widest">Jimmy Brooke</Text>
                     <Text className="text-gray-600 mt-1 tracking-wider text-lg w-[90%]">
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                      eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                      eiusmod tempor incididunt ut labore et dolore magna aliqua.
                       <Text className="font-bold text-black"> Read more...</Text>
                     </Text>
                   </View>
