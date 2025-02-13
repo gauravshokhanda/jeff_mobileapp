@@ -28,7 +28,7 @@ export default function TabRoot() {
           headerShown: false,
           tabBarStyle: {
             backgroundColor: "#082f49",
-            height: isKeyboardVisible ? 0 : 77,
+            height: isKeyboardVisible ? 0 : 68,
             paddingTop: isKeyboardVisible ? 0 : 10,
           },
         }}
@@ -38,7 +38,7 @@ export default function TabRoot() {
           options={{
             title: "Home",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? "home" : "home-outline"} color={"white"} size={30} />
+              <Ionicons name={focused ? "home" : "home-outline"} color={"white"} size={25} />
             ),
             tabBarLabelStyle: { display: "none" },
           }}
@@ -49,7 +49,7 @@ export default function TabRoot() {
           options={{
             title: "ChatList",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? "chatbubble" : "chatbubble-outline"} size={30} color={"white"} />
+              <Ionicons name={focused ? "chatbubble" : "chatbubble-outline"} size={25} color={"white"} />
             ),
             tabBarLabelStyle: { display: "none" },
           }}
@@ -60,7 +60,7 @@ export default function TabRoot() {
           options={{
             title: "Property Post",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? "business" : "business-outline"} color="white" size={30} />
+              <Ionicons name={focused ? "business" : "business-outline"} color="white" size={25} />
             ),
             tabBarLabelStyle: { display: "none" },
           }}
@@ -71,7 +71,7 @@ export default function TabRoot() {
           options={{
             title: "Listenings",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? "newspaper" : "newspaper-outline"} size={30} color={"white"} />
+              <Ionicons name={focused ? "newspaper" : "newspaper-outline"} size={25} color={"white"} />
             ),
             tabBarLabelStyle: { display: "none" },
           }}
@@ -82,7 +82,7 @@ export default function TabRoot() {
           options={{
             title: "Profile",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? "person" : "person-outline"} color="white" size={30} />
+              <Ionicons name={focused ? "person" : "person-outline"} color="white" size={25} />
             ),
             tabBarLabelStyle: { display: "none" },
           }}
