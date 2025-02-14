@@ -1,4 +1,4 @@
-import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert, SafeAreaView } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -25,7 +25,7 @@ const imageData = [
 
 
 export default function Index() {
-  const { width: screenWidth } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const postContentWidth = screenWidth * 0.92;
   const userName = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
@@ -51,7 +51,7 @@ export default function Index() {
 
 
   return (
-    <View className="flex-1 bg-gray-200">
+    <SafeAreaView className="flex-1 bg-gray-200">
 
       <LinearGradient
         colors={['#082f49', 'transparent']}
@@ -77,9 +77,9 @@ export default function Index() {
       <View className="rounded-3xl "
         style={{
           position: 'absolute',
-          top: '17%',
+          top: screenHeight * 0.16,
           width: postContentWidth,
-          height: '84%',
+          height: screenHeight * 0.84,
           left: (screenWidth - postContentWidth) / 2,
           backgroundColor: 'white',
         }}
@@ -100,8 +100,9 @@ export default function Index() {
                 <TouchableOpacity
                   key={item.id}
                   activeOpacity={0.7}
-                  className="relative w-[47.8%] h-28 flex items-center justify-center"
+                  className="relative  h-28 flex items-center justify-center"
                   onPress={() => handlePress(item.screen)}
+                  style={{ width: screenWidth * 0.40 }}
                 >
                   <Image source={item.source} className="w-full h-full absolute" />
                   <View className="absolute flex items-center">
@@ -119,6 +120,6 @@ export default function Index() {
 
 
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

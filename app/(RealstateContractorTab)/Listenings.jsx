@@ -1,26 +1,63 @@
-import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
-import React, { useState } from 'react';
+import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert, SafeAreaView, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-
-
-
-
-
-
-
-
+import { useSelector } from 'react-redux';
+import { API } from '../../config/apiConfig';
 export default function Index() {
-  const { width: screenWidth } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const postContentWidth = screenWidth * 0.92;
 
-  const [selectedPropertyType, setSelectedPropertyType] = useState(null);
-  const [category, setCategory] = useState(null)
+  const [selectedPropertyType, setSelectedPropertyType] = useState('residential');
+  const [properties, setProperties] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
 
-  const categoryType = [
+  const token = useSelector((state) => state.auth.token);
 
-  ]
+
+
+  const fetchProperties = async (page = 1) => {
+    if (loading || page > totalPages) return; // Prevent multiple requests
+
+    setLoading(true);
+    try {
+      const response = await API.get(
+        `get-property/type?property_type=${selectedPropertyType}&page=${page}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log("response", response.data.properties.current_page)
+      console.log("response", response.data.properties.last_page)
+      // console.log("response", response.data.properties)
+      setProperties((prev) =>
+        page === 1 ? response.data.properties.data : [...prev, ...response.data.properties.data]
+      );
+      setCurrentPage(response.data.properties.current_page);
+      setTotalPages(response.data.properties.last_page);
+    } catch (error) {
+      console.log("Error fetching properties:", error);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    setProperties([]);
+    setCurrentPage(1);
+    fetchProperties(1);
+  }, [selectedPropertyType]);
+
+  const loadMore = () => {
+    if (currentPage < totalPages) {
+      fetchProperties(currentPage + 1);
+    }
+  };
+
+
+
   const propertyTypes = [
     { id: 'residential', label: 'Residential' },
     { id: 'commercial', label: 'Commercial' },
@@ -49,13 +86,71 @@ export default function Index() {
   }
 
 
+  const renderListening = ({ item }) => (
+
+    <View className="bg-sky-950 p-4 rounded-xl max-w-md mb-3">
+      <View className="flex-row justify-between items-start ">
+        <View className="flex-row items-center">
+          <Ionicons name="location" size={20} color="white" />
+          <View className="ml-2">
+            <Text className="text-white font-bold">ADJUNTAS</Text>
+          </View>
+        </View>
+        <View className="flex-row gap-2">
+          <View className="bg-white rounded-full px-3 py-1">
+            <Text className="text-slate-700 text-sm">Apartment</Text>
+          </View>
+          <View className="bg-white rounded-full px-3 py-1">
+            <Text className="text-slate-700 text-sm">Locality</Text>
+          </View>
+        </View>
+      </View>
+      <View className="mb-4 mt-1">
+        <Text className="text-gray-300 text-sm">Kharakpur, Sachivalay F block</Text>
+      </View>
+      <View className="flex-row">
+
+        <View className="flex-row items-center justify-between">
+
+          <Image source={require("../../assets/images/realState/ListingHome.png")} />
+
+        </View>
+
+        <View className="flex-1 ml-4">
+          <View className="flex-row items-baseline">
+            <Text className="text-white text-2xl font-bold">$48670</Text>
+            <Text className="text-gray-300 ml-1">USD</Text>
+          </View>
+
+          <View className="space-y-1 mt-2">
+            <View className="flex-row items-center">
+              <Ionicons name="calendar-outline" size={16} color="white" className="mr-1" />
+              <Text className="text-gray-300 ml-1">Available from 25/01/07</Text>
+            </View>
+            <View className="flex-row items-center">
+              <Ionicons name="resize-outline" size={16} color="white" className="mr-1" />
+              <Text className="text-gray-300 ml-1">Area- 500 sq ft</Text>
+            </View>
+            <View className="flex-row items-center">
+              <Ionicons name="bed-outline" size={16} color="white" className="mr-1" />
+              <Text className="text-gray-300 ml-1">Full-Furnished 2BHK</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+
+  )
+
+
 
   return (
-    <View className="flex-1 bg-gray-200">
+    <SafeAreaView className="flex-1 bg-gray-200">
 
       <LinearGradient
         colors={['#082f49', 'transparent']}
-        className="h-[40%]"
+
+        style={{ height: screenHeight * 0.4 }}
       >
         <View className="mt-8 px-4 ">
           <Text className="text-2xl font-semibold text-white">Property Listing</Text>
@@ -81,377 +176,40 @@ export default function Index() {
       <View className="rounded-3xl"
         style={{
           position: 'absolute',
-          top: '25%',
+          top: screenHeight * 0.20,
           width: postContentWidth,
-          height: '80%',
+          height: screenHeight * 0.75,
           left: (screenWidth - postContentWidth) / 2,
           backgroundColor: 'white',
 
-
         }}
       >
-        <KeyboardAvoidingView
-          className="flex-1"
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-        >
-          <ScrollView
-            contentContainerStyle={{ paddingBottom: 20 }}
-            showsVerticalScrollIndicator={false}
-          >
-            <View className="flex-1 m-5">
-              <View className="sticky flex-1 justify-center items-center p-3 rounded-2xl bg-gray-100">
 
-                <FlatList
-                  data={propertyTypes}
-                  keyExtractor={(item) => item.id}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  renderItem={renderPropertyTypeItem}
-                  contentContainerStyle={{ gap: 10 }}
-                />
-
-              </View>
-              {selectedPropertyType === 'residential' ? (
-
-                <View>
-
-
-                  <View className="flex-1">
-
-                    <View className=" flex-1 bg-sky-950 rounded-t-xl p-3 w-full mt-5">
-                      {/* Top Section */}
-                      <View className="flex-row justify-between border-b border-b-gray-300 pb-3">
-                        {/* Left - Image */}
-                        <Image
-                          style={{ resizeMode: "contain" }}
-                          className="w-24 h-24 rounded-lg"
-                          source={require('../../assets/images/realState/checkoutProperty.png')}
-                        />
-
-                        {/* Right - Text Content */}
-                        <View className="flex-1 ml-2">
-                          {/* Status Tags */}
-                          <View className="flex-row justify-end">
-
-                            <Text className="bg-white px-2 py-1 font-semibold text-xs rounded-lg">
-                              Under Review
-                            </Text>
-                          </View>
-
-                          {/* Property Info */}
-                          <Text className="text-white font-semibold text-normal mt-2">
-                            9 BHK Independent House LA, USA
-                          </Text>
-                          <Text className="text-white text-sm ml-2">
-                            2600 sq.ft.
-                          </Text>
-                        </View>
-                      </View>
-
-                      <View className="mt-2 flex-row justify-between items-center mx-2">
-                        <View className="flex-row items-center gap-1">
-                          <Ionicons name="location-outline" size={18} color="white" />
-                          <Text className="text-sm text-white">Nainwa-ku</Text>
-                        </View>
-                        <View className="flex-row items-center gap-1">
-                          <Text className="text-lg font-bold text-white">$48760</Text>
-                          <Text className="text-sm text-white">USD</Text>
-                        </View>
-                      </View>
-
-                      <View>
-
-
-                      </View>
-
-                    </View>
-                    {/* second */}
-                    <View className="bg-gray-200 flex-row justify-between rounded-b-xl">
-                      <View className="self-start p-3">
-                        <Text className="text-gray-600 font-semibold tracking-widest">Last Added</Text>
-                        <Text className="tracking-wider font-medium text-sm bg-white rounded-full px-1 mt-1">13 feb 2025</Text>
-                      </View>
-
-                      <View className="self-end ">
-                        <View className="mt-4 p-2">
-                          <Text className="text-gray-600 text-sm font-semibold mb-1">
-                            Your Listing Score: 35%
-                          </Text>
-                          <View className="bg-gray-300 h-2 rounded-full w-full mt-1">
-                            <LinearGradient className="bg-red-950 h-2"
-                              colors={['#0f0f0f', '#4b5563']}
-                              start={{ x: 0, y: 0 }}
-                              end={{ x: 1, y: 0 }}
-                              style={{ width: "35%", borderRadius: 10 }}
-                            ></LinearGradient>
-                          </View>
-
-                        </View>
-                      </View>
-                    </View>
-
-                  </View>
-                  <View className="flex-1">
-
-                    <View className=" flex-1 bg-sky-950 rounded-t-xl p-3 w-full mt-5">
-                      {/* Top Section */}
-                      <View className="flex-row justify-between border-b border-b-gray-300 pb-3">
-                        {/* Left - Image */}
-                        <Image
-                          style={{ resizeMode: "contain" }}
-                          className="w-24 h-24 rounded-lg"
-                          source={require('../../assets/images/realState/checkoutProperty.png')}
-                        />
-
-                        {/* Right - Text Content */}
-                        <View className="flex-1 ml-2">
-                          {/* Status Tags */}
-                          <View className="flex-row justify-end">
-
-                            <Text className="bg-white px-2 py-1 font-semibold text-xs rounded-lg">
-                              Under Review
-                            </Text>
-                          </View>
-
-                          {/* Property Info */}
-                          <Text className="text-white font-semibold text-normal mt-2">
-                            9 BHK Independent House LA, USA
-                          </Text>
-                          <Text className="text-white text-sm ml-2">
-                            2600 sq.ft.
-                          </Text>
-                        </View>
-                      </View>
-
-                      <View className="mt-2 flex-row justify-between items-center mx-2">
-                        <View className="flex-row items-center gap-1">
-                          <Ionicons name="location-outline" size={18} color="white" />
-                          <Text className="text-sm text-white">Nainwa-ku</Text>
-                        </View>
-                        <View className="flex-row items-center gap-1">
-                          <Text className="text-lg font-bold text-white">$48760</Text>
-                          <Text className="text-sm text-white">USD</Text>
-                        </View>
-                      </View>
-
-                      <View>
-
-
-                      </View>
-
-                    </View>
-                    {/* second */}
-                    <View className="bg-gray-200 flex-row justify-between rounded-b-xl">
-                      <View className="self-start p-3">
-                        <Text className="text-gray-600 font-semibold tracking-widest">Last Added</Text>
-                        <Text className="tracking-wider font-medium text-sm bg-white rounded-full px-1 mt-1">13 feb 2025</Text>
-                      </View>
-
-                      <View className="self-end ">
-                        <View className="mt-4 p-2">
-                          <Text className="text-gray-600 text-sm font-semibold mb-1">
-                            Your Listing Score: 35%
-                          </Text>
-                          <View className="bg-gray-300 h-2 rounded-full w-full mt-1">
-                            <LinearGradient className="bg-red-950 h-2"
-                              colors={['#0f0f0f', '#4b5563']}
-                              start={{ x: 0, y: 0 }}
-                              end={{ x: 1, y: 0 }}
-                              style={{ width: "35%", borderRadius: 10 }}
-                            ></LinearGradient>
-                          </View>
-
-                        </View>
-                      </View>
-                    </View>
-
-                  </View>
-                  <View className="flex-1">
-
-                    <View className=" flex-1 bg-sky-950 rounded-t-xl p-3 w-full mt-5">
-                      {/* Top Section */}
-                      <View className="flex-row justify-between border-b border-b-gray-300 pb-3">
-                        {/* Left - Image */}
-                        <Image
-                          style={{ resizeMode: "contain" }}
-                          className="w-24 h-24 rounded-lg"
-                          source={require('../../assets/images/realState/checkoutProperty.png')}
-                        />
-
-                        {/* Right - Text Content */}
-                        <View className="flex-1 ml-2">
-                          {/* Status Tags */}
-                          <View className="flex-row justify-end">
-
-                            <Text className="bg-white px-2 py-1 font-semibold text-xs rounded-lg">
-                              Under Review
-                            </Text>
-                          </View>
-
-                          {/* Property Info */}
-                          <Text className="text-white font-semibold text-normal mt-2">
-                            9 BHK Independent House LA, USA
-                          </Text>
-                          <Text className="text-white text-sm ml-2">
-                            2600 sq.ft.
-                          </Text>
-                        </View>
-                      </View>
-
-                      <View className="mt-2 flex-row justify-between items-center mx-2">
-                        <View className="flex-row items-center gap-1">
-                          <Ionicons name="location-outline" size={18} color="white" />
-                          <Text className="text-sm text-white">Nainwa-ku</Text>
-                        </View>
-                        <View className="flex-row items-center gap-1">
-                          <Text className="text-lg font-bold text-white">$48760</Text>
-                          <Text className="text-sm text-white">USD</Text>
-                        </View>
-                      </View>
-
-                      <View>
-
-
-                      </View>
-
-                    </View>
-                    {/* second */}
-                    <View className="bg-gray-200 flex-row justify-between rounded-b-xl">
-                      <View className="self-start p-3">
-                        <Text className="text-gray-600 font-semibold tracking-widest">Last Added</Text>
-                        <Text className="tracking-wider font-medium text-sm bg-white rounded-full px-1 mt-1">13 feb 2025</Text>
-                      </View>
-
-                      <View className="self-end ">
-                        <View className="mt-4 p-2">
-                          <Text className="text-gray-600 text-sm font-semibold mb-1">
-                            Your Listing Score: 35%
-                          </Text>
-                          <View className="bg-gray-300 h-2 rounded-full w-full mt-1">
-                            <LinearGradient className="bg-red-950 h-2"
-                              colors={['#0f0f0f', '#4b5563']}
-                              start={{ x: 0, y: 0 }}
-                              end={{ x: 1, y: 0 }}
-                              style={{ width: "35%", borderRadius: 10 }}
-                            ></LinearGradient>
-                          </View>
-
-                        </View>
-                      </View>
-                    </View>
-
-                  </View>
-                  <View className="flex-1">
-
-                    <View className=" flex-1 bg-sky-950 rounded-t-xl p-3 w-full mt-5">
-                      {/* Top Section */}
-                      <View className="flex-row justify-between border-b border-b-gray-300 pb-3">
-                        {/* Left - Image */}
-                        <Image
-                          style={{ resizeMode: "contain" }}
-                          className="w-24 h-24 rounded-lg"
-                          source={require('../../assets/images/realState/checkoutProperty.png')}
-                        />
-
-                        {/* Right - Text Content */}
-                        <View className="flex-1 ml-2">
-                          {/* Status Tags */}
-                          <View className="flex-row justify-end">
-
-                            <Text className="bg-white px-2 py-1 font-semibold text-xs rounded-lg">
-                              Under Review
-                            </Text>
-                          </View>
-
-                          {/* Property Info */}
-                          <Text className="text-white font-semibold text-normal mt-2">
-                            9 BHK Independent House LA, USA
-                          </Text>
-                          <Text className="text-white text-sm ml-2">
-                            2600 sq.ft.
-                          </Text>
-                        </View>
-                      </View>
-
-                      <View className="mt-2 flex-row justify-between items-center mx-2">
-                        <View className="flex-row items-center gap-1">
-                          <Ionicons name="location-outline" size={18} color="white" />
-                          <Text className="text-sm text-white">Nainwa-ku</Text>
-                        </View>
-                        <View className="flex-row items-center gap-1">
-                          <Text className="text-lg font-bold text-white">$48760</Text>
-                          <Text className="text-sm text-white">USD</Text>
-                        </View>
-                      </View>
-
-                      <View>
-
-
-                      </View>
-
-                    </View>
-                    {/* second */}
-                    <View className="bg-gray-200 flex-row justify-between rounded-b-xl">
-                      <View className="self-start p-3">
-                        <Text className="text-gray-600 font-semibold tracking-widest">Last Added</Text>
-                        <Text className="tracking-wider font-medium text-sm bg-white rounded-full px-1 mt-1">13 feb 2025</Text>
-                      </View>
-
-                      <View className="self-end ">
-                        <View className="mt-4 p-2">
-                          <Text className="text-gray-600 text-sm font-semibold mb-1">
-                            Your Listing Score: 35%
-                          </Text>
-                          <View className="bg-gray-300 h-2 rounded-full w-full mt-1">
-                            <LinearGradient className="bg-red-950 h-2"
-                              colors={['#0f0f0f', '#4b5563']}
-                              start={{ x: 0, y: 0 }}
-                              end={{ x: 1, y: 0 }}
-                              style={{ width: "35%", borderRadius: 10 }}
-                            ></LinearGradient>
-                          </View>
-
-                        </View>
-                      </View>
-                    </View>
-
-                  </View>
-
-                </View>
-              )
-
-                :
-                (
-                  <View>
-                    <Text>
-                      NO Listing found
-                    </Text>
-                  </View>
-                )
-              }
-
-
-
-
-
-
-
-
-
-
-
-            </View>
-
-          </ScrollView>
-        </KeyboardAvoidingView>
-
-
-
-
-
-
+        <View className="flex-1 m-5">
+          <View className="flex-1 justify-center items-center p-3 rounded-2xl">
+            <FlatList
+              data={propertyTypes}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              renderItem={renderPropertyTypeItem}
+              contentContainerStyle={{ gap: 10 }}
+            />
+          </View>
+          <View className="mt-2">
+
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              data={properties}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={renderListening}
+              onEndReached={loadMore}
+              onEndReachedThreshold={0.5}
+            />
+
+          </View>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

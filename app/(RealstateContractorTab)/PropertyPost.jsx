@@ -1,21 +1,23 @@
 
-import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
-import React, { useState } from 'react';
+import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert, SafeAreaView } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import RadioGroup from "react-native-radio-buttons-group";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import CustomTextInput from "../../components/CustomTextInput"
 import CustomDatePicker from "../../components/CustomDatePicker"
 import API from "../../config/apiConfig"
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import CitySearch from '../../components/CitySearch';
 import axios from 'axios';
 import { router } from 'expo-router';
+import { setRealStateProperty } from "../../redux/slice/realStatePropertySlice"
 
 
 
 export default function Index() {
-  const { width: screenWidth } = Dimensions.get('window');
+  const dispatch=useDispatch();
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const postContentWidth = screenWidth * 0.95;
   const [selectedBHK, setSelectedBHK] = useState(null);
   const [selectedType, setSelectedType] = useState(null);
@@ -31,6 +33,8 @@ export default function Index() {
   const [price, setPrice] = useState('');
   const [area, setArea] = useState('');
   const [availableFrom, setAvailableFrom] = useState(null);
+
+ 
 
   const propertyTypes = [
     { id: 'residential', label: 'Residential' },
@@ -157,6 +161,7 @@ export default function Index() {
   // handle submit
   const token = useSelector((state) => state.auth.token);
   const handleSubmit = async () => {
+    console.log("handle submit function")
     const formData = new FormData();
     formData.append("property_type", selectedPropertyType);
     formData.append("city", city);
@@ -168,7 +173,22 @@ export default function Index() {
     formData.append("furnish_type", selectedType);
     formData.append("price", price);
     formData.append("available_from", availableFrom.toISOString());
+   
     console.log("form data", formData)
+    dispatch(
+      setRealStateProperty({
+        property_type: selectedPropertyType,
+        city,
+        house_type: selectedHomeType,
+        address,
+        locale: locality,
+        bhk: selectedBHK,
+        area,
+        furnish_type: selectedType,
+        price,
+        available_from: availableFrom.toISOString(),
+      })
+    );
 
     try {
       const response = await axios.post("https://g32.iamdeveloper.in/api/realstate-property", formData, {
@@ -180,6 +200,7 @@ export default function Index() {
         },
       })
       // console.log("response",response.data.message)
+     
       Alert.alert(
         "Success",
         "Property details added successfully!",
@@ -187,7 +208,6 @@ export default function Index() {
           {
             text: "OK",
             onPress: () => {
-              // Reset form fields
               setSelectedPropertyType("");
               setCity("");
               setSelectedHomeType("");
@@ -198,9 +218,7 @@ export default function Index() {
               setSelectedType("");
               setPrice("");
               setAvailableFrom("");
-
-
-              router.replace("/RealstateContractorTab");
+              router.replace("/");
             },
           },
         ],
@@ -215,39 +233,43 @@ export default function Index() {
   };
 
   return (
-    <View className="flex-1 bg-gray-200">
-      <View className="h-[40%] bg-sky-950">
-        <View className="bg-sky-950 p-5">
+    <SafeAreaView className="flex-1 bg-gray-200">
+      <LinearGradient
+        colors={['#082f49', 'transparent']}
+        style={{ height: screenHeight * 0.4 }}
+      >
+        <View className="p-5">
           <TouchableOpacity
             className="absolute top-5 left-4"
           >
-            <Ionicons name='arrow-back' size={24} color="white" />
+            {/* <Ionicons name='arrow-back' size={24} color="white" /> */}
           </TouchableOpacity>
           <Text className="text-3xl font-bold text-center text-white">Property Post</Text>
         </View>
 
-      </View>
+      </LinearGradient>
 
       <View className="rounded-3xl border border-gray-400"
         style={{
           position: 'absolute',
-          top: '10%',
+          top: screenHeight * 0.12,
           width: postContentWidth,
-          height: '90%',
+          height: screenHeight * 0.80,
           left: (screenWidth - postContentWidth) / 2,
           backgroundColor: 'white',
           marginBottom: 10,
-
         }}
       >
 
         <KeyboardAvoidingView
           className="flex-1 mx-7 my-5"
           behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
         >
           <ScrollView
-            contentContainerStyle={{ flexGrow: 1 }}
+            contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
             keyboardShouldPersistTaps="handled"
+            contentInsetAdjustmentBehavior="automatic"
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
           >
@@ -370,6 +392,6 @@ export default function Index() {
 
 
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
