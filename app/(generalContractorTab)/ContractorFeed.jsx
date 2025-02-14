@@ -58,7 +58,7 @@ export default function PropertyList() {
       setLoading(false);
     }
   };
-
+  
   // page refresh on scroll from the top 
   const handleScroll = (event) => {
     const offsetY = event.nativeEvent.contentOffset.y;

@@ -23,6 +23,9 @@ const PortfolioScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+
   const router = useRouter();
   const [newPortfolio, setNewPortfolio] = useState({
     project_name: "",
@@ -36,10 +39,11 @@ const PortfolioScreen = ({ navigation }) => {
   const token = useSelector((state) => state.auth.token);
 
   // Fetch Portfolio Function
-  const fetchPortfolio = async () => {
+  const fetchPortfolio = async (page = 1) => {
     try {
-      console.log("Fetching portfolio...");
-      const response = await axios.post(
+      console.log("Fetching user details...");
+  
+      const userResponse = await axios.post(
         "https://g32.iamdeveloper.in/api/user-detail",
         {},
         {
@@ -49,40 +53,70 @@ const PortfolioScreen = ({ navigation }) => {
           },
         }
       );
-
-      if (response.status === 200) {
-        const contractorId = response.data.id;
-        const portfolioResponse = await axios.get(
-          `https://g32.iamdeveloper.in/api/portfolios/contractor/${contractorId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        if (portfolioResponse.status === 200) {
-          console.log("Fetched portfolio:", portfolioResponse.data);
-          const formattedData = portfolioResponse.data.portfolios.map((item) => ({
-            id: item.id.toString(),
-            name: item.project_name,
-            description: item.description,
-            image: JSON.parse(item.portfolio_images || "[]")[0]
-              ? `https://g32.iamdeveloper.in/public/${JSON.parse(item.portfolio_images || "[]")[0]}`
-              : "https://via.placeholder.com/150",
-            year: new Date(item.created_at).getFullYear(),
-          }));
-
-          setPortfolioItems(formattedData);
-        }
-      }
-    } catch (error) {
-      Alert.alert(
-        "API Error",
-        error.response?.data?.message || "An error occurred"
+  
+      if (userResponse.status !== 200)
+        throw new Error("Failed to fetch user details");
+  
+      console.log("User details fetched successfully:", userResponse.data);
+      const contractorId = userResponse.data?.id;
+  
+      if (!contractorId) throw new Error("Contractor ID is missing");
+  
+      console.log(
+        `Fetching portfolios for contractor ID: ${contractorId}, Page: ${page}`
       );
+  
+      const portfolioResponse = await axios.get(
+        `https://g32.iamdeveloper.in/api/portfolios/contractor/${contractorId}?page=${page}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      if (portfolioResponse.status !== 200)
+        throw new Error("Failed to fetch portfolios");
+  
+      console.log("Fetched portfolio data:", portfolioResponse.data);
+      const portfolios = portfolioResponse.data.portfolios;
+  
+      if (!portfolios?.data || !Array.isArray(portfolios.data)) {
+        throw new Error("Invalid portfolio data format");
+      }
+  
+      const formattedData = portfolios.data.map((item) => {
+        let images = [];
+        try {
+          images = JSON.parse(item.portfolio_images || "[]");
+        } catch (err) {
+          console.error("Error parsing portfolio images:", err);
+        }
+  
+        return {
+          id: String(item.id),
+          name: item.project_name || "No Name",
+          description: item.description || "No description available",
+          image: images.length
+            ? `https://g32.iamdeveloper.in/public/${images[0]}`
+            : "https://via.placeholder.com/150",
+          year: item.created_at
+            ? new Date(item.created_at).getFullYear()
+            : "N/A",
+        };
+      });
+  
+      // ✅ Update the state completely instead of appending
+      setPortfolioItems(formattedData);
+  
+      setCurrentPage(portfolios.current_page);
+      setLastPage(portfolios.last_page);
+    } catch (error) {
+      console.error("API Error:", error);
+      Alert.alert("API Error", error.message || "An error occurred");
     } finally {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     if (token) {
@@ -141,7 +175,8 @@ const PortfolioScreen = ({ navigation }) => {
           onPress: () => {
             setModalVisible(false); // Close modal
             fetchPortfolio();
-            setNewPortfolio({ // Reset input fields
+            setNewPortfolio({
+              // Reset input fields
               project_name: "",
               city: "",
               address: "",
@@ -196,7 +231,12 @@ const PortfolioScreen = ({ navigation }) => {
       setNewPortfolio((prev) => ({
         ...prev,
         images: [...prev.images, ...result.assets.map((asset) => asset.uri)],
-        imageNames: [...prev.imageNames, ...result.assets.map((asset) => asset.fileName || `image_${Date.now()}.jpg`)],
+        imageNames: [
+          ...prev.imageNames,
+          ...result.assets.map(
+            (asset) => asset.fileName || `image_${Date.now()}.jpg`
+          ),
+        ],
       }));
     }
   };
@@ -235,9 +275,9 @@ const PortfolioScreen = ({ navigation }) => {
             )}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() =>
-                router.push(`/PortfolioDetail?id=${item.id}`)
-              } >
+              <TouchableOpacity
+                onPress={() => router.push(`/PortfolioDetail?id=${item.id}`)}
+              >
                 <View className="flex-row p-4 my-3 gap-3 items-center bg-gray-200 rounded-lg shadow-sm">
                   <Image
                     source={{ uri: item.image }}
@@ -267,7 +307,7 @@ const PortfolioScreen = ({ navigation }) => {
           <ScrollView>
             {/* Close Button */}
             <TouchableOpacity
-              onPress={() => {  
+              onPress={() => {
                 fetchPortfolio();
                 setModalVisible(false);
               }}
