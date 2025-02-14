@@ -1,4 +1,4 @@
-import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert, SafeAreaView } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -11,8 +11,9 @@ import { router } from 'expo-router';
 
 
 
+
 export default function Index() {
-  const { width: screenWidth } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const postContentWidth = screenWidth * 0.92;
 
   const [chats, setChats] = useState([
@@ -34,11 +35,11 @@ export default function Index() {
 
 
   return (
-    <View className="flex-1 bg-gray-200">
+    <SafeAreaView className="flex-1 bg-gray-200">
 
       <LinearGradient
         colors={['#082f49', 'transparent']}
-        className="h-[40%]"
+        style={{ height: screenHeight * 0.4 }}
       >
         <View className="mt-8 px-4  items-center justify-center">
           <Text className="text-3xl font-bold text-white">Chats</Text>
@@ -51,13 +52,12 @@ export default function Index() {
       <View className="rounded-3xl"
         style={{
           position: 'absolute',
-          top: '12%',
+          top: screenHeight * 0.12,
           width: postContentWidth,
-          height: '90%',
+          height: screenHeight * 0.85,
           left: (screenWidth - postContentWidth) / 2,
           backgroundColor: 'white',
-
-
+          borderRadius: 25,
         }}
       >
         <View className="flex-1">
@@ -81,6 +81,6 @@ export default function Index() {
           />
         </View>
       </View>
-    </View>
+    </SafeAreaView >
   );
 }

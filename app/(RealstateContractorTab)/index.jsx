@@ -1,4 +1,4 @@
-import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert, SafeAreaView } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,17 +8,21 @@ import { router } from 'expo-router';
 
 
 export default function Index() {
-  const { width: screenWidth } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const postContentWidth = screenWidth * 0.92;
   const userName = useSelector((state) => state.auth.user);
 
 
+
+
+
+
   return (
-    <View className="flex-1 bg-gray-200">
+    <SafeAreaView className="flex-1 bg-gray-200">
 
       <LinearGradient
         colors={['#082f49', 'transparent']}
-        className="h-[40%]"
+        style={{ height: screenHeight * 0.4 }}
       >
         <View className="mt-10 px-4 gap-2 flex-row items-center">
           <Image
@@ -50,9 +54,9 @@ export default function Index() {
       <View className="rounded-3xl "
         style={{
           position: 'absolute',
-          top: '27%',
+          top: screenHeight * 0.20,
           width: postContentWidth,
-          height: '80%',
+          height: screenHeight * 0.80,
           left: (screenWidth - postContentWidth) / 2,
           backgroundColor: 'white',
 
@@ -69,7 +73,7 @@ export default function Index() {
             contentContainerStyle={{ paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
           >
-if()
+
 
             <View className="m-5">
               <View className="flex-row items-center justify-between h-32 px-4 ">
@@ -250,6 +254,6 @@ if()
 
 
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
