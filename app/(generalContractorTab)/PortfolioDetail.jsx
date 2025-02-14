@@ -60,8 +60,10 @@ const PortfolioDetail = () => {
         setLoading(false);
       }
     };
+  
     fetchPortfolioDetails();
-  }, [id, token]);
+  }, [id, token, modalVisible]); // 🔹 Added modalVisible as dependency
+  
 
   const handleDelete = () => {
     Alert.alert(
