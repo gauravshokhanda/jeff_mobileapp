@@ -10,7 +10,7 @@ import {
   SafeAreaView,
   Image,
 } from "react-native";
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector } from "react-redux";
@@ -26,9 +26,6 @@ export default function Index() {
   const [selectedTab, setSelectedTab] = useState("realEstate");
   const [realEstateList, setRealEstateList] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
-
-  
-  
 
   useEffect(() => {
     const fetchContractors = async () => {
@@ -102,7 +99,8 @@ export default function Index() {
 
       {/* Contact Icons */}
       <View className="flex-row justify-between gap-2 items-center px-4 pb-4">
-        <TouchableOpacity className="bg-sky-950 p-2 rounded-lg"
+        <TouchableOpacity
+          className="bg-sky-950 p-2 rounded-lg"
           onPress={() => router.push(`ContractorProfile/?id=${item.id}`)}
         >
           <Text className="text-white">Visit Profile</Text>
@@ -123,33 +121,35 @@ export default function Index() {
     </View>
   );
 
-  
   useEffect(() => {
     const fetchRealEstateProperties = async (page = 1) => {
       try {
         const response = await API.get(`get-property/type?page=${page}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-    
+
         // Check if response and properties exist
-        if (!response.data || !response.data.properties || !response.data.properties.data) {
+        if (
+          !response.data ||
+          !response.data.properties ||
+          !response.data.properties.data
+        ) {
           console.error("Invalid API response:", response.data);
           return;
         }
-    
+
         // Extracting correct data
         const { data, last_page } = response.data.properties;
-    
+
         // Ensure data is an array before mapping
         if (!Array.isArray(data)) {
           console.error("Unexpected data format:", data);
           return;
         }
-    
+
         const formattedProperties = data.map((item) => ({
-          
           id: item.id?.toString() || "N/A",
-          user_id: item.user_id?.toString() || "N/A", 
+          user_id: item.user_id?.toString() || "N/A",
           property_type: item.property_type || "Unknown",
           city: item.city || "Unknown",
           house_type: item.house_type || "Unknown",
@@ -163,32 +163,37 @@ export default function Index() {
             ? moment(item.available_from).format("MMMM D, YYYY")
             : "N/A",
         }));
-    
+
         setRealEstateList(formattedProperties);
         setTotalPages(last_page || 1);
       } catch (error) {
         console.error("Error fetching real estate properties:", error);
       }
     };
-    
-    
 
     fetchRealEstateProperties();
   }, [token]);
 
-
-
-
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
-      <LinearGradient colors={["#082f49", "transparent"]} style={{ height: screenHeight * 0.4 }}>
+      <LinearGradient
+        colors={["#082f49", "transparent"]}
+        style={{ height: screenHeight * 0.4 }}
+      >
         <View className="mt-8 px-4">
-          <Text className="text-2xl font-semibold text-white">Properties & Contractors</Text>
+          <Text className="text-2xl font-semibold text-white">
+            Properties & Contractors
+          </Text>
         </View>
         <View className="mx-5 mt-5 items-end">
           <View className="bg-gray-100 h-12 mr-5 rounded-full px-3 flex-row items-center justify-between">
             <Ionicons name="search" size={18} color="black" />
-            <TextInput placeholder="Search" placeholderTextColor={"gray"} style={{ fontSize: 14 }} className="flex-1 ml-5 text-lg" />
+            <TextInput
+              placeholder="Search"
+              placeholderTextColor={"gray"}
+              style={{ fontSize: 14 }}
+              className="flex-1 ml-5 text-lg"
+            />
             <Ionicons name="filter-sharp" size={26} color="black" />
           </View>
         </View>
@@ -206,16 +211,39 @@ export default function Index() {
           padding: 20,
         }}
       >
-        <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        <KeyboardAvoidingView
+          className="flex-1"
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
           <View className="flex-row justify-around mb-4">
-            <TouchableOpacity onPress={() => setSelectedTab("realEstate")}
-              className={`px-4 py-2 rounded-xl ${selectedTab === "realEstate" ? "bg-sky-950" : "bg-gray-300"}`}>
-              <Text className={selectedTab === "realEstate" ? "text-white" : "text-black"}>Real Estate Property</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setSelectedTab("contractors")}
-              className={`px-4 py-2 rounded-xl ${selectedTab === "contractors" ? "bg-sky-950" : "bg-gray-300"}`}>
-              <Text className={selectedTab === "contractors" ? "text-white" : "text-black"}>Contractors</Text>
-            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectedTab("realEstate")}
+              className={`px-4 py-2 rounded-xl ${
+                selectedTab === "realEstate" ? "bg-sky-950" : "bg-gray-300"
+              }`}
+            >
+              <Text
+                className={
+                  selectedTab === "realEstate" ? "text-white" : "text-black"
+                }
+              >
+                Real Estate Property
+              </Text>
+            </TouchableOpacity >
+            <TouchableOpacity
+              onPress={() => setSelectedTab("contractors")}
+              className={`px-4 py-2 rounded-xl ${
+                selectedTab === "contractors" ? "bg-sky-950" : "bg-gray-300"
+              }`}
+            >
+              <Text
+                className={
+                  selectedTab === "contractors" ? "text-white" : "text-black"
+                }
+              >
+                Contractors
+              </Text>
+            </TouchableOpacity >
           </View>
 
           {selectedTab === "realEstate" ? (
@@ -223,31 +251,101 @@ export default function Index() {
               data={realEstateList}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
-                <View className="p-3 bg-gray-100 rounded-lg mb-2">
-                  <Text className="text-lg font-semibold">{item.property_type}</Text>
-                  <Text className="text-sm text-gray-600">{item.city}, {item.house_type}</Text>
-                  <Text className="text-sm">Address: {item.address}</Text>
-                  <Text className="text-sm">Locality: {item.locality}</Text>
-                  <Text className="text-sm">BHK: {item.bhk}</Text>
-                  <Text className="text-sm">Area: {item.area}</Text>
-                  <Text className="text-sm">Furnish Type: {item.furnish_type}</Text>
-                  <Text className="text-sm">Price: {item.price}</Text>
-                  <Text className="text-sm">Available From: {item.available_from}</Text>
+                <TouchableOpacity  onPress={() => router.push(`/RealEstateDetails?id=${item.id}`)}>
+                <View className="bg-sky-950 p-3 rounded-lg mb-4">
+                  {/* Header: Location & Tags */}
+                  <View className="flex-row items-center justify-between">
+                    <View className="flex-row items-center">
+                      <Ionicons
+                        name="location-outline"
+                        size={16}
+                        color="white"
+                      />
+                      <Text className="text-white ml-2 font-semibold text-base">
+                        {item.city}
+                      </Text>
+                    </View>
+                    <View className="flex-row gap-2">
+                      <View className="bg-white px-3 py-1 rounded-full">
+                        <Text className="text-sky-950 text-xs font-semibold">
+                          {item.property_type}
+                        </Text>
+                      </View>
+                      <View className="bg-white px-3 py-1 rounded-full">
+                        <Text className="text-sky-950 text-xs font-semibold">
+                          {item.house_type}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
 
-                  <View className="flex-row w-full justify-between mt-2">
-                  <TouchableOpacity className="bg-sky-950 py-2 px-4  rounded-lg"><Text className="text-white">View Profile</Text></TouchableOpacity>
-                  <TouchableOpacity className="bg-sky-950 py-2 px-4 rounded-lg"   onPress={() => router.push(`/ChatScreen?user_id=${item.user_id}&id=${item.id}`)} ><Text className="text-white">Chat</Text></TouchableOpacity>
+                  {/* Property Icon & Details */}
+                  <View className="flex-row items-center mt-2">
+                    <Ionicons name="home-outline" size={60} color="white" />
+                    <View className="ml-4">
+                      <Text className="text-white text-2xl font-bold">
+                        ${item.price} USD
+                      </Text>
+                      <View className="flex-row items-center mt-1">
+                        <Ionicons
+                          name="calendar-outline"
+                          size={16}
+                          color="white"
+                        />
+                        <Text className="text-white ml-2 text-sm">
+                          Available from {item.available_from}
+                        </Text>
+                      </View>
+                      <View className="flex-row items-center mt-1">
+                        <Ionicons
+                          name="resize-outline"
+                          size={16}
+                          color="white"
+                        />
+                        <Text className="text-white ml-2 text-sm">
+                          Area: {item.area}
+                        </Text>
+                      </View>
+                      <View className="flex-row items-center mt-1">
+                        <Ionicons name="bed-outline" size={16} color="white" />
+                        <Text className="text-white ml-2 text-sm">
+                          {item.furnish_type}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  {/* Bottom Section: CTA */}
+                  <View className="p-3 mt-3 rounded-lg flex-row items-center justify-between">
+                  <TouchableOpacity className="bg-white px-4 py-2 rounded-lg"  onPress={() =>
+                        router.push(
+                          `/ContractorProfile?user_id=${item.user_id}`
+                        )
+                      }>
+                      <Text className="text-sky-950 font-semibold">View Contractor</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      className=" bg-white py-2 px-4 rounded-lg"
+                      onPress={() =>
+                        router.push(
+                          `/ChatScreen?user_id=${item.user_id}&id=${item.id}`
+                        )
+                      }
+                    >
+                      <Text className="text-sky-950 font-semibold">Chat</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
+                </TouchableOpacity>
               )}
             />
           ) : (
             <FlatList
-            data={contractors}
-            renderItem={renderContractor}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={{ padding: 10 }}
-          />
+              data={contractors}
+              renderItem={renderContractor}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={{ padding: 10 }}
+            />
           )}
         </KeyboardAvoidingView>
       </View>
