@@ -1,24 +1,59 @@
-import { useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions, SafeAreaView, FlatList } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { API, baseUrl } from "../../config/apiConfig";
+import { useSelector } from "react-redux";
 
 export default function PropertyDetails() {
-  const router = useRouter();
+  const { id } = useLocalSearchParams();
+  const token = useSelector((state) => state.auth.token);
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-  const [selectedPropertyType, setSelectedPropertyType] = useState('detail');
 
-  const propertyTypes = [
+  const [selectedPropertyType, setSelectedPropertyType] = useState('detail');
+  const [property, setProperty] = useState(null);
+  const [images, setImages] = useState([]);
+  const [mainImage, setMainImage] = useState("");
+  const [designImages, setDesignImages] = useState([]);
+
+  const propertyTypes = useMemo(() => [
     { id: 'detail', label: 'Detail' },
     { id: 'gallery', label: 'Gallery' },
-  ];
+  ], []);
+
+  const handleFetchListing = async () => {
+    try {
+      const response = await API.get(`realstate-property/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      // console.log("single response", response.data);
+  
+      if (response.data.property) {
+        const propertyData = response.data.property;
+  
+        // Parse property_images and add the full API URL if needed
+        const imagesArray = JSON.parse(propertyData.property_images || "[]").map(
+          (img) => `${baseUrl}/${img}`
+        );
+  
+        setProperty(propertyData);
+        setMainImage(imagesArray.length > 0 ? imagesArray[0] : null);
+        setDesignImages(imagesArray);
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  useEffect(() => {
+    handleFetchListing();
+  }, [token, id]);
 
   const renderPropertyTypeItem = ({ item }) => {
     const isSelected = selectedPropertyType === item.id;
     return (
       <TouchableOpacity
-        className={`px-8 py-2 flex-row items-center justify-center border-b-2 ${isSelected ? "border-sky-900" : "border-gray-300"}`}
+        className={`px-8 py-2 flex-row items-center justify-between border-b-2 ${isSelected ? "border-sky-900" : "border-gray-300"}`}
         onPress={() => setSelectedPropertyType(item.id)}
       >
         <Text className={`text-lg font-medium ${isSelected ? "text-sky-900" : "text-gray-400"}`}>
@@ -28,15 +63,21 @@ export default function PropertyDetails() {
     );
   };
 
-  const propertyDetails = [
-    { label: "City", value: "Adjuntas" },
-    { label: "Address", value: "Kharak Sachiveaalya F block" },
-    { label: "Available from", value: "25/02/06" },
-    { label: "Property Type", value: "Single Family" },
-    { label: "Building Type", value: "Apartment" },
-    { label: "Area", value: "477sqft" },
-    { label: "Locality", value: "bijnor" },
-  ];
+  // Memoize propertyDetails calculation
+  const propertyDetails = useMemo(() => {
+    return property ? [
+      { label: "City", value: property.city },
+      { label: "Address", value: property.address },
+      { label: "Available from", value: property.available_from.split("T")[0] },
+      { label: "Property Type", value: property.property_type },
+      { label: "Building Type", value: property.house_type },
+      { label: "Area", value: `${property.area} sqft` },
+      { label: "Locality", value: property.locale },
+      { label: "Price", value: `₹${property.price}` },
+      { label: "Furnish Type", value: property.furnish_type },
+      { label: "BHK", value: property.bhk },
+    ] : [];
+  }, [property]);
 
   const renderDetailsItems = ({ item }) => (
     <View className="flex-row mb-2">
@@ -45,30 +86,15 @@ export default function PropertyDetails() {
     </View>
   );
 
-  const [mainImage, setMainImage] = useState("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCf5FTK5UEZ2gfGA5Yyn30lpa6RdfwIjKoxQ&s");
-  const designImages = [
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYZ5jI-Fa5ojebuQo08sYifb8QH1zP0MPoIc70VmE8Mh8e-4zqKnhNePwiZAVXMUo32Ms&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBoiOlNizLXLvvt_yRoF8NJCxyhDBQaHab9yI3iVJeQ530uYYy0HwVFpeNd6_ILZ85ztw&usqp=CAU",
-    "https://ssl.cdn-redfin.com/photo/1/mbphotov2/044/genMid.2308044_0.jpg",
-    "https://photos.zillowstatic.com/fp/e47534bc683f185c9f002f2e19dbcc7d-p_c.jpg"
-  ];
-
-  const property = {
-    total_cost: 500000,
-    number_of_days: 120,
-    area: 2000,
-    city: "New Delhi",
-    project_type: "Residential",
-    description: "A beautiful 3BHK apartment in the heart of the city with modern amenities.",
-  };
-
   return (
-    <SafeAreaView className="flex-1 bg-gray-100">
+    <SafeAreaView className="flex-1 bg-gray-100"> 
       <View className="flex-1">
+        {/* Main Image */}
         <View className="relative">
           <Image source={{ uri: mainImage }} className="w-full h-60 rounded-lg" />
         </View>
 
+        {/* Thumbnail Gallery */}
         <ScrollView horizontal className="mt-4 p-2 bg-white rounded-lg mx-2"
           style={{
             elevation: 15,
@@ -87,6 +113,7 @@ export default function PropertyDetails() {
         </ScrollView>
       </View>
 
+      {/* Property Type Tabs */}
       <View className="mt-4 p-4 bg-white rounded-lg mx-2">
         <FlatList
           data={propertyTypes}
@@ -102,14 +129,17 @@ export default function PropertyDetails() {
         />
       </View>
 
+      {/* Property Details & Gallery */}
       <View className="flex-1 p-4">
         {selectedPropertyType === 'detail' ? (
           <View>
             {/* Header */}
             <View className="flex-row justify-between items-center mb-3">
               <Text className="text-xl font-bold mb-2">Property Details:</Text>
-              <TouchableOpacity className="bg-blue-900 px-2 py-1 rounded-md flex-row items-center">
-                <Text className="text-white text-lg font-semibold">⏳ Fully Furnished</Text>
+              <TouchableOpacity className="bg-sky-950 px-2 py-1 rounded-md flex-row items-center">
+                <Text className="text-white text-lg font-semibold">
+                  {property?.furnish_type ? `⏳ ${property.furnish_type} Furnished` : "⏳ Fully Furnished"}
+                </Text>
               </TouchableOpacity>
             </View>
 
@@ -127,8 +157,8 @@ export default function PropertyDetails() {
             <FlatList
               data={designImages}
               keyExtractor={(item, index) => index.toString()}
-              numColumns={selectedPropertyType === 'gallery' ? 2 : 1}
-              key={selectedPropertyType}
+              numColumns={2}
+              key={"gallery"}
               columnWrapperStyle={{ justifyContent: "space-between", marginBottom: 10 }}
               renderItem={({ item }) => (
                 <Image source={{ uri: item }}

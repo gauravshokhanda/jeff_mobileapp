@@ -1,9 +1,13 @@
-import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert, SafeAreaView } from 'react-native';
-import React, { useState } from 'react';
+import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert, SafeAreaView, ActivityIndicator } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSelector } from "react-redux";
 import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { API, baseUrl } from '../../config/apiConfig';
+import Swiper from 'react-native-swiper';
+
+
 
 
 
@@ -11,6 +15,166 @@ export default function Index() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const postContentWidth = screenWidth * 0.92;
   const userName = useSelector((state) => state.auth.user);
+  const token = useSelector((state) => state.auth.token);
+  const userId = userName.id;
+
+  const [properties, setProperties] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(false);
+
+
+
+  const fetchProperties = async (page = 1) => {
+    if (loading || page > totalPages) return;
+
+    setLoading(true);
+    try {
+      const response = await API.get(
+        `realstate-property/contractor/${userId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      // console.log("response", response.data.properties.data)
+      // console.log("response", response.data.properties.last_page)
+      console.log("response", response.data.properties)
+      setProperties(page === 1 ? [response.data.properties.data[0]] : [...prev, response.data.properties.data[0]]);
+
+      setCurrentPage(response.data.properties.current_page);
+      setTotalPages(response.data.properties.last_page);
+    } catch (error) {
+      console.log("Error fetching properties:", error);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      setProperties([]);
+      setCurrentPage(1);
+      fetchProperties(1, searchQuery);
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [token]);
+
+  const renderListening = ({ item }) => {
+    const propertyImages = JSON.parse(item.property_images) || [];
+
+    return (
+      <View
+        style={{
+        }}
+        className="rounded-xl bg-white shadow-md overflow-hidden mb-4"
+      >
+        <TouchableOpacity
+          className="bg-sky-950 p-4 flex-row items-start"
+          onPress={() => router.push(`SingleListing?id=${item.id}`)}
+        >
+          <View className="flex-1">
+            {/* Location and Tags */}
+            <View className="flex-row justify-between items-center">
+              <View className="flex-row items-center">
+                <Ionicons name="location" size={20} color="white" />
+                <Text className="text-white font-bold ml-2">{item.city}</Text>
+              </View>
+              <View className="flex-row gap-2">
+                <View className="bg-white rounded-full px-3"
+
+                >
+                  <Text className="text-slate-700 text-sm"
+                    style={{ fontSize: screenWidth * 0.03 }}
+                  >{item.house_type}</Text>
+                </View>
+                <View className="bg-white rounded-full p-1 justify-center items-center">
+                  <Text className="text-slate-700 text-sm">{item.locale}</Text>
+                </View>
+              </View>
+            </View>
+
+            <View className="my-2">
+              <Text className="text-gray-100">{item.address}</Text>
+            </View>
+
+            <View className="flex-row items-center">
+              <View
+                style={{
+                  width: screenWidth * 0.2,
+                  height: screenWidth * 0.2,
+                }}
+                className="mr-4"
+              >
+                {propertyImages.length > 0 ? (
+                  <Swiper
+                    className="w-full h-full"
+                    loop
+                    autoplay
+                    autoplayTimeout={3}
+                    showsPagination={false}
+                  >
+                    {propertyImages.map((image, index) => (
+                      <View key={index} className="w-full h-full">
+                        <Image
+                          className="rounded-full"
+                          source={{
+                            uri: `${baseUrl}${image.replace(/\\/g, '/')}`,
+                          }}
+                          style={{ width: '100%', height: '100%' }}
+                          resizeMode="cover"
+                        />
+                      </View>
+                    ))}
+                  </Swiper>
+                ) : (
+                  <Image
+                    source={require("../../assets/images/realState/checkoutProperty.png")}
+                    style={{ width: '100%', height: '100%', borderRadius: 10 }}
+                    resizeMode="cover"
+                  />
+                )}
+              </View>
+
+              <View className="flex-1 space-y-2 mt-2">
+                <View className="flex-row items-center justify-start">
+                  <View className="flex-row items-center justify-center gap-2">
+                    <Text className="text-white text-2xl font-bold">${item.price}</Text>
+                    <Text className="text-gray-300 text-lg">USD</Text>
+                  </View>
+                </View>
+
+                <View className="flex-row items-center">
+                  <Ionicons name="calendar-outline" size={16} color="white" />
+                  <Text className="text-gray-300 ml-2">
+                    Available from {new Date(item.available_from).toISOString().split('T')[0]}
+                  </Text>
+                </View>
+
+                <View className="flex-row items-center">
+                  <Ionicons name="resize-outline" size={16} color="white" />
+                  <Text className="text-gray-300 ml-2">Area - {item.area} sq ft</Text>
+                </View>
+
+                <View className="flex-row items-center">
+                  <Ionicons name="bed-outline" size={16} color="white" />
+                  <Text className="text-gray-300 ml-2">{item.furnish_type}</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </TouchableOpacity>
+
+        {/* Bottom Section with Button */}
+        <View className="bg-gray-200 rounded-b-2xl p-4 flex-row justify-between items-center">
+          <Text className="text-lg font-semibold text-gray-600">Get ready list of buyers</Text>
+          <TouchableOpacity className="bg-white px-4 py-2 rounded-lg shadow-md">
+            <Text className="text-indigo-900 font-semibold">Update</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
 
 
 
@@ -76,102 +240,27 @@ export default function Index() {
 
 
             <View className="m-5">
-              <View className="flex-row items-center justify-between h-32 px-4 ">
 
-                <View className="">
-                  <Text className="text-lg font-semibold text-black">Need Any help?</Text>
-                  <TouchableOpacity className="bg-sky-900 px-4 py-2 rounded-lg mt-2 self-start ml-5">
-                    <Text className="text-white font-semibold tracking-widest">Chat us</Text>
-                  </TouchableOpacity>
-                </View>
+              <View className="rounded-2xl p-2">
 
-
-                <Image
-                  source={require("../../assets/images/realState/chatGroupImage.png")}
-                  className="w-40 h-28"
-                  style={{ resizeMode: "contain" }}
-                />
-              </View>
-
-              <View className=" rounded-2xl mt-10 p-2">
                 <Text className="text-2xl font-semibold tracking-widest mb-4 text-black">Checkout your properties.</Text>
+                {loading == true ? (
+                  <ActivityIndicator size="large" color="#082f49" />
+                ) : (
+                  <FlatList
+                    showsVerticalScrollIndicator={false}
+                    data={properties}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={renderListening}
 
-                <View className="bg-sky-950 rounded-t-xl p-3 w-full">
-                  {/* Top Section */}
-                  <View className="flex-row justify-between">
-                    {/* Left - Image */}
-                    <Image
-                      style={{ resizeMode: "contain" }}
-                      className="w-24 h-24 rounded-lg"
-                      source={require('../../assets/images/realState/checkoutProperty.png')}
-                    />
-
-                    {/* Right - Text Content */}
-                    <View className="flex-1 ml-2">
-                      {/* Status Tags */}
-                      <View className="flex-row justify-between">
-                        <Text className="bg-white px-2 py-1 font-semibold text-xs mr-1">
-                          Plan upgrade required
-                        </Text>
-                        <Text className="bg-white px-2 py-1 font-semibold text-xs">
-                          Under Review
-                        </Text>
-                      </View>
-
-                      {/* Property Info */}
-                      <Text className="text-white font-semibold text-lg mt-2">
-                        9 BHK Independent House LA, USA
-                      </Text>
-                      <Text className="text-white text-sm">
-                        2600 sq.ft. - $70000.0
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* Progress Bar Section */}
-                  <View className="mt-3">
-                    <Text className="text-white text-xs font-semibold">
-                      Your Listing Score: 35%
-                    </Text>
-                    <View className="bg-gray-300 h-2 rounded-full w-full mt-1">
-                      <LinearGradient className="bg-red-950 h-2"
-                        colors={['#0f0f0f', '#4b5563']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={{ width: "35%", borderRadius: 10 }}
-                      ></LinearGradient>
-                    </View>
-                  </View>
-
-                  {/* Footer Section */}
-                  <TouchableOpacity className="mt-3 bg-sky-900 py-2 px-3 flex-row justify-between items-center rounded-lg">
-                    <Text className="text-white font-semibold text-sm">
-                      Select Preferred Language for Callback
-                    </Text>
-                    <Ionicons name="chevron-forward" size={16} color="white" />
-                  </TouchableOpacity>
-                </View>
-                <View className="bg-gray-200 rounded-b-2xl p-5 shadow-lg w-full flex-row justify-between items-center">
-
-                  <View className="flex-1">
-                    <Text className="text-lg font-semibold text-gray-600">
-                      Get ready list of buyers
-                    </Text>
-                  </View>
-
-
-                  <TouchableOpacity className="bg-white px-4 py-2 rounded-lg shadow-md">
-                    <Text className="text-indigo-900 font-semibold">Upgrade Now</Text>
-                  </TouchableOpacity>
-
-
-                </View>
+                  />
+                )}
 
 
 
 
               </View>
-              <View className="bg-[#505C3F] py-4 rounded-2xl  mt-9 shadow-lg flex-row  justify-between w-full">
+              <View className="bg-[#505C3F] py-4 rounded-2xl  mt-6 shadow-lg flex-row  justify-between w-full">
                 {/* Left Section - Text */}
                 <View className="pl-2">
                   <Text className="text-white text-2xl font-semibold tracking-widest">New Properties!</Text>
