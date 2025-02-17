@@ -83,12 +83,13 @@ export default function PropertyDetails() {
     }
 
     try {
-      const response = await axios.get(`https://g32.iamdeveloper.in/api/user/show/${user_id}`, {
+      const response = await axios.get(`https://g32.iamdeveloper.in/api/users/listing/${user_id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.status === 200) {
-        const phoneNumber = response.data.data.number;
+        console.log(response);
+        const phoneNumber = response.data.number;
 
         if (phoneNumber) {
           Linking.openURL(`tel:${phoneNumber}`);

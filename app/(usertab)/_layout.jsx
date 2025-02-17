@@ -202,6 +202,13 @@ export default function TabRoot() {
             href: null,
           }}
         />
+         <Tabs.Screen
+          name="RealEstateDetails"
+          options={{
+            href: null,
+          }}
+        />
+        
         <Tabs.Screen
           name="User"
           options={{

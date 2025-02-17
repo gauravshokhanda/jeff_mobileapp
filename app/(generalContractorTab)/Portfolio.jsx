@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -15,93 +15,116 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import * as ImagePicker from "expo-image-picker";
+import { useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 
 const PortfolioScreen = ({ navigation }) => {
   const [portfolioItems, setPortfolioItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+
+  const router = useRouter();
   const [newPortfolio, setNewPortfolio] = useState({
     project_name: "",
     city: "",
     address: "",
     description: "",
-    images: [], // Ensure images is always an array
+    images: [],
     imageNames: [],
   });
 
   const token = useSelector((state) => state.auth.token);
 
-  useEffect(() => {
-    const fetchPortfolio = async () => {
-      try {
-        console.log("Token being sent:", token);
-        const response = await axios.post(
-          "https://g32.iamdeveloper.in/api/user-detail",
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (response.status === 200) {
-          const userData = response.data;
-          const portfolioImages = JSON.parse(userData.portfolio || "[]");
-          const portfolioData = portfolioImages.map((image, index) => ({
-            id: index.toString(),
-            image: `https://g32.iamdeveloper.in/public/${image}`,
-            name: userData.project_name || `Project ${index + 1}`,
-            description: userData.description || "No description available.",
-            year: new Date(userData.created_at).getFullYear().toString(),
-          }));
-          setPortfolioItems(portfolioData);
+  // Fetch Portfolio Function
+  const fetchPortfolio = async (page = 1) => {
+    try {
+      console.log("Fetching user details...");
+  
+      const userResponse = await axios.post(
+        "https://g32.iamdeveloper.in/api/user-detail",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      } catch (error) {
-        Alert.alert(
-          "API Error",
-          error.response?.data?.message || "An error occurred"
-        );
-      } finally {
-        setLoading(false);
+      );
+  
+      if (userResponse.status !== 200)
+        throw new Error("Failed to fetch user details");
+  
+      console.log("User details fetched successfully:", userResponse.data);
+      const contractorId = userResponse.data?.id;
+  
+      if (!contractorId) throw new Error("Contractor ID is missing");
+  
+      console.log(
+        `Fetching portfolios for contractor ID: ${contractorId}, Page: ${page}`
+      );
+  
+      const portfolioResponse = await axios.get(
+        `https://g32.iamdeveloper.in/api/portfolios/contractor/${contractorId}?page=${page}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      if (portfolioResponse.status !== 200)
+        throw new Error("Failed to fetch portfolios");
+  
+      console.log("Fetched portfolio data:", portfolioResponse.data);
+      const portfolios = portfolioResponse.data.portfolios;
+  
+      if (!portfolios?.data || !Array.isArray(portfolios.data)) {
+        throw new Error("Invalid portfolio data format");
       }
-    };
+  
+      const formattedData = portfolios.data.map((item) => {
+        let images = [];
+        try {
+          images = JSON.parse(item.portfolio_images || "[]");
+        } catch (err) {
+          console.error("Error parsing portfolio images:", err);
+        }
+  
+        return {
+          id: String(item.id),
+          name: item.project_name || "No Name",
+          description: item.description || "No description available",
+          image: images.length
+            ? `https://g32.iamdeveloper.in/public/${images[0]}`
+            : "https://via.placeholder.com/150",
+          year: item.created_at
+            ? new Date(item.created_at).getFullYear()
+            : "N/A",
+        };
+      });
+  
+      // ✅ Update the state completely instead of appending
+      setPortfolioItems(formattedData);
+  
+      setCurrentPage(portfolios.current_page);
+      setLastPage(portfolios.last_page);
+    } catch (error) {
+      console.error("API Error:", error);
+      Alert.alert("API Error", error.message || "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
+  useEffect(() => {
     if (token) {
       fetchPortfolio();
     }
   }, [token]);
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: true, // iOS supports this, Android may not
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled && result.assets?.length > 0) {
-      console.log("Selected Images:", result.assets);
-
-      setNewPortfolio((prev) => ({
-        ...prev,
-        images: [
-          ...(prev.images || []),
-          ...result.assets.map((asset) => asset.uri),
-        ], // Ensure it's always an array
-        imageNames: [
-          ...(prev.imageNames || []),
-          ...result.assets.map(
-            (asset) => asset.fileName || `image_${Date.now()}.jpg`
-          ),
-        ],
-      }));
-    }
-  };
-
+  // Add Portfolio Item Function
   const addPortfolioItem = async () => {
     console.log("New Portfolio Data:", newPortfolio);
 
@@ -124,12 +147,11 @@ const PortfolioScreen = ({ navigation }) => {
       formData.append("address", newPortfolio.address);
       formData.append("description", newPortfolio.description);
 
-      // Append each image separately with the same key name
       newPortfolio.images.forEach((uri, index) => {
         formData.append(`portfolio_images[]`, {
           uri,
           name: newPortfolio.imageNames[index] || `image_${index}.jpg`,
-          type: "image/jpeg", // Adjust as needed
+          type: "image/jpeg",
         });
       });
 
@@ -146,18 +168,28 @@ const PortfolioScreen = ({ navigation }) => {
         }
       );
 
-      console.log("API Response:", response.data); // Log the response
-      Alert.alert("Success", JSON.stringify(response.data, null, 2)); // Show response in an alert
+      console.log("API Response:", response.data);
+      Alert.alert("Success", "Portfolio added successfully!", [
+        {
+          text: "OK",
+          onPress: () => {
+            setModalVisible(false); // Close modal
+            fetchPortfolio();
+            setNewPortfolio({
+              // Reset input fields
+              project_name: "",
+              city: "",
+              address: "",
+              description: "",
+              images: [],
+              imageNames: [],
+            });
+          },
+        },
+      ]);
 
       if (response.status === 200) {
-        setPortfolioItems([
-          ...portfolioItems,
-          {
-            id: Date.now().toString(),
-            ...newPortfolio,
-            year: new Date().getFullYear().toString(),
-          },
-        ]);
+        fetchPortfolio(); // Fetch updated data from API
         setModalVisible(false);
         setNewPortfolio({
           project_name: "",
@@ -165,7 +197,7 @@ const PortfolioScreen = ({ navigation }) => {
           address: "",
           description: "",
           images: [],
-          portfolio_images: [],
+          imageNames: [],
         });
       }
     } catch (error) {
@@ -177,6 +209,37 @@ const PortfolioScreen = ({ navigation }) => {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchPortfolio();
+    }, [])
+  );
+
+  // Pick Image Function
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets) {
+      console.log("Selected Images:", result.assets);
+
+      setNewPortfolio((prev) => ({
+        ...prev,
+        images: [...prev.images, ...result.assets.map((asset) => asset.uri)],
+        imageNames: [
+          ...prev.imageNames,
+          ...result.assets.map(
+            (asset) => asset.fileName || `image_${Date.now()}.jpg`
+          ),
+        ],
+      }));
+    }
+  };
   return (
     <View className="flex-1 bg-white">
       <View className="bg-sky-950 p-4 h-24 mt-12 flex-row items-center">
@@ -193,7 +256,7 @@ const PortfolioScreen = ({ navigation }) => {
       </View>
 
       <View className="mt-6 px-4 w-full">
-        <View className="flex-row gap-2 items-center">
+        <View className="flex-row gap-2 mb-2 items-center">
           <Text className="font-bold text-xl text-sky-950 tracking-widest">
             Portfolio
           </Text>
@@ -206,26 +269,33 @@ const PortfolioScreen = ({ navigation }) => {
           <ActivityIndicator size="large" color="skyblue" className="mt-10" />
         ) : (
           <FlatList
+            className="mb-48"
             data={portfolioItems.filter((item) =>
               item.name.toLowerCase().includes(searchText.toLowerCase())
             )}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View className="flex-row p-4 my-3 gap-3 items-center bg-gray-100 rounded-lg shadow-sm">
-                <Image
-                  source={{ uri: item.image }}
-                  className="w-32 h-32 rounded-lg"
-                />
-                <View className="ml-4 flex-1">
-                  <Text className="text-lg font-bold text-gray-900">
-                    {item.name}
-                  </Text>
-                  <Text className="text-gray-700 mt-1">{item.description}</Text>
-                  <Text className="text-black font-semibold mt-2">
-                    Year: {item.year}
-                  </Text>
+              <TouchableOpacity
+                onPress={() => router.push(`/PortfolioDetail?id=${item.id}`)}
+              >
+                <View className="flex-row p-4 my-3 gap-3 items-center bg-gray-200 rounded-lg shadow-sm">
+                  <Image
+                    source={{ uri: item.image }}
+                    className="w-32 h-32 rounded-lg"
+                  />
+                  <View className="ml-4 flex-1">
+                    <Text className="text-lg font-bold text-gray-900">
+                      {item.name}
+                    </Text>
+                    <Text className="text-gray-700 mt-1">
+                      {item.description}
+                    </Text>
+                    <Text className="text-black font-semibold mt-2">
+                      Year: {item.year}
+                    </Text>
+                  </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             )}
           />
         )}
@@ -237,10 +307,13 @@ const PortfolioScreen = ({ navigation }) => {
           <ScrollView>
             {/* Close Button */}
             <TouchableOpacity
-              onPress={() => setModalVisible(false)}
+              onPress={() => {
+                fetchPortfolio();
+                setModalVisible(false);
+              }}
               className="absolute right-4 top-4 p-2"
             >
-              <Ionicons name="close-circle" size={30} color="black" />
+              <Ionicons name="close-circle" size={40} color="black" />
             </TouchableOpacity>
 
             <Text className="text-xl font-bold text-gray-900 mb-4 mt-10 text-center">

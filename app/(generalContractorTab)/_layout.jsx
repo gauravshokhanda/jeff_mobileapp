@@ -120,6 +120,12 @@ export default function TabRoot() {
             href: null,
           }}
         />
+         <Tabs.Screen
+          name="PortfolioDetail"
+          options={{
+            href: null,
+          }}
+        />
       </Tabs>
     </ProtectedRoute>
   );
