@@ -205,18 +205,20 @@ export default function ContractorProfileComplete() {
           </View> */}
 
           <View className="mt-14 border-b border-gray-400 flex-row justify-between items-center pb-1">
-            <Text className="text-gray-400 text-lg">Company Name</Text>
+            <Text className="text-gray-400 text-lg">Company Name :</Text>
+
             <TextInput
-              className="flex-1 text-right px-3 bg-white py-2 text-gray-700"
+              className="flex-1  px-3 bg-white py-2 text-gray-700"
               value={companyName}
               onChangeText={setCompanyName}
             />
+
           </View>
 
           <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
-            <Text className="text-gray-400 text-lg">Company Contact Number</Text>
+            <Text className="text-gray-400 text-lg">Company Contact Number :</Text>
             <TextInput
-              className="flex-1 text-right px-3 bg-white py-2 text-gray-700"
+              className="flex-1  px-3 bg-white py-2 text-gray-700"
               keyboardType="numeric"
               value={companyContactNumber}
               onChangeText={setCompanyContactNumber}
@@ -226,19 +228,19 @@ export default function ContractorProfileComplete() {
 
 
           <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
-            <Text className="text-gray-400 text-lg">Company Registration No.</Text>
+            <Text className="text-gray-400 text-lg">Company Registration No. :</Text>
             <TextInput
-              className="flex-1 text-right px-3 bg-white py-2 text-gray-700"
-
+              className="flex-1  px-3 bg-white py-2 text-gray-700"
+              keyboardType="numeric"
               value={registrationNo}
               onChangeText={setRegistrationNo}
             />
           </View>
 
           <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
-            <Text className="text-gray-400 text-lg">Company Address</Text>
+            <Text className="text-gray-400 text-lg">Company Address :</Text>
             <TextInput
-              className="flex-1 text-right px-3 bg-white py-2 text-gray-700"
+              className="flex-1 px-3 bg-white py-2 text-gray-700"
               value={companyAddress}
               onChangeText={setCompanyAddress}
             />
