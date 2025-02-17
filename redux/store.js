@@ -8,6 +8,7 @@ import authReducer from './slice/authSlice';
 import contractorReducer from './slice/contractorsSlice';
 import polygonReducer from './slice/polygonSlice';
 import breakdownCostReducer from './slice/breakdownCostSlice';
+import realStatePropertyReducer from './slice/realStatePropertySlice';
 
 // Persist Configuration
 const persistConfig = {
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
     contractorsList: contractorReducer,
     polygon: polygonReducer,
     breakdownCost: breakdownCostReducer,
+    realStateProperty:realStatePropertyReducer,
 });
 
 // Persisted Reducer
