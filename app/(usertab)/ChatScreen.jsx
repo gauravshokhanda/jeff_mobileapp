@@ -65,7 +65,7 @@ const ChatScreen = () => {
           setDraftAttachment({
             id: propertyData.id,
             title: `${propertyData.bhk} in ${propertyData.city}`,
-            image: "https://via.placeholder.com/200", // Replace with actual image field if available
+            image: "https://via.placeholder.com/200",
             price: `₹${propertyData.price}`,
             address: propertyData.address,
           });

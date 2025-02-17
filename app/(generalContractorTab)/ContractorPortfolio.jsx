@@ -25,7 +25,6 @@ const ProfileCard = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [organizationImage, setOrganizationImage] = useState(null);
   const [updating, setUpdating] = useState(false);
-
   const token = useSelector((state) => state.auth.token);
 
   useEffect(() => {
@@ -35,20 +34,30 @@ const ProfileCard = () => {
           "https://g32.iamdeveloper.in/api/user-detail",
           {},
           {
-            headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
           }
         );
 
         if (response.status === 200) {
           setUserData(response.data);
           setEditableData(response.data);
-          setProfileImage(`https://g32.iamdeveloper.in/public/${response.data.image}`);
-          setOrganizationImage(`https://g32.iamdeveloper.in/public/${response.data.upload_organisation}`);
+          setProfileImage(
+            `https://g32.iamdeveloper.in/public/${response.data.image}`
+          );
+          setOrganizationImage(
+            `https://g32.iamdeveloper.in/public/${response.data.upload_organisation}`
+          );
         } else {
           console.error("Unexpected Response:", response.status);
         }
       } catch (error) {
-        console.error("Error fetching user data:", error.response?.data || error.message);
+        console.error(
+          "Error fetching user data:",
+          error.response?.data || error.message
+        );
         Alert.alert("API Error", "Failed to fetch user data.");
       } finally {
         setLoading(false);
@@ -84,14 +93,18 @@ const ProfileCard = () => {
 
     try {
       const response = await axios.post(
-        `https://g32.iamdeveloper.in/api/user/update/${userData.id}`,
+        `https://g32.iamdeveloper.in/api/contractors/update/${response.data.id}`,
         editableData,
         {
-          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
       if (response.status === 200) {
+        console.log("api working");
         setUserData(editableData);
         Alert.alert("Success", "Profile updated successfully.");
         setEditModalVisible(false);
@@ -99,7 +112,10 @@ const ProfileCard = () => {
         Alert.alert("Error", "Failed to update profile.");
       }
     } catch (error) {
-      console.error("Error updating user data:", error.response?.data || error.message);
+      console.error(
+        "Error updating user data:",
+        error.response?.data || error.message
+      );
       Alert.alert("API Error", "Failed to update profile.");
     } finally {
       setUpdating(false);
@@ -134,29 +150,47 @@ const ProfileCard = () => {
   return (
     <ScrollView className="bg-white p-4 shadow-lg rounded-lg">
       <View className="mt-5 relative w-full h-52">
-        <Image source={{ uri: organizationImage }} className="w-full h-full rounded-lg" />
+        <Image
+          source={{ uri: organizationImage }}
+          className="w-full h-full rounded-lg"
+        />
         <View className="absolute inset-0 bg-black/30 rounded-lg" />
-        <Text className="absolute bottom-4 right-4 text-black font-bold text-lg">
+        <Text className="absolute bottom-4 right-4 text-white font-bold text-lg">
           {userData.company_name}
         </Text>
-        <Image source={{ uri: profileImage }} className="absolute -bottom-9 left-4 w-28 h-28 rounded-full border-2 border-white" />
+        <Image
+          source={{ uri: profileImage }}
+          className="absolute -bottom-9 left-4 w-28 h-28 rounded-full border-2 border-white"
+        />
       </View>
 
-      <TouchableOpacity className="absolute top-5 right-2" onPress={() => setEditModalVisible(true)}>
-        <Ionicons name="create" size={40} color="black" />
+      <TouchableOpacity
+        className="absolute top-5 right-2"
+        onPress={() => setEditModalVisible(true)}
+      >
+        <Ionicons name="create" size={40} color="white" />
       </TouchableOpacity>
 
       <View className="mt-16 p-4 w-full gap-3 bg-gray-100 rounded-lg">
-        <Text className="text-xl font-semibold tracking-widest">Name - {userData.name}</Text>
-        <Text className="text-xl font-semibold mt-1 tracking-wider">Company - {userData.company_name}</Text>
-        <Text className="text-xl font-semibold mt-1 tracking-wider">City - {userData.city}, {userData.zip_code}</Text>
-        <Text className="text-xl font-semibold mt-1 tracking-wider">Address - {userData.company_address}</Text>
+        <Text className="text-xl font-semibold tracking-widest">
+          Name - {userData.name}
+        </Text>
+        <Text className="text-xl font-semibold mt-1 tracking-wider">
+          Company - {userData.company_name}
+        </Text>
+        <Text className="text-xl font-semibold mt-1 tracking-wider">
+          City - {userData.city}, {userData.zip_code}
+        </Text>
+        <Text className="text-xl font-semibold mt-1 tracking-wider">
+          Address - {userData.company_address}
+        </Text>
       </View>
 
-     
-   <View className="mt-10 px-2 w-full">
+      <View className="mt-10 px-2 w-full">
         <View className="flex-row gap-1 items-center">
-          <Text className="font-bold text-xl text-sky-950 tracking-widest">Portfolio</Text>
+          <Text className="font-bold text-xl text-sky-950 tracking-widest">
+            Portfolio
+          </Text>
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Ionicons name="add-circle" size={30} color="gray" />
           </TouchableOpacity>
@@ -168,11 +202,20 @@ const ProfileCard = () => {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View className="flex-row p-4 my-3 gap-3 items-center bg-gray-100">
-              <Image source={{ uri: item.image }} className="w-40 h-36 rounded-lg" />
+              <Image
+                source={{ uri: item.image }}
+                className="w-40 h-36 rounded-lg"
+              />
               <View className="ml-4 flex-1">
-                <Text className="text-lg font-bold text-gray-900">{item.name}</Text>
-                <Text className="text-gray-700 mt-1 w-full flex-wrap">{item.description}</Text>
-                <Text className="text-black rounded-3xl p-1 mt-1 text-lg font-bold w-auto">Year: {item.year}</Text>
+                <Text className="text-lg font-bold text-gray-900">
+                  {item.name}
+                </Text>
+                <Text className="text-gray-700 mt-1 w-full flex-wrap">
+                  {item.description}
+                </Text>
+                <Text className="text-black rounded-3xl p-1 mt-1 text-lg font-bold w-auto">
+                  Year: {item.year}
+                </Text>
               </View>
             </View>
           )}
@@ -247,9 +290,7 @@ const ProfileCard = () => {
               />
             </View>
             <View className="mb-4">
-              <Text className="text-gray-700 font-semibold mb-1">
-                Email
-              </Text>
+              <Text className="text-gray-700 font-semibold mb-1">Email</Text>
               <TextInput
                 placeholder="Enter your email"
                 value={editableData.email}
