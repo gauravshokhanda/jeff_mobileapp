@@ -1,30 +1,33 @@
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  Platform, 
-  TextInput, 
-  ScrollView, 
-  KeyboardAvoidingView, 
-  Image, 
-  ActivityIndicator, 
-  StyleSheet 
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Platform,
+  TextInput,
+  ScrollView,
+  KeyboardAvoidingView,
+  Image,
+  ActivityIndicator,
+  StyleSheet
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import PortfolioModal from "../../components/PortfolioModal";
 import * as DocumentPicker from 'expo-document-picker';
-import { useSelector } from 'react-redux';
+import { useSelector, dispatch, useDispatch } from 'react-redux';
 import { API } from '../../config/apiConfig';
 import { BlurView } from 'expo-blur';
+import { updateUserProfile } from "../../redux/slice/authSlice";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function ContractorProfileComplete() {
+  const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const user = useSelector((state) => state.auth.user);
-  
+
   const [userEmail, setUserEmail] = useState('');
-  const [userName,setUserFullName]=useState('');
+  const [userName, setUserFullName] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [companyContactNumber, setCompanyContactNumber] = useState('');
   const [companyName, setCompanyName] = useState('');
@@ -63,6 +66,7 @@ export default function ContractorProfileComplete() {
   };
 
   const handleSubmit = async () => {
+    console.log("contractor profile complete")
     const formData = new FormData();
 
     formData.append("name", userName);
@@ -111,7 +115,8 @@ export default function ContractorProfileComplete() {
         },
       });
 
-      console.log("Profile submitted successfully:", response.data);
+      // console.log("Profile submitted successfully:", response.data);
+      dispatch(updateUserProfile(response.data));
       router.replace("/(generalContractorTab)");
     } catch (error) {
       console.error("Error submitting profile:", error.response?.data || error.message);
@@ -132,7 +137,7 @@ export default function ContractorProfileComplete() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: "white" }}
     >
       {/* Blur Overlay */}
       {modalVisible && (
@@ -149,15 +154,38 @@ export default function ContractorProfileComplete() {
       >
         {/* Header */}
         <View className="p-4 bg-sky-950">
-          {/* <TouchableOpacity
-            className="absolute z-10 left-4 top-4"
-            onPress={() => router.back()}
-          >
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity> */}
           <Text className="text-gray-100 text-xl font-bold text-center">
             Complete Your Profile
           </Text>
+        </View>
+        <View className="justify-center items-center relative">
+          <TouchableOpacity
+            onPress={() => pickImage(setProfileImage)}
+            activeOpacity={0.7}
+            className="mt-4 size-32 rounded-full overflow-hidden shadow-lg"
+
+          >
+            {profileImage ? (
+              <Image source={{ uri: profileImage }} className="w-full h-full rounded-full" />
+            ) : (
+              <LinearGradient
+                colors={["#e0e0e0", "#cfcfcf"]}
+                className="w-full h-full flex justify-center items-center"
+              >
+                <Ionicons name="person-circle-outline" size={60} color="#7c7c7c" />
+                <Text className="text-gray-600 text-xs mt-2">Tap to Upload</Text>
+              </LinearGradient>
+            )}
+
+
+          </TouchableOpacity>
+          {/* 📷 Camera Icon for Upload (Fixed Visibility) */}
+          {/* <View
+            className="absolute bg-blue-500 bottom-0 right-40 p-2 rounded-full border-2 border-white shadow-md"
+            style={{ zIndex: 10, elevation: 10 }}
+          >
+            <Ionicons name="camera" size={22} color="white" />
+          </View> */}
         </View>
 
         {/* Form Content */}
@@ -172,113 +200,126 @@ export default function ContractorProfileComplete() {
               onChangeText={setFullName}
             />
           </View> */}
+          {/* <View className="border-b border-gray-400">
+            <Text>Company Name</Text>
+          </View> */}
 
-          <View className="mt-6">
-            <Text className="text-gray-600 mb-1 ml-3 text-sm">Company Name</Text>
+          <View className="mt-14 border-b border-gray-400 flex-row justify-between items-center pb-1">
+            <Text className="text-gray-400 text-lg">Company Name :</Text>
+
             <TextInput
-              className="border border-gray-400 rounded-2xl pl-3 bg-white py-4"
-              placeholder="Enter Your Company Name"
-              placeholderTextColor="gray"
+              className="flex-1  px-3 bg-white py-2 text-gray-700"
               value={companyName}
               onChangeText={setCompanyName}
             />
+
           </View>
-          
-          <View className="mt-6">
-            <Text className="text-gray-600 mb-1 ml-3 text-sm">Company Contact Number</Text>
+
+          <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
+            <Text className="text-gray-400 text-lg">Company Contact Number :</Text>
             <TextInput
-              className="border border-gray-400 rounded-2xl pl-3 bg-white py-4"
-              placeholder="Enter Your Company Name"
-              placeholderTextColor="gray"
+              className="flex-1  px-3 bg-white py-2 text-gray-700"
+              keyboardType="numeric"
               value={companyContactNumber}
               onChangeText={setCompanyContactNumber}
             />
           </View>
 
-          <View className="mt-6 flex-row justify-between items-center">
-            <View className="justify-center items-center">
-              <Text className="text-gray-600 text-sm">Upload your Profile</Text>
-              <TouchableOpacity 
-                onPress={() => pickImage(setProfileImage)} 
-                className="size-32 mt-4 bg-gray-200 rounded-3xl justify-center items-center"
-              >
-                {profileImage ? (
-                  <Image source={{ uri: profileImage }} className="w-full h-full rounded-3xl" />
-                ) : (
-                  <Image source={require('../../assets/images/UploadLogo.png')} />
-                )}
-              </TouchableOpacity>
-            </View>
 
-            <View className="w-[40%]">
-              <Text className="text-gray-600 text-sm">Upload Organization Photo</Text>
-              <TouchableOpacity 
-                onPress={() => pickImage(setOrganizationImage)} 
-                className="size-32 my-2 bg-gray-200 rounded-3xl justify-center items-center"
-              >
-                {organizationImage ? (
-                  <Image source={{ uri: organizationImage }} className="w-full h-full rounded-3xl" />
-                ) : (
-                  <Image source={require('../../assets/images/uploadOrganization.png')} />
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
 
-          <View className="mt-6">
-            <Text className="text-gray-600 mb-1 ml-3 text-sm">Company Registration No.</Text>
+          <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
+            <Text className="text-gray-400 text-lg">Company Registration No. :</Text>
             <TextInput
-              className="border border-gray-400 rounded-2xl pl-3 bg-white py-4"
-              placeholder="Enter Your Company Registration No"
-              placeholderTextColor="gray"
+              className="flex-1  px-3 bg-white py-2 text-gray-700"
+              keyboardType="numeric"
               value={registrationNo}
               onChangeText={setRegistrationNo}
             />
           </View>
 
-          <View className="mt-6">
-            <Text className="text-gray-600 mb-1 ml-3 text-sm">Company Address</Text>
+          <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
+            <Text className="text-gray-400 text-lg">Company Address :</Text>
             <TextInput
-              className="border border-gray-400 rounded-2xl pl-3 bg-white py-4"
-              placeholder="Enter Company Address"
-              placeholderTextColor="gray"
+              className="flex-1 px-3 bg-white py-2 text-gray-700"
               value={companyAddress}
               onChangeText={setCompanyAddress}
             />
           </View>
 
-          <View className="mt-6 items-start">
-            {portfolioData.images.length > 0 ? (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
-                {portfolioData.images.map((uri, index) => (
-                  <View key={index} className="relative mx-2">
-                    <Image source={{ uri }} className="w-20 h-20 rounded-lg" />
+
+          <View className="flex-row mt-10 justify-between items-center">
+
+
+            {/* portfolio section */}
+            <View className="items-start">
+              {portfolioData.images.length > 0 ? (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+                  <View className="flex-col border border-dashed border-gray-400 items-center ">
+                    <Text className="text-gray-500 text-lg">Portfolio Image</Text>
+                    {portfolioData.images.map((uri, index) => (
+                      <View key={index} className="relative m-5">
+                        <Image source={{ uri }} className="w-32 h-32 rounded-lg" />
+                        <TouchableOpacity
+                          className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
+                          onPress={() => setPortfolioData(prevData => ({
+                            ...prevData,
+                            images: prevData.images.filter((_, i) => i !== index),
+                          }))}
+                        >
+                          <Ionicons name="close" size={16} color="white" />
+                        </TouchableOpacity>
+                      </View>
+                    ))}
+                  </View>
+
+                </ScrollView>
+              ) : (
+                <TouchableOpacity
+                  className="border border-gray-500 rounded-lg py-3 flex-row items-center px-6"
+                  onPress={() => setModalVisible(true)}
+                >
+                  <Text className="text-gray-600 font-semibold mr-2">Add Portfolio</Text>
+                  <Image source={require('../../assets/images/shortUploadIcon.png')} />
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Organization Image Section */}
+            <View className="items-center">
+              {!organizationImage ? (
+                <TouchableOpacity
+                  onPress={() => pickImage(setOrganizationImage)}
+                  className="border border-gray-500 rounded-lg py-3 px-4 flex-row items-center justify-center"
+                >
+                  <Ionicons name="cloud-upload-outline" size={20} color="black" />
+                  <Text className="text-gray-600 font-semibold ml-2">Upload Organization</Text>
+                </TouchableOpacity>
+              ) : (
+                <View className="relative">
+
+                  <View className="border border-dashed border-gray-400 items-center">
+                    <Text className="text-lg text-gray-500">Organization Image</Text>
+                    <Image source={{ uri: organizationImage }} className="w-32 h-32 rounded-lg m-5" />
+
+                    {/* Replace Icon */}
                     <TouchableOpacity
-                      className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
-                      onPress={() => setPortfolioData(prevData => ({
-                        ...prevData,
-                        images: prevData.images.filter((_, i) => i !== index),
-                      }))}
+                      className="absolute top-7 right-5  rounded-full p-1"
+                      onPress={() => pickImage(setOrganizationImage)}
                     >
-                      <Ionicons name="close" size={16} color="white" />
+                      <Ionicons name="refresh" size={16} color="black" />
                     </TouchableOpacity>
                   </View>
-                ))}
-              </ScrollView>
-            ) : (
-              <TouchableOpacity 
-                className="border border-gray-400 rounded-2xl p-3 flex-row items-center"
-                onPress={() => setModalVisible(true)}
-              >
-                <Text className="text-gray-600 font-semibold mr-2">Add Portfolio</Text>
-                <Image source={require('../../assets/images/shortUploadIcon.png')} />
-              </TouchableOpacity>
-            )}
+
+                </View>
+
+              )}
+            </View>
+
           </View>
 
           <View className="mt-9 items-center">
-            <TouchableOpacity 
-              className="bg-sky-950 w-[45%] rounded-2xl" 
+            <TouchableOpacity
+              className="bg-sky-950 w-[45%] rounded-2xl"
               onPress={handleSubmit}
             >
               <Text className="p-3 text-white text-center">Save Profile</Text>
