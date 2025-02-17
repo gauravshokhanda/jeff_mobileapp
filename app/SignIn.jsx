@@ -5,7 +5,7 @@ import { View, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollV
 import { setLogin } from "../redux/slice/authSlice";
 import { API } from "../config/apiConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import AuthInput from "../components/AuthInput"
+import AuthInput from "../components/AuthInput";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -16,6 +16,13 @@ export default function SignIn() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const token = useSelector((state) => state.auth.token);
   const userData = useSelector((state) => state.auth.user);
+  const hasPropertyDetails = useSelector((state) => state.realStateProperty);
+
+
+  // real state property details
+  // console.log("hasPropertyDetails:", hasPropertyDetails);
+
+
 
   useEffect(() => {
     // Check AsyncStorage for persisted token before proceeding
@@ -38,13 +45,22 @@ export default function SignIn() {
 
   useEffect(() => {
     if (isAuthenticated && token) {
-
+      // console.log("Image userdata",userData)
       if (userData?.role == 3) {
         if (userData?.image === null) {
-          console.log("userData?.image",userData?.image)
+          // console.log("userData?.image",userData?.image)
           router.replace('/ContractorProfileComplete')
-        }else{
+        }
+        else {
           router.replace("/(generalContractorTab)");
+        }
+      }
+      else if (userData?.role == 4) {
+        if (hasPropertyDetails === null) {
+          router.replace('/RealstateSelector')
+        }
+        else {
+          router.replace('/(RealstateContractorTab)')
         }
       }
       else {
@@ -56,7 +72,7 @@ export default function SignIn() {
   const handleSignIn = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Email and Password are required.");
-      
+
       return;
     }
     setLoading(true);
@@ -70,6 +86,9 @@ export default function SignIn() {
 
       if (user.role == 3) {
         router.replace("/(generalContractorTab)");
+      }
+      else if (user.role == 4) {
+        router.replace("/(RealstateContractorTab)");
       }
       else {
         router.replace("/(usertab)");

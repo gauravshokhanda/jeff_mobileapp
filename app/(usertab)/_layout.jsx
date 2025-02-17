@@ -83,12 +83,12 @@ export default function TabRoot() {
         />
 
         <Tabs.Screen
-          name="User"
+          name="ChatList"
           options={{
-            title: "User",
+            title: "ChatList",
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
-                name={focused ? "person" : "person-outline"}
+                name={focused ? "chatbubble" : "chatbubble-outline"}
                 size={30}
                 color={"white"}
               />
@@ -204,6 +204,13 @@ export default function TabRoot() {
         />
          <Tabs.Screen
           name="RealEstateDetails"
+          options={{
+            href: null,
+          }}
+        />
+        
+        <Tabs.Screen
+          name="User"
           options={{
             href: null,
           }}

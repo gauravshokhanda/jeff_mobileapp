@@ -41,8 +41,9 @@ const CardSlider = () => {
     getContractors();
   }, []);
 
-  const handleVisitProfile = (profileLink) => {
-    router.push('/ContractorProfile');
+  const handleVisitProfile = (id) => {
+    // Alert.alert("Visit Profile", `Redirecting to: ${profileLink}`);
+    router.push(`/ContractorProfile?id=${id}`)
   };
 
   const handleCall = (phone) => {
@@ -76,10 +77,14 @@ const CardSlider = () => {
         {item.title}
       </Text>
       <Text className="text-xs text-gray-600 text-center mt-1 mb-3" numberOfLines={2}>
-        {item.description}
+        {item.description
+          ? item.description.split(" ").slice(0, 5).join(" ") + (item.description.split(" ").length > 5 ? "..." : "")
+          : ""}
       </Text>
+
+
       <View className="flex-row space-x-2">
-        <TouchableOpacity className=" rounded-md px-2 bg-sky-950 justify-center" onPress={() => handleVisitProfile()}>
+        <TouchableOpacity className="bg-blue-600 rounded-md px-2 bg-sky-950 justify-center" onPress={() => handleVisitProfile(item.id)}>
           <Text className="text-white text-xs font-medium">Visit Profile</Text>
         </TouchableOpacity>
         <TouchableOpacity className=" rounded-md px-3 py-2 bg-sky-950 justify-center ml-1" onPress={() => handleCall(item.contact)}>
@@ -94,14 +99,28 @@ const CardSlider = () => {
       {loading ? (
         <ActivityIndicator size="large" color="#000" className="mt-10" />
       ) : (
-        <FlatList
-          data={contractors}
-          renderItem={renderCard}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 10 }}
-        />
+        <View>
+          <FlatList
+            data={contractors}
+            renderItem={renderCard}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 10 }}
+          />
+
+          <View className="flex-row justify-center mt-10">
+            <TouchableOpacity
+              onPress={() => router.push('ContractorLists')} 
+              className="bg-sky-950 rounded-full py-3 px-8 items-center"
+            >
+              <Text className="text-white font-bold">View All Contractors</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+
+
       )}
     </View>
   );

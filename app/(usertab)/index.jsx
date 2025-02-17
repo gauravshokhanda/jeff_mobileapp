@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView, TextInput, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, Image, ScrollView, TextInput, TouchableOpacity, Platform,ImageBackground } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { FontAwesome } from '@expo/vector-icons';
@@ -6,6 +6,7 @@ import CardSlider from '../../components/CardSlider';
 import EsateSlider from '../../components/Estateslider';
 import { useRouter } from "expo-router";
 import { useSelector } from 'react-redux';
+import Swiper from "react-native-swiper";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -67,23 +68,77 @@ export default function Dashboard() {
             <Text className="text-sky-950 text-lg">Search using Images</Text>
           </TouchableOpacity>
         </View>
+        <View className="h-56 p-2 mt-2">
+  <Swiper autoplay loop className="rounded-xl">
+    <View className="relative w-full h-full">
+      <ImageBackground
+        source={{
+          uri: "https://media.istockphoto.com/id/1420678520/photo/building-site-at-sunset.jpg?s=612x612&w=0&k=20&c=HoDUK1RxsH78Fj9D34nao_MUTbf-vR3G97zUWMtES4k=",
+        }}
+        className="w-full h-full justify-center items-center"
+        resizeMode="cover"
+      >
+        <View className="absolute inset-0 bg-black/30 rounded-xl" />
+        <Text className="text-white font-bold text-3xl absolute top-5 left-5">
+          Building the Future
+        </Text>
+      </ImageBackground>
+    </View>
+
+    <View className="relative w-full h-full">
+      <ImageBackground
+        source={{
+          uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6fIA0SdlaGgrMPZ_BS9Z5WnM42HPF71iGkw&s",
+        }}
+        className="w-full h-full justify-center items-center"
+        resizeMode="cover"
+      >
+        <View className="absolute inset-0 bg-black/30 rounded-xl" />
+        <Text className="text-white font-bold text-3xl absolute top-5 left-5">
+          Strength in Every Brick
+        </Text>
+      </ImageBackground>
+    </View>
+
+    <View className="relative w-full h-full">
+      <ImageBackground
+        source={{
+          uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKTccCO8EfR28FeusyZdoh8lZs_u63vxo3-Q&s",
+        }}
+        className="w-full h-full justify-center items-center"
+        resizeMode="cover"
+      >
+        <View className="absolute inset-0 bg-black/30 rounded-xl" />
+        <Text className="text-white font-bold text-3xl absolute top-5 left-5">
+          Engineering Excellence
+        </Text>
+      </ImageBackground>
+    </View>
+  </Swiper>
+</View>
 
         {/* Best Contractors */}
-        <View className="mt-4 mb-10 h-72">
+        <View className="mt-4 h-72">
           <Text className="text-xl text-sky-950 text-center">Top Contractors</Text>
           <CardSlider />
         </View>
 
         {/* View All Button */}
-        <View className="flex-row justify-center">
+        {/* <View className="flex-row justify-center mt-5">
           <TouchableOpacity
-            onPress={() => router.push('ContractorLists')} // Adjust route name as needed
+            onPress={() => router.push('ContractorListScreen')} // Adjust route name as needed
             className="bg-sky-950 rounded-full py-3 px-8 items-center"
           >
             <Text className="text-white font-bold">View All Contractors</Text>
           </TouchableOpacity>
         </View>
 
+        {/* Best Estates */}
+        {/* <View className="items-center h-72">
+          <Text className="text-xl mb-2 text-sky-950">Top Real Estate</Text>
+          <EsateSlider />
+        </View> */}
+        
       </View>
     </ScrollView>
   );
