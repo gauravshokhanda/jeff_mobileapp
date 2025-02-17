@@ -45,9 +45,9 @@ export default function TabRoot() {
         />
 
         <Tabs.Screen
-          name="ChatList"
+          name="RealStateChatList"
           options={{
-            title: "ChatList",
+            title: "RealStateChatList",
             tabBarIcon: ({ color, focused }) => (
               <Ionicons name={focused ? "chatbubble" : "chatbubble-outline"} size={25} color={"white"} />
             ),
@@ -60,16 +60,16 @@ export default function TabRoot() {
           options={{
             title: "Property Post",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? "business" : "business-outline"} color="white" size={25} />
+              <Ionicons name={focused ? "add-circle" : "add-circle-outline"} color="white" size={25} />
             ),
             tabBarLabelStyle: { display: "none" },
           }}
         />
 
         <Tabs.Screen
-          name="Listenings"
+          name="Listings"
           options={{
-            title: "Listenings",
+            title: "Listings",
             tabBarIcon: ({ color, focused }) => (
               <Ionicons name={focused ? "newspaper" : "newspaper-outline"} size={25} color={"white"} />
             ),
@@ -96,6 +96,18 @@ export default function TabRoot() {
         />
         <Tabs.Screen
           name="KnowMore"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="SingleListing"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="MyListing"
           options={{
             href: null,
           }}

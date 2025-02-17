@@ -13,10 +13,10 @@ import { setLogout } from "../../redux/slice/authSlice";
 
 // Object Array for menu items
 const imageData = [
-  { id: 1, label: "Portfolio", icon: "arrow-up", screen: "Portfolio", source: Box },
-  { id: 2, label: "Feeds", icon: "rss", screen: "ContractorFeed", source: Box },
+  // { id: 1, label: "Portfolio", icon: "arrow-up", screen: "", source: Box },
+  { id: 2, label: "My Listing", icon: "rss", screen: "MyListing", source: Box },
   { id: 4, label: "Profile", icon: "user", screen: "ContractorPortfolio", source: Box },
-  { id: 6, label: "Chat", icon: "comments", screen: "ChatList", source: Box },
+  { id: 6, label: "Chat", icon: "comments", screen: "RealStateChatList", source: Box },
   { id: 8, label: "Log Out", icon: "sign-out-alt", screen: 'logout', source: Box },
 ];
 

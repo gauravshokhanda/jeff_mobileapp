@@ -7,22 +7,25 @@ import { LinearGradient } from 'expo-linear-gradient';
 import CustomTextInput from "../../components/CustomTextInput"
 import CustomDatePicker from "../../components/CustomDatePicker"
 import API from "../../config/apiConfig"
-import { useSelector,useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import CitySearch from '../../components/CitySearch';
 import axios from 'axios';
 import { router } from 'expo-router';
 import { setRealStateProperty } from "../../redux/slice/realStatePropertySlice"
+import * as DocumentPicker from 'expo-document-picker';
+
 
 
 
 export default function Index() {
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const postContentWidth = screenWidth * 0.95;
   const [selectedBHK, setSelectedBHK] = useState(null);
   const [selectedType, setSelectedType] = useState(null);
   const [selectedPropertyType, setSelectedPropertyType] = useState(null);
   const [selectedHomeType, setSelectedHomeType] = useState(null);
+  const [images, setImages] = useState([]);
 
   const [selectedCity, setSelectedCity] = useState(null);
 
@@ -34,7 +37,24 @@ export default function Index() {
   const [area, setArea] = useState('');
   const [availableFrom, setAvailableFrom] = useState(null);
 
- 
+  const handleImagePick = async () => {
+    let result = await DocumentPicker.getDocumentAsync({
+      type: ["image/*"],
+      multiple: true,
+      copyToCacheDirectory: true,
+    });
+
+    if (!result.canceled && result.assets?.length > 0) {
+      setImages((prevImages) => [...prevImages, ...result.assets.map(asset => asset.uri)]);
+    }
+  };
+
+  const removeImage = (index) => {
+    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  };
+
+
+
 
   const propertyTypes = [
     { id: 'residential', label: 'Residential' },
@@ -173,7 +193,15 @@ export default function Index() {
     formData.append("furnish_type", selectedType);
     formData.append("price", price);
     formData.append("available_from", availableFrom.toISOString());
-   
+    images.forEach((uri, index) => {
+      console.log("add floormap images", uri)
+      formData.append('property_images[ ]', {
+        uri: uri,
+        type: 'image/jpeg',  
+        name: `property_image_${index}_${Date.now()}.jpg`
+      });
+    });
+
     console.log("form data", formData)
     dispatch(
       setRealStateProperty({
@@ -199,11 +227,11 @@ export default function Index() {
 
         },
       })
-      // console.log("response",response.data.message)
-     
+      console.log("response",response.data.message)
+
       Alert.alert(
         "Success",
-        "Property details added successfully!",
+        response.data.message,
         [
           {
             text: "OK",
@@ -218,7 +246,8 @@ export default function Index() {
               setSelectedType("");
               setPrice("");
               setAvailableFrom("");
-              router.replace("/");
+              setImages(null)
+              // router.replace("/");
             },
           },
         ],
@@ -316,6 +345,7 @@ export default function Index() {
                 </View>
 
 
+
                 <View className="mt-5">
                   <CustomTextInput
                     placeholder="Building/Project/Society(Optional)"
@@ -366,6 +396,48 @@ export default function Index() {
                     contentContainerStyle={{ paddingHorizontal: 10 }}
                     renderItem={renderFurnishItem}
                   />
+                </View>
+                <View className="mt-10">
+                  {images.length === 0 && (
+                    <TouchableOpacity
+                      className="bg-white p-4 rounded-2xl shadow-lg flex items-center justify-center"
+                      onPress={() => handleImagePick()}
+                    >
+                      <Text className="text-sky-500">Upload Property Images</Text>
+                    </TouchableOpacity>
+                  )}
+                  <View className="flex-row flex-wrap m-3 ">
+
+
+                    {images.length > 0 && (
+                      <View>
+                        <Text className="ml-4 text-gray-600">Design Images</Text>
+                        <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3 bg-white">
+                          <View className="flex-row items-center flex-wrap mt-2">
+                            {images.map((uri, index) => (
+                              <View key={index} className="relative w-24 h-24 m-1">
+                                <Image source={{ uri }} className="w-full h-full rounded-2xl" />
+                                <TouchableOpacity
+                                  onPress={() => removeImage('designImages', index)}
+                                  className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
+                                >
+                                  <Ionicons name="close" size={16} color="white" />
+                                </TouchableOpacity>
+                              </View>
+                            ))}
+                            <TouchableOpacity onPress={() => handleImagePick('designImages')} className="w-24 h-24 m-1 flex items-center justify-center bg-gray-200 rounded-2xl">
+                              <Text className="text-4xl text-gray-600">+</Text>
+                            </TouchableOpacity>
+                          </View>
+
+                        </View>
+
+                      </View>
+
+                    )}
+                  </View>
+
+
                 </View>
                 <View>
                   <CustomDatePicker
