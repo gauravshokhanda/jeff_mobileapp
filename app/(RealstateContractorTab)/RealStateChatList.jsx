@@ -12,7 +12,7 @@ import { router } from 'expo-router';
 
 
 
-export default function Index() {
+export default function RealStateChatList() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const postContentWidth = screenWidth * 0.92;
 
