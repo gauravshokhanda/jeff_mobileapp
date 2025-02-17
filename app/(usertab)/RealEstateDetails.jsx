@@ -7,6 +7,7 @@ import { API } from "../../config/apiConfig";
 import { useSelector } from "react-redux";
 import { router } from "expo-router";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useNavigation } from "@react-navigation/native";
 
 export default function PropertyDetails() {
   const { id } = useLocalSearchParams();
@@ -24,6 +25,7 @@ export default function PropertyDetails() {
   ];
 
   const [viewMode, setViewMode] = useState("details");
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (!id) return;
@@ -108,9 +110,14 @@ export default function PropertyDetails() {
   return (
     <ScrollView className="bg-white flex-1 mt-8 p-4">
       <View className="w-full bg-sky-950 h-20 mb-2 flex justify-start px-5 gap-4 flex-row items-center rounded-lg">
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.goBack()
+          }
+        >
           <Ionicons name="arrow-back" size={28} color="white" />
         </TouchableOpacity>
+
         <Text className="text-white text-2xl font-bold">Property Details</Text>
       </View>
       <View className="relative">
@@ -130,33 +137,34 @@ export default function PropertyDetails() {
 
       {/* Buttons for details and gallery */}
       <View className="flex-row gap-4 mt-4">
-  <TouchableOpacity
-    onPress={() => setViewMode("details")}
-    style={{
-      borderBottomWidth: viewMode === "details" ? 4 : 0,
-      borderBottomColor: viewMode === "details" ? "#0284c7" : "transparent",
-    }}
-    className="flex-1 p-3 rounded-lg justify-center items-center shadow-md"
-  >
-    <Text className="text-center text-sky-950 text-lg font-semibold">
-      Details
-    </Text>
-  </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setViewMode("details")}
+          style={{
+            borderBottomWidth: viewMode === "details" ? 4 : 0,
+            borderBottomColor:
+              viewMode === "details" ? "#0284c7" : "transparent",
+          }}
+          className="flex-1 p-3 rounded-lg justify-center items-center shadow-md"
+        >
+          <Text className="text-center text-sky-950 text-lg font-semibold">
+            Details
+          </Text>
+        </TouchableOpacity>
 
-  <TouchableOpacity
-    onPress={() => setViewMode("gallery")}
-    style={{
-      borderBottomWidth: viewMode === "gallery" ? 4 : 0,
-      borderBottomColor: viewMode === "gallery" ? "#0284c7" : "transparent",
-    }}
-    className="flex-1 p-3 rounded-lg justify-center items-center shadow-md"
-  >
-    <Text className="text-center text-sky-950 text-lg font-semibold">
-      Gallery
-    </Text>
-  </TouchableOpacity>
-</View>
-
+        <TouchableOpacity
+          onPress={() => setViewMode("gallery")}
+          style={{
+            borderBottomWidth: viewMode === "gallery" ? 4 : 0,
+            borderBottomColor:
+              viewMode === "gallery" ? "#0284c7" : "transparent",
+          }}
+          className="flex-1 p-3 rounded-lg justify-center items-center shadow-md"
+        >
+          <Text className="text-center text-sky-950 text-lg font-semibold">
+            Gallery
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Conditional rendering based on selected mode */}
       {viewMode === "details" ? <DetailsSection /> : <GallerySection />}
