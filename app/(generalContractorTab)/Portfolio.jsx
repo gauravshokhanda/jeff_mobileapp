@@ -17,6 +17,10 @@ import { useSelector } from "react-redux";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
+import { debounce } from "lodash";
+import CitySearch from "../../components/CitySearch";
+import { API } from "../../config/apiConfig"; 
+
 
 const PortfolioScreen = ({ navigation }) => {
   const [portfolioItems, setPortfolioItems] = useState([]);
@@ -25,6 +29,7 @@ const PortfolioScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
+  const [citySuggestions, setCitySuggestions] = useState([]);
 
   const router = useRouter();
   const [newPortfolio, setNewPortfolio] = useState({
@@ -42,7 +47,7 @@ const PortfolioScreen = ({ navigation }) => {
   const fetchPortfolio = async (page = 1) => {
     try {
       console.log("Fetching user details...");
-  
+
       const userResponse = await axios.post(
         "https://g32.iamdeveloper.in/api/user-detail",
         {},
@@ -53,36 +58,36 @@ const PortfolioScreen = ({ navigation }) => {
           },
         }
       );
-  
+
       if (userResponse.status !== 200)
         throw new Error("Failed to fetch user details");
-  
+
       console.log("User details fetched successfully:", userResponse.data);
       const contractorId = userResponse.data?.id;
-  
+
       if (!contractorId) throw new Error("Contractor ID is missing");
-  
+
       console.log(
         `Fetching portfolios for contractor ID: ${contractorId}, Page: ${page}`
       );
-  
+
       const portfolioResponse = await axios.get(
         `https://g32.iamdeveloper.in/api/portfolios/contractor/${contractorId}?page=${page}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-  
+
       if (portfolioResponse.status !== 200)
         throw new Error("Failed to fetch portfolios");
-  
+
       console.log("Fetched portfolio data:", portfolioResponse.data);
       const portfolios = portfolioResponse.data.portfolios;
-  
+
       if (!portfolios?.data || !Array.isArray(portfolios.data)) {
         throw new Error("Invalid portfolio data format");
       }
-  
+
       const formattedData = portfolios.data.map((item) => {
         let images = [];
         try {
@@ -90,7 +95,7 @@ const PortfolioScreen = ({ navigation }) => {
         } catch (err) {
           console.error("Error parsing portfolio images:", err);
         }
-  
+
         return {
           id: String(item.id),
           name: item.project_name || "No Name",
@@ -103,10 +108,10 @@ const PortfolioScreen = ({ navigation }) => {
             : "N/A",
         };
       });
-  
+
       // ✅ Update the state completely instead of appending
       setPortfolioItems(formattedData);
-  
+
       setCurrentPage(portfolios.current_page);
       setLastPage(portfolios.last_page);
     } catch (error) {
@@ -116,7 +121,6 @@ const PortfolioScreen = ({ navigation }) => {
       setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     if (token) {
@@ -240,6 +244,8 @@ const PortfolioScreen = ({ navigation }) => {
       }));
     }
   };
+  
+
   return (
     <View className="flex-1 bg-white">
       <View className="bg-sky-950 p-4 h-24 mt-12 flex-row items-center">
@@ -333,12 +339,20 @@ const PortfolioScreen = ({ navigation }) => {
             <TextInput
               placeholder="City"
               placeholderTextColor="gray"
-              value={newPortfolio.city}
-              onChangeText={(text) =>
-                setNewPortfolio({ ...newPortfolio, city: text })
-              }
+              value=""
               className="border p-2 rounded-lg mb-3"
             />
+            {citySuggestions.length > 0 && (
+              <FlatList
+                data={citySuggestions}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity onPress={() => handleSelectCity(item.name)}>
+                    <Text className="p-2">{item.name}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+            )}
 
             <TextInput
               placeholder="Address"
