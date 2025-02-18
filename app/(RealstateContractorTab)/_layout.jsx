@@ -60,7 +60,7 @@ export default function TabRoot() {
           options={{
             title: "Property Post",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? "add-circle" : "add-circle-outline"} color="white" size={25} />
+              <Ionicons name={focused ? "add-circle" : "add-circle-outline"} color="white" size={30} />
             ),
             tabBarLabelStyle: { display: "none" },
           }}

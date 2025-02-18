@@ -33,8 +33,8 @@ export default function Listing() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log("response", response.data.properties.data)
-      console.log("response", response.data.properties.last_page)
+      // console.log("response", response.data.properties.data)
+      // console.log("response", response.data.properties.last_page)
       // console.log("response", response.data.properties)
       setProperties((prev) =>
         page === 1 ? response.data.properties.data : [...prev, ...response.data.properties.data]
@@ -107,15 +107,17 @@ export default function Listing() {
                 <Text className="text-white font-bold ml-2">{item.city}</Text>
               </View>
               <View className="flex-row gap-2">
-                <View className="bg-white rounded-full px-3"
-
+                <View className="bg-white rounded-full p-1 justify-center items-center"
                 >
-                  <Text className="text-slate-700 text-sm"
-                    style={{ fontSize: screenWidth * 0.03 }}
+                  <Text className="text-slate-700 text-sm "
+                    style={{ fontSize: screenWidth * 0.022 }}
                   >{item.house_type}</Text>
                 </View>
                 <View className="bg-white rounded-full p-1 justify-center items-center">
-                  <Text className="text-slate-700 text-sm">{item.locale}</Text>
+                  <Text className="text-slate-700 text-sm"
+                    style={{ fontSize: screenWidth * 0.022 }}
+                  >
+                    {item.locale.split(" ").slice(0, 2).join(" ") + (item.locale.split(" ").length > 2 ? "..." : "")}                  </Text>
                 </View>
               </View>
             </View>
@@ -258,9 +260,13 @@ export default function Listing() {
               contentContainerStyle={{ flexGrow: 1, gap: 10 }}
             />
           </View>
-          <View className=" flex-1 mt-2 mb-3">
-            {loading == true ? (
+          <View className="flex-1 mt-2 mb-3">
+            {loading ? (
               <ActivityIndicator size="large" color="#082f49" />
+            ) : properties.length === 0 ? (
+              <View className="flex-1 justify-center items-center">
+                <Text className="text-gray-500 text-lg font-semibold">No Listings Found</Text>
+              </View>
             ) : (
               <FlatList
                 showsVerticalScrollIndicator={false}
@@ -271,9 +277,8 @@ export default function Listing() {
                 onEndReachedThreshold={0.5}
               />
             )}
-
-
           </View>
+
         </View>
       </View>
     </SafeAreaView>
