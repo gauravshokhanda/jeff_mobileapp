@@ -1,8 +1,9 @@
 import { useEffect, useState, useMemo } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions, SafeAreaView, FlatList } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams, router } from "expo-router";
 import { API, baseUrl } from "../../config/apiConfig";
 import { useSelector } from "react-redux";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function PropertyDetails() {
   const { id } = useLocalSearchParams();
@@ -25,17 +26,17 @@ export default function PropertyDetails() {
       const response = await API.get(`realstate-property/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       // console.log("single response", response.data);
-  
+
       if (response.data.property) {
         const propertyData = response.data.property;
-  
+
         // Parse property_images and add the full API URL if needed
         const imagesArray = JSON.parse(propertyData.property_images || "[]").map(
           (img) => `${baseUrl}/${img}`
         );
-  
+
         setProperty(propertyData);
         setMainImage(imagesArray.length > 0 ? imagesArray[0] : null);
         setDesignImages(imagesArray);
@@ -52,14 +53,17 @@ export default function PropertyDetails() {
   const renderPropertyTypeItem = ({ item }) => {
     const isSelected = selectedPropertyType === item.id;
     return (
+      <View>
       <TouchableOpacity
         className={`px-8 py-2 flex-row items-center justify-between border-b-2 ${isSelected ? "border-sky-900" : "border-gray-300"}`}
         onPress={() => setSelectedPropertyType(item.id)}
       >
-        <Text className={`text-lg font-medium ${isSelected ? "text-sky-900" : "text-gray-400"}`}>
+        <Text className={`text-lg mx-10 font-medium ${isSelected ? "text-sky-900" : "text-gray-400"}`}>
           {item.label}
         </Text>
+        
       </TouchableOpacity>
+      </View>
     );
   };
 
@@ -80,15 +84,28 @@ export default function PropertyDetails() {
   }, [property]);
 
   const renderDetailsItems = ({ item }) => (
-    <View className="flex-row mb-2">
+    <View className="flex-row mb-2 ml-3 gap-10">
       <Text className="font-semibold w-32">{item.label}:</Text>
       <Text className="text-gray-700">{item.value || "-"}</Text>
     </View>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100"> 
+    <SafeAreaView className="flex-1 bg-gray-100">
+      {/* backbutton and chatbutton */}
+      <View className="w-[100%] flex-row items-center justify-between p-3 absolute z-10 bg-black/40">
+        <TouchableOpacity onPress={() => router.replace("Listings")} className="mr-4">
+          <Ionicons name="arrow-back" size={24} color="white" />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => console.log("Chat Clicked")}>
+          <Ionicons name="chatbubble-ellipses-outline" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
+
+
       <View className="flex-1">
+
         {/* Main Image */}
         <View className="relative">
           <Image source={{ uri: mainImage }} className="w-full h-60 rounded-lg" />

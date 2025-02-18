@@ -39,7 +39,7 @@ export default function Index() {
       );
       // console.log("response", response.data.properties.data)
       // console.log("response", response.data.properties.last_page)
-      console.log("response", response.data.properties)
+      // console.log("response", response.data.properties)
       setProperties(page === 1 ? [response.data.properties.data[0]] : [...prev, response.data.properties.data[0]]);
 
       setCurrentPage(response.data.properties.current_page);
@@ -81,15 +81,17 @@ export default function Index() {
                 <Text className="text-white font-bold ml-2">{item.city}</Text>
               </View>
               <View className="flex-row gap-2">
-                <View className="bg-white rounded-full px-3"
-
+                <View className="bg-white rounded-full p-1 justify-center items-center"
                 >
-                  <Text className="text-slate-700 text-sm"
-                    style={{ fontSize: screenWidth * 0.03 }}
+                  <Text className="text-slate-700 text-sm "
+                    style={{ fontSize: screenWidth * 0.022 }}
                   >{item.house_type}</Text>
                 </View>
                 <View className="bg-white rounded-full p-1 justify-center items-center">
-                  <Text className="text-slate-700 text-sm">{item.locale}</Text>
+                  <Text className="text-slate-700 text-sm"
+                    style={{ fontSize: screenWidth * 0.022 }}
+                  >
+                    {item.locale.split(" ").slice(0, 2).join(" ") + (item.locale.split(" ").length > 2 ? "..." : "")}                  </Text>
                 </View>
               </View>
             </View>
@@ -233,115 +235,119 @@ export default function Index() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
         >
-          <ScrollView
-            contentContainerStyle={{ paddingBottom: 20 }}
-            showsVerticalScrollIndicator={false}
-          >
-
-
-            <View className="m-5">
-
-              <View className="rounded-2xl p-2">
-
-                <Text className="text-2xl font-semibold tracking-widest mb-4 text-black">Checkout your properties.</Text>
-                {loading == true ? (
-                  <ActivityIndicator size="large" color="#082f49" />
-                ) : (
-                  <FlatList
-                    showsVerticalScrollIndicator={false}
-                    data={properties}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={renderListening}
-
-                  />
-                )}
 
 
 
+          <View className="m-5">
 
-              </View>
-              <View className="bg-[#505C3F] py-4 rounded-2xl  mt-6 shadow-lg flex-row  justify-between w-full">
-                {/* Left Section - Text */}
-                <View className="pl-2">
-                  <Text className="text-white text-2xl font-semibold tracking-widest">New Properties!</Text>
-                  <Text className="text-gray-100 text-lg tracking-wider">house and land packages</Text>
-                </View>
+            <View className="rounded-2xl p-2">
 
-                {/* Right Section - Image */}
-                <Image
-                  source={require("../../assets/images/realState/NewProperty.png")}
-                  className="w-32 h-24 "
-                  style={{ resizeMode: "cover" }}
+
+              {loading == true ? (
+                <ActivityIndicator size="large" color="#082f49" />
+              ) : (
+                <FlatList
+                  ListHeaderComponent={
+                    <View>
+                      <Text className="text-2xl font-semibold tracking-widest mb-4 text-black">Checkout your properties.</Text>
+                    </View>
+                  }
+                  showsVerticalScrollIndicator={false}
+                  data={properties}
+                  keyExtractor={(item) => item.id.toString()}
+                  renderItem={renderListening}
+                  ListFooterComponent={
+                  <View>
+                    <View className="bg-[#505C3F] py-4 rounded-2xl  mt-6 shadow-lg flex-row  justify-between w-full">
+                      {/* Left Section - Text */}
+                      <View className="pl-2">
+                        <Text className="text-white text-2xl font-semibold tracking-widest">New Properties!</Text>
+                        <Text className="text-gray-100 text-lg tracking-wider">house and land packages</Text>
+                      </View>
+
+                      {/* Right Section - Image */}
+                      <Image
+                        source={require("../../assets/images/realState/NewProperty.png")}
+                        className="w-32 h-24 "
+                        style={{ resizeMode: "cover" }}
+                      />
+                    </View>
+
+                    {/*  */}
+                    <View className="py-10">
+                      {/* Caution Box */}
+                      <View className="bg-gray-100 rounded-xl p-4 flex-row items-start">
+                        <Image
+                          source={require("../../assets/images/realState/warning.png")} // Replace with the warning icon image
+                          className="w-12 h-12 mr-3"
+                        />
+                        <View className="flex-1">
+                          <Text className="text-xl font-bold text-black tracking-widest">Caution!</Text>
+                          <Text className="text-gray-700 text-lg">
+                            Be cautious of suspicious calls received from users posing as
+                            ‘armyman’ or ‘Public Service’ & asking to transfer money.
+                          </Text>
+                          <TouchableOpacity
+                            onPress={() => router.push("/KnowMore")}
+                            className="mt-2">
+                            <Text className="text-black font-bold">Know more &gt;</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+
+                      {/* User Post */}
+                      <View className="mt-8 flex-row items-start">
+                        <Image
+                          source={require("../../assets/images/realState/user-profile.png")} // Replace with the user image
+                          className="w-10 h-10 rounded-full mr-3"
+                        />
+                        <View className="flex-1">
+                          <Text className="text-black font-semibold text-xl tracking-widest">Jimmy Brooke</Text>
+                          <Text className="text-gray-600 mt-1 tracking-wider text-lg w-[90%]">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                            <Text className="font-bold text-black"> Read more...</Text>
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+
+                    <View className="p-8 bg-gray-100 rounded-xl mb-5">
+                      {/* Call Us Card */}
+                      <TouchableOpacity className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center mb-3">
+                        <View className="bg-gray-200 p-2 rounded-full mr-5">
+                          <Ionicons name="call" size={20} color="black" />
+                        </View>
+                        <View className=" items-center ml-5">
+                          <Text className="text-lg font-bold text-black">Call Us</Text>
+                          <Text className="text-gray-700">1800-131-56677</Text>
+                        </View>
+                      </TouchableOpacity>
+
+                      {/* Email Us Card */}
+                      <TouchableOpacity className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center">
+                        <View className="bg-gray-200 p-2 rounded-full mr-3">
+                          <Ionicons name="chatbubble-ellipses" size={20} color="black" />
+                        </View>
+                        <View className=" items-center ml-5">
+                          <Text className="text-lg font-bold text-black">Email Us</Text>
+                          <Text className="text-gray-700">Supportjeff@gmail.com</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  </View>}
+
                 />
-              </View>
+              )}
 
-              {/*  */}
-              <View className="py-10">
-                {/* Caution Box */}
-                <View className="bg-gray-100 rounded-xl p-4 flex-row items-start">
-                  <Image
-                    source={require("../../assets/images/realState/warning.png")} // Replace with the warning icon image
-                    className="w-12 h-12 mr-3"
-                  />
-                  <View className="flex-1">
-                    <Text className="text-xl font-bold text-black tracking-widest">Caution!</Text>
-                    <Text className="text-gray-700 text-lg">
-                      Be cautious of suspicious calls received from users posing as
-                      ‘armyman’ or ‘Public Service’ & asking to transfer money.
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => router.push("/KnowMore")}
-                      className="mt-2">
-                      <Text className="text-black font-bold">Know more &gt;</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
 
-                {/* User Post */}
-                <View className="mt-8 flex-row items-start">
-                  <Image
-                    source={require("../../assets/images/realState/user-profile.png")} // Replace with the user image
-                    className="w-10 h-10 rounded-full mr-3"
-                  />
-                  <View className="flex-1">
-                    <Text className="text-black font-semibold text-xl tracking-widest">Jimmy Brooke</Text>
-                    <Text className="text-gray-600 mt-1 tracking-wider text-lg w-[90%]">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                      eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                      <Text className="font-bold text-black"> Read more...</Text>
-                    </Text>
-                  </View>
-                </View>
-              </View>
 
-              <View className="p-8 bg-gray-100 rounded-xl mb-5">
-                {/* Call Us Card */}
-                <TouchableOpacity className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center mb-3">
-                  <View className="bg-gray-200 p-2 rounded-full mr-5">
-                    <Ionicons name="call" size={20} color="black" />
-                  </View>
-                  <View className=" items-center ml-5">
-                    <Text className="text-lg font-bold text-black">Call Us</Text>
-                    <Text className="text-gray-700">1800-131-56677</Text>
-                  </View>
-                </TouchableOpacity>
 
-                {/* Email Us Card */}
-                <TouchableOpacity className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center">
-                  <View className="bg-gray-200 p-2 rounded-full mr-3">
-                    <Ionicons name="chatbubble-ellipses" size={20} color="black" />
-                  </View>
-                  <View className=" items-center ml-5">
-                    <Text className="text-lg font-bold text-black">Email Us</Text>
-                    <Text className="text-gray-700">Supportjeff@gmail.com</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
             </View>
-          </ScrollView>
+
+          </View>
+
         </KeyboardAvoidingView>
-
-
       </View>
     </SafeAreaView>
   );
