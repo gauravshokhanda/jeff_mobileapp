@@ -106,9 +106,9 @@ export default function PropertyDetails() {
   return (
     <ScrollView className="bg-white flex-1 mt-8 p-4">
       <View className="w-full h-20 bg-sky-950 mb-2 flex justify-center flex-row items-center rounded-lg">
-        <View className="absolute left-2 p-2 rounded-full shadow-md">
+        <TouchableOpacity onPress={() => router.back()} className="absolute left-2 p-2 rounded-full shadow-md">
           <FontAwesome name="arrow-left" size={20} color="white" />
-        </View>
+        </TouchableOpacity>
         <Text className="text-white text-2xl font-bold">Property Details</Text>
       </View>
 
