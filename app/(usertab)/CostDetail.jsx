@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, Platform, Dimensions, SafeAreaView, ImageBackground } from 'react-native';
 import React from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -9,6 +9,8 @@ import { useDispatch } from 'react-redux';
 import { setBreakdownCost } from '../../redux/slice/breakdownCostSlice';
 
 export default function CostDetail() {
+    const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+    const postContentWidth = screenWidth * 0.92;
     const dispatch = useDispatch();
     const { CostDetails } = useLocalSearchParams();
 
@@ -36,67 +38,87 @@ export default function CostDetail() {
         dispatch(setBreakdownCost(breakdownCost));
         router.push(`/BreakdownCost?breakdownCost=${breakdownCost}&screenName=MapScreen`)
     }
-    
+
     return (
-        <View className={`flex-1 bg-gray-100 ${Platform.OS === 'ios' ? 'mt-10' : ''}`}> 
+        <SafeAreaView className="flex-1 bg-gray-100">
+
             <LinearGradient
                 colors={["#082f49", "transparent"]}
-                style={{ height: "40%", padding: 20, justifyContent: "center" }}
+                style={{ height: "40%" }}
             >
-                <TouchableOpacity
-                    onPress={() => router.push("/AreaDetailsScreen")}
-                    className="absolute top-6 left-4"
-                >
-                    <Ionicons name='arrow-back' size={24} color="white" />
-                </TouchableOpacity>
-            </LinearGradient>
 
-            <View className="flex-1 p-5 justify-center h-full mt-[-240]">
-                <View className="bg-white border border-gray-300 rounded-lg p-6 shadow-lg">
-                    <Text className="text-3xl font-bold text-sky-950 mb-6 text-center bg-slate-100 rounded-lg py-2">Cost Details</Text>
-                    {detailItems.map((item, index) => (
-                        <View key={index} className="flex-row items-center mb-4">
-                            <View
-                                className="justify-center items-center bg-sky-100"
-                                style={{
-                                    width: 40,
-                                    height: 40,
-                                    borderRadius: 20,
-                                    marginRight: 12,
-                                }}
-                            >
-                                <FontAwesome5
-                                    name={item.icon}
-                                    size={20}
-                                    color="#082f49"
-                                />
-                            </View>
-                            <View>
-                                <Text className="text-gray-700 font-semibold">{item.label}:</Text>
-                                <Text
-                                    className={`text-lg ${item.label.includes("Cost") ? "text-red-600" : "text-gray-700"}`}
-                                    style={{ fontWeight: item.label.includes("Cost") ? 'bold' : 'normal' }}
-                                >
-                                    {item.value}
-                                </Text>
-                            </View>
-
-                            
-                        </View>
-                        
-                    ))}
-                     <TouchableOpacity
-                    onPress={handleBreakdownCost}
-                    className="bg-sky-950 mt-10 rounded-lg py-3 px-6 flex-row justify-center items-center">
-                    <Text className="text-white font-semibold">Cost Breakdown</Text>
-                    <Ionicons name="arrow-forward" size={26} color="white" style={{ marginLeft: 20 }} />
-                </TouchableOpacity>
+                <View className="mt-2">
+                    <TouchableOpacity
+                        className="absolute top-6 z-10 left-5"
+                        onPress={() => router.push("/MapScreen")}
+                    >
+                        <Ionicons name="arrow-back" size={24} color="white" />
+                    </TouchableOpacity>
+                    <Text className="text-2xl font-semibold text-white mb-4 py-4 text-center">
+                        Cost Details
+                    </Text>
                 </View>
-            </View>
 
-            <View className="p-5">
-               
+            </LinearGradient>
+            <View className="rounded-3xl bg-white"
+                style={{
+                    position: 'absolute',
+                    top: screenHeight * 0.20,
+                    width: postContentWidth,
+                    height: screenHeight * 0.80,
+                    left: (screenWidth - postContentWidth) / 2,
+                    overflow: 'hidden',
+                }}
+            >
+                <ImageBackground
+                    style={{ backgroundColor: 'black' }}
+                    source={require('../../assets/images/userImages/costDetail.png')}
+                    className="flex-1 shadow-lg">
+                    <View className="p-6 ">
+
+                        {detailItems.map((item, index) => (
+                            <View key={index} className="flex-row items-center mb-4 p-2 rounded-2xl bg-black/50">
+                                <View
+                                    className="justify-center items-center bg-white"
+                                    style={{
+                                        width: 40,
+                                        height: 40,
+                                        borderRadius: 20,
+                                        marginRight: 12,
+                                        borderRadius: 20,
+                                        borderWidth: 2,
+                                        borderColor: 'white',
+                                    }}
+                                >
+                                    <FontAwesome5
+                                        name={item.icon}
+                                        size={20}
+                                        color="#082f49"
+                                    />
+                                </View>
+                                <View>
+                                    <Text className="text-white font-semibold">{item.label}:</Text>
+                                    <Text
+                                        className={`text-lg ${item.label.includes("Cost") ? "text-red-600" : "text-gray-100"}`}
+                                        style={{ fontWeight: item.label.includes("Cost") ? 'bold' : 'normal' }}
+                                    >
+                                        {item.value}
+                                    </Text>
+                                </View>
+
+
+                            </View>
+
+                        ))}
+                        <TouchableOpacity
+                            onPress={handleBreakdownCost}
+                            className="bg-black/50 mt-10 rounded-lg py-3 px-6 flex-row justify-center items-center border border-white">
+                            <Text className="text-white font-semibold">Cost Breakdown</Text>
+                            <Ionicons name="arrow-forward" size={26} color="white" style={{ marginLeft: 20 }} />
+                        </TouchableOpacity>
+                    </View>
+                </ImageBackground>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
