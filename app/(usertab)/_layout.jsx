@@ -5,6 +5,9 @@ import ProtectedRoute from "../../components/ProtectedRoute";
 
 import { useFocusEffect } from "@react-navigation/native";
 import { BackHandler } from "react-native";
+import { Keyboard } from "react-native";
+import { useState,useEffect } from "react";
+
 
 // const disableBackAction = () => {
 //     useFocusEffect(() => {
@@ -19,7 +22,21 @@ import { BackHandler } from "react-native";
 // };
 
 export default function TabRoot() {
-  // disableBackAction()
+   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+ 
+   useEffect(() => {
+     const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+       setKeyboardVisible(true);
+     });
+     const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+       setKeyboardVisible(false);
+     });
+ 
+     return () => {
+       keyboardDidShowListener.remove();
+       keyboardDidHideListener.remove();
+     };
+   }, []);
   return (
     <ProtectedRoute>
       <Tabs
@@ -27,8 +44,8 @@ export default function TabRoot() {
           headerShown: false,
           tabBarStyle: {
             backgroundColor: "#082f49",
-            height: 77,
-            paddingTop: 10,
+            height: isKeyboardVisible ? 0 : 58,
+            paddingTop: isKeyboardVisible ? 0 : 10,
           },
         }}
       >
@@ -40,7 +57,7 @@ export default function TabRoot() {
               <Ionicons
                 name={focused ? "home" : "home-outline"}
                 color={"white"}
-                size={30}
+                size={25}
               />
             ),
             tabBarLabelStyle: {
@@ -55,7 +72,7 @@ export default function TabRoot() {
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "calculator" : "calculator-outline"}
-                size={30}
+                size={25}
                 color={"white"}
               />
             ),
@@ -72,7 +89,7 @@ export default function TabRoot() {
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "newspaper" : "newspaper-outline"}
-                size={30}
+                size={25}
                 color={"white"}
               />
             ),
@@ -89,7 +106,7 @@ export default function TabRoot() {
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "chatbubble" : "chatbubble-outline"}
-                size={30}
+                size={25}
                 color={"white"}
               />
             ),
@@ -105,7 +122,7 @@ export default function TabRoot() {
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "menu" : "menu-outline"}
-                size={30}
+                size={25}
                 color={"white"}
               />
             ),
