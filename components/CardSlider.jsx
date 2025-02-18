@@ -51,7 +51,7 @@ const CardSlider = () => {
   };
 
   const renderCard = ({ item }) => (
-    <View className="bg-gray-200 rounded-xl p-4 mx-2 w-44 items-center"
+    <View className="bg-gray-200 rounded-xl p-4 mb-4 w-full items-center"
       style={{
         elevation: 5,
         shadowColor: "#082f49",
@@ -59,7 +59,7 @@ const CardSlider = () => {
         shadowOpacity: 0.2,
         shadowRadius: 2,
       }}>
-
+  
       {item.image ? (
         <Image source={item.image} className="w-20 h-20 rounded-full mb-3" resizeMode="cover" />
       ) : (
@@ -69,7 +69,7 @@ const CardSlider = () => {
           </Text>
         </View>
       )}
-      
+  
       <Text className="text-lg font-semibold text-gray-900 text-center" numberOfLines={1}>
         {item.name}
       </Text>
@@ -81,13 +81,12 @@ const CardSlider = () => {
           ? item.description.split(" ").slice(0, 5).join(" ") + (item.description.split(" ").length > 5 ? "..." : "")
           : ""}
       </Text>
-
-
+  
       <View className="flex-row space-x-2">
-        <TouchableOpacity className="bg-blue-600 rounded-md px-2 bg-sky-950 justify-center" onPress={() => handleVisitProfile(item.id)}>
+        <TouchableOpacity className="rounded-md px-2 bg-sky-950 justify-center" onPress={() => handleVisitProfile(item.id)}>
           <Text className="text-white text-xs font-medium">Visit Profile</Text>
         </TouchableOpacity>
-        <TouchableOpacity className=" rounded-md px-3 py-2 bg-sky-950 justify-center ml-1" onPress={() => handleCall(item.contact)}>
+        <TouchableOpacity className="rounded-md px-3 py-2 bg-sky-950 justify-center ml-1" onPress={() => handleCall(item.contact)}>
           <Text className="text-white text-xs font-medium">Call Now</Text>
         </TouchableOpacity>
       </View>
@@ -96,33 +95,29 @@ const CardSlider = () => {
 
   return (
     <View className="py-3">
-      {loading ? (
-        <ActivityIndicator size="large" color="#000" className="mt-10" />
-      ) : (
-        <View>
-          <FlatList
-            data={contractors}
-            renderItem={renderCard}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 10 }}
-          />
+    {loading ? (
+      <ActivityIndicator size="large" color="#000" className="mt-10" />
+    ) : (
+      <View>
+        <FlatList
+          data={contractors}
+          renderItem={renderCard}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 10 }}
+        />
 
-          <View className="flex-row justify-center mt-10">
-            <TouchableOpacity
-              onPress={() => router.push('ContractorLists')} 
-              className="bg-sky-950 rounded-full py-3 px-8 items-center"
-            >
-              <Text className="text-white font-bold">View All Contractors</Text>
-            </TouchableOpacity>
-          </View>
+        <View className="flex-row justify-center mt-10">
+          <TouchableOpacity
+            onPress={() => router.push('ContractorLists')}
+            className="bg-sky-950 rounded-full py-3 px-8 items-center"
+          >
+            <Text className="text-white font-bold">View All Contractors</Text>
+          </TouchableOpacity>
         </View>
-
-
-
-      )}
-    </View>
+      </View>
+    )}
+  </View>
   );
 };
 

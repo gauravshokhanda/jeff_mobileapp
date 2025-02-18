@@ -8,7 +8,7 @@ import {
   Platform,
   ImageBackground,
   SafeAreaView,
-  Dimensions
+  Dimensions,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -18,15 +18,15 @@ import EsateSlider from "../../components/Estateslider";
 import { useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import Swiper from "react-native-swiper";
-import { LinearGradient } from 'expo-linear-gradient';
-
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Dashboard() {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const router = useRouter();
   const userName = useSelector((state) => state.auth.user);
   const [avatarLetter, setAvatarLetter] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("general"); // Track selected category
 
   // Ensure user name is available and set the first letter for avatar
   useEffect(() => {
@@ -38,11 +38,12 @@ export default function Dashboard() {
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
       <LinearGradient
-        colors={['#082f49', 'transparent']}
+        colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
         {/* Header */}
-        <View className={`flex-row justify-center items-center py-3 px-10 pb-4`}
+        <View
+          className={`flex-row justify-center items-center py-3 px-10 pb-4`}
         >
           {/* Home Icon */}
           <Ionicons
@@ -56,33 +57,35 @@ export default function Dashboard() {
           <View className="flex-row items-center border border-white rounded-full px-4 mt-2 bg-white">
             <Ionicons name="search" size={24} color="#000000" />
             <TextInput
-              className="flex-1 ml-2 text-black"
+              className="flex-1 ml-2 p-2 justify-center items-center text-black"
               placeholder="Start Search"
               placeholderTextColor="#000000"
             />
             {/* Filter Icon */}
-            <Ionicons name="filter" size={24} color="#000000" className="ml-4" />
+            <Ionicons
+              name="filter"
+              size={24}
+              color="#000000"
+              className="ml-4"
+            />
           </View>
         </View>
-        <View className="flex-row justify-center items-center mt-2">
-          
-        </View>
-
       </LinearGradient>
-      <View className="rounded-3xl "
+      <View
+        className="rounded-3xl "
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: screenHeight * 0.15,
           width: postContentWidth,
-          height: screenHeight * 0.80,
+          height: screenHeight * 0.8,
           left: (screenWidth - postContentWidth) / 2,
-          backgroundColor: 'white',
+          backgroundColor: "white",
         }}
       >
         <View className="rounded-3xl mt-1 bg-white p-2">
           {/* Welcome Message */}
           <View className="flex-row justify-center items-center mt-2">
-            <Text className="text-black text-lg">Welcome,</Text>
+            <Text className="text-black text-Welcomelg">,</Text>
             <Text className="text-sky-950 text-lg font-semibold">
               {userName && userName.name ? userName.name : "Unknown"}
             </Text>
@@ -118,82 +121,48 @@ export default function Dashboard() {
               <Text className="text-gray-700 text-lg">Search using Images</Text>
             </TouchableOpacity>
           </View>
-          
-          {/* <View className="h-56 p-2 mt-2">
-            <Swiper autoplay loop className="rounded-xl">
-              <View className="relative w-full h-full">
-                <ImageBackground
-                  source={{
-                    uri: "https://media.istockphoto.com/id/1420678520/photo/building-site-at-sunset.jpg?s=612x612&w=0&k=20&c=HoDUK1RxsH78Fj9D34nao_MUTbf-vR3G97zUWMtES4k=",
-                  }}
-                  className="w-full h-full justify-center items-center"
-                  resizeMode="cover"
-                >
-                  <View className="absolute inset-0 bg-black/30 rounded-xl" />
-                  <Text className="text-white font-bold text-3xl absolute top-5 left-5">
-                    Building the Future
-                  </Text>
-                </ImageBackground>
-              </View>
 
-              <View className="relative w-full h-full">
-                <ImageBackground
-                  source={{
-                    uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6fIA0SdlaGgrMPZ_BS9Z5WnM42HPF71iGkw&s",
-                  }}
-                  className="w-full h-full justify-center items-center"
-                  resizeMode="cover"
-                >
-                  <View className="absolute inset-0 bg-black/30 rounded-xl" />
-                  <Text className="text-white font-bold text-3xl absolute top-5 left-5">
-                    Strength in Every Brick
-                  </Text>
-                </ImageBackground>
-              </View>
-
-              <View className="relative w-full h-full">
-                <ImageBackground
-                  source={{
-                    uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKTccCO8EfR28FeusyZdoh8lZs_u63vxo3-Q&s",
-                  }}
-                  className="w-full h-full justify-center items-center"
-                  resizeMode="cover"
-                >
-                  <View className="absolute inset-0 bg-black/30 rounded-xl" />
-                  <Text className="text-white font-bold text-3xl absolute top-5 left-5">
-                    Engineering Excellence
-                  </Text>
-                </ImageBackground>
-              </View>
-            </Swiper>
-          </View> */}
-
-          {/* Best Contractors */}
-          <View className="mt-4 h-72">
+          {/* Top Contractors Section */}
+          <View className="mt-4 h-full">
             <Text className="text-xl text-sky-950 text-center">
               Top Contractors
             </Text>
-            <CardSlider />
+            <View className="flex-row gap-5 justify-center mt-4">
+              <TouchableOpacity
+                onPress={() => setSelectedCategory("general")}
+                className={`${
+                  selectedCategory === "general"
+                    ? "bg-sky-950 text-white"
+                    : "bg-gray-200 text-black"
+                } rounded-xl p-2`}
+              >
+                <Text className="text-lg">General Contractors</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setSelectedCategory("real-estate")}
+                className={`${
+                  selectedCategory === "real-estate"
+                    ? "bg-sky-950 text-white"
+                    : "bg-gray-200 text-black"
+                } rounded-xl p-2`}
+              >
+                <Text className="text-lg">Real Estate Contractors</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Conditional Rendering */}
+            {selectedCategory === "general" ? (
+              <CardSlider />
+            ) : (
+              <View className="mt-5 p-4">
+             
+                <EsateSlider/>
+              </View>
+            )}
           </View>
-
-          {/* View All Button */}
-          {/* <View className="flex-row justify-center mt-5">
-          <TouchableOpacity
-            onPress={() => router.push('ContractorListScreen')} // Adjust route name as needed
-            className="bg-sky-950 rounded-full py-3 px-8 items-center"
-          >
-            <Text className="text-white font-bold">View All Contractors</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Best Estates */}
-          {/* <View className="items-center h-72">
-          <Text className="text-xl mb-2 text-sky-950">Top Real Estate</Text>
-          <EsateSlider />
-        </View> */}
         </View>
       </View>
-
     </SafeAreaView>
   );
 }

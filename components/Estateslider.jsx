@@ -1,37 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons'; 
 
-const contractors = [
-  {
-    id: '1',
-    image: require('../assets/images/contractors/1.jpg'),
-    title: 'Noteworthy technology acquisitions 2021',
-    description: 'Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.',
-    profileLink: 'https://profile1.com',
-    contact: '1234567890',
-  },
-  {
-    id: '2',
-    image: require('../assets/images/contractors/2.jpg'),
-    title: 'Top Contractors of 2021',
-    description: 'Explore the top contractors providing excellent services in various industries.',
-    profileLink: 'https://profile2.com',
-    contact: '0987654321',
-  },
-  {
-    id: '3',
-    image: require('../assets/images/contractors/3.jpg'),
-    title: 'Reliable Services 2023',
-    description: 'Find reliable contractors offering the best services in 2023. We provide comprehensive insights for your needs.',
-    profileLink: 'https://profile3.com',
-    contact: '1122334455',
-  },
-];
-
 const EsateSlider = () => {
+  const [contractors, setContractors] = useState([]);
   const navigation = useNavigation();
+
+  // Fetch contractors data from API
+  useEffect(() => {
+    const fetchContractors = async () => {
+      try {
+        const response = await fetch('https://g32.iamdeveloper.in/api/get/real-state-contractors');
+        const data = await response.json();
+        setContractors(data.contractors); 
+      } catch (error) {
+        Alert.alert('Error', 'Failed to fetch contractors.');
+      }
+    };
+
+    fetchContractors();
+  }, []);
 
   const handleVisitProfile = (profileLink) => {
     Alert.alert('Visit Profile', `Redirecting to: ${profileLink}`);
@@ -46,9 +35,9 @@ const EsateSlider = () => {
   };
 
   const renderCard = ({ item }) => (
-    <View className="bg-white  shadow-md w-44 h-64 mr-4">
+    <View className="bg-white shadow-md w-44 h-64 mr-4">
       <Image
-        source={item.image}
+        source={{ uri: item.image }} // Assuming the API returns image URLs
         className="w-full h-24 rounded-t-lg mx-2"
         resizeMode="cover"
       />
@@ -90,7 +79,7 @@ const EsateSlider = () => {
       {/* View All Button */}
       <View className="mt-4 items-center">
         <TouchableOpacity
-          className="bg-sky-600 rounded-md px-6 py-2 flex-row items-center"
+          className="bg-sky-950 rounded-md px-6 py-2 flex-row items-center"
           onPress={handleViewAll}
         >
           <Ionicons name="eye" size={20} color="white" className="mr-2" />
