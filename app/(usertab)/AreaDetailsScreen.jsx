@@ -9,6 +9,8 @@ import {
   ActivityIndicator,
   StyleSheet,
   Platform,
+  SafeAreaView,
+  Dimensions
 } from "react-native";
 import { useSelector } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,7 +19,10 @@ import { API } from "../../config/apiConfig";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function AreaDetailsScreen() {
-  const placeHolderImage = require("../../assets/images/Mapscreen/areaDetailBanner.png");
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const postContentWidth = screenWidth * 0.92;
+
+  const placeHolderImage = require("../../assets/images/userImages/propertyArea.jpg");
   const { area } = useSelector((state) => state.polygon);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const token = useSelector((state) => state.auth.token);
@@ -103,66 +108,95 @@ export default function AreaDetailsScreen() {
   }, []);
 
   return (
-    <Animated.View
-      className={`flex-1 ${Platform.OS === "ios" ? "mt-10" : ""}`}
-      style={{
-        opacity: fadeAnim,
-      }}
-    >
+    <SafeAreaView className="flex-1 bg-gray-200">
       <LinearGradient
         colors={["#082f49", "transparent"]}
         style={{ height: "40%" }}
       >
-        <TouchableOpacity
-          className="absolute top-6 z-10 left-5"
-          onPress={() => router.push("/MapScreen")}
-        >
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <Text className="text-3xl font-semibold text-white mb-4 py-4 text-center">
-          Your Area Details
-        </Text>
+        <View className="mt-2">
+          <TouchableOpacity
+            className="absolute top-6 z-10 left-5"
+            onPress={() => router.push("/MapScreen")}
+          >
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text className="text-2xl font-semibold text-white mb-4 py-4 text-center">
+            Your Area Details
+          </Text>
+        </View>
+
       </LinearGradient>
 
-      {loading && (
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#00ADEF" />
-        </View>
-      )}
+      <View className="rounded-3xl bg-white"
+        style={{
+          position: 'absolute',
+          top: screenHeight * 0.15,
+          width: postContentWidth,
+          height: screenHeight * 0.80,
+          left: (screenWidth - postContentWidth) / 2,
+        }}
+      >
 
-      <View className="p-4 mt-[-160] flex-1">
-        <View className="items-center mb-5 pt-8">
-          <Image
-            source={placeHolderImage}
-            style={{ width: "100%", height: 200, borderRadius: 10 }}
-          />
-        </View>
+        {loading && (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color="#00ADEF" />
+          </View>
+        )}
 
-        <View className="px-6 items-center flex-1 mt-10">
-          <Text className="text-2xl text-gray-600 mb-6 mt-5">
-            Your area is <Text className="text-3xl font-bold px-2">{area}</Text>{" "}
-            ft²
-          </Text>
-
-          <TouchableOpacity
-            onPress={scheduleCost}
-            className="bg-sky-700 px-8 py-4 rounded-full flex-row items-center justify-center"
-            style={{ elevation: 3 }}
-            disabled={loading} // Disable the button when loading
-          >
-            <Text className="text-white text-lg font-semibold">
-              Calculate Cost
-            </Text>
-            <Ionicons
-              name="arrow-forward"
-              size={20}
-              color="white"
-              style={{ marginLeft: 10 }}
+        <View className="flex-1">
+          <View className="items-center ">
+            <Image
+              className="rounded-t-3xl"
+              source={placeHolderImage}
+              style={{ width: "100%", height: screenHeight * 0.52 }}
             />
-          </TouchableOpacity>
+          </View>
+
+          <View
+            className="bg-white justify-center items-center rounded-xl"
+            style={{
+              position: 'absolute',
+              top: screenHeight * 0.5,
+              width: screenWidth * 0.5,
+              alignSelf: 'center',
+              zIndex: 1,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 4,
+              elevation: 5,
+            }}>
+            <Text className="text-lg text-sky-950 text-center font-medium">
+              Your area is
+            </Text>
+          </View>
+          {/* Area details */}
+          <View
+            className="justify-center items-center"
+            style={{ marginVertical: screenHeight * 0.04 }}>
+            <Text
+            className="tracking-widest font-bold"
+            style={{ fontSize: screenHeight * 0.055 }}>{area} sq ft.</Text>
+          </View>
+
+
+
+
+          <View className="flex-1 items-center">
+            <TouchableOpacity
+              onPress={scheduleCost}
+              className="bg-sky-950 px-10 py-3 rounded-full"
+              disabled={loading} 
+            >
+              <Text className="text-white text-lg font-semibold tracking-widest">
+                Calculate Cost
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </Animated.View>
+    </SafeAreaView>
+
   );
 }
 
