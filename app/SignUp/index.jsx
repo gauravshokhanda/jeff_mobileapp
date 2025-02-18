@@ -8,7 +8,9 @@ import {
     ScrollView,
     Image,
     Alert,
-    TextInput
+    TextInput,
+    SafeAreaView,
+    Dimensions
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import AuthInput from "../../components/AuthInput";
@@ -18,7 +20,11 @@ import Logo from "../../assets/images/AC5D_Logo.jpg";
 import ModalSelector from 'react-native-modal-selector';
 import { useDispatch, useSelector } from "react-redux";
 import { setSignUp } from "../../redux/slice/authSlice";
+import { LinearGradient } from 'expo-linear-gradient';
+
 export default function SignUp() {
+    const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+    const postContentWidth = screenWidth * 0.92;
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -76,108 +82,136 @@ export default function SignUp() {
     };
 
     return (
-        <KeyboardAvoidingView
-            className="flex-1"
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-            <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-                <View className="flex-1 bg-sky-10 p-12 border items-center justify-center bg-white">
-                    {/* Logo */}
-                    <View className="mb-8 items-center justify-center">
-                        <View className="w-44 h-44 rounded-full border-4 border-sky-950 overflow-hidden items-center justify-center">
-                            <Image
-                                source={Logo}
-                                style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    resizeMode: "cover",
-                                }}
-                            />
-                        </View>
-                    </View>
+        <SafeAreaView className="flex-1 bg-gray-200">
 
-                    <View className="w-full max-w-md">
-                        {/* Input Fields */}
-                        <View className="w-full space-y-4">
-                            <AuthInput
-                                placeholder="Name"
-                                secureTextEntry={false}
-                                onChangeText={setName}
+            <LinearGradient
+                colors={['#082f49', 'transparent']}
+                style={{ height: screenHeight * 0.4 }}
+            />
 
-                            />
-                            <AuthInput
-                                placeholder="Email Address"
-                                secureTextEntry={false}
-                                onChangeText={setEmail}
+            <View className="rounded-3xl "
+                style={{
+                    position: 'absolute',
+                    top: screenHeight * 0.20,
+                    width: postContentWidth,
+                    height: screenHeight * 0.81,
+                    left: (screenWidth - postContentWidth) / 2,
+                    backgroundColor: 'white',
 
-                            />
-                            <AuthInput
-                                placeholder="Password"
-                                secureTextEntry={true}
-                                onChangeText={setPassword}
 
-                            />
-                            <AuthInput
-                                placeholder="Confirm Password"
-                                secureTextEntry={true}
-                                onChangeText={setPasswordConfirmation}
-                            />
-                            {/* <TextInput className=' text-gray-600 rounded-lg mb-8 px-5 py-5 bg-slate-200'/> */}
-                            <View>
-                                <ModalSelector
+                }}
+            >
+                <KeyboardAvoidingView
+                    className="flex-1"
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                >
+
+                    <View className="flex-1 rounded-3xl  bg-white p-12 ">
+                        {/* Logo */}
+                        <View className="items-center justify-center relative"
+
+                        >
+                            <View
+                                style={{ height: screenHeight * 0.2, width: screenWidth * 0.4, position: "absolute", bottom: -32 }}
+                                className="rounded-full border-4 border-sky-950 overflow-hidden items-center justify-center">
+                                <Image
+                                    source={Logo}
                                     style={{
-
-                                        marginBlock: 2,
+                                        width: "100%",
+                                        height: "100%",
+                                        resizeMode: "cover",
                                     }}
-                                    data={[
-                                        { key: 2, label: 'Customer' },
-                                        { key: 3, label: 'General Contractor' },
-                                        { key: 4, label: 'Real Estate Contractor' },
-                                    ]}
-                                    initValue="Select Role"
-                                    onChange={(option) => setRole({ key: option.key, label: option.label })}
-                                >
-                                    <TouchableOpacity style={{
-                                        backgroundColor: "#e2e8f0",
-                                        padding: 15,
-                                        borderRadius: 8,
-                                        elevation: 15,
-                                        shadowColor: "gray",
-                                        shadowOffset: { width: 0, height: 3 },
-                                        shadowOpacity: 0.3,
-                                        shadowRadius: 2,
-                                    }}>
-                                        {role.label
-                                            ? <Text className="text-gray-700">{role.label}</Text>
-                                            : <Text className="text-gray-400">Select Role</Text>}
-                                    </TouchableOpacity>
-                                </ModalSelector>
+                                />
+                            </View>
+                        </View>
+
+                        <View
+                            style={{ marginTop: screenHeight * 0.09 }}
+                            className="w-full max-w-md">
+                            {/* Input Fields */}
+                            <View className="w-full space-y-4">
+                                <AuthInput
+                                    placeholder="Name"
+                                    secureTextEntry={false}
+                                    onChangeText={setName}
+
+                                />
+                                <AuthInput
+                                    placeholder="Email Address"
+                                    secureTextEntry={false}
+                                    onChangeText={setEmail}
+                                    value={email}
+
+                                />
+                                <AuthInput
+                                    placeholder="Password"
+                                    secureTextEntry={true}
+                                    onChangeText={setPassword}
+                                    value={password}
+
+                                />
+                                <AuthInput
+                                    placeholder="Confirm Password"
+                                    secureTextEntry={true}
+                                    onChangeText={setPasswordConfirmation}
+                                    value={passwordConfirmation}
+                                />
+                                {/* <TextInput className=' text-gray-600 rounded-lg mb-8 px-5 py-5 bg-slate-200'/> */}
+                                <View>
+                                    <ModalSelector
+                                        style={{
+                                            marginBlock: 2,
+                                        }}
+                                        data={[
+                                            { key: 2, label: 'Customer' },
+                                            { key: 3, label: 'General Contractor' },
+                                            { key: 4, label: 'Real Estate Contractor' },
+                                        ]}
+                                        initValue="Select Role"
+                                        onChange={(option) => setRole({ key: option.key, label: option.label })}
+                                    >
+                                        <TouchableOpacity style={{
+                                            backgroundColor: "#e2e8f0",
+                                            padding: 15,
+                                            borderRadius: 8,
+                                            elevation: 15,
+                                            shadowColor: "gray",
+                                            shadowOffset: { width: 0, height: 3 },
+                                            shadowOpacity: 0.3,
+                                            shadowRadius: 2,
+                                        }}>
+                                            {role.label
+                                                ? <Text className="text-gray-700">{role.label}</Text>
+                                                : <Text className="text-gray-400">Select Role</Text>}
+                                        </TouchableOpacity>
+                                    </ModalSelector>
+                                </View>
+
                             </View>
 
+                            {/* Sign Up Button */}
+                            <View className="items-center justify-center mt-6">
+                                <TouchableOpacity
+                                    onPress={handleSignUp}
+                                    className="text-center rounded-3xl bg-sky-950 px-5 py-3 w-full max-w-xs"
+                                >
+                                    <Text className="text-center text-white text-lg">SIGN UP</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
 
-                        {/* Sign Up Button */}
-                        <View className="items-center justify-center mt-6">
-                            <TouchableOpacity
-                                onPress={handleSignUp}
-                                className="text-center rounded-3xl bg-sky-950 px-5 py-3 w-full max-w-xs"
-                            >
-                                <Text className="text-center text-white text-lg">SIGN UP</Text>
-                            </TouchableOpacity>
+                        {/* Additional Links */}
+                        <View className="w-full max-w-md mt-10 items-center">
+                            <View className="flex-row items-center justify-center">
+                                <Text className="text-gray-700 text-lg">Already Have an Account?</Text>
+                                <Link className="text-blue-600 text-lg pl-1" href="/SignIn">
+                                    Sign In
+                                </Link>
+                            </View>
                         </View>
                     </View>
-
-                    {/* Additional Links */}
-                    <View className="w-full max-w-md mt-10 items-center">
-                        <View className="flex-row items-center justify-center">
-                            <Text className="text-gray-700 text-lg">Already Have an Account?</Text>
-                            <Link className="text-blue-600 text-lg pl-1" href="/SignIn">
-                                Sign In
-                            </Link>
-                        </View>
-                    </View>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                </KeyboardAvoidingView>
+            </View>
+        </SafeAreaView>
     );
 }
