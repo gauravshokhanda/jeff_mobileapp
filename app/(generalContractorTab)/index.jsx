@@ -61,44 +61,46 @@ const DashboardScreen = () => {
   };
 
   const renderItem = ({ item }) => (
-    <View className="relative mt-2">
-      {/* Property Image */}
-      <Image
-        source={{
-          uri: `https://g32.iamdeveloper.in/public/${
-            JSON.parse(item.floor_maps_image)[0]
-          }`,
-        }}
-        className="w-full h-48 rounded-lg"
-        resizeMode="cover"
-      />
+    <TouchableOpacity onPress={() => router.push(`/PropertyDetails?id=${item.id}`)}>
+      <View className="relative mt-2">
+        {/* Property Image */}
+        <Image
+          source={{
+            uri: `https://g32.iamdeveloper.in/public/${
+              JSON.parse(item.floor_maps_image)[0]
+            }`,
+          }}
+          className="w-full h-48 rounded-lg"
+          resizeMode="cover"
+        />
 
-      {/* Overlay Container */}
-      <View className="absolute inset-0 bg-black/30 rounded-lg" />
+        {/* Overlay Container */}
+        <View className="absolute inset-0 bg-black/30 rounded-lg" />
 
-      {/* Location Tag */}
-      <View className="absolute top-3 left-3">
-        <Image source={require("../../assets/images/Arrow-up-right.png")} />
+        {/* Location Tag */}
+        <View className="absolute top-3 left-3">
+          <Image source={require("../../assets/images/Arrow-up-right.png")} />
+        </View>
+
+        {/* Info Text */}
+        <View className="absolute bottom-3 left-3 bg-white px-2 py-1 rounded-full flex-row items-center">
+          <Ionicons name="location-outline" size={14} color="green" />
+          <Text className="text-xs font-bold text-green-600 ml-1 tracking-widest">
+            {item.city}
+          </Text>
+        </View>
+
+        {/* Info Text */}
+        <View className="absolute bottom-3 right-3">
+          <Text className="text-white font-bold text-lg tracking-widest">
+            {item.project_type}
+          </Text>
+          <Text className="text-white font-semibold tracking-widest">
+            ${item.total_cost}
+          </Text>
+        </View>
       </View>
-
-      {/* Info Text */}
-      <View className="absolute bottom-3 left-3 bg-white px-2 py-1 rounded-full flex-row items-center">
-        <Ionicons name="location-outline" size={14} color="green" />
-        <Text className="text-xs font-bold text-green-600 ml-1 tracking-widest">
-          {item.city}
-        </Text>
-      </View>
-
-      {/* Info Text */}
-      <View className="absolute bottom-3 right-3">
-        <Text className="text-white font-bold text-lg tracking-widest">
-          {item.project_type}
-        </Text>
-        <Text className="text-white font-semibold tracking-widest">
-          ${item.total_cost}
-        </Text>
-      </View>
-    </View>
+    </TouchableOpacity>
   );
 
   if (!user) {
@@ -116,57 +118,55 @@ const DashboardScreen = () => {
         </View>
       </View>
 
-      {/* Swiper Section */}
-      {/* Swiper Section */}
-<View className="h-56 p-2 mt-2">
-  <Swiper autoplay loop className="rounded-xl">
-    <View className="relative w-full h-full">
-      <ImageBackground
-        source={{
-          uri: "https://media.istockphoto.com/id/1420678520/photo/building-site-at-sunset.jpg?s=612x612&w=0&k=20&c=HoDUK1RxsH78Fj9D34nao_MUTbf-vR3G97zUWMtES4k=",
-        }}
-        className="w-full h-full justify-center items-center"
-        resizeMode="cover"
-      >
-        <View className="absolute inset-0 bg-black/30 rounded-xl" />
-        <Text className="text-white font-bold text-3xl absolute top-5 left-5">
-          Building the Future
-        </Text>
-      </ImageBackground>
-    </View>
-
-    <View className="relative w-full h-full">
-      <ImageBackground
-        source={{
-          uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6fIA0SdlaGgrMPZ_BS9Z5WnM42HPF71iGkw&s",
-        }}
-        className="w-full h-full justify-center items-center"
-        resizeMode="cover"
-      >
-        <View className="absolute inset-0 bg-black/30 rounded-xl" />
-        <Text className="text-white font-bold text-3xl absolute top-5 left-5">
-          Strength in Every Brick
-        </Text>
-      </ImageBackground>
-    </View>
-
-    <View className="relative w-full h-full">
-      <ImageBackground
-        source={{
-          uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKTccCO8EfR28FeusyZdoh8lZs_u63vxo3-Q&s",
-        }}
-        className="w-full h-full justify-center items-center"
-        resizeMode="cover"
-      >
-        <View className="absolute inset-0 bg-black/30 rounded-xl" />
-        <Text className="text-white font-bold text-3xl absolute top-5 left-5">
-          Engineering Excellence
-        </Text>
-      </ImageBackground>
-    </View>
-  </Swiper>
-</View>
-
+      {/* Image Slider */}
+      <View className="h-56 p-2 mt-2">
+        <Swiper autoplay loop className="rounded-xl">
+          {/* Swiper Content */}
+          <View className="relative w-full h-full">
+            <ImageBackground
+              source={{
+                uri: "https://media.istockphoto.com/id/1420678520/photo/building-site-at-sunset.jpg?s=612x612&w=0&k=20&c=HoDUK1RxsH78Fj9D34nao_MUTbf-vR3G97zUWMtES4k=",
+              }}
+              className="w-full h-full justify-center items-center"
+              resizeMode="cover"
+            >
+              <View className="absolute inset-0 bg-black/30 rounded-xl" />
+              <Text className="text-white font-bold text-3xl absolute top-5 left-5">
+                Building the Future
+              </Text>
+            </ImageBackground>
+          </View>
+          {/* Other Slides */}
+          <View className="relative w-full h-full">
+            <ImageBackground
+              source={{
+                uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6fIA0SdlaGgrMPZ_BS9Z5WnM42HPF71iGkw&s",
+              }}
+              className="w-full h-full justify-center items-center"
+              resizeMode="cover"
+            >
+              <View className="absolute inset-0 bg-black/30 rounded-xl" />
+              <Text className="text-white font-bold text-3xl absolute top-5 left-5">
+                Strength in Every Brick
+              </Text>
+            </ImageBackground>
+          </View>
+          <View className="relative w-full h-full">
+            <ImageBackground
+              source={{
+                uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKTccCO8EfR28FeusyZdoh8lZs_u63vxo3-Q&s",
+              }}
+              className="w-full h-full justify-center items-center"
+              resizeMode="cover"
+            >
+              <View className="absolute inset-0 bg-black/30 rounded-xl" />
+              <Text className="text-white font-bold text-3xl absolute top-5 left-5">
+                Engineering Excellence
+              </Text>
+            </ImageBackground>
+          </View>
+        </Swiper>
+      </View>
 
       {/* New Property Openings */}
       <View className="mx-9 mt-4">

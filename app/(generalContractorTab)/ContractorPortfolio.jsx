@@ -25,6 +25,7 @@ const ProfileCard = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [organizationImage, setOrganizationImage] = useState(null);
   const [updating, setUpdating] = useState(false);
+
   const token = useSelector((state) => state.auth.token);
 
   useEffect(() => {
@@ -93,7 +94,7 @@ const ProfileCard = () => {
 
     try {
       const response = await axios.post(
-        `https://g32.iamdeveloper.in/api/contractors/update/${response.data.id}`,
+        `https://g32.iamdeveloper.in/api/contractors/update/${userData.id}`,
         editableData,
         {
           headers: {
@@ -121,6 +122,8 @@ const ProfileCard = () => {
       setUpdating(false);
     }
   };
+
+
 
   if (loading) {
     return (
@@ -225,7 +228,6 @@ const ProfileCard = () => {
       <Modal visible={editModalVisible} transparent={true} animationType="fade">
         <View className="flex-1 justify-center items-center bg-black/50 p-5">
           <View className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
-            {/* Close Button */}
             <TouchableOpacity
               className="absolute top-3 right-3"
               onPress={() => setEditModalVisible(false)}
@@ -237,7 +239,6 @@ const ProfileCard = () => {
               Edit Profile
             </Text>
 
-            {/* Profile Image Upload */}
             <View className="mb-4">
               <Text className="text-gray-700 font-semibold mb-1">
                 Profile Image
@@ -256,7 +257,6 @@ const ProfileCard = () => {
               </TouchableOpacity>
             </View>
 
-            {/* Organization Image Upload */}
             <View className="mb-4">
               <Text className="text-gray-700 font-semibold mb-1">
                 Organization Image
@@ -275,7 +275,6 @@ const ProfileCard = () => {
               </TouchableOpacity>
             </View>
 
-            {/* Input Fields */}
             <View className="mb-4">
               <Text className="text-gray-700 font-semibold mb-1">
                 Full Name
@@ -337,10 +336,9 @@ const ProfileCard = () => {
               />
             </View>
 
-            {/* Save Button */}
             <TouchableOpacity
               className="bg-sky-950 p-3 rounded-lg"
-              onPress={() => setEditModalVisible(false)}
+              onPress={handleSaveChanges}
             >
               <Text className="text-white text-center font-bold">
                 Save Changes
@@ -349,6 +347,7 @@ const ProfileCard = () => {
           </View>
         </View>
       </Modal>
+      
     </ScrollView>
   );
 };
