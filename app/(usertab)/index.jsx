@@ -20,6 +20,7 @@ import { useSelector } from "react-redux";
 import Swiper from "react-native-swiper";
 import { LinearGradient } from "expo-linear-gradient";
 
+
 export default function Dashboard() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
