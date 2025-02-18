@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { View, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, Image, TouchableOpacity, Text } from 'react-native';
+import { View, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, Image, TouchableOpacity, Text, SafeAreaView, Dimensions } from 'react-native';
 import { setLogin } from "../redux/slice/authSlice";
 import { API } from "../config/apiConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthInput from "../components/AuthInput";
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 export default function SignIn() {
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const postContentWidth = screenWidth * 0.92;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(true);
@@ -72,7 +76,7 @@ export default function SignIn() {
   const handleSignIn = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Email and Password are required.");
-
+      setLoading(false);
       return;
     }
     setLoading(true);
@@ -111,45 +115,68 @@ export default function SignIn() {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#0c4a6e" />
       </View>
     );
   }
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1"
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-        <View className="flex-1 bg-sky-10 p-12 border items-center justify-center">
-          <View className="mb-8 items-center justify-center">
-            <View className="w-44 h-44 rounded-full border-4 border-sky-950 overflow-hidden items-center justify-center">
-              <Image source={require("../assets/images/AC5D_Logo.jpg")} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
+    <SafeAreaView className="flex-1 bg-gray-200">
+
+      <LinearGradient
+        colors={['#082f49', 'transparent']}
+        style={{ height: screenHeight * 0.4 }}
+      />
+      <View className="rounded-3xl "
+        style={{
+          position: 'absolute',
+          top: screenHeight * 0.20,
+          width: postContentWidth,
+          height: screenHeight * 0.78,
+          left: (screenWidth - postContentWidth) / 2,
+          backgroundColor: 'white',
+        }}
+      >
+        <KeyboardAvoidingView
+          className="flex-1"
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View
+            className="flex-1 rounded-3xl flex-1">
+            <View className="items-center justify-center relative">
+              <View
+                style={{ height: screenHeight * 0.2, width: screenWidth * 0.4, position: "absolute" }}
+                className="rounded-full border-4 border-sky-950 overflow-hidden items-center justify-center">
+                <Image source={require("../assets/images/AC5D_Logo.jpg")} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
+              </View>
+            </View>
+            <View className="w-full max-w-md p-12"
+              style={{ marginTop: screenHeight * 0.12 }}
+            >
+              <View className="w-full space-y-4">
+                <AuthInput placeholder="Email Address" secureTextEntry={false} onChangeText={setEmail} value={email} />
+                <AuthInput placeholder="Password" secureTextEntry={true} onChangeText={setPassword} value={password}
+                 style={{ backgroundColor: "white", borderColor: "gray", borderWidth: 1, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, fontSize: 16 }} />
+              </View>
+              <View className="items-center justify-center mt-6">
+                <TouchableOpacity onPress={handleSignIn} className="text-center rounded-3xl bg-sky-950 px-5 py-3 w-full max-w-xs">
+                  <Text className="text-center text-white text-lg">SIGN IN</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View className="w-full max-w-md mt-10 items-center">
+              <View className="items-center pb-2">
+                <Link href={""} className="text-slate-500">Forgot Your Password</Link>
+              </View>
+              <View className="flex-row items-center justify-center">
+                <Text className="text-gray-700 text-lg">Already Have an Account?</Text>
+                <Link className="text-blue-600 text-lg pl-1" href={"/SignUp"}>Sign up</Link>
+              </View>
             </View>
           </View>
-          <View className="w-full max-w-md">
-            <View className="w-full space-y-4">
-              <AuthInput placeholder="Email Address" secureTextEntry={false} onChangeText={setEmail} />
-              <AuthInput placeholder="Password" secureTextEntry={true} onChangeText={setPassword} style={{ backgroundColor: "white", borderColor: "gray", borderWidth: 1, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, fontSize: 16 }} />
-            </View>
-            <View className="items-center justify-center mt-6">
-              <TouchableOpacity onPress={handleSignIn} className="text-center rounded-3xl bg-sky-950 px-5 py-3 w-full max-w-xs">
-                <Text className="text-center text-white text-lg">SIGN IN</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View className="w-full max-w-md mt-10 items-center">
-            <View className="items-center pb-2">
-              <Link href={""} className="text-slate-500">Forgot Your Password</Link>
-            </View>
-            <View className="flex-row items-center justify-center">
-              <Text className="text-gray-700 text-lg">Already Have an Account?</Text>
-              <Link className="text-blue-600 text-lg pl-1" href={"/SignUp"}>Sign up</Link>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+
+        </KeyboardAvoidingView>
+      </View>
+    </SafeAreaView >
   );
 }
