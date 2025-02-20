@@ -89,41 +89,40 @@ export default function SignUp() {
                 style={{ height: screenHeight * 0.4 }}
             />
 
-            <View className="rounded-3xl "
+            <View
+                className="flex-1 rounded-3xl bg-white"
                 style={{
-                    position: 'absolute',
-                    top: screenHeight * 0.20,
+                    marginTop: -screenHeight * 0.20,
                     width: postContentWidth,
-                    height: screenHeight * 0.81,
-                    left: (screenWidth - postContentWidth) / 2,
-                    backgroundColor: 'white',
-
-
+                    marginHorizontal: (screenWidth - postContentWidth) / 2,
                 }}
             >
-                <KeyboardAvoidingView
-                    className="flex-1"
-                    behavior={Platform.OS === "ios" ? "padding" : "height"}
-                >
 
-                    <View className="flex-1 rounded-3xl  bg-white p-12 ">
-                        {/* Logo */}
-                        <View className="items-center justify-center relative"
 
-                        >
-                            <View
-                                style={{ height: screenHeight * 0.2, width: screenWidth * 0.4, position: "absolute", bottom: -32 }}
-                                className="rounded-full border-4 border-sky-950 overflow-hidden items-center justify-center">
-                                <Image
-                                    source={Logo}
-                                    style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        resizeMode: "cover",
-                                    }}
-                                />
-                            </View>
+
+
+                <View className="flex-1 rounded-3xl  bg-white p-12 ">
+                    {/* Logo */}
+                    <View className="items-center justify-center relative"
+
+                    >
+                        <View
+                            style={{ height: screenHeight * 0.2, width: screenWidth * 0.4, position: "absolute", bottom: -32 }}
+                            className="rounded-full border-4 border-sky-950 overflow-hidden items-center justify-center">
+                            <Image
+                                source={Logo}
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    resizeMode: "cover",
+                                }}
+                            />
                         </View>
+                    </View>
+                    <ScrollView
+                        contentContainerStyle={{ paddingBottom: 200 }}
+                        showsVerticalScrollIndicator={false}
+                    >
 
                         <View
                             style={{ marginTop: screenHeight * 0.09 }}
@@ -209,8 +208,8 @@ export default function SignUp() {
                                 </Link>
                             </View>
                         </View>
-                    </View>
-                </KeyboardAvoidingView>
+                    </ScrollView>
+                </View>
             </View>
         </SafeAreaView>
     );

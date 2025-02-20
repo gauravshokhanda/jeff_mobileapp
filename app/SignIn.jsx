@@ -127,14 +127,12 @@ export default function SignIn() {
         colors={['#082f49', 'transparent']}
         style={{ height: screenHeight * 0.4 }}
       />
-      <View className="rounded-3xl "
+      <View
+        className="flex-1 rounded-3xl bg-white"
         style={{
-          position: 'absolute',
-          top: screenHeight * 0.20,
+          marginTop: -screenHeight * 0.20,
           width: postContentWidth,
-          height: screenHeight * 0.78,
-          left: (screenWidth - postContentWidth) / 2,
-          backgroundColor: 'white',
+          marginHorizontal: (screenWidth - postContentWidth) / 2,
         }}
       >
         <KeyboardAvoidingView
@@ -156,7 +154,7 @@ export default function SignIn() {
               <View className="w-full space-y-4">
                 <AuthInput placeholder="Email Address" secureTextEntry={false} onChangeText={setEmail} value={email} />
                 <AuthInput placeholder="Password" secureTextEntry={true} onChangeText={setPassword} value={password}
-                 style={{ backgroundColor: "white", borderColor: "gray", borderWidth: 1, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, fontSize: 16 }} />
+                  style={{ backgroundColor: "white", borderColor: "gray", borderWidth: 1, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, fontSize: 16 }} />
               </View>
               <View className="items-center justify-center mt-6">
                 <TouchableOpacity onPress={handleSignIn} className="text-center rounded-3xl bg-sky-950 px-5 py-3 w-full max-w-xs">
