@@ -72,14 +72,11 @@ export default function Dashboard() {
         </View>
       </LinearGradient>
       <View
-        className="rounded-3xl "
+        className="flex-1 rounded-3xl bg-white"
         style={{
-          position: "absolute",
-          top: screenHeight * 0.15,
+          marginTop: -screenHeight * 0.25, 
           width: postContentWidth,
-          height: screenHeight * 0.8,
-          left: (screenWidth - postContentWidth) / 2,
-          backgroundColor: "white",
+          marginHorizontal: (screenWidth - postContentWidth) / 2,
         }}
       >
         <View className="rounded-3xl mt-1 bg-white p-2">

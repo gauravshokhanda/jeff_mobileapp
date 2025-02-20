@@ -60,14 +60,14 @@ export default function CostDetail() {
                 </View>
 
             </LinearGradient>
-            <View className="rounded-3xl bg-white"
+
+            <View
+                className="flex-1 rounded-3xl bg-white"
                 style={{
-                    position: 'absolute',
-                    top: screenHeight * 0.20,
+                    marginTop: -screenHeight * 0.25,
                     width: postContentWidth,
-                    height: screenHeight * 0.80,
-                    left: (screenWidth - postContentWidth) / 2,
-                    overflow: 'hidden',
+                    marginHorizontal: (screenWidth - postContentWidth) / 2,
+                    overflow:'hidden'
                 }}
             >
                 <ImageBackground
