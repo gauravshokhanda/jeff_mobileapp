@@ -9,7 +9,7 @@ export default function AuthInput({ placeholder, secureTextEntry, onChangeText,v
             onChangeText={onChangeText}
             value={value}
             style={{
-                elevation: 15,
+                elevation: 5,
                 shadowColor: "#082f49",
                 shadowOffset: { width: 0, height: 3 }, 
                 shadowOpacity: 0.3, 
