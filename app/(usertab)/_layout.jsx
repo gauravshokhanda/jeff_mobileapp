@@ -110,7 +110,6 @@ export default function TabRoot() {
           "ChatScreen",
           "ContractorProfile",
           "RealEstateDetails",
-          "User",
         ].map((screen) => (
           <Tabs.Screen key={screen} name={screen} options={{ href: null }} />
         ))}
