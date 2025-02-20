@@ -38,7 +38,7 @@ export default function TabRoot() {
           tabBarStyle: {
             backgroundColor: "#082f49",
             height: isKeyboardVisible ? 0 : 58,
-            paddingTop: isKeyboardVisible ? 0 : 10,
+            paddingTop: isKeyboardVisible ? 0 : 10,      
           },
         }}
       >
