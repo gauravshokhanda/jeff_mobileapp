@@ -19,6 +19,17 @@ export default function TabRoot() {
       hideSubscription.remove();
     };
   }, []);
+
+  // Handle back button behavior (prevent exiting the app)
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => true; // Disable back button default behavior
+
+      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+      return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+    }, [])
+  );
+
   return (
     <ProtectedRoute>
       <Tabs

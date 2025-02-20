@@ -13,7 +13,7 @@ import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import AddPortfolioModal from "@/components/addPortfolioModal";
-import UpdateContractorProfile from "@/components/updateContractorProfile"; // Import the modal
+import UpdateContractorProfile from "@/components/updateContractorProfile"; 
 
 const ProfileCard = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -27,6 +27,8 @@ const ProfileCard = () => {
   const [addPortfolioModalVisible, setAddPortfolioModalVisible] = useState(false);
 
   const token = useSelector((state) => state.auth.token);
+  const [contractorId, setContractorId] = useState(null);
+
 
   // Fetch user data
   useEffect(() => {
@@ -44,9 +46,11 @@ const ProfileCard = () => {
         );
 
         if (response.status === 200) {
-          contractorId = response.id;
+         
+          setContractorId(response.data.id);
+          console.log("Contractor ID:", response.data.id);
           const portfolioResponse = await axios.get(
-            `https://g32.iamdeveloper.in/api/portfolios/contractor/${contractorId}?page=${page}`,
+            `https://g32.iamdeveloper.in/api/portfolios/contractor/${contractorId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -191,8 +195,7 @@ const ProfileCard = () => {
           visible={addPortfolioModalVisible}
           onClose={() => setAddPortfolioModalVisible(false)}
         />
-
-        {/* Use FlatList for portfolio items */}
+  
         <FlatList
           data={portfolioItems}
           keyExtractor={(item) => item.id}
