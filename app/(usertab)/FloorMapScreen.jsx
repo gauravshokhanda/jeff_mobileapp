@@ -220,22 +220,22 @@ export default function FloorMapScreen() {
                     </Text>
                 </View>
             </LinearGradient>
-            <View className="rounded-3xl bg-white"
+            <View
+                className="flex-1 rounded-3xl bg-white"
                 style={{
-                    position: 'absolute',
-                    top: screenHeight * 0.20,
+                    marginTop: -screenHeight * 0.25,
                     width: postContentWidth,
-                    height: screenHeight * 0.73,
-                    left: (screenWidth - postContentWidth) / 2,
-                   
+                    marginHorizontal: (screenWidth - postContentWidth) / 2,
                 }}
             >
                 <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                    style={{ flex: 1 }}
+                    className="flex-1"
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                    keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 50}
                 >
                     <ScrollView
-                        contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+                        contentContainerStyle={{ flexGrow: 1 }}
+                        showsVerticalScrollIndicator={false}
                         keyboardShouldPersistTaps="handled"
                     >
 

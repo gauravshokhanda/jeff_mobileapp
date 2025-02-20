@@ -127,14 +127,14 @@ export default function AreaDetailsScreen() {
 
       </LinearGradient>
 
-      <View className="rounded-3xl bg-white"
-        style={{
-          position: 'absolute',
-          top: screenHeight * 0.15,
-          width: postContentWidth,
-          height: screenHeight * 0.80,
-          left: (screenWidth - postContentWidth) / 2,
-        }}
+      <View 
+         className="flex-1 rounded-3xl bg-white"
+         style={{
+           marginTop: -screenHeight * 0.25, 
+           width: postContentWidth,
+           marginHorizontal: (screenWidth - postContentWidth) / 2,
+           overflow:"hidden"
+         }}
       >
 
         {loading && (
