@@ -27,9 +27,8 @@ export default function Dashboard() {
   const router = useRouter();
   const userName = useSelector((state) => state.auth.user);
   const [avatarLetter, setAvatarLetter] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("general"); // Track selected category
+  const [selectedCategory, setSelectedCategory] = useState("general"); 
 
-  // Ensure user name is available and set the first letter for avatar
   useEffect(() => {
     if (userName && userName.name) {
       setAvatarLetter(userName.name[0].toUpperCase());
@@ -86,7 +85,7 @@ export default function Dashboard() {
         <View className="rounded-3xl mt-1 bg-white p-2">
           {/* Welcome Message */}
           <View className="flex-row justify-center items-center mt-2">
-            <Text className="text-black text-Welcomelg">,</Text>
+            <Text className="text-sky-950 text-lg">Welcome,</Text>
             <Text className="text-sky-950 text-lg font-semibold">
               {userName && userName.name ? userName.name : "Unknown"}
             </Text>
@@ -134,7 +133,7 @@ export default function Dashboard() {
                 className={`${
                   selectedCategory === "general"
                     ? "bg-sky-950 text-white"
-                    : "bg-gray-200 text-black"
+                    : "bg-gray-200 text-white"
                 } rounded-xl p-2`}
               >
                 <Text className="text-lg">General Contractors</Text>

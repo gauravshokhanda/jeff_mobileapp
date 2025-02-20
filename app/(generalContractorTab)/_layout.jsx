@@ -2,8 +2,34 @@ import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { View, Text } from "react-native";
+import { useState, useEffect, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { BackHandler, Keyboard } from "react-native";
 
 export default function TabRoot() {
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  // Detect keyboard visibility
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => setKeyboardVisible(true));
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => setKeyboardVisible(false));
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  // Handle back button behavior (prevent exiting the app)
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => true; // Disable back button default behavior
+
+      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+      return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+    }, [])
+  );
+
   return (
     <ProtectedRoute>
       <Tabs
