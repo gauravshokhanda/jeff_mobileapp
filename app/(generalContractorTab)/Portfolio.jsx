@@ -114,8 +114,8 @@ const PortfolioScreen = ({ navigation }) => {
       setCurrentPage(portfolios.current_page);
       setLastPage(portfolios.last_page);
     } catch (error) {
-      console.error("API Error:", error);
-      Alert.alert("API Error", error.message || "An error occurred");
+      console.error("API Errors:", error);
+      Alert.alert("API Errors", error.message || "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -192,7 +192,7 @@ const PortfolioScreen = ({ navigation }) => {
       ]);
 
       if (response.status === 200) {
-        fetchPortfolio(); // Fetch updated data from API
+        fetchPortfolio(); 
         setModalVisible(false);
         setNewPortfolio({
           project_name: "",
