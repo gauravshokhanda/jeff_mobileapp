@@ -29,6 +29,8 @@ const PortfolioScreen = ({ navigation }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [citySuggestions, setCitySuggestions] = useState([]);
+  const [cityQuery, setCityQuery] = useState("");
+ 
 
   const router = useRouter();
   const [newPortfolio, setNewPortfolio] = useState({
@@ -108,7 +110,6 @@ const PortfolioScreen = ({ navigation }) => {
         };
       });
 
-      // ✅ Update the state completely instead of appending
       setPortfolioItems(formattedData);
 
       setCurrentPage(portfolios.current_page);
@@ -244,6 +245,50 @@ const PortfolioScreen = ({ navigation }) => {
     }
   };
 
+  const CitySearchModal = ({
+    modalVisible,
+    setModalVisible,
+    newPortfolio,
+    setNewPortfolio,
+    fetchPortfolio,
+    pickImage,
+    addPortfolioItem,
+  }) => {
+   
+
+   
+   
+  };
+  const fetchCities = async (page = 1, query = "") => {
+    try {
+      const response = await axios.post(
+        `https://g32.iamdeveloper.in/api/citie-search?page=${page}&search=${query}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      console.log("Full API Response:", response.data); 
+  
+      if (!response.data || !response.data.cities) {
+        throw new Error("Empty response or missing 'cities' field");
+      }
+  
+      // If first page, reset cities. Otherwise, append results.
+      setCitySuggestions((prev) =>
+        page === 1 ? response.data.cities : [...prev, ...response.data.cities]
+      );
+  
+      setCurrentPage(response.data.current_page);
+      setLastPage(response.data.last_page);
+    } catch (error) {
+      console.error("Error fetching cities:", error.response || error);
+      Alert.alert("Error", "Failed to fetch cities.");
+    }
+  };
+  
+  
+
   return (
     <View className="flex-1 bg-white">
       <View className="bg-sky-950 p-4 h-24 mt-12 flex-row items-center">
@@ -307,7 +352,7 @@ const PortfolioScreen = ({ navigation }) => {
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <View className="flex-1 justify-center items-center bg-black bg-opacity-50 p-6">
           <View className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
-
+            {/* Close Button */}
             <TouchableOpacity
               onPress={() => {
                 fetchPortfolio();
@@ -323,7 +368,7 @@ const PortfolioScreen = ({ navigation }) => {
             </Text>
 
             <ScrollView showsVerticalScrollIndicator={false}>
-        
+              {/* Project Name */}
               <TextInput
                 placeholder="Project Name"
                 placeholderTextColor="gray"
@@ -334,27 +379,40 @@ const PortfolioScreen = ({ navigation }) => {
                 className="border border-gray-300 p-3 rounded-lg mb-4 text-gray-700"
               />
 
+              {/* City Input with API Search */}
               <TextInput
-                placeholder="City"
+                placeholder="City Name"
                 placeholderTextColor="gray"
-                value=""
+                value={cityQuery}
+                onChangeText={(text) => {
+                  setCityQuery(text);
+                  fetchCities(text);
+                }}
                 className="border border-gray-300 p-3 rounded-lg mb-4 text-gray-700"
               />
+
+              {/* City Suggestions */}
               {citySuggestions.length > 0 && (
                 <FlatList
                   data={citySuggestions}
-                  keyExtractor={(item) => item.id.toString()}
+                  keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item }) => (
                     <TouchableOpacity
-                      onPress={() => handleSelectCity(item.name)}
-                      className="p-3 border-b border-gray-200"
+                      onPress={() => {
+                        setNewPortfolio({ ...newPortfolio, city: item });
+                        setCityQuery(item);
+                        setCitySuggestions([]); // Hide suggestions after selection
+                      }}
+                      className="p-2 border-b border-gray-200"
                     >
-                      <Text className="text-gray-700">{item.name}</Text>
+                      <Text className="text-gray-700">{item}</Text>
                     </TouchableOpacity>
                   )}
+                  className="bg-white border border-gray-300 rounded-lg max-h-40"
                 />
               )}
 
+              {/* Address */}
               <TextInput
                 placeholder="Address"
                 placeholderTextColor="gray"
@@ -365,6 +423,7 @@ const PortfolioScreen = ({ navigation }) => {
                 className="border border-gray-300 p-3 rounded-lg mb-4 text-gray-700"
               />
 
+              {/* Description */}
               <TextInput
                 placeholder="Description"
                 placeholderTextColor="gray"
@@ -377,6 +436,7 @@ const PortfolioScreen = ({ navigation }) => {
                 className="border border-gray-300 p-3 rounded-lg mb-6 text-gray-700 h-32"
               />
 
+              {/* Pick Image Button */}
               <TouchableOpacity
                 onPress={pickImage}
                 className="p-4 bg-sky-950 rounded-lg mb-6 flex-row justify-center items-center"
@@ -387,6 +447,7 @@ const PortfolioScreen = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
 
+              {/* Add Portfolio Button */}
               <TouchableOpacity
                 onPress={addPortfolioItem}
                 className="p-4 bg-sky-950 rounded-lg"
@@ -397,6 +458,7 @@ const PortfolioScreen = ({ navigation }) => {
               </TouchableOpacity>
             </ScrollView>
 
+            {/* Selected Images Preview */}
             <View className="mt-4">
               <Text className="text-gray-800 font-semibold">
                 Selected Images:
@@ -413,7 +475,7 @@ const PortfolioScreen = ({ navigation }) => {
                         source={{ uri: image }}
                         className="w-20 h-20 m-2 rounded-lg border-2 border-gray-200"
                       />
-                      {/ Close Icon /}
+
                       <TouchableOpacity
                         onPress={() => {
                           const updatedImages = newPortfolio.images.filter(

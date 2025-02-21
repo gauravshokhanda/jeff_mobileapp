@@ -1,36 +1,43 @@
 import React, { useState, useEffect } from "react";
 import {
+  SafeAreaView,
   View,
   Text,
   Image,
   FlatList,
+  Modal,
   TouchableOpacity,
-  Alert,
   ActivityIndicator,
+  TextInput,
+  Alert,
+  Button,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import AddPortfolioModal from "@/components/addPortfolioModal";
-import UpdateContractorProfile from "@/components/updateContractorProfile"; 
+import { useNavigation } from "@react-navigation/native";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import AddPortfolioModal from "../../components/addPortfolioModal";
+import * as ImagePicker from "expo-image-picker";
 
 const ProfileCard = () => {
+  const token = useSelector((state) => state.auth.token);
+  const navigation = useNavigation();
+
+  const [userData, setUserData] = useState(null);
+  const [portfolios, setPortfolios] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [editableData, setEditableData] = useState({});
   const [profileImage, setProfileImage] = useState(null);
   const [organizationImage, setOrganizationImage] = useState(null);
   const [updating, setUpdating] = useState(false);
-  const [addPortfolioModalVisible, setAddPortfolioModalVisible] = useState(false);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    lastPage: null,
+    fetching: false,
+  });
+  const [error, setError] = useState(null);
 
-  const token = useSelector((state) => state.auth.token);
-  const [contractorId, setContractorId] = useState(null);
-
-
-  // Fetch user data
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -44,73 +51,174 @@ const ProfileCard = () => {
             },
           }
         );
-
-        if (response.status === 200) {
-         
-          setContractorId(response.data.id);
-          console.log("Contractor ID:", response.data.id);
-          const portfolioResponse = await axios.get(
-            `https://g32.iamdeveloper.in/api/portfolios/contractor/${contractorId}`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          const { data } = response;
-          setUserData(data);
-          setEditableData(data);
-          setProfileImage(`https://g32.iamdeveloper.in/public/${data.image}`);
-          setOrganizationImage(`https://g32.iamdeveloper.in/public/${data.upload_organisation}`);
-        } else {
-          console.error("Unexpected Response:", response.status);
-        }
+        setUserData(response.data);
       } catch (error) {
-        console.error("Error fetching user data:", error.response?.data || error.message);
-        Alert.alert("API Error", "Failed to fetch user data.");
-      } finally {
-        setLoading(false);
+        setError("Failed to load user data");
       }
     };
 
-    if (token) {
-      fetchUserData();
-    }
+    fetchUserData();
   }, [token]);
 
-  // Handle image picker
-  const pickImage = async (type) => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
+  useEffect(() => {
+    if (userData?.id) fetchPortfolios(1, true);
+  }, [userData]);
 
-    if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      type === "profile" ? setProfileImage(uri) : setOrganizationImage(uri);
+  const fetchPortfolios = async (page, reset = false) => {
+    if (
+      pagination.fetching ||
+      (pagination.lastPage && page > pagination.lastPage)
+    )
+      return;
+
+    try {
+      setPagination((prev) => ({ ...prev, fetching: true }));
+
+      const response = await axios.get(
+        `https://g32.iamdeveloper.in/api/portfolios/contractor/${userData.id}?page=${page}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const { portfolios } = response.data;
+
+      setPortfolios((prev) =>
+        reset ? portfolios.data : [...prev, ...portfolios.data]
+      );
+      setPagination({
+        currentPage: portfolios.current_page,
+        lastPage: portfolios.last_page,
+        fetching: false,
+      });
+    } catch (error) {
+      console.error("Error fetching portfolios:", error);
+      setPagination((prev) => ({ ...prev, fetching: false }));
     }
   };
 
-  // Handle save changes
-  const handleSaveChanges = async () => {
-    if (!userData) return;
-
-    setUpdating(true);
+  const addPortfolioItem = async (newData) => {
+   
 
     try {
+      let formData = new FormData();
+      formData.append("project_name", newData.projectName);
+      formData.append("city", newData.cityName);
+      formData.append("address", newData.address);
+      formData.append("description", newData.description);
+
+      newData.selectedImages.forEach((uri, index) => {
+        formData.append(`portfolio_images[]`, {
+          uri,
+          name: `image_${index}.jpg`,
+          type: "image/jpeg",
+        });
+      });
+
+      console.log("Form Data being sent:", formData);
+
       const response = await axios.post(
-        `https://g32.iamdeveloper.in/api/contractors/update/${userData.id}`,
-        editableData,
+        "https://g32.iamdeveloper.in/api/portfolio/store",
+        formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
 
+      if (response.data) {
+        Alert.alert("Success", "Portfolio added successfully!", [
+          {
+            text: "OK",
+            onPress: () => {
+              setModalVisible(false);
+              fetchPortfolios(1, true); // Refresh the portfolio list
+            },
+          },
+        ]);
+      }
+    } catch (error) {
+      console.error("API Error:", error.response?.data || error);
+      Alert.alert(
+        "API Error",
+        error.response?.data?.message || "An error occurred"
+      );
+    }
+  };
+
+  const pickImage = async (type) => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissionResult.granted === false) {
+      Alert.alert("Permission required", "You need to allow access to your photos.");
+      return;
+    }
+  
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+  
+    if (!result.cancelled) {
+      if (type === "profile") {
+        setProfileImage(result.uri);
+      } else if (type === "organization") {
+        setOrganizationImage(result.uri);
+      }
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    if (!userData) return;
+  
+    setUpdating(true);
+  
+    try {
+      // Create a FormData object
+      const formData = new FormData();
+  
+      // Add text fields to FormData
+      formData.append("name", editableData.name || userData.name);
+      formData.append("email", editableData.email || userData.email);
+      formData.append("company_name", editableData.company_name || userData.company_name);
+      formData.append("city", editableData.city || userData.city);
+      formData.append("company_address", editableData.company_address || userData.company_address);
+  
+      // Add profile image (if changed)
+      if (profileImage) {
+        formData.append("image", uriToFormData(profileImage, "image"));
+      } else {
+        formData.append("image", userData.image); // Send existing image if not changed
+      }
+  
+      // Add organization image (if changed)
+      if (organizationImage) {
+        formData.append("upload_organisation", uriToFormData(organizationImage, "upload_organisation"));
+      } else {
+        formData.append("upload_organisation", userData.upload_organisation); // Send existing image if not changed
+      }
+  
+      // Add portfolio data (if required)
+      if (userData.portfolio) {
+        formData.append("portfolio", JSON.stringify(userData.portfolio)); // Ensure portfolio is sent as an array
+      }
+  
+      // Send the FormData to the API
+      const response = await axios.post(
+        `https://g32.iamdeveloper.in/api/contractors/update/${userData.id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data", // Important for file uploads
+          },
+        }
+      );
+  
       if (response.status === 200) {
-        setUserData(editableData);
+        // Update the local state with the new data
+        setUserData({ ...userData, ...editableData });
         Alert.alert("Success", "Profile updated successfully.");
         setEditModalVisible(false);
       } else {
@@ -123,109 +231,219 @@ const ProfileCard = () => {
       setUpdating(false);
     }
   };
-
-  // Loading and error handling UI
-  if (loading) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="skyblue" />
-      </View>
-    );
-  }
-
-  if (!userData) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-red-500 text-lg">Failed to load user data.</Text>
-      </View>
-    );
-  }
-
-  // Prepare portfolio items
-  const portfolioImages = JSON.parse(userData.portfolio || "[]");
-  const portfolioItems = portfolioImages.map((image, index) => ({
-    id: index.toString(),
-    image: `https://g32.iamdeveloper.in/public/${image}`,
-    name: userData.project_name || `Project ${index + 1}`,
-    description: userData.description || "No description available.",
-    year: new Date(userData.created_at).getFullYear().toString(),
-  }));
-
   return (
-    <View className="bg-white p-4 shadow-lg rounded-lg">
-      <View className="mt-5 relative w-full h-52">
-        <Image
-          source={{ uri: organizationImage }}
-          className="w-full h-full rounded-lg"
-        />
-        <View className="absolute inset-0 bg-black/30 rounded-lg" />
-        <Text className="absolute bottom-4 right-4 text-white font-bold text-lg">
-          {userData.company_name}
-        </Text>
-        <Image
-          source={{ uri: profileImage }}
-          className="absolute -bottom-9 left-4 w-28 h-28 rounded-full border-2 border-white"
-        />
-      </View>
+    <SafeAreaView className="bg-gray-100 flex-1">
+      {userData ? (
+        <>
+          {/* Banner with User Image */}
+          <View className="relative">
+            <Image
+              source={{
+                uri: `https://g32.iamdeveloper.in/public/${userData.upload_organisation}`,
+              }}
+              className="w-full h-48"
+              resizeMode="cover"
+            />
+            <TouchableOpacity
+              className="absolute top-4 left-4 bg-white p-2 rounded-full shadow"
+              onPress={() => navigation.goBack()}
+            >
+              <Ionicons name="arrow-back" size={24} color="black" />
+            </TouchableOpacity>
+            <Image
+              source={{
+                uri: `https://g32.iamdeveloper.in/public/${userData.image}`,
+              }}
+              className="absolute bottom-[-20] left-4 w-20 h-20 rounded-full border-4 border-white"
+            />
+          </View>
 
-      <TouchableOpacity
-        className="absolute top-5 right-2"
-        onPress={() => setEditModalVisible(true)}
-      >
-        <Ionicons name="create" size={40} color="white" />
-      </TouchableOpacity>
-
-      <View className="mt-16 p-4 w-full gap-3 bg-gray-100 rounded-lg">
-        <Text className="text-xl font-semibold tracking-widest">Name - {userData.name}</Text>
-        <Text className="text-xl font-semibold mt-1 tracking-wider">Company - {userData.company_name}</Text>
-        <Text className="text-xl font-semibold mt-1 tracking-wider">City - {userData.city}, {userData.zip_code}</Text>
-        <Text className="text-xl font-semibold mt-1 tracking-wider">Address - {userData.company_address}</Text>
-      </View>
-
-      <View className="mt-10 px-2 w-full">
-        <View className="flex-row gap-1 items-center">
-          <Text className="font-bold text-xl text-sky-950 tracking-widest">Portfolio</Text>
-          <TouchableOpacity
-            onPress={() => setAddPortfolioModalVisible(true)}
-          >
-            <Ionicons name="add-circle" size={30} color="gray" />
-          </TouchableOpacity>
-        </View>
-        <AddPortfolioModal
-          visible={addPortfolioModalVisible}
-          onClose={() => setAddPortfolioModalVisible(false)}
-        />
-  
-        <FlatList
-          data={portfolioItems}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View className="flex-row p-4 my-3 gap-3 items-center bg-gray-100">
-              <Image source={{ uri: item.image }} className="w-40 h-36 rounded-lg" />
-              <View className="ml-4 flex-1">
-                <Text className="text-lg font-bold text-gray-900">{item.name}</Text>
-                <Text className="text-gray-700 mt-1">{item.description}</Text>
-                <Text className="text-black rounded-3xl p-1 mt-1 text-lg font-bold">Year: {item.year}</Text>
-              </View>
+          {/* User Details Card */}
+          <View className="bg-white mx-4 mt-6 p-4 rounded-lg shadow">
+            <View className="flex-row justify-between items-center">
+              <Text className="text-lg font-bold">Personal Information</Text>
+              <TouchableOpacity
+                onPress={() => setEditModalVisible(true)}
+                className="absolute top-4 right-4 bg-white p-2 rounded-full shadow"
+              >
+                <Ionicons name="pencil" size={24} color="black" />
+              </TouchableOpacity>
             </View>
-          )}
-        />
-      </View>
+            <Text className="text-gray-600 mt-2">{userData.name}</Text>
+            <Text className="text-gray-600">{userData.email}</Text>
+            <Text className="text-gray-600">{userData.number}</Text>
+            <Text className="text-gray-600">
+              {userData.address}, {userData.city}
+            </Text>
+            <Text className="text-gray-600 font-semibold mt-2">
+              {userData.company_name}
+            </Text>
+            <Text className="text-gray-600">{userData.company_address}</Text>
+          </View>
 
-      {/* Import Update Contractor Profile Modal */}
-      <UpdateContractorProfile
-        visible={editModalVisible}
-        onClose={() => setEditModalVisible(false)}
-        onSave={handleSaveChanges}
-        editableData={editableData}
-        setEditableData={setEditableData}
-        profileImage={profileImage}
-        setProfileImage={setProfileImage}
-        organizationImage={organizationImage}
-        setOrganizationImage={setOrganizationImage}
-      />
-    </View>
+          {/* Portfolio Section */}
+          <View className="flex-row justify-between items-center mx-4 mt-6">
+            <Text className="text-xl font-semibold">Portfolios</Text>
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <Ionicons name="add-circle" size={28} color="black" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Portfolio List */}
+          <FlatList
+            data={portfolios}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                className="bg-white mx-4 mt-4 p-4 rounded-lg shadow flex-row items-center"
+                onPress={() =>
+                  navigation.navigate("PortfolioDetail", { id: item.id })
+                }
+              >
+                <Image
+                  source={{
+                    uri: `https://g32.iamdeveloper.in/public/${
+                      JSON.parse(item.portfolio_images)[0]
+                    }`,
+                  }}
+                  className="w-24 h-24 rounded-lg mr-4"
+                  resizeMode="cover"
+                />
+                <View className="flex-1">
+                  <Text className="text-lg font-semibold">
+                    {item.project_name}
+                  </Text>
+                  <Text className="text-gray-600">
+                    {item.city}, {item.address}
+                  </Text>
+                  <Text
+                    className="text-gray-500 text-sm mt-1"
+                    numberOfLines={2}
+                  >
+                    {item.description}
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={24} color="black" />
+              </TouchableOpacity>
+            )}
+            onEndReached={() => fetchPortfolios(pagination.currentPage + 1)}
+            onEndReachedThreshold={0.1}
+          />
+        </>
+      ) : (
+        <ActivityIndicator size="large" color="blue" />
+      )}
+
+      {modalVisible && (
+        <AddPortfolioModal
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          onClose={() => setModalVisible(false)}
+          addPortfolioItem={addPortfolioItem}
+        />
+      )}
+
+      <Modal visible={editModalVisible} transparent={true} animationType="fade">
+        <View className="flex-1 justify-center items-center bg-black/50 p-5">
+          <View className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
+            <TouchableOpacity
+              className="absolute top-3 right-3"
+              onPress={() => setEditModalVisible(false)}
+            >
+              <Ionicons name="close" size={24} color="black" />
+            </TouchableOpacity>
+
+            <Text className="text-xl font-bold text-center mb-5">Edit Profile</Text>
+
+            {/* Profile Image */}
+            <View className="mb-4">
+              <Text className="text-gray-700 font-semibold mb-1">Profile Image</Text>
+              <TouchableOpacity onPress={() => pickImage("profile")} className="items-center">
+                <Image
+                  source={{ uri: profileImage || userData?.image }}
+                  className="w-24 h-24 rounded-full border-2 border-gray-400"
+                />
+                <Text className="bg-gray-300 p-1 rounded-xl font-bold text-sky-950 mt-2">
+                  Change Profile Image
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Organization Image */}
+            <View className="mb-4">
+              <Text className="text-gray-700 font-semibold mb-1">Organization Image</Text>
+              <TouchableOpacity onPress={() => pickImage("organization")} className="items-center">
+                <Image
+                  source={{ uri: organizationImage || userData?.upload_organisation }}
+                  className="w-32 h-20 rounded-lg border-2 border-gray-400"
+                />
+                <Text className="bg-gray-300 p-1 rounded-xl font-bold text-sky-950 mt-2">
+                  Change Organization Image
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Editable Fields */}
+            <View className="mb-4">
+              <Text className="text-gray-700 font-semibold mb-1">Full Name</Text>
+              <TextInput
+                placeholder="Enter your name"
+                value={editableData.name || userData?.name}
+                onChangeText={(text) => setEditableData((prevData) => ({ ...prevData, name: text }))}
+                className="border border-gray-300 rounded-lg p-3"
+              />
+            </View>
+
+            <View className="mb-4">
+              <Text className="text-gray-700 font-semibold mb-1">Email</Text>
+              <TextInput
+                placeholder="Enter your email"
+                value={editableData.email || userData?.email}
+                onChangeText={(text) => setEditableData((prevData) => ({ ...prevData, email: text }))}
+                className="border border-gray-300 rounded-lg p-3"
+              />
+            </View>
+
+            <View className="mb-4">
+              <Text className="text-gray-700 font-semibold mb-1">Company</Text>
+              <TextInput
+                placeholder="Enter company name"
+                value={editableData.company_name || userData?.company_name}
+                onChangeText={(text) => setEditableData((prevData) => ({ ...prevData, company_name: text }))}
+                className="border border-gray-300 rounded-lg p-3"
+              />
+            </View>
+
+            <View className="mb-4">
+              <Text className="text-gray-700 font-semibold mb-1">City</Text>
+              <TextInput
+                placeholder="Enter city"
+                value={editableData.city || userData?.city}
+                onChangeText={(text) => setEditableData((prevData) => ({ ...prevData, city: text }))}
+                className="border border-gray-300 rounded-lg p-3"
+              />
+            </View>
+
+            <View className="mb-6">
+              <Text className="text-gray-700 font-semibold mb-1">Address</Text>
+              <TextInput
+                placeholder="Enter address"
+                value={editableData.company_address || userData?.company_address}
+                onChangeText={(text) => setEditableData((prevData) => ({ ...prevData, company_address: text }))}
+                className="border border-gray-300 rounded-lg p-3"
+              />
+            </View>
+
+            <TouchableOpacity className="bg-sky-950 p-3 rounded-lg" onPress={handleSaveChanges}>
+              <Text className="text-white text-center font-bold">
+                {updating ? "Saving..." : "Save Changes"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
 };
 
-export default ProfileCard; 
+export default ProfileCard;
