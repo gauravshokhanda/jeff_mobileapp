@@ -2,6 +2,7 @@ import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { View, Text } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { useState, useEffect, useCallback } from "react";
 import { BackHandler, Keyboard } from "react-native";
 

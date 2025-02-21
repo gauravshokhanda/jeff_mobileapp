@@ -114,8 +114,8 @@ const PortfolioScreen = ({ navigation }) => {
       setCurrentPage(portfolios.current_page);
       setLastPage(portfolios.last_page);
     } catch (error) {
-      console.error("API Errors:", error);
-      Alert.alert("API Errors", error.message || "An error occurred");
+      console.error("API Error:", error);
+      Alert.alert("API Error", error.message || "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -192,7 +192,7 @@ const PortfolioScreen = ({ navigation }) => {
       ]);
 
       if (response.status === 200) {
-        fetchPortfolio(); 
+        fetchPortfolio(); // Fetch updated data from API
         setModalVisible(false);
         setNewPortfolio({
           project_name: "",
@@ -304,12 +304,10 @@ const PortfolioScreen = ({ navigation }) => {
           />
         )}
       </View>
-
-      {/* Add Portfolio Modal */}
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <View className="flex-1 justify-center items-center bg-black bg-opacity-50 p-6">
           <View className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
-            {/* Close Button */}
+
             <TouchableOpacity
               onPress={() => {
                 fetchPortfolio();
@@ -325,7 +323,7 @@ const PortfolioScreen = ({ navigation }) => {
             </Text>
 
             <ScrollView showsVerticalScrollIndicator={false}>
-              {/* Project Name */}
+        
               <TextInput
                 placeholder="Project Name"
                 placeholderTextColor="gray"
@@ -336,7 +334,6 @@ const PortfolioScreen = ({ navigation }) => {
                 className="border border-gray-300 p-3 rounded-lg mb-4 text-gray-700"
               />
 
-              {/* City */}
               <TextInput
                 placeholder="City"
                 placeholderTextColor="gray"
@@ -358,7 +355,6 @@ const PortfolioScreen = ({ navigation }) => {
                 />
               )}
 
-              {/* Address */}
               <TextInput
                 placeholder="Address"
                 placeholderTextColor="gray"
@@ -369,7 +365,6 @@ const PortfolioScreen = ({ navigation }) => {
                 className="border border-gray-300 p-3 rounded-lg mb-4 text-gray-700"
               />
 
-              {/* Description */}
               <TextInput
                 placeholder="Description"
                 placeholderTextColor="gray"
@@ -382,7 +377,6 @@ const PortfolioScreen = ({ navigation }) => {
                 className="border border-gray-300 p-3 rounded-lg mb-6 text-gray-700 h-32"
               />
 
-              {/* Pick Image Button */}
               <TouchableOpacity
                 onPress={pickImage}
                 className="p-4 bg-sky-950 rounded-lg mb-6 flex-row justify-center items-center"
@@ -393,7 +387,6 @@ const PortfolioScreen = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
 
-              {/* Add Portfolio Button */}
               <TouchableOpacity
                 onPress={addPortfolioItem}
                 className="p-4 bg-sky-950 rounded-lg"
@@ -404,7 +397,6 @@ const PortfolioScreen = ({ navigation }) => {
               </TouchableOpacity>
             </ScrollView>
 
-            {/* Selected Images */}
             <View className="mt-4">
               <Text className="text-gray-800 font-semibold">
                 Selected Images:
@@ -421,7 +413,7 @@ const PortfolioScreen = ({ navigation }) => {
                         source={{ uri: image }}
                         className="w-20 h-20 m-2 rounded-lg border-2 border-gray-200"
                       />
-                      {/* Close Icon */}
+                      {/ Close Icon /}
                       <TouchableOpacity
                         onPress={() => {
                           const updatedImages = newPortfolio.images.filter(
