@@ -108,15 +108,20 @@ export default function Listing() {
                 <Text className="text-white font-bold ml-2">{item.city}</Text>
               </View>
               <View className="flex-row gap-2">
-                <View className="bg-white rounded-full px-3"
-
+                <View className="bg-white rounded-full px-3 justify-center items-center"
                 >
-                  <Text className="text-slate-700 text-sm"
+                  <Text className="text-slate-700"
                     style={{ fontSize: screenWidth * 0.03 }}
-                  >{item.house_type}</Text>
+                  >{item.house_type}
+                  </Text>
                 </View>
                 <View className="bg-white rounded-full p-1 justify-center items-center">
-                  <Text className="text-slate-700 text-sm">{item.locale}</Text>
+                  <Text className="text-slate-700"
+                    style={{ fontSize: screenWidth * 0.03 }}
+                  >
+                    {(item.locale.split(" ").slice(0, 2).join(" ") + (item.locale.split(" ").length > 2 ? "..." : "")).trim()}
+
+                  </Text>
                 </View>
               </View>
             </View>
@@ -212,8 +217,16 @@ export default function Listing() {
 
         style={{ height: screenHeight * 0.4 }}
       >
-        <View className="mt-8 px-4 ">
-          <Text className="text-2xl font-semibold text-white">Property Listing</Text>
+        <View className="mt-2">
+          <TouchableOpacity
+            className="absolute top-6 z-10 left-5"
+            onPress={() => router.back()}
+          >
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text className="text-2xl font-semibold text-white mb-4 py-4 text-center">
+            My property Listing
+          </Text>
         </View>
         <View className="mx-5 mt-5 items-end">
           <View className="bg-gray-100  h-12 mr-5 rounded-full px-3 flex-row items-center justify-between ">

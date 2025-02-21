@@ -88,10 +88,11 @@ export default function Index() {
                   >{item.house_type}</Text>
                 </View>
                 <View className="bg-white rounded-full p-1 justify-center items-center">
-                  <Text className="text-slate-700 text-sm"
+                  <Text className="text-slate-700"
                     style={{ fontSize: screenWidth * 0.022 }}
                   >
-                    {item.locale.split(" ").slice(0, 2).join(" ") + (item.locale.split(" ").length > 2 ? "..." : "")}                  </Text>
+                    {(item.locale.split(" ").slice(0, 2).join(" ") + (item.locale.split(" ").length > 2 ? "..." : "")).trim()}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -257,85 +258,85 @@ export default function Index() {
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={renderListening}
                   ListFooterComponent={
-                  <View>
-                    <View className="bg-[#505C3F] py-4 rounded-2xl  mt-6 shadow-lg flex-row  justify-between w-full">
-                      {/* Left Section - Text */}
-                      <View className="pl-2">
-                        <Text className="text-white text-2xl font-semibold tracking-widest">New Properties!</Text>
-                        <Text className="text-gray-100 text-lg tracking-wider">house and land packages</Text>
-                      </View>
+                    <View>
+                      <View className="bg-[#505C3F] py-4 rounded-2xl  mt-6 shadow-lg flex-row  justify-between w-full">
+                        {/* Left Section - Text */}
+                        <View className="pl-2">
+                          <Text className="text-white text-2xl font-semibold tracking-widest">New Properties!</Text>
+                          <Text className="text-gray-100 text-lg tracking-wider">house and land packages</Text>
+                        </View>
 
-                      {/* Right Section - Image */}
-                      <Image
-                        source={require("../../assets/images/realState/NewProperty.png")}
-                        className="w-32 h-24 "
-                        style={{ resizeMode: "cover" }}
-                      />
-                    </View>
-
-                    {/*  */}
-                    <View className="py-10">
-                      {/* Caution Box */}
-                      <View className="bg-gray-100 rounded-xl p-4 flex-row items-start">
+                        {/* Right Section - Image */}
                         <Image
-                          source={require("../../assets/images/realState/warning.png")} // Replace with the warning icon image
-                          className="w-12 h-12 mr-3"
+                          source={require("../../assets/images/realState/NewProperty.png")}
+                          className="w-32 h-24 "
+                          style={{ resizeMode: "cover" }}
                         />
-                        <View className="flex-1">
-                          <Text className="text-xl font-bold text-black tracking-widest">Caution!</Text>
-                          <Text className="text-gray-700 text-lg">
-                            Be cautious of suspicious calls received from users posing as
-                            ‘armyman’ or ‘Public Service’ & asking to transfer money.
-                          </Text>
-                          <TouchableOpacity
-                            onPress={() => router.push("/KnowMore")}
-                            className="mt-2">
-                            <Text className="text-black font-bold">Know more &gt;</Text>
-                          </TouchableOpacity>
+                      </View>
+
+                      {/*  */}
+                      <View className="py-10">
+                        {/* Caution Box */}
+                        <View className="bg-gray-100 rounded-xl p-4 flex-row items-start">
+                          <Image
+                            source={require("../../assets/images/realState/warning.png")} // Replace with the warning icon image
+                            className="w-12 h-12 mr-3"
+                          />
+                          <View className="flex-1">
+                            <Text className="text-xl font-bold text-black tracking-widest">Caution!</Text>
+                            <Text className="text-gray-700 text-lg">
+                              Be cautious of suspicious calls received from users posing as
+                              ‘armyman’ or ‘Public Service’ & asking to transfer money.
+                            </Text>
+                            <TouchableOpacity
+                              onPress={() => router.push("/KnowMore")}
+                              className="mt-2">
+                              <Text className="text-black font-bold">Know more &gt;</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+
+                        {/* User Post */}
+                        <View className="mt-8 flex-row items-start">
+                          <Image
+                            source={require("../../assets/images/realState/user-profile.png")} // Replace with the user image
+                            className="w-10 h-10 rounded-full mr-3"
+                          />
+                          <View className="flex-1">
+                            <Text className="text-black font-semibold text-xl tracking-widest">Jimmy Brooke</Text>
+                            <Text className="text-gray-600 mt-1 tracking-wider text-lg w-[90%]">
+                              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                              <Text className="font-bold text-black"> Read more...</Text>
+                            </Text>
+                          </View>
                         </View>
                       </View>
 
-                      {/* User Post */}
-                      <View className="mt-8 flex-row items-start">
-                        <Image
-                          source={require("../../assets/images/realState/user-profile.png")} // Replace with the user image
-                          className="w-10 h-10 rounded-full mr-3"
-                        />
-                        <View className="flex-1">
-                          <Text className="text-black font-semibold text-xl tracking-widest">Jimmy Brooke</Text>
-                          <Text className="text-gray-600 mt-1 tracking-wider text-lg w-[90%]">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                            eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                            <Text className="font-bold text-black"> Read more...</Text>
-                          </Text>
-                        </View>
+                      <View className="p-8 bg-gray-100 rounded-xl mb-5">
+                        {/* Call Us Card */}
+                        <TouchableOpacity className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center mb-3">
+                          <View className="bg-gray-200 p-2 rounded-full mr-5">
+                            <Ionicons name="call" size={20} color="black" />
+                          </View>
+                          <View className=" items-center ml-5">
+                            <Text className="text-lg font-bold text-black">Call Us</Text>
+                            <Text className="text-gray-700">1800-131-56677</Text>
+                          </View>
+                        </TouchableOpacity>
+
+                        {/* Email Us Card */}
+                        <TouchableOpacity className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center">
+                          <View className="bg-gray-200 p-2 rounded-full mr-3">
+                            <Ionicons name="chatbubble-ellipses" size={20} color="black" />
+                          </View>
+                          <View className=" items-center ml-5">
+                            <Text className="text-lg font-bold text-black">Email Us</Text>
+                            <Text className="text-gray-700">Supportjeff@gmail.com</Text>
+                          </View>
+                        </TouchableOpacity>
                       </View>
-                    </View>
-
-                    <View className="p-8 bg-gray-100 rounded-xl mb-5">
-                      {/* Call Us Card */}
-                      <TouchableOpacity className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center mb-3">
-                        <View className="bg-gray-200 p-2 rounded-full mr-5">
-                          <Ionicons name="call" size={20} color="black" />
-                        </View>
-                        <View className=" items-center ml-5">
-                          <Text className="text-lg font-bold text-black">Call Us</Text>
-                          <Text className="text-gray-700">1800-131-56677</Text>
-                        </View>
-                      </TouchableOpacity>
-
-                      {/* Email Us Card */}
-                      <TouchableOpacity className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center">
-                        <View className="bg-gray-200 p-2 rounded-full mr-3">
-                          <Ionicons name="chatbubble-ellipses" size={20} color="black" />
-                        </View>
-                        <View className=" items-center ml-5">
-                          <Text className="text-lg font-bold text-black">Email Us</Text>
-                          <Text className="text-gray-700">Supportjeff@gmail.com</Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                  </View>}
+                    </View>}
 
                 />
               )}

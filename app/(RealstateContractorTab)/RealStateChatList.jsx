@@ -3,15 +3,6 @@ import React, { useState } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-
-
-
-
-
-
-
-
-
 export default function RealStateChatList() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const postContentWidth = screenWidth * 0.92;
