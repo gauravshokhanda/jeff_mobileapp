@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, Image } from "react-native";
-import { Ionicons, Entypo } from "@expo/vector-icons"; // Entypo for emoji icon
+import { Ionicons, Entypo } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -20,7 +20,7 @@ const ChatScreen = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`https://g32.iamdeveloper.in/api/user/show/${user_id}`, {
+        const response = await axios.get(`https://g32.iamdeveloper.in/api/users/listing/${user_id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -45,7 +45,7 @@ const ChatScreen = () => {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1 bg-gray-100">
-      {/* Header */}
+     
       <View className="bg-sky-950 mt-12 flex-row items-center p-4">
         <TouchableOpacity onPress={() => router.back()} className="mr-3">
           <Ionicons name="arrow-back" size={28} color="white" />
@@ -60,7 +60,6 @@ const ChatScreen = () => {
         )}
       </View>
 
-      {/* Chat Messages */}
       <FlatList
         data={messages}
         keyExtractor={(item) => item.id}
@@ -79,7 +78,6 @@ const ChatScreen = () => {
         contentContainerStyle={{ paddingVertical: 10 }}
       />
 
-      {/* Chat Input Box */}
       <View className="flex-row items-center p-4 bg-white border-t border-gray-300">
         <TouchableOpacity className="mr-2">
           <Entypo name="emoji-happy" size={28} color="gray" />

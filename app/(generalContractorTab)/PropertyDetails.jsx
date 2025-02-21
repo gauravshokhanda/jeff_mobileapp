@@ -83,12 +83,13 @@ export default function PropertyDetails() {
     }
 
     try {
-      const response = await axios.get(`https://g32.iamdeveloper.in/api/user/show/${user_id}`, {
+      const response = await axios.get(`https://g32.iamdeveloper.in/api/users/listing/${user_id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.status === 200) {
-        const phoneNumber = response.data.data.number;
+        console.log(response);
+        const phoneNumber = response.data.number;
 
         if (phoneNumber) {
           Linking.openURL(`tel:${phoneNumber}`);
@@ -105,18 +106,16 @@ export default function PropertyDetails() {
   return (
     <ScrollView className="bg-white flex-1 mt-8 p-4">
       <View className="w-full h-20 bg-sky-950 mb-2 flex justify-center flex-row items-center rounded-lg">
-        <View className="absolute left-2 p-2 rounded-full shadow-md">
+        <TouchableOpacity onPress={() => router.back()} className="absolute left-2 p-2 rounded-full shadow-md">
           <FontAwesome name="arrow-left" size={20} color="white" />
-        </View>
+        </TouchableOpacity>
         <Text className="text-white text-2xl font-bold">Property Details</Text>
       </View>
 
-      {/* Main Image */}
       <View className="relative">
         <Image source={{ uri: mainImage }} className="w-full h-60 rounded-lg" />
       </View>
 
-      {/* Scrollable Design Images */}
       <ScrollView horizontal className="mt-4">
         {designImages.length > 0 ? (
           designImages.map((img, index) => (
@@ -129,7 +128,6 @@ export default function PropertyDetails() {
         )}
       </ScrollView>
 
-      {/* Property Details */}
       <View className="mt-4 bg-white p-4 rounded-lg shadow-md">
         <Text className="text-xl font-bold">Property Type: {project_type}</Text>
         <View className="flex-row items-center justify-between mt-2">
@@ -140,7 +138,6 @@ export default function PropertyDetails() {
         <Text className="text-gray-700 mt-2">Area: {area} sqft</Text>
       </View>
 
-      {/* Property Information */}
       <View className="mt-4 bg-white p-4 rounded-lg shadow-md">
         <Text className="text-xl font-semibold">Property Information</Text>
         <View className="mt-2 gap-2">
@@ -169,7 +166,6 @@ export default function PropertyDetails() {
         </View>
       </View>
 
-      {/* Buttons */}
       <View className="mt-4 bg-white p-4 flex flex-row items-center justify-center gap-5">
         <TouchableOpacity
           className="bg-sky-950 p-3 w-48 rounded-lg justify-center items-center flex-row gap-2 shadow-md active:bg-sky-800"
