@@ -185,39 +185,34 @@ const ProfileCard = () => {
       formData.append("city", editableData.city || userData.city);
       formData.append("company_address", editableData.company_address || userData.company_address);
   
-      // Add profile image (if changed)
       if (profileImage) {
         formData.append("image", uriToFormData(profileImage, "image"));
       } else {
-        formData.append("image", userData.image); // Send existing image if not changed
+        formData.append("image", userData.image); 
       }
   
-      // Add organization image (if changed)
       if (organizationImage) {
         formData.append("upload_organisation", uriToFormData(organizationImage, "upload_organisation"));
       } else {
-        formData.append("upload_organisation", userData.upload_organisation); // Send existing image if not changed
+        formData.append("upload_organisation", userData.upload_organisation); 
       }
   
-      // Add portfolio data (if required)
       if (userData.portfolio) {
-        formData.append("portfolio", JSON.stringify(userData.portfolio)); // Ensure portfolio is sent as an array
+        formData.append("portfolio", JSON.stringify(userData.portfolio)); 
       }
   
-      // Send the FormData to the API
       const response = await axios.post(
         `https://g32.iamdeveloper.in/api/contractors/update/${userData.id}`,
         formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data", // Important for file uploads
+            "Content-Type": "multipart/form-data",
           },
         }
       );
   
       if (response.status === 200) {
-        // Update the local state with the new data
         setUserData({ ...userData, ...editableData });
         Alert.alert("Success", "Profile updated successfully.");
         setEditModalVisible(false);
@@ -235,7 +230,6 @@ const ProfileCard = () => {
     <SafeAreaView className="bg-gray-100 flex-1">
       {userData ? (
         <>
-          {/* Banner with User Image */}
           <View className="relative">
             <Image
               source={{
