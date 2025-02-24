@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 
+
 const CitySearch = ({ city, setCity }) => {
     const [cities, setCities] = useState([]);
     const [searchLoading, setSearchLoading] = useState(false);

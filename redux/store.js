@@ -14,7 +14,7 @@ import realStatePropertyReducer from './slice/realStatePropertySlice';
 const persistConfig = {
     key: 'root',
     storage: AsyncStorage,
-    whitelist: ['auth'], // Persist only auth, preventing unnecessary state persistence
+    whitelist: ['auth','realStateProperty'], // Persist only auth, preventing unnecessary state persistence
 };
 
 // Root Reducer
