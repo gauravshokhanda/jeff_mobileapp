@@ -18,120 +18,83 @@ import { setLogin } from "../redux/slice/authSlice";
 import { API } from "../config/apiConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AuthInput from "../components/AuthInput";
-import { LinearGradient } from "expo-linear-gradient";
-import fetchUserData from "./utils/fetchUserData";
+import { LinearGradient } from 'expo-linear-gradient';
+import fetchUserData from './utils/fetchUserData';
 
 export default function SignIn() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [UserProfileComplete, setUserProfileComplete] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [forceRender, setForceRender] = useState(false);
+  const [userProfileComplete, setUserProfileComplete] = useState(null); // Initialize as null for clarity
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true); // Unified loading state
 
   const router = useRouter();
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const token = useSelector((state) => state.auth.token);
-  const userData = useSelector((state) => state.auth.user);
-  const hasPropertyDetails = useSelector(
-    (state) => state.realStateProperty.propertyDetails
-  );
-  const userId = userData.id;
+  const { isAuthenticated, token, user } = useSelector((state) => state.auth);
 
-  // real state property details
-  console.log("hasPropertyDetails:", hasPropertyDetails);
-
+  // Centralized auth and profile check
   useEffect(() => {
-    const getUserData = async () => {
+    const initializeAuth = async () => {
+      setIsCheckingAuth(true);
       try {
-        const data = await fetchUserData(token, userId);
-        console.log("UserProfileComplete:", UserProfileComplete);
-        console.log(
-          "is_profile_complete:",
-          UserProfileComplete?.is_profile_complete
-        );
-        if (data.data && data.data.is_profile_complete !== undefined) {
-          setUserProfileComplete(data.data); // Update the state
-          console.log("UserProfileComplete state updated:", data.data);
-        } else {
-          console.error("Invalid user data:", data.data);
+        // Check for persisted token
+        const storedData = await AsyncStorage.getItem('persist:root');
+        if (!storedData || !token || !user?.id) {
+          setIsCheckingAuth(false);
+          return;
         }
 
-        setUserProfileComplete((prevState) => ({ ...prevState, ...data.data }));
-        setForceRender((prev) => !prev);
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      }
-    };
-    if (token && userId) {
-      // ✅ Correct condition
-      console.log(`Fetching data with token: ${token} and userId: ${userId}`);
-      getUserData();
-    }
-  }, [API, token, userId]);
+        // Fetch user profile data if token and user ID exist
+        const userData = await fetchUserData(token, user.id, setIsCheckingAuth);
+        if (userData?.data?.is_profile_complete !== undefined) {
+          setUserProfileComplete(userData.data);
+        }
 
-  useEffect(() => {
-    // Check AsyncStorage for persisted token before proceeding
-    const checkAuthStatus = async () => {
-      try {
-        const storedToken = await AsyncStorage.getItem("persist:root");
-        if (storedToken) {
-          setLoading(false);
-        } else {
-          setLoading(false);
+        // Navigate based on role and profile completion
+        if (isAuthenticated && token && userData?.data) {
+          const { role, id } = user;
+          if (role === 3) {
+            router.replace(userData.data.is_profile_complete ? "/(generalContractorTab)" : "/ContractorProfileComplete");
+          } else if (role === 4) {
+            router.replace(userData.data.is_profile_complete ? "/(RealstateContractorTab)" : "/RealstateSelector");
+          } else {
+            router.replace("/(usertab)");
+          }
         }
       } catch (error) {
-        console.error("Error checking persisted token:", error);
-        setLoading(false);
+        console.error("Auth initialization error:", error);
+      } finally {
+        setIsCheckingAuth(false);
       }
     };
 
-    checkAuthStatus();
-  }, []);
-
-  useEffect(() => {
-    if (isAuthenticated && token && UserProfileComplete) {
-      if (userData?.role == 3) {
-        if (UserProfileComplete?.is_profile_complete) {
-          router.replace("/(generalContractorTab)");
-        } else {
-          router.replace("/ContractorProfileComplete");
-        }
-      } else if (userData?.role == 4) {
-        console.log("UserProfileComplete before routing:", UserProfileComplete);
-        if (UserProfileComplete?.is_profile_complete) {
-          console.log("first");
-          router.replace("/(RealstateContractorTab)");
-        } else {
-          router.replace("/RealstateSelector");
-        }
-      } else {
-        router.replace("/(usertab)");
-      }
-    }
-  }, [isAuthenticated, token, UserProfileComplete, forceRender]); // Added UserProfileComplete
+    initializeAuth();
+  }, [isAuthenticated, token, user, router, dispatch]);
 
   const handleSignIn = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Email and Password are required.");
-      setLoading(false);
       return;
     }
-    setLoading(true);
+
+    setIsCheckingAuth(true);
     try {
       const response = await API.post("auth/login", { email, password });
       const { token, user } = response.data;
-      // console.log("user login data", response.data)
 
-      // Save token in Redux
+      // Save token and user in Redux
       dispatch(setLogin({ token, user }));
 
-      if (user.role == 3) {
-        router.replace("/(generalContractorTab)");
-      } else if (user.role == 4) {
-        router.replace("/(RealstateContractorTab)");
+      // Fetch profile data after login
+      const userData = await fetchUserData(token, user.id, setIsCheckingAuth);
+      const profileComplete = userData?.data?.is_profile_complete;
+
+      // Navigate based on role and profile completion
+      if (user.role === 3) {
+        router.replace(profileComplete ? "/(generalContractorTab)" : "/ContractorProfileComplete");
+      } else if (user.role === 4) {
+        router.replace(profileComplete ? "/(RealstateContractorTab)" : "/RealstateSelector");
       } else {
         router.replace("/(usertab)");
       }
@@ -146,11 +109,12 @@ export default function SignIn() {
       }
       Alert.alert("Error", errorMessage);
     } finally {
-      setLoading(false);
+      setIsCheckingAuth(false);
     }
   };
 
-  if (loading) {
+  // Show loading spinner while checking auth or signing in
+  if (isCheckingAuth) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
         <ActivityIndicator size="large" color="#0c4a6e" />
@@ -158,12 +122,10 @@ export default function SignIn() {
     );
   }
 
+  // Render sign-in form only if auth check is complete and user is not authenticated
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
-      <LinearGradient
-        colors={["#082f49", "transparent"]}
-        style={{ height: screenHeight * 0.4 }}
-      />
+      <LinearGradient colors={['#082f49', 'transparent']} style={{ height: screenHeight * 0.4 }} />
       <View
         className="flex-1 rounded-3xl bg-white"
         style={{
@@ -176,48 +138,19 @@ export default function SignIn() {
           className="flex-1"
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          <View className="flex-1 rounded-3xl ">
+          <View className="flex-1 rounded-3xl">
             <View className="items-center justify-center relative">
               <View
-                style={{
-                  height: screenHeight * 0.2,
-                  width: screenWidth * 0.4,
-                  position: "absolute",
-                }}
+                style={{ height: screenHeight * 0.2, width: screenWidth * 0.4, position: "absolute" }}
                 className="rounded-full border-4 border-sky-950 overflow-hidden items-center justify-center"
               >
-                <Image
-                  source={require("../assets/images/AC5D_Logo.jpg")}
-                  style={{ width: "100%", height: "100%", resizeMode: "cover" }}
-                />
+                <Image source={require("../assets/images/AC5D_Logo.jpg")} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
               </View>
             </View>
-            <View
-              className="w-full max-w-md p-12"
-              style={{ marginTop: screenHeight * 0.12 }}
-            >
+            <View className="w-full max-w-md p-12" style={{ marginTop: screenHeight * 0.12 }}>
               <View className="w-full space-y-4">
-                <AuthInput
-                  placeholder="Email Address"
-                  secureTextEntry={false}
-                  onChangeText={setEmail}
-                  value={email}
-                />
-                <AuthInput
-                  placeholder="Password"
-                  secureTextEntry={true}
-                  onChangeText={setPassword}
-                  value={password}
-                  style={{
-                    backgroundColor: "white",
-                    borderColor: "gray",
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    paddingHorizontal: 16,
-                    paddingVertical: 12,
-                    fontSize: 16,
-                  }}
-                />
+                <AuthInput placeholder="Email Address" secureTextEntry={false} onChangeText={setEmail} value={email} />
+                <AuthInput placeholder="Password" secureTextEntry={true} onChangeText={setPassword} value={password} />
               </View>
               <View className="items-center justify-center mt-6">
                 <TouchableOpacity
