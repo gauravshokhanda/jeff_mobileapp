@@ -1,16 +1,28 @@
-import { useEffect, useState } from 'react';
-import { Link, useRouter } from 'expo-router';
-import { useDispatch, useSelector } from 'react-redux';
-import { View, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, Image, TouchableOpacity, Text, SafeAreaView, Dimensions } from 'react-native';
+import { useEffect, useState } from "react";
+import { Link, useRouter } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  View,
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  Text,
+  SafeAreaView,
+  Dimensions,
+} from "react-native";
 import { setLogin } from "../redux/slice/authSlice";
 import { API } from "../config/apiConfig";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import AuthInput from "../components/AuthInput";
 import { LinearGradient } from 'expo-linear-gradient';
 import fetchUserData from './utils/fetchUserData';
 
 export default function SignIn() {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -117,7 +129,7 @@ export default function SignIn() {
       <View
         className="flex-1 rounded-3xl bg-white"
         style={{
-          marginTop: -screenHeight * 0.20,
+          marginTop: -screenHeight * 0.2,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
         }}
@@ -141,18 +153,29 @@ export default function SignIn() {
                 <AuthInput placeholder="Password" secureTextEntry={true} onChangeText={setPassword} value={password} />
               </View>
               <View className="items-center justify-center mt-6">
-                <TouchableOpacity onPress={handleSignIn} className="text-center rounded-3xl bg-sky-950 px-5 py-3 w-full max-w-xs">
-                  <Text className="text-center text-white text-lg">SIGN IN</Text>
+                <TouchableOpacity
+                  onPress={handleSignIn}
+                  className="text-center rounded-3xl bg-sky-950 px-5 py-3 w-full max-w-xs"
+                >
+                  <Text className="text-center text-white text-lg">
+                    SIGN IN
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
             <View className="w-full max-w-md mt-10 items-center">
               <View className="items-center pb-2">
-                <Link href={""} className="text-slate-500">Forgot Your Password</Link>
+                <Link href={""} className="text-slate-500">
+                  Forgot Your Password
+                </Link>
               </View>
               <View className="flex-row items-center justify-center">
-                <Text className="text-gray-700 text-lg">Already Have an Account?</Text>
-                <Link className="text-blue-600 text-lg pl-1" href={"/SignUp"}>Sign up</Link>
+                <Text className="text-gray-700 text-lg">
+                  Already Have an Account?
+                </Text>
+                <Link className="text-blue-600 text-lg pl-1" href={"/SignUp"}>
+                  Sign up
+                </Link>
               </View>
             </View>
           </View>
