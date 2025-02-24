@@ -201,40 +201,7 @@ export default function Index() {
   const token = useSelector((state) => state.auth.token);
 
   const handleSubmit = async () => {
-    console.log("handle submit function");
-    
-    // Validation object to store errors
-    const errors = {};
-
-    // Required fields validation
-    if (!selectedPropertyType) errors.property_type = "Property type is required";
-    if (!city) errors.city = "City is required";
-    if (!selectedHomeType) errors.house_type = "House type is required";
-    if (!address) errors.address = "Address is required";
-    if (!locality) errors.locale = "Locality is required";
-    if (!selectedBHK) errors.bhk = "BHK selection is required";
-    if (!area) errors.area = "Area is required";
-    if (!furnish_type) errors.furnish_type = "Furnish type is required";
-    if (!price) errors.price = "Price is required";
-    if (!availableFrom) errors.available_from = "Available from date is required";
-    if (!images || images.length === 0) errors.images = "At least one image is required";
-
-    // Additional validation rules
-    if (area && (isNaN(area) || Number(area) <= 0)) {
-        errors.area = "Area must be a valid positive number";
-    }
-    if (price && (isNaN(price) || Number(price) <= 0)) {
-        errors.price = "Price must be a valid positive number";
-    }
-
-    // If there are any errors, show alert and return
-    if (Object.keys(errors).length > 0) {
-        const errorMessage = Object.values(errors)[0]; // Show first error
-        Alert.alert("Validation Error", errorMessage);
-        return;
-    }
-
-    // If validation passes, proceed with form submission
+    console.log("handle submit function")
     const formData = new FormData();
     formData.append("property_type", selectedPropertyType);
     formData.append("city", city);
@@ -246,64 +213,64 @@ export default function Index() {
     formData.append("furnish_type", selectedType);
     formData.append("price", price);
     formData.append("available_from", availableFrom.toISOString());
-
     images.forEach((uri, index) => {
-        console.log("add floormap images", uri);
-        formData.append('property_images[ ]', {
-            uri: uri,
-            type: 'image/jpeg',
-            name: `property_image_${index}_${Date.now()}.jpg`
-        });
+      console.log("add floormap images", uri)
+      formData.append('property_images[ ]', {
+        uri: uri,
+        type: 'image/jpeg',
+        name: `property_image_${index}_${Date.now()}.jpg`
+      });
     });
 
-    console.log("form data", formData);
+    console.log("form data", formData)
+
+
 
     try {
-        const response = await axios.post(
-            "https://g32.iamdeveloper.in/api/realstate-property",
-            formData,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "multipart/form-data",
-                },
-            }
-        );
-        
-        console.log("response", response.data.property);
-        dispatch(setRealStateProperty(response.data.property));
+      const response = await axios.post("https://g32.iamdeveloper.in/api/realstate-property", formData, {
+        headers:
+        {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
 
-        Alert.alert(
-            "Success",
-            response.data.message,
-            [
-                {
-                    text: "OK",
-                    onPress: () => {
-                        setSelectedPropertyType("");
-                        setCity("");
-                        setSelectedHomeType("");
-                        setAddress("");
-                        setLocality("");
-                        setSelectedBHK("");
-                        setArea("");
-                        setSelectedType("");
-                        setPrice("");
-                        setAvailableFrom("");
-                        setImages(null);
-                        router.replace("/(RealstateContractorTab)");
-                    },
-                },
-            ],
-            { cancelable: false }
-        );
+        },
+      })
+      console.log("response", response.data.property)
+      dispatch(
+        setRealStateProperty(response.data.property)
+      );
+
+      Alert.alert(
+        "Success",
+        response.data.message,
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setSelectedPropertyType("");
+              setCity("");
+              setSelectedHomeType("");
+              setAddress("");
+              setLocality("");
+              setSelectedBHK("");
+              setArea("");
+              setSelectedType("");
+              setPrice("");
+              setAvailableFrom("");
+              setImages(null)
+              router.replace("/(RealstateContractorTab)");
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+
+
     } catch (error) {
-        console.log(error, "error");
-        // Add better error handling
-        const errorMessage = error.response?.data?.message || "An error occurred while submitting the form";
-        Alert.alert("Error", errorMessage);
+      console.log(error, "error")
     }
-};
+
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
