@@ -19,6 +19,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import AddPortfolioModal from "../../components/addPortfolioModal";
 import * as ImagePicker from "expo-image-picker";
 
+
 const ProfileCard = () => {
   const token = useSelector((state) => state.auth.token);
   const navigation = useNavigation();
@@ -98,8 +99,6 @@ const ProfileCard = () => {
   };
 
   const addPortfolioItem = async (newData) => {
-   
-
     try {
       let formData = new FormData();
       formData.append("project_name", newData.projectName);
@@ -149,17 +148,21 @@ const ProfileCard = () => {
   };
 
   const pickImage = async (type) => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permissionResult.granted === false) {
-      Alert.alert("Permission required", "You need to allow access to your photos.");
+      Alert.alert(
+        "Permission required",
+        "You need to allow access to your photos."
+      );
       return;
     }
-  
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
     });
-  
+
     if (!result.cancelled) {
       if (type === "profile") {
         setProfileImage(result.uri);
@@ -175,32 +178,19 @@ const ProfileCard = () => {
     setUpdating(true);
   
     try {
-      // Create a FormData object
       const formData = new FormData();
-  
-      // Add text fields to FormData
       formData.append("name", editableData.name || userData.name);
       formData.append("email", editableData.email || userData.email);
       formData.append("company_name", editableData.company_name || userData.company_name);
       formData.append("city", editableData.city || userData.city);
       formData.append("company_address", editableData.company_address || userData.company_address);
-  
-      if (profileImage) {
-        formData.append("image", uriToFormData(profileImage, "image"));
-      } else {
-        formData.append("image", userData.image); 
-      }
-  
-      if (organizationImage) {
-        formData.append("upload_organisation", uriToFormData(organizationImage, "upload_organisation"));
-      } else {
-        formData.append("upload_organisation", userData.upload_organisation); 
-      }
-  
-      if (userData.portfolio) {
+      formData.append("image", userData.image); 
+      formData.append("upload_organisation", userData.upload_organisation); 
+      formData.append("role", userData.role );
+      if (userData.portfolio && Array.isArray(userData.portfolio)) {
         formData.append("portfolio", JSON.stringify(userData.portfolio)); 
       }
-  
+     
       const response = await axios.post(
         `https://g32.iamdeveloper.in/api/contractors/update/${userData.id}`,
         formData,
@@ -220,7 +210,10 @@ const ProfileCard = () => {
         Alert.alert("Error", "Failed to update profile.");
       }
     } catch (error) {
-      console.error("Error updating user data:", error.response?.data || error.message);
+      console.error(
+        "Error updating user data:",
+        error.response?.data || error.message
+      );
       Alert.alert("API Error", "Failed to update profile.");
     } finally {
       setUpdating(false);
@@ -347,43 +340,21 @@ const ProfileCard = () => {
               <Ionicons name="close" size={24} color="black" />
             </TouchableOpacity>
 
-            <Text className="text-xl font-bold text-center mb-5">Edit Profile</Text>
-
-            {/* Profile Image */}
-            <View className="mb-4">
-              <Text className="text-gray-700 font-semibold mb-1">Profile Image</Text>
-              <TouchableOpacity onPress={() => pickImage("profile")} className="items-center">
-                <Image
-                  source={{ uri: profileImage || userData?.image }}
-                  className="w-24 h-24 rounded-full border-2 border-gray-400"
-                />
-                <Text className="bg-gray-300 p-1 rounded-xl font-bold text-sky-950 mt-2">
-                  Change Profile Image
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Organization Image */}
-            <View className="mb-4">
-              <Text className="text-gray-700 font-semibold mb-1">Organization Image</Text>
-              <TouchableOpacity onPress={() => pickImage("organization")} className="items-center">
-                <Image
-                  source={{ uri: organizationImage || userData?.upload_organisation }}
-                  className="w-32 h-20 rounded-lg border-2 border-gray-400"
-                />
-                <Text className="bg-gray-300 p-1 rounded-xl font-bold text-sky-950 mt-2">
-                  Change Organization Image
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <Text className="text-xl font-bold text-center mb-5">
+              Edit Profile
+            </Text>
 
             {/* Editable Fields */}
             <View className="mb-4">
-              <Text className="text-gray-700 font-semibold mb-1">Full Name</Text>
+              <Text className="text-gray-700 font-semibold mb-1">
+                Full Name
+              </Text>
               <TextInput
                 placeholder="Enter your name"
                 value={editableData.name || userData?.name}
-                onChangeText={(text) => setEditableData((prevData) => ({ ...prevData, name: text }))}
+                onChangeText={(text) =>
+                  setEditableData((prevData) => ({ ...prevData, name: text }))
+                }
                 className="border border-gray-300 rounded-lg p-3"
               />
             </View>
@@ -393,7 +364,9 @@ const ProfileCard = () => {
               <TextInput
                 placeholder="Enter your email"
                 value={editableData.email || userData?.email}
-                onChangeText={(text) => setEditableData((prevData) => ({ ...prevData, email: text }))}
+                onChangeText={(text) =>
+                  setEditableData((prevData) => ({ ...prevData, email: text }))
+                }
                 className="border border-gray-300 rounded-lg p-3"
               />
             </View>
@@ -403,7 +376,12 @@ const ProfileCard = () => {
               <TextInput
                 placeholder="Enter company name"
                 value={editableData.company_name || userData?.company_name}
-                onChangeText={(text) => setEditableData((prevData) => ({ ...prevData, company_name: text }))}
+                onChangeText={(text) =>
+                  setEditableData((prevData) => ({
+                    ...prevData,
+                    company_name: text,
+                  }))
+                }
                 className="border border-gray-300 rounded-lg p-3"
               />
             </View>
@@ -413,7 +391,9 @@ const ProfileCard = () => {
               <TextInput
                 placeholder="Enter city"
                 value={editableData.city || userData?.city}
-                onChangeText={(text) => setEditableData((prevData) => ({ ...prevData, city: text }))}
+                onChangeText={(text) =>
+                  setEditableData((prevData) => ({ ...prevData, city: text }))
+                }
                 className="border border-gray-300 rounded-lg p-3"
               />
             </View>
@@ -422,13 +402,23 @@ const ProfileCard = () => {
               <Text className="text-gray-700 font-semibold mb-1">Address</Text>
               <TextInput
                 placeholder="Enter address"
-                value={editableData.company_address || userData?.company_address}
-                onChangeText={(text) => setEditableData((prevData) => ({ ...prevData, company_address: text }))}
+                value={
+                  editableData.company_address || userData?.company_address
+                }
+                onChangeText={(text) =>
+                  setEditableData((prevData) => ({
+                    ...prevData,
+                    company_address: text,
+                  }))
+                }
                 className="border border-gray-300 rounded-lg p-3"
               />
             </View>
 
-            <TouchableOpacity className="bg-sky-950 p-3 rounded-lg" onPress={handleSaveChanges}>
+            <TouchableOpacity
+              className="bg-sky-950 p-3 rounded-lg"
+              onPress={handleSaveChanges}
+            >
               <Text className="text-white text-center font-bold">
                 {updating ? "Saving..." : "Save Changes"}
               </Text>
