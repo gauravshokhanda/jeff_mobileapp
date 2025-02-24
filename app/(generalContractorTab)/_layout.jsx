@@ -2,8 +2,35 @@ import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { View, Text } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import { useState, useEffect, useCallback } from "react";
+import { BackHandler, Keyboard } from "react-native";
+
 
 export default function TabRoot() {
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  // Detect keyboard visibility
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => setKeyboardVisible(true));
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => setKeyboardVisible(false));
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  // Handle back button behavior (prevent exiting the app)
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => true; // Disable back button default behavior
+
+      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+      return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+    }, [])
+  );
+
   return (
     <ProtectedRoute>
       <Tabs
@@ -11,8 +38,8 @@ export default function TabRoot() {
           headerShown: false,
           tabBarStyle: {
             backgroundColor: "#082f49",
-            height: 77,
-            paddingTop: 10,
+            height: isKeyboardVisible ? 0 : 68,
+            paddingTop: isKeyboardVisible ? 0 : 10,
           },
         }}
       >
@@ -24,7 +51,7 @@ export default function TabRoot() {
               <Ionicons
                 name={focused ? "home" : "home-outline"}
                 color={"white"}
-                size={30}
+                size={25}
               />
             ),
             tabBarLabelStyle: {
@@ -40,7 +67,7 @@ export default function TabRoot() {
               <Ionicons
                 name={focused ? "grid" : "grid-outline"}
                 color="white"
-                size={30}
+                size={25}
               />
             ),
             tabBarLabelStyle: {
@@ -56,7 +83,7 @@ export default function TabRoot() {
               <Ionicons
                 name={focused ? "albums" : "albums-outline"}
                 color="white"
-                size={30}
+                size={25}
               />
             ),
             tabBarLabelStyle: {
@@ -72,7 +99,7 @@ export default function TabRoot() {
               <Ionicons
                 name={focused ? "chatbubble" : "chatbubble-outline"}
                 color="white"
-                size={30}
+                size={25}
               />
             ),
             tabBarLabelStyle: {
@@ -88,7 +115,7 @@ export default function TabRoot() {
               <Ionicons
                 name={focused ? "person" : "person-outline"}
                 color="white"
-                size={30}
+                size={25}
               />
             ),
             tabBarLabelStyle: {
@@ -102,14 +129,8 @@ export default function TabRoot() {
             href: null,
           }}
         />
-         <Tabs.Screen
+        <Tabs.Screen
           name="ChatScreen"
-          options={{
-            href: null,
-          }}
-        />
-         <Tabs.Screen
-          name="chat"
           options={{
             href: null,
           }}
@@ -120,7 +141,7 @@ export default function TabRoot() {
             href: null,
           }}
         />
-         <Tabs.Screen
+        <Tabs.Screen
           name="PortfolioDetail"
           options={{
             href: null,

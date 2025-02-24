@@ -1,18 +1,25 @@
-import { View, Text, Image, ScrollView } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { View, Text, Image, ScrollView, TouchableOpacity, SafeAreaView } from "react-native";
 
 export default function KnowMoreScreen() {
   return (
-    <ScrollView className="flex-1 bg-white p-4 ">
+    <SafeAreaView className="flex-1 bg-white">
+        <View className=" absolute flex-row items-center justify-between z-10 ">
+        <TouchableOpacity onPress={() => router.back()} className="mx-3 mt-2">
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
       {/* Warning Icon */}
-      <View className="bg-gray-200 rounded-xl p-4 items-center mt-20">
+      <View className="bg-gray-200 rounded-xl p-4 items-center">
         <Image
-          source={require("../../assets/images/realState/warning.png")} // Add your warning icon image
+          source={require("../../assets/images/realState/warning.png")} 
           className="w-28 h-48"
         />
       </View>
 
       {/* Information Box */}
-      <View className="bg-gray-100 rounded-xl p-4 mt-4">
+      <View className="bg-gray-100 rounded-xl p-10 m-4">
         <Text className="text-black">
           Now, when users click on <Text className="font-bold">"Know More,"</Text> they'll be taken to knowmore.html for more details. 🚀{"\n"}
         </Text>
@@ -33,6 +40,6 @@ export default function KnowMoreScreen() {
           Stay alert and protect yourself from fraud! 🚨
         </Text>
       </View>
-    </ScrollView>
+    </SafeAreaView>
   );
 }

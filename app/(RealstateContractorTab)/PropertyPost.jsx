@@ -64,21 +64,25 @@ export default function Index() {
     const isSelected = selectedPropertyType === item.id;
 
     return (
-      <TouchableOpacity
-        className="rounded-lg overflow-hidden"
-        onPress={() => setSelectedPropertyType(item.id)}
-      >
-        <LinearGradient
-          colors={isSelected ? ['#93C5FD', '#1E3A8A'] : ['#F3F4F6', '#D1D5DB']} // Blue when selected, Gray otherwise
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-          className="px-8 py-4 flex items-center justify-center"
+      <View className="rounded-lg overflow-hidden">
+        <TouchableOpacity
+
+          onPress={() => setSelectedPropertyType(item.id)}
         >
-          <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-900"}`}>
-            {item.label}
-          </Text>
-        </LinearGradient>
-      </TouchableOpacity>
+          <LinearGradient
+            colors={isSelected ? ['#93C5FD', '#1E3A8A'] : ['#F3F4F6', '#D1D5DB']} // Blue when selected, Gray otherwise
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+            className="px-8 py-4 flex items-center justify-center"
+          >
+            <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-900"}`}>
+              {item.label}
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+      </View>
+
     );
   };
 
@@ -104,23 +108,26 @@ export default function Index() {
     const isSelected = selectedHomeType === item.name;
 
     return (
-      <TouchableOpacity
-        className="mx-2 rounded-full overflow-hidden"
-        style={{ width: 100, height: 100 }}
-        onPress={() => setSelectedHomeType(item.name)}
-      >
-        <LinearGradient
-          colors={isSelected ? ['#93C5FD', '#1E3A8A'] : ['#F3F4F6', '#D1D5DB']} // Blue gradient when selected, Gray otherwise
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-          className="flex items-center justify-center rounded-full w-full h-full"
+      <View className="mx-2 rounded-full overflow-hidden">
+        <TouchableOpacity
+
+          style={{ width: 100, height: 100 }}
+          onPress={() => setSelectedHomeType(item.name)}
         >
-          <Image source={item.image} style={{ width: 50, height: 50 }} resizeMode="contain" />
-          <Text className={`text-sm font-medium mt-2 mx-1 text-center ${isSelected ? "text-white" : "text-gray-900"}`}>
-            {item.name}
-          </Text>
-        </LinearGradient>
-      </TouchableOpacity>
+          <LinearGradient
+            colors={isSelected ? ['#93C5FD', '#1E3A8A'] : ['#F3F4F6', '#D1D5DB']} // Blue gradient when selected, Gray otherwise
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+            className="flex items-center justify-center rounded-full w-full h-full"
+          >
+            <Image source={item.image} style={{ width: 50, height: 50 }} resizeMode="contain" />
+            <Text className={`text-sm font-medium mt-2 mx-1 text-center ${isSelected ? "text-white" : "text-gray-900"}`}>
+              {item.name}
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+
     );
   };
 
@@ -129,21 +136,23 @@ export default function Index() {
   const renderBHKItem = ({ item }) => {
     const isSelected = selectedBHK === item;
     return (
-      <TouchableOpacity
-        onPress={() => setSelectedBHK(item)}
-        className="mx-2 rounded-lg overflow-hidden" // Ensures gradient stays within the border
-      >
-        <LinearGradient
-          colors={isSelected ? ['#93C5FD', '#1E3A8A'] : ['#F3F4F6', '#D1D5DB']} // Blue when selected, Gray otherwise
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-          className="px-6 py-4 flex items-center justify-center rounded-lg border border-gray-300"
+      <View className="mx-2 rounded-lg overflow-hidden" >
+        <TouchableOpacity
+          onPress={() => setSelectedBHK(item)}
+
         >
-          <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-900"}`}>
-            {item}
-          </Text>
-        </LinearGradient>
-      </TouchableOpacity>
+          <LinearGradient
+            colors={isSelected ? ['#93C5FD', '#1E3A8A'] : ['#F3F4F6', '#D1D5DB']} // Blue when selected, Gray otherwise
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+            className="px-6 py-4 flex items-center justify-center rounded-lg border border-gray-300"
+          >
+            <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-900"}`}>
+              {item}
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
     )
   }
 
@@ -158,8 +167,10 @@ export default function Index() {
   const renderFurnishItem = ({ item }) => {
     const isSelected = selectedType === item.id;
     return (
+      <View className="mx-2 rounded-lg overflow-hidden" >
+
       <TouchableOpacity
-        className="mx-2 rounded-lg overflow-hidden" // Ensures gradient stays within the border
+        
         onPress={() => setSelectedType(item.id)}
       >
         <LinearGradient
@@ -174,6 +185,7 @@ export default function Index() {
           </Text>
         </LinearGradient>
       </TouchableOpacity>
+      </View>
     );
   };
 
@@ -197,7 +209,7 @@ export default function Index() {
       console.log("add floormap images", uri)
       formData.append('property_images[ ]', {
         uri: uri,
-        type: 'image/jpeg',  
+        type: 'image/jpeg',
         name: `property_image_${index}_${Date.now()}.jpg`
       });
     });
@@ -227,7 +239,7 @@ export default function Index() {
 
         },
       })
-      console.log("response",response.data.message)
+      console.log("response", response.data.message)
 
       Alert.alert(
         "Success",
@@ -268,11 +280,6 @@ export default function Index() {
         style={{ height: screenHeight * 0.4 }}
       >
         <View className="p-5">
-          <TouchableOpacity
-            className="absolute top-5 left-4"
-          >
-            {/* <Ionicons name='arrow-back' size={24} color="white" /> */}
-          </TouchableOpacity>
           <Text className="text-3xl font-bold text-center text-white">Property Post</Text>
         </View>
 
@@ -291,16 +298,14 @@ export default function Index() {
       >
 
         <KeyboardAvoidingView
-          className="flex-1 mx-7 my-5"
+          className="flex-1 m-4"
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
         >
           <ScrollView
-            contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
             keyboardShouldPersistTaps="handled"
-            contentInsetAdjustmentBehavior="automatic"
+            contentContainerStyle={{ flexGrow: 1 }}
             showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
           >
 
 
@@ -397,10 +402,19 @@ export default function Index() {
                     renderItem={renderFurnishItem}
                   />
                 </View>
+              
+                <View>
+                  <CustomDatePicker
+                    label="Available From"
+                    value={availableFrom}
+                    onChangeDate={setAvailableFrom}
+                  />
+                </View>
+
                 <View className="mt-10">
                   {images.length === 0 && (
                     <TouchableOpacity
-                      className="bg-white p-4 rounded-2xl shadow-lg flex items-center justify-center"
+                      className="border border-gray-400 bg-white p-4 rounded-2xl shadow-lg flex items-center justify-center"
                       onPress={() => handleImagePick()}
                     >
                       <Text className="text-sky-500">Upload Property Images</Text>
@@ -438,13 +452,6 @@ export default function Index() {
                   </View>
 
 
-                </View>
-                <View>
-                  <CustomDatePicker
-                    label="Available From"
-                    value={availableFrom}
-                    onChangeDate={setAvailableFrom}
-                  />
                 </View>
 
               </View>
