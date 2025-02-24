@@ -20,11 +20,11 @@ export default function SignIn() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const token = useSelector((state) => state.auth.token);
   const userData = useSelector((state) => state.auth.user);
-  const hasPropertyDetails = useSelector((state) => state.realStateProperty);
+  const hasPropertyDetails = useSelector((state) => state.realStateProperty.propertyDetails);
 
 
   // real state property details
-  // console.log("hasPropertyDetails:", hasPropertyDetails);
+  console.log("hasPropertyDetails:", hasPropertyDetails);
 
 
 

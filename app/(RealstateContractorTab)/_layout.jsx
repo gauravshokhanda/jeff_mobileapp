@@ -1,8 +1,9 @@
 import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ProtectedRoute from "../../components/ProtectedRoute";
-import { useState, useEffect } from "react";
-import { Keyboard } from "react-native";
+import { useState, useEffect,useCallback } from "react";
+import { Keyboard,BackHandler } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function TabRoot() {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
@@ -21,9 +22,20 @@ export default function TabRoot() {
     };
   }, []);
 
+    // Handle back button behavior (prevent exiting the app)
+    useFocusEffect(
+      useCallback(() => {
+        const onBackPress = () => true; // Disable back button default behavior
+  
+        BackHandler.addEventListener("hardwareBackPress", onBackPress);
+        return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+      }, [])
+    );
+
   return (
     <ProtectedRoute>
       <Tabs
+       backBehavior="history"
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
@@ -60,7 +72,7 @@ export default function TabRoot() {
           options={{
             title: "Property Post",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? "add-circle" : "add-circle-outline"} color="white" size={25} />
+              <Ionicons name={focused ? "add-circle" : "add-circle-outline"} color="white" size={30} />
             ),
             tabBarLabelStyle: { display: "none" },
           }}
