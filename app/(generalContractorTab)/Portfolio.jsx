@@ -38,6 +38,8 @@ const Portfolio = ({ navigation }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [citySuggestions, setCitySuggestions] = useState([]);
+  const [cityQuery, setCityQuery] = useState("");
+ 
 
   const router = useRouter();
 
@@ -121,7 +123,6 @@ const Portfolio = ({ navigation }) => {
         };
       });
 
-      // ✅ Update the state completely instead of appending
       setPortfolioItems(formattedData);
 
       setCurrentPage(portfolios.current_page);
@@ -236,6 +237,50 @@ const Portfolio = ({ navigation }) => {
     }
   };
 
+  const CitySearchModal = ({
+    modalVisible,
+    setModalVisible,
+    newPortfolio,
+    setNewPortfolio,
+    fetchPortfolio,
+    pickImage,
+    addPortfolioItem,
+  }) => {
+   
+
+   
+   
+  };
+  const fetchCities = async (page = 1, query = "") => {
+    try {
+      const response = await axios.post(
+        `https://g32.iamdeveloper.in/api/citie-search?page=${page}&search=${query}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      console.log("Full API Response:", response.data); 
+  
+      if (!response.data || !response.data.cities) {
+        throw new Error("Empty response or missing 'cities' field");
+      }
+  
+      // If first page, reset cities. Otherwise, append results.
+      setCitySuggestions((prev) =>
+        page === 1 ? response.data.cities : [...prev, ...response.data.cities]
+      );
+  
+      setCurrentPage(response.data.current_page);
+      setLastPage(response.data.last_page);
+    } catch (error) {
+      console.error("Error fetching cities:", error.response || error);
+      Alert.alert("Error", "Failed to fetch cities.");
+    }
+  };
+  
+  
+
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
 
@@ -254,7 +299,7 @@ const Portfolio = ({ navigation }) => {
               placeholder="Search Properties"
               placeholderTextColor={"gray"}
               style={{ fontSize: 14 }}
-              className="flex-1 ml-5 text-lg text-sm"
+              className="flex-1 ml-5 text-lg "
             />
             <Ionicons name="filter-sharp" size={26} color="black" />
 
