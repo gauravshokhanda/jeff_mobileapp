@@ -98,7 +98,7 @@ export default function ContractorProfileComplete() {
     }
 
     portfolioData.images.forEach((imageUri, index) => {
-      formData.append(`portfolio[${index}]`, {
+      formData.append(`portfolio_images[${index}]`, {
         uri: imageUri,
         type: "image/jpeg",
         name: `portfolio_${index}.jpg`,
@@ -108,7 +108,7 @@ export default function ContractorProfileComplete() {
     setLoading(true);
 
     try {
-      const response = await API.post('setup-profile', formData, {
+      const response = await API.post('portfolio/store', formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,

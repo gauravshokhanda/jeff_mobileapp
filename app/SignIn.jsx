@@ -1,38 +1,82 @@
-import { useEffect, useState } from 'react';
-import { Link, useRouter } from 'expo-router';
-import { useDispatch, useSelector } from 'react-redux';
-import { View, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, Image, TouchableOpacity, Text, SafeAreaView, Dimensions } from 'react-native';
+import { useEffect, useState } from "react";
+import { Link, useRouter } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  View,
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  Text,
+  SafeAreaView,
+  Dimensions,
+} from "react-native";
 import { setLogin } from "../redux/slice/authSlice";
 import { API } from "../config/apiConfig";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import AuthInput from "../components/AuthInput";
-import { LinearGradient } from 'expo-linear-gradient';
-
+import { LinearGradient } from "expo-linear-gradient";
+import fetchUserData from "./utils/fetchUserData";
 
 export default function SignIn() {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [UserProfileComplete, setUserProfileComplete] = useState("");
   const [loading, setLoading] = useState(true);
+  const [forceRender, setForceRender] = useState(false);
+
   const router = useRouter();
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const token = useSelector((state) => state.auth.token);
   const userData = useSelector((state) => state.auth.user);
-  const hasPropertyDetails = useSelector((state) => state.realStateProperty.propertyDetails);
-
+  const hasPropertyDetails = useSelector(
+    (state) => state.realStateProperty.propertyDetails
+  );
+  const userId = userData.id;
 
   // real state property details
   console.log("hasPropertyDetails:", hasPropertyDetails);
 
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const data = await fetchUserData(token, userId);
+        console.log("UserProfileComplete:", UserProfileComplete);
+        console.log(
+          "is_profile_complete:",
+          UserProfileComplete?.is_profile_complete
+        );
+        if (data.data && data.data.is_profile_complete !== undefined) {
+          setUserProfileComplete(data.data); // Update the state
+          console.log("UserProfileComplete state updated:", data.data);
+        } else {
+          console.error("Invalid user data:", data.data);
+        }
 
+        setUserProfileComplete((prevState) => ({ ...prevState, ...data.data }));
+        setForceRender((prev) => !prev);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
+    if (token && userId) {
+      // ✅ Correct condition
+      console.log(`Fetching data with token: ${token} and userId: ${userId}`);
+      getUserData();
+    }
+  }, [API, token, userId]);
 
   useEffect(() => {
     // Check AsyncStorage for persisted token before proceeding
     const checkAuthStatus = async () => {
       try {
-        const storedToken = await AsyncStorage.getItem('persist:root');
+        const storedToken = await AsyncStorage.getItem("persist:root");
         if (storedToken) {
           setLoading(false);
         } else {
@@ -48,30 +92,26 @@ export default function SignIn() {
   }, []);
 
   useEffect(() => {
-    if (isAuthenticated && token) {
-      // console.log("Image userdata",userData)
+    if (isAuthenticated && token && UserProfileComplete) {
       if (userData?.role == 3) {
-        if (userData?.image === null) {
-          // console.log("userData?.image",userData?.image)
-          router.replace('/ContractorProfileComplete')
-        }
-        else {
+        if (UserProfileComplete?.is_profile_complete) {
           router.replace("/(generalContractorTab)");
+        } else {
+          router.replace("/ContractorProfileComplete");
         }
-      }
-      else if (userData?.role == 4) {
-        if (hasPropertyDetails === null) {
-          router.replace('/RealstateSelector')
+      } else if (userData?.role == 4) {
+        console.log("UserProfileComplete before routing:", UserProfileComplete);
+        if (UserProfileComplete?.is_profile_complete) {
+          console.log("first");
+          router.replace("/(RealstateContractorTab)");
+        } else {
+          router.replace("/RealstateSelector");
         }
-        else {
-          router.replace('/(RealstateContractorTab)')
-        }
-      }
-      else {
+      } else {
         router.replace("/(usertab)");
       }
     }
-  }, [isAuthenticated, token]);
+  }, [isAuthenticated, token, UserProfileComplete, forceRender]); // Added UserProfileComplete
 
   const handleSignIn = async () => {
     if (!email || !password) {
@@ -90,11 +130,9 @@ export default function SignIn() {
 
       if (user.role == 3) {
         router.replace("/(generalContractorTab)");
-      }
-      else if (user.role == 4) {
+      } else if (user.role == 4) {
         router.replace("/(RealstateContractorTab)");
-      }
-      else {
+      } else {
         router.replace("/(usertab)");
       }
     } catch (err) {
@@ -122,15 +160,14 @@ export default function SignIn() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
-
       <LinearGradient
-        colors={['#082f49', 'transparent']}
+        colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       />
       <View
         className="flex-1 rounded-3xl bg-white"
         style={{
-          marginTop: -screenHeight * 0.20,
+          marginTop: -screenHeight * 0.2,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
         }}
@@ -139,42 +176,78 @@ export default function SignIn() {
           className="flex-1"
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          <View
-            className="flex-1 rounded-3xl flex-1">
+          <View className="flex-1 rounded-3xl ">
             <View className="items-center justify-center relative">
               <View
-                style={{ height: screenHeight * 0.2, width: screenWidth * 0.4, position: "absolute" }}
-                className="rounded-full border-4 border-sky-950 overflow-hidden items-center justify-center">
-                <Image source={require("../assets/images/AC5D_Logo.jpg")} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
+                style={{
+                  height: screenHeight * 0.2,
+                  width: screenWidth * 0.4,
+                  position: "absolute",
+                }}
+                className="rounded-full border-4 border-sky-950 overflow-hidden items-center justify-center"
+              >
+                <Image
+                  source={require("../assets/images/AC5D_Logo.jpg")}
+                  style={{ width: "100%", height: "100%", resizeMode: "cover" }}
+                />
               </View>
             </View>
-            <View className="w-full max-w-md p-12"
+            <View
+              className="w-full max-w-md p-12"
               style={{ marginTop: screenHeight * 0.12 }}
             >
               <View className="w-full space-y-4">
-                <AuthInput placeholder="Email Address" secureTextEntry={false} onChangeText={setEmail} value={email} />
-                <AuthInput placeholder="Password" secureTextEntry={true} onChangeText={setPassword} value={password}
-                  style={{ backgroundColor: "white", borderColor: "gray", borderWidth: 1, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, fontSize: 16 }} />
+                <AuthInput
+                  placeholder="Email Address"
+                  secureTextEntry={false}
+                  onChangeText={setEmail}
+                  value={email}
+                />
+                <AuthInput
+                  placeholder="Password"
+                  secureTextEntry={true}
+                  onChangeText={setPassword}
+                  value={password}
+                  style={{
+                    backgroundColor: "white",
+                    borderColor: "gray",
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    paddingHorizontal: 16,
+                    paddingVertical: 12,
+                    fontSize: 16,
+                  }}
+                />
               </View>
               <View className="items-center justify-center mt-6">
-                <TouchableOpacity onPress={handleSignIn} className="text-center rounded-3xl bg-sky-950 px-5 py-3 w-full max-w-xs">
-                  <Text className="text-center text-white text-lg">SIGN IN</Text>
+                <TouchableOpacity
+                  onPress={handleSignIn}
+                  className="text-center rounded-3xl bg-sky-950 px-5 py-3 w-full max-w-xs"
+                >
+                  <Text className="text-center text-white text-lg">
+                    SIGN IN
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
             <View className="w-full max-w-md mt-10 items-center">
               <View className="items-center pb-2">
-                <Link href={""} className="text-slate-500">Forgot Your Password</Link>
+                <Link href={""} className="text-slate-500">
+                  Forgot Your Password
+                </Link>
               </View>
               <View className="flex-row items-center justify-center">
-                <Text className="text-gray-700 text-lg">Already Have an Account?</Text>
-                <Link className="text-blue-600 text-lg pl-1" href={"/SignUp"}>Sign up</Link>
+                <Text className="text-gray-700 text-lg">
+                  Already Have an Account?
+                </Text>
+                <Link className="text-blue-600 text-lg pl-1" href={"/SignUp"}>
+                  Sign up
+                </Link>
               </View>
             </View>
           </View>
-
         </KeyboardAvoidingView>
       </View>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 }

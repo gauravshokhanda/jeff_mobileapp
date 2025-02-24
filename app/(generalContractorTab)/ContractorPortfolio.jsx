@@ -19,7 +19,6 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import AddPortfolioModal from "../../components/addPortfolioModal";
 import * as ImagePicker from "expo-image-picker";
 
-
 const ProfileCard = () => {
   const token = useSelector((state) => state.auth.token);
   const navigation = useNavigation();
@@ -150,7 +149,8 @@ const ProfileCard = () => {
   const pickImage = async (type) => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (permissionResult.granted === false) {
+
+    if (!permissionResult.granted) {
       Alert.alert(
         "Permission required",
         "You need to allow access to your photos."
@@ -163,34 +163,74 @@ const ProfileCard = () => {
       quality: 1,
     });
 
-    if (!result.cancelled) {
+    // Ensure an image was selected
+    if (result.assets && result.assets.length > 0) {
+      const selectedAsset = result.assets[0];
+
+      const fileData = {
+        uri: selectedAsset.uri,
+        name: selectedAsset.fileName || `image_${Date.now()}.jpg`,
+        type: selectedAsset.mimeType || "image/jpeg",
+      };
+
       if (type === "profile") {
-        setProfileImage(result.uri);
-      } else if (type === "organization") {
-        setOrganizationImage(result.uri);
+        setProfileImage(fileData);
+      } else if (type === "upload_organisation") {
+        setOrganizationImage(fileData);
       }
     }
   };
 
   const handleSaveChanges = async () => {
     if (!userData) return;
-  
+
     setUpdating(true);
-  
+
     try {
       const formData = new FormData();
       formData.append("name", editableData.name || userData.name);
       formData.append("email", editableData.email || userData.email);
-      formData.append("company_name", editableData.company_name || userData.company_name);
+      formData.append(
+        "company_name",
+        editableData.company_name || userData.company_name
+      );
       formData.append("city", editableData.city || userData.city);
-      formData.append("company_address", editableData.company_address || userData.company_address);
-      formData.append("image", userData.image); 
-      formData.append("upload_organisation", userData.upload_organisation); 
-      formData.append("role", userData.role );
-      if (userData.portfolio && Array.isArray(userData.portfolio)) {
-        formData.append("portfolio", JSON.stringify(userData.portfolio)); 
+      formData.append(
+        "company_address",
+        editableData.company_address || userData.company_address
+      );
+      formData.append("role", userData.role);
+      if (editableData.image?.uri) {
+        formData.append("image", {
+          uri: editableData.image.uri,
+          type: "image/jpeg",
+          name: "profile.jpg",
+        });
+      } else if (userData.image?.uri) {
+        formData.append("image", {
+          uri: userData.image.uri,
+          type: "image/jpeg",
+          name: "profile.jpg",
+        });
       }
-     
+
+      if (editableData.upload_organisation?.uri) {
+        const image = {
+          uri: editableData.upload_organisation.uri,
+          type: editableData.upload_organisation.mimeType || "image/png",
+          name:
+            editableData.upload_organisation.fileName ||
+            "upload_organisation.png",
+        };
+
+        formData.append("upload_organisation", image);
+      }
+
+      console.log("form data is  : ", formData);
+      if (userData.portfolio && Array.isArray(userData.portfolio)) {
+        formData.append("portfolio", JSON.stringify(userData.portfolio));
+      }
+
       const response = await axios.post(
         `https://g32.iamdeveloper.in/api/contractors/update/${userData.id}`,
         formData,
@@ -201,7 +241,7 @@ const ProfileCard = () => {
           },
         }
       );
-  
+
       if (response.status === 200) {
         setUserData({ ...userData, ...editableData });
         Alert.alert("Success", "Profile updated successfully.");
@@ -413,6 +453,81 @@ const ProfileCard = () => {
                 }
                 className="border border-gray-300 rounded-lg p-3"
               />
+            </View>
+
+            {/* Profile Image */}
+            <View className="mb-4 items-center">
+              {editableData.image?.uri || userData?.image ? (
+                <Image
+                  source={{ uri: editableData.image?.uri || userData.image }}
+                  className="w-24 h-24 rounded-full mb-2"
+                />
+              ) : (
+                <Text>No profile image</Text>
+              )}
+              <TouchableOpacity
+                className="bg-gray-200 p-2 rounded-lg"
+                onPress={async () => {
+                  const result = await ImagePicker.launchImageLibraryAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                    allowsEditing: true,
+                    aspect: [1, 1],
+                    quality: 0.7,
+                  });
+                  if (!result.canceled) {
+                    setEditableData((prev) => ({
+                      ...prev,
+                      image: result.assets[0],
+                    }));
+                  }
+                }}
+              >
+                <Text className="text-blue-600">Change Profile Image</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Upload Organization Image */}
+            <View className="mb-4 items-center">
+              {editableData.upload_organisation?.uri ||
+              userData?.upload_organisation ? (
+                <Image
+                  source={{
+                    uri:
+                      editableData.upload_organisation?.uri ||
+                      userData.upload_organisation,
+                  }}
+                  className="w-24 h-24 rounded-lg mb-2"
+                />
+              ) : (
+                <Text>No organization image</Text>
+              )}
+              <TouchableOpacity
+                className="bg-gray-200 p-2 rounded-lg"
+                onPress={async () => {
+                  const result = await ImagePicker.launchImageLibraryAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                    allowsEditing: true,
+                    aspect: [1, 1],
+                    quality: 0.7,
+                  });
+                  console.log(
+                    "Selected organization image: ",
+                    editableData.upload_organisation
+                  );
+                  if (!result.canceled) {
+                    console.log(
+                      "Selected organization image:",
+                      result.assets[0]
+                    );
+                    setEditableData((prev) => ({
+                      ...prev,
+                      upload_organisation: result.assets[0],
+                    }));
+                  }
+                }}
+              >
+                <Text className="text-blue-600">Change Organization Image</Text>
+              </TouchableOpacity>
             </View>
 
             <TouchableOpacity

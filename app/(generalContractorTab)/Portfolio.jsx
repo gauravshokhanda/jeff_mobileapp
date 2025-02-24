@@ -299,7 +299,7 @@ const Portfolio = ({ navigation }) => {
               placeholder="Search Properties"
               placeholderTextColor={"gray"}
               style={{ fontSize: 14 }}
-              className="flex-1 ml-5 text-lg text-sm"
+              className="flex-1 ml-5 text-lg "
             />
             <Ionicons name="filter-sharp" size={26} color="black" />
 
