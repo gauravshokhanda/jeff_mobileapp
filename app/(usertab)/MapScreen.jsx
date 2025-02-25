@@ -231,6 +231,7 @@ export default function MapScreen() {
               value={searchText}
               onChangeText={setSearchText}
               placeholder="Search by location name or co."
+              placeholderTextColor="gray"
               onSubmitEditing={() => searchLocation(searchText)}
             />
 

@@ -32,15 +32,16 @@ const ChatListScreen = ({ navigation }) => {
       >
 
         {/* Header */}
-        <View className="p-4 flex-row items-center justify-center items-center">
-          <Text className="text-white text-2xl font-bold ">Chats</Text>
+        <View className="p-4 flex-row justify-center items-center">
+          <Text className="text-white text-2xl mt-5 font-bold ">Chats</Text>
         </View>
 
       </LinearGradient>
       <View
         className="flex-1 rounded-3xl bg-white"
         style={{
-          marginTop: -screenHeight * 0.28,
+          position: 'absolute',
+          marginTop: screenHeight * 0.20,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
           overflow: 'hidden'
