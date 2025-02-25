@@ -22,7 +22,6 @@ import * as ImagePicker from "expo-image-picker";
 const ProfileCard = () => {
   const token = useSelector((state) => state.auth.token);
   const navigation = useNavigation();
-
   const [userData, setUserData] = useState(null);
   const [portfolios, setPortfolios] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -132,7 +131,7 @@ const ProfileCard = () => {
             text: "OK",
             onPress: () => {
               setModalVisible(false);
-              fetchPortfolios(1, true); // Refresh the portfolio list
+              fetchPortfolios(1, true);
             },
           },
         ]);

@@ -68,7 +68,10 @@ const ChatScreen = () => {
           });
         }
       } catch (error) {
-        console.error("Error fetching data:", error.response?.data || error.message);
+        console.error(
+          "Error fetching data:",
+          error.response?.data || error.message
+        );
       } finally {
         setLoading(false);
       }
@@ -133,7 +136,7 @@ const ChatScreen = () => {
           style={{
             width: postContentWidth,
             marginHorizontal: (screenWidth - postContentWidth) / 2,
-            marginTop: -screenHeight * 0.25, // Overlap with gradient
+            marginTop: -screenHeight * 0.25, 
           }}
         >
           <FlatList
@@ -143,7 +146,9 @@ const ChatScreen = () => {
             renderItem={({ item }) => (
               <View
                 className={`flex-row items-end mx-3 my-2 ${
-                  item.sender === "me" ? "self-end flex-row-reverse" : "self-start"
+                  item.sender === "me"
+                    ? "self-end flex-row-reverse"
+                    : "self-start"
                 }`}
               >
                 <Image
@@ -151,7 +156,8 @@ const ChatScreen = () => {
                     uri:
                       item.sender === "me"
                         ? "https://randomuser.me/api/portraits/men/2.jpg"
-                        : user?.profile_photo || "https://via.placeholder.com/50",
+                        : user?.profile_photo ||
+                          "https://via.placeholder.com/50",
                   }}
                   className="w-8 h-8 rounded-full mx-1"
                 />
@@ -163,19 +169,27 @@ const ChatScreen = () => {
                   }`}
                 >
                   <Text
-                    className={`${item.sender === "me" ? "text-white" : "text-gray-900"} text-lg`}
+                    className={`${
+                      item.sender === "me" ? "text-white" : "text-gray-900"
+                    } text-lg`}
                   >
                     {item.text}
                   </Text>
                   {item.attachment && (
                     <TouchableOpacity
-                      onPress={() => router.push(`/RealEstateDetails?id=${item.attachment.id}`)}
+                      onPress={() =>
+                        router.push(
+                          `/RealEstateDetails?id=${item.attachment.id}`
+                        )
+                      }
                       className="mt-2 bg-gray-200 p-2 rounded-lg"
                     >
                       <Text className="text-gray-900 text-center font-semibold">
                         {item.attachment.title}
                       </Text>
-                      <Text className="text-gray-600 text-center">{item.attachment.address}</Text>
+                      <Text className="text-gray-600 text-center">
+                        {item.attachment.address}
+                      </Text>
                       <Text className="text-green-600 text-center font-bold">
                         {item.attachment.price}
                       </Text>
@@ -191,11 +205,18 @@ const ChatScreen = () => {
           {draftAttachment && (
             <View className="flex-row items-center bg-white p-3 border-t border-gray-300">
               <View className="flex-1">
-                <Text className="text-gray-900 font-semibold">{draftAttachment.title}</Text>
+                <Text className="text-gray-900 font-semibold">
+                  {draftAttachment.title}
+                </Text>
                 <Text className="text-gray-600">{draftAttachment.address}</Text>
-                <Text className="text-green-600 font-bold">{draftAttachment.price}</Text>
+                <Text className="text-green-600 font-bold">
+                  {draftAttachment.price}
+                </Text>
               </View>
-              <TouchableOpacity onPress={() => setDraftAttachment(null)} className="ml-2">
+              <TouchableOpacity
+                onPress={() => setDraftAttachment(null)}
+                className="ml-2"
+              >
                 <AntDesign name="closecircle" size={24} color="red" />
               </TouchableOpacity>
             </View>
@@ -212,7 +233,10 @@ const ChatScreen = () => {
               placeholder="Type a message..."
               className="flex-1 p-3 bg-gray-200 rounded-full text-gray-900"
             />
-            <TouchableOpacity onPress={sendMessage} className="ml-3 bg-sky-950 p-3 rounded-full">
+            <TouchableOpacity
+              onPress={sendMessage}
+              className="ml-3 bg-sky-950 p-3 rounded-full"
+            >
               <Ionicons name="send" size={24} color="white" />
             </TouchableOpacity>
           </View>

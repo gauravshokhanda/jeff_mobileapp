@@ -42,7 +42,7 @@ const MenuHeader = () => {
           },
         },
       ]);
-    } else if (screen === "ContractorPortfolio") {  // Profile screen
+    } else if (screen === "ContractorPortfolio") {  
       router.push({ pathname: screen, params: { edit: "true" } });
     } else if (screen) {
       router.push(screen);
@@ -50,13 +50,10 @@ const MenuHeader = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1">
-      {/* Header with User Info */}
-
-
+    <SafeAreaView>
       <LinearGradient
         colors={['#082f49', 'transparent']}
-        className="h-[40%]"
+        style={{ height: screenHeight * 0.4 }}
       >
         <View className="mt-10 px-4 gap-2 flex-row items-center">
           <Image
@@ -75,15 +72,17 @@ const MenuHeader = () => {
       </LinearGradient>
 
       <View
-        className="flex-1 rounded-3xl bg-white"
         style={{
-          marginTop: -screenHeight * 0.20,
+          position: 'absolute',
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          marginTop: screenHeight * 0.20,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
           overflow: 'hidden'
         }}
       >
-        <View className="flex flex-wrap flex-row mt-10 justify-center gap-4 p-4">
+        <View className="flex flex-wrap flex-row justify-center gap-4 p-4">
           {imageData.map((item) => (
             <TouchableOpacity
               key={item.id}
@@ -100,12 +99,6 @@ const MenuHeader = () => {
             </TouchableOpacity>
           ))}
         </View>
-
-
-
-
-
-
 
       </View>
     </SafeAreaView>
