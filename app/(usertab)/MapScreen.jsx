@@ -47,7 +47,7 @@ export default function MapScreen() {
 
   const handleZoomIn = () => {
     if (location) {
-      setLocation((prevLocation) => ({
+      setLocation((prevLocation) => ({ 
         ...prevLocation,
         latitudeDelta: prevLocation.latitudeDelta / 2,
         longitudeDelta: prevLocation.longitudeDelta / 2,
