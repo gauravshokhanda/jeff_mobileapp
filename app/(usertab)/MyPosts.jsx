@@ -118,6 +118,7 @@ export default function MyPosts() {
             showsHorizontalScrollIndicator={false}
             snapToInterval={postContentWidth}
             decelerationRate="fast"
+        
           />
         )}
         <View className="flex-row justify-between p-3">
@@ -197,6 +198,8 @@ export default function MyPosts() {
               data={results}
               keyExtractor={(item) => item.id.toString()}
               renderItem={renderItem}
+              refreshing={loading}
+              onRefresh={fetchPosts}
             />
           )}
         </View>

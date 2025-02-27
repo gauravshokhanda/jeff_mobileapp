@@ -39,7 +39,7 @@ const Portfolio = ({ navigation }) => {
   const [lastPage, setLastPage] = useState(1);
   const [citySuggestions, setCitySuggestions] = useState([]);
   const [cityQuery, setCityQuery] = useState("");
- 
+
 
   const router = useRouter();
 
@@ -246,10 +246,10 @@ const Portfolio = ({ navigation }) => {
     pickImage,
     addPortfolioItem,
   }) => {
-   
 
-   
-   
+
+
+
   };
   const fetchCities = async (page = 1, query = "") => {
     try {
@@ -259,18 +259,18 @@ const Portfolio = ({ navigation }) => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-  
-      console.log("Full API Response:", response.data); 
-  
+
+      console.log("Full API Response:", response.data);
+
       if (!response.data || !response.data.cities) {
         throw new Error("Empty response or missing 'cities' field");
       }
-  
+
       // If first page, reset cities. Otherwise, append results.
       setCitySuggestions((prev) =>
         page === 1 ? response.data.cities : [...prev, ...response.data.cities]
       );
-  
+
       setCurrentPage(response.data.current_page);
       setLastPage(response.data.last_page);
     } catch (error) {
@@ -278,8 +278,8 @@ const Portfolio = ({ navigation }) => {
       Alert.alert("Error", "Failed to fetch cities.");
     }
   };
-  
-  
+
+
 
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
@@ -320,55 +320,57 @@ const Portfolio = ({ navigation }) => {
         }}
       >
 
-<View className="mt-6 px-4 w-full">
-        <View className="flex-row gap-2 mb-2 items-center">
-          <Text className="font-bold text-xl text-sky-950 tracking-widest">
-            Portfolio
-          </Text>
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
-            <Ionicons name="add-circle" size={30} color="gray" />
-          </TouchableOpacity>
-        </View>
+        <View className="mt-6 px-4 w-full">
+          <View className="flex-row gap-2 mb-2 items-center">
+            <Text className="font-bold text-xl text-sky-950 tracking-widest">
+              Portfolios
+            </Text>
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <Ionicons name="add-circle" size={30} color="gray" />
+            </TouchableOpacity>
+          </View>
 
-        {loading ? (
-          <ActivityIndicator size="large" color="skyblue" className="mt-10" />
-        ) : (
-          <FlatList
-            className="mb-48"
-            data={portfolioItems.filter((item) =>
-              item.name.toLowerCase().includes(searchText.toLowerCase())
-            )}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => router.push(`/PortfolioDetail?id=${item.id}`)}
-              >
-                <View className="flex-row p-4 my-3 gap-3 items-center bg-gray-200 rounded-lg shadow-sm">
-                  <Image
-                    source={{ uri: item.image }}
-                    className="w-32 h-32 rounded-lg"
-                  />
-                  <View className="ml-4 flex-1">
-                    <Text className="text-lg font-bold text-gray-900">
-                      {item.name}
-                    </Text>
-                    <Text className="text-gray-700 mt-1">
-                      {item.description}
-                    </Text>
-                    <Text className="text-black font-semibold mt-2">
-                      Year: {item.year}
-                    </Text>
+          {loading ? (
+            <ActivityIndicator size="large" color="skyblue" className="mt-10" />
+          ) : (
+            <FlatList
+              className="mb-48"
+              data={portfolioItems.filter((item) =>
+                item.name.toLowerCase().includes(searchText.toLowerCase())
+              )}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => router.push(`/PortfolioDetail?id=${item.id}`)}
+                >
+                  <View className="flex-row p-4 my-3 gap-3 items-center bg-gray-200 rounded-lg shadow-sm">
+                    <Image
+                      source={{ uri: item.image }}
+                      className="w-32 h-32 rounded-lg"
+                    />
+                    <View className="ml-4 flex-1">
+                      <Text className="text-lg font-bold text-gray-900">
+                        {item.name}
+                      </Text>
+                      <Text className="text-gray-700 mt-1">
+                        {item.description}
+                      </Text>
+                      <Text className="text-black font-semibold mt-2">
+                        Year: {item.year}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-        )}
-      </View>
+                </TouchableOpacity>
+              )}
+              refreshing={loading}
+              onRefresh={fetchPortfolio}
+            />
+          )}
+        </View>
       </View>
 
 
-    
+
       <ContractorPortfolioModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
