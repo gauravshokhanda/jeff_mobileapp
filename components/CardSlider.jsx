@@ -9,30 +9,31 @@ const CardSlider = () => {
   const [contractors, setContractors] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const getContractors = async () => {
+    setLoading(true);
+    try {
+      const response = await API.get("contractors/listing", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const formattedData = response.data.data.map((item) => ({
+        id: item.id.toString(),
+        image: item.image ? { uri: `${baseUrl}${item.image}` } : null,
+        name: item.name,
+        title: item.company_name,
+        description: item.description,
+        profileLink: `${baseUrl}${item.upload_organisation}`,
+        contact: item.company_registered_number || "Not Available",
+      }));
+
+      setContractors(formattedData);
+    } catch (error) {
+      console.log("Error fetching contractors:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const getContractors = async () => {
-      setLoading(true);
-      try {
-        const response = await API.get("contractors/listing", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const formattedData = response.data.data.map((item) => ({
-          id: item.id.toString(),
-          image: item.image ? { uri: `${baseUrl}${item.image}` } : null,
-          name: item.name || "Unknown",
-          title: item.company_name || "No Company",
-          description: item.description || "No description available",
-          contact: item.company_registered_number || "Not Available",
-        }));
-
-        setContractors(formattedData);
-      } catch (error) {
-        console.error("Error fetching contractors:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
     getContractors();
   }, []);
@@ -109,7 +110,9 @@ const CardSlider = () => {
           renderItem={renderCard}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingHorizontal: 10 }}
+          refreshing={loading}
+          onRefresh={getContractors}
         />
       )}
 

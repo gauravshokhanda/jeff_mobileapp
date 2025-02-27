@@ -85,6 +85,16 @@ const PropertyPost = () => {
     };
 
     const handleSubmit = async () => {
+        if (!form.numberOfDays.trim()) return Alert.alert("Error", "Number of days is required!");
+        if (!form.totalCost.trim()) return Alert.alert("Error", "Total cost is required!");
+        if (!form.zipCode.trim()) return Alert.alert("Error", "Zip code is required!");
+        if (!form.area.trim()) return Alert.alert("Error", "Area is required!");
+        if (!form.city.trim()) return Alert.alert("Error", "City is required!");
+        if (!form.projectType.trim()) return Alert.alert("Error", "Project type is required!");
+        if (!form.description.trim()) return Alert.alert("Error", "Description is required!");
+        if (form.floorMapImages.length === 0) return Alert.alert("Error", "At least one floor map image is required!");
+        if (form.designImages.length === 0) return Alert.alert("Error", "At least one design image is required!");
+    
         const formData = new FormData();
         formData.append('number_of_days', form.numberOfDays);
         formData.append('total_cost', form.totalCost);
@@ -112,7 +122,7 @@ const PropertyPost = () => {
             });
         });
 
-        console.log("Form Data:", formData);
+        // console.log("Form Data:", formData);
 
         setLoading(true);
 
@@ -245,6 +255,7 @@ const PropertyPost = () => {
                                         className="bg-white p-4 rounded-2xl text-sky-800 mx-1"
                                         placeholder="Enter number of days"
                                         keyboardType="numeric"
+                                        editable={false}
                                         value={form.numberOfDays}
                                         onChangeText={(text) => handleInputChange('numberOfDays', text)}
                                         style={{
@@ -263,6 +274,7 @@ const PropertyPost = () => {
                                         className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 mx-1"
                                         placeholder="Enter total cost"
                                         keyboardType="numeric"
+                                        editable={false}
                                         value={form.totalCost}
                                         style={{
                                             elevation: 15,
@@ -284,6 +296,7 @@ const PropertyPost = () => {
                                         className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 mx-1"
                                         placeholder="Enter zip code"
                                         keyboardType="numeric"
+                                        editable={false}
                                         value={form.zipCode}
                                         style={{
                                             elevation: 15,
@@ -309,6 +322,8 @@ const PropertyPost = () => {
                                         }}
                                         className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 mx-1"
                                         placeholder="Enter area"
+                                        keyboardType='numeric'
+                                        editable={false}
                                         value={form.area}
                                         onChangeText={(text) => handleInputChange('area', text)}
                                     />
@@ -322,6 +337,7 @@ const PropertyPost = () => {
                                     <TextInput
                                         className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 mx-1"
                                         placeholder="Enter city"
+                                        editable={false}
                                         value={form.city}
                                         style={{
                                             elevation: 15,
@@ -341,6 +357,7 @@ const PropertyPost = () => {
                                         className="bg-white p-4 rounded-2xl shadow-lg text-sky-800 mx-1"
                                         placeholder="Enter project type"
                                         value={form.projectType}
+                                        editable={false}
                                         style={{
                                             elevation: 15,
                                             shadowColor: "#082f49",

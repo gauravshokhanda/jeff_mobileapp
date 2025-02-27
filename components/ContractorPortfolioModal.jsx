@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import React, { useState, useCallback, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { FlashList } from '@shopify/flash-list';
 import debounce from 'lodash.debounce';
@@ -92,17 +92,27 @@ export default function ContractorPortfolioModal({ visible, onClose, setPortfoli
         });
     };
 
-    const pickImage = async () => {
-        let result = await DocumentPicker.getDocumentAsync({ type: 'image/*', copyToCacheDirectory: true });
-
+    const pickImages = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsMultipleSelection: true, // Allows selecting multiple images
+            quality: 1,
+        });
+    
         if (!result.canceled) {
-            const compressedImage = await ImageManipulator.manipulateAsync(
-                result.assets[0].uri,
-                [{ resize: { width: 800 } }],
-                { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+            // Compress each image
+            const compressedImages = await Promise.all(
+                result.assets.map(async (image) => {
+                    const compressedImage = await ImageManipulator.manipulateAsync(
+                        image.uri,
+                        [{ resize: { width: 800 } }],
+                        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+                    );
+                    return compressedImage.uri;
+                })
             );
-
-            setSelectedImages([...selectedImages, compressedImage.uri]);
+    
+            setSelectedImages([...selectedImages, ...compressedImages]);
         }
     };
 
@@ -192,7 +202,6 @@ export default function ContractorPortfolioModal({ visible, onClose, setPortfoli
                         value={address}
                         onChangeText={setAddress}
                     />
-
                     <Text className="text-gray-600 mt-4 mb-2">Description</Text>
                     <TextInput
                         className="border border-gray-400 rounded-lg p-3 bg-white"
@@ -203,7 +212,7 @@ export default function ContractorPortfolioModal({ visible, onClose, setPortfoli
                     />
 
                     <Text className="text-gray-600 mt-4 mb-2">Add Images</Text>
-                    <TouchableOpacity onPress={pickImage} className="bg-gray-200 rounded-xl p-6 items-center justify-center w-[60%]">
+                    <TouchableOpacity onPress={pickImages} className="bg-gray-200 rounded-xl p-6 items-center justify-center w-[60%]">
                         <Text>Select Images</Text>
                     </TouchableOpacity>
 

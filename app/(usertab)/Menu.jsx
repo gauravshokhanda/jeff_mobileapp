@@ -12,7 +12,7 @@ const imageData = [
   { id: 1, label: "Contractor Lists", icon: "list", screen: "/ContractorLists", source: Box },
   { id: 2, label: "My Posts", icon: "arrow-up", screen: "/MyPosts", source: Box },
   { id: 5, label: "Profile", icon: "user", screen: "/UserProfile", source: Box },
-  { id: 6, label: "Chats", icon: "comments", screen: "/ChatScreen", source: Box },
+  { id: 6, label: "Chats", icon: "comments", screen: "/ChatList", source: Box },
   { id: 7, label: "Calculator", icon: "calculator", screen: "/PropertyCalculator", source: Box },
   { id: 8, label: "Log Out", icon: "sign-out-alt", screen: "logout", source: Box },
 ];
