@@ -273,7 +273,7 @@ export default function Index() {
                           {item.city}
                         </Text>
                       </View>
-                      <View className="flex-row gap-2">
+                      {/* <View className="flex-row gap-2">
                         <View className="bg-white px-3 py-1 rounded-full">
                           <Text className="text-sky-950 text-xs font-semibold">
                             {item.property_type}
@@ -284,7 +284,7 @@ export default function Index() {
                             {item.house_type}
                           </Text>
                         </View>
-                      </View>
+                      </View> */}
                     </View>
 
                     {/* Property Icon & Details */}

@@ -7,16 +7,20 @@ import {
   Alert,
   FlatList,
   Dimensions,
+  TouchableOpacity,
   SafeAreaView,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../../config/apiConfig";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import Icon from "react-native-vector-icons/Feather";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get("window");
 
 const MenuHeader = () => {
+  const router = useRouter();
   const postContentWidth = screenWidth * 0.92;
   const userId = useSelector((state) => state.auth.user.id);
   const token = useSelector((state) => state.auth.token);
@@ -63,8 +67,11 @@ const MenuHeader = () => {
   return (
     <SafeAreaView className="flex-1">
       {/* Header with Gradient */}
-      <LinearGradient colors={["#082f49", "transparent"]} className="h-[40%]">
+      <LinearGradient colors={["#082f49", "transparent"]}  style={{ height: screenHeight * 0.4 }}>
         <View className="mt-10 px-4 gap-2 flex-row items-center">
+        <TouchableOpacity onPress={() => router.back()} className="">
+            <Ionicons name="arrow-back" size={28} color="white" />
+          </TouchableOpacity>
           <Image
             source={{ uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg" }}
             className="w-14 h-14 border-2 border-white rounded-full"
@@ -82,7 +89,7 @@ const MenuHeader = () => {
       <View
         className="flex-1 rounded-3xl bg-white"
         style={{
-          marginTop: -screenHeight * 0.20, // Overlap with gradient
+          marginTop: -screenHeight * 0.22, // Overlap with gradient
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
         }}
@@ -90,6 +97,12 @@ const MenuHeader = () => {
         <View className="flex-1 p-4">
           {/* User Info */}
           <View className="p-4 rounded-lg gap-3">
+          <TouchableOpacity
+         
+          className="absolute top-2 right-2 p-2"
+        >
+          <Icon name="edit" size={24} color="black" />
+        </TouchableOpacity>
             <Text className="text-xl font-semibold tracking-widest">Name - {userData.name}</Text>
             <Text className="text-xl font-semibold tracking-wider">Email - {userData.email}</Text>
             <Text className="text-xl font-semibold tracking-wider">

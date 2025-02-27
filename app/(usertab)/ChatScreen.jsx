@@ -39,17 +39,14 @@ const ChatScreen = () => {
       try {
         setLoading(true);
         if (user_id) {
-          const userResponse = await API.get(
-            `users/listing/${user_id}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
+          const userResponse = await API.get(`users/listing/${user_id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
           // console.log("userResponse", userResponse.data.data)
 
           if (userResponse.status === 200) {
             setUser(userResponse.data.data);
-
           }
-
         }
 
         if (id) {
@@ -57,7 +54,6 @@ const ChatScreen = () => {
             `https://g32.iamdeveloper.in/api/realstate-property/${id}`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
-
 
           if (propertyResponse.status === 200) {
             // console.log("API working");
@@ -73,14 +69,15 @@ const ChatScreen = () => {
               price: `₹${propertyData.price}`,
               address: propertyData.address,
             });
-          }
-          else {
+          } else {
             setDraftAttachment(null);
           }
         }
-
       } catch (error) {
-        console.log("Error fetching data:", error.response?.data || error.message);
+        console.log(
+          "Error fetching data:",
+          error.response?.data || error.message
+        );
         setUser(null);
       } finally {
         setLoading(false);
@@ -90,7 +87,7 @@ const ChatScreen = () => {
     if (user_id || id) {
       fetchData();
     }
-  }, [id,user_id]);
+  }, [id, user_id]);
 
   const sendMessage = () => {
     if (inputText.trim() === "") return;
@@ -105,9 +102,8 @@ const ChatScreen = () => {
     setMessages([newMessage, ...messages]);
     setInputText("");
     // Only reset draftAttachment if it was used in the message
-    
-      setDraftAttachment(null);
-    
+
+    setDraftAttachment(null);
   };
 
   return (
@@ -149,7 +145,7 @@ const ChatScreen = () => {
           style={{
             width: postContentWidth,
             marginHorizontal: (screenWidth - postContentWidth) / 2,
-            marginTop: -screenHeight * 0.25, 
+            marginTop: -screenHeight * 0.25,
           }}
         >
           <FlatList
@@ -158,8 +154,11 @@ const ChatScreen = () => {
             inverted
             renderItem={({ item }) => (
               <View
-                className={`flex-row items-end mx-3 my-2 ${item.sender === "me" ? "self-end flex-row-reverse" : "self-start"
-                  }`}
+                className={`flex-row items-end mx-3 my-2 ${
+                  item.sender === "me"
+                    ? "self-end flex-row-reverse"
+                    : "self-start"
+                }`}
               >
                 <Image
                   source={{
@@ -172,10 +171,11 @@ const ChatScreen = () => {
                   className="w-8 h-8 rounded-full mx-1"
                 />
                 <View
-                  className={`p-3 w-[80%] rounded-lg ${item.sender === "me"
-                    ? "bg-sky-950 self-end"
-                    : "bg-white border border-gray-300 self-start"
-                    }`}
+                  className={`p-3  rounded-lg ${
+                    item.sender === "me"
+                      ? "bg-sky-950 self-end"
+                      : "bg-white border border-gray-300 self-start"
+                  }`}
                 >
                   <Text
                     className={`${
@@ -229,7 +229,9 @@ const ChatScreen = () => {
                 <AntDesign name="closecircle" size={24} color="red" />
               </TouchableOpacity>
             </View>
-          ) : ""}
+          ) : (
+            ""
+          )}
 
           {/* Chat Input Box */}
           <View className="flex-row items-center p-4 bg-white border-t border-gray-300">
