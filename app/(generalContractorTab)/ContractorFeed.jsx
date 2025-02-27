@@ -55,7 +55,7 @@ export default function PropertyList() {
         setHasMore(!!response.data.data.next_page_url);
         if (!isRefresh) setPage(pageNumber);
       } else {
-        console.error("Unexpected API response:", response.data);
+        console.log("Unexpected API response:", response.data);
       }
     } catch (error) {
       console.error("Error fetching properties:", error.response?.data || error.message);

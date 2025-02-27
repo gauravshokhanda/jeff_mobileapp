@@ -239,7 +239,7 @@ export default function Index() {
 
         },
       })
-      console.log("response", response.data.message)
+      // console.log("response", response.data.message)
 
       Alert.alert(
         "Success",
