@@ -15,11 +15,10 @@ import { API } from "../../config/apiConfig";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "expo-router";
-import { LinearGradient } from 'expo-linear-gradient';
-
+import { LinearGradient } from "expo-linear-gradient";
 
 const DashboardScreen = () => {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const router = useRouter();
   const [posts, setPosts] = useState([]);
@@ -66,13 +65,16 @@ const DashboardScreen = () => {
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => router.push(`/PropertyDetails?id=${item.id}`)}>
+    <TouchableOpacity
+      onPress={() => router.push(`/PropertyDetails?id=${item.id}`)}
+    >
       <View className="relative mt-2">
         {/* Property Image */}
         <Image
           source={{
-            uri: `https://g32.iamdeveloper.in/public/${JSON.parse(item.floor_maps_image)[0]
-              }`,
+            uri: `https://g32.iamdeveloper.in/public/${
+              JSON.parse(item.floor_maps_image)[0]
+            }`,
           }}
           className="w-full h-48 rounded-lg"
           resizeMode="cover"
@@ -112,16 +114,18 @@ const DashboardScreen = () => {
   }
 
   return (
-    <SafeAreaView className="bg-white flex-1">
-      <LinearGradient
-        colors={['#082f49', 'transparent']}
-        className="h-[40%]"
-      >
+    <SafeAreaView className="bg-gray-100 flex-1">
+      <LinearGradient colors={["#082f49", "transparent"]}   style={{ height: screenHeight * 0.4 }}>
         <View className="mt-10 px-4 gap-2 flex-row items-center">
+          <TouchableOpacity  onPress={() => router.push("ContractorPortfolio")}>
           <Image
-            source={{ uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg" }}
+            source={{
+              uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg",
+            }}
             className="w-14 h-14 border-2 border-white rounded-full"
           />
+          </TouchableOpacity>
+        
           <View className="gap-1">
             <Text className="text-2xl font-semibold text-white">
               Welcome! {user?.name || "User"}
@@ -129,117 +133,113 @@ const DashboardScreen = () => {
             <Text className="text-gray-400">📍 Florida, USA</Text>
           </View>
         </View>
-
-
       </LinearGradient>
       <View
-        className="flex-1 rounded-3xl bg-white"
+        className="flex-1 h-full bg-gray-100 rounded-3xl "
         style={{
-          marginTop: -screenHeight * 0.25,
+          marginTop: screenHeight * 0.0,
           width: postContentWidth,
+          position: 'absolute',
+          top: screenHeight * 0.20,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
-          overflow: 'hidden',
+          overflow: "hidden",
         }}
       >
-
-
-
-        {/* Image Slider */}
-        <View className="p-2" style={{ height: screenHeight * 0.25 }}>
-          <Swiper autoplay loop className="rounded-xl">
-            {/* Swiper Content */}
-            <View className="relative w-full h-full">
-              <ImageBackground
-                source={{
-                  uri: "https://media.istockphoto.com/id/1420678520/photo/building-site-at-sunset.jpg?s=612x612&w=0&k=20&c=HoDUK1RxsH78Fj9D34nao_MUTbf-vR3G97zUWMtES4k=",
-                }}
-                className="w-full h-full justify-center items-center"
-                resizeMode="cover"
-              >
-                <View className="absolute inset-0 bg-black/30 rounded-xl" />
-                <Text className="text-white font-bold text-3xl absolute top-5 left-5">
-                  Building the Future
-                </Text>
-              </ImageBackground>
-            </View>
-            {/* Other Slides */}
-            <View className="relative w-full h-full">
-              <ImageBackground
-                source={{
-                  uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6fIA0SdlaGgrMPZ_BS9Z5WnM42HPF71iGkw&s",
-                }}
-                className="w-full h-full justify-center items-center"
-                resizeMode="cover"
-              >
-                <View className="absolute inset-0 bg-black/30 rounded-xl" />
-                <Text className="text-white font-bold text-3xl absolute top-5 left-5">
-                  Strength in Every Brick
-                </Text>
-              </ImageBackground>
-            </View>
-            <View className="relative w-full h-full">
-              <ImageBackground
-                source={{
-                  uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKTccCO8EfR28FeusyZdoh8lZs_u63vxo3-Q&s",
-                }}
-                className="w-full h-full justify-center items-center"
-                resizeMode="cover"
-              >
-                <View className="absolute inset-0 bg-black/30 rounded-xl" />
-                <Text className="text-white font-bold text-3xl absolute top-5 left-5">
-                  Engineering Excellence
-                </Text>
-              </ImageBackground>
-            </View>
-          </Swiper>
-        </View>
-
-        {/* New Property Openings */}
-        <View className="mx-3"
-          style={{ marginTop: screenHeight * 0.02 }}
+        {/* Card Wrapper */}
+        <View
+          className="shadow-lg pb-5 px-2 pt-4"
+          style={{
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.2,
+            shadowRadius: 5,
+            elevation: 5, 
+            overflow: "hidden",
+          }}
         >
-          <Text className="text-2xl text-center font-bold text-gray-800 ml-2">
-            New Property Openings
-          </Text>
-          <FlatList
-            data={posts}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderItem}
-            showsVerticalScrollIndicator={false}
-            ListFooterComponent={
-              <View className="flex-1">
-                <TouchableOpacity
-                  className="items-end"
-                  onPress={() => {
-                    router.push("ContractorFeed");
+          {/* Image Slider */}
+          <View className="p-2" style={{ height: screenHeight * 0.25 }}>
+            <Swiper autoplay loop className="rounded-t-xl">
+              {/* Swiper Content */}
+              <View className="relative w-full h-full">
+                <ImageBackground
+                  source={{
+                    uri: "https://media.istockphoto.com/id/1420678520/photo/building-site-at-sunset.jpg?s=612x612&w=0&k=20&c=HoDUK1RxsH78Fj9D34nao_MUTbf-vR3G97zUWMtES4k=",
                   }}
+                  className="w-full h-full justify-center items-center rounded-t-xl"
+                  resizeMode="cover"
                 >
-                  <Text className="text-gray-500">See all</Text>
-                </TouchableOpacity>
-                {/* Portfolio Button */}
-                <View className="flex-col mt-5 justify-center items-center gap-3">
+                  <View className="absolute inset-0 bg-black/30 rounded-t-xl" />
+                  <Text className="text-white font-bold text-3xl absolute top-5 left-5">
+                    Building the Future
+                  </Text>
+                </ImageBackground>
+              </View>
+              {/* Other Slides */}
+              <View className="relative w-full h-full">
+                <ImageBackground
+                  source={{
+                    uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6fIA0SdlaGgrMPZ_BS9Z5WnM42HPF71iGkw&s",
+                  }}
+                  className="w-full h-full justify-center items-center rounded-t-xl"
+                  resizeMode="cover"
+                >
+                  <View className="absolute inset-0 bg-black/30 rounded-t-xl" />
+                  <Text className="text-white font-bold text-3xl absolute top-5 left-5">
+                    Strength in Every Brick
+                  </Text>
+                </ImageBackground>
+              </View>
+            </Swiper>
+          </View>
+
+          {/* New Property Openings */}
+          <View className="mx-3 mt-4">
+            <Text className="text-2xl text-center font-bold text-gray-800">
+              New Property Openings
+            </Text>
+            <FlatList
+              data={posts}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={renderItem}
+              showsVerticalScrollIndicator={false}
+              ListFooterComponent={
+                <View className="flex-1">
                   <TouchableOpacity
-                    className="w-60 h-16"
+                    className="items-end mt-2"
                     onPress={() => {
-                      router.push("Portfolio");
+                      router.push("ContractorFeed");
                     }}
                   >
-                    <ImageBackground
-                      source={require("../../assets/images/myportfoliobtn.png")}
-                      className="w-full h-full justify-center items-center"
-                      imageStyle={{ borderRadius: 12 }}
-                    >
-                      <Text className="text-white font-bold text-xl">My Portfolio</Text>
-                    </ImageBackground>
+                    <Text className="text-gray-500">See all</Text>
                   </TouchableOpacity>
+
+                  {/* Portfolio Button */}
+                  <View className="flex-col mt-5 justify-center items-center gap-3">
+                    <TouchableOpacity
+                      className="w-60 h-16"
+                      onPress={() => {
+                        router.push("Portfolio");
+                      }}
+                    >
+                      <ImageBackground
+                        source={require("../../assets/images/myportfoliobtn.png")}
+                        className="w-full h-full justify-center items-center"
+                        imageStyle={{ borderRadius: 12 }}
+                      >
+                        <Text className="text-white font-bold text-xl">
+                          My Portfolio
+                        </Text>
+                      </ImageBackground>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>}
-          />
-
+              }
+            />
+          </View>
         </View>
-
-
-
       </View>
     </SafeAreaView>
   );

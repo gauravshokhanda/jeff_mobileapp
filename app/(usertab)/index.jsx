@@ -1,164 +1,145 @@
 import {
   View,
   Text,
-  Image,
-  ScrollView,
   TextInput,
   TouchableOpacity,
-  Platform,
-  ImageBackground,
-  SafeAreaView,
   Dimensions,
+  SafeAreaView,
+  FlatList,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { FontAwesome } from "@expo/vector-icons";
-import CardSlider from "../../components/CardSlider";
-import EsateSlider from "../../components/Estateslider";
 import { useRouter } from "expo-router";
 import { useSelector } from "react-redux";
-import Swiper from "react-native-swiper";
 import { LinearGradient } from "expo-linear-gradient";
-
+import CardSlider from "../../components/CardSlider";
+import EstateSlider from "../../components/Estateslider";
 
 export default function Dashboard() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-  const postContentWidth = screenWidth * 0.92;
   const router = useRouter();
+  const postContentWidth = screenWidth * 0.92;
   const userName = useSelector((state) => state.auth.user);
-  const [avatarLetter, setAvatarLetter] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("general"); 
-
-  useEffect(() => {
-    if (userName && userName.name) {
-      setAvatarLetter(userName.name[0].toUpperCase());
-    }
-  }, [userName]);
+  const [selectedCategory, setSelectedCategory] = useState("general");
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-200">
+    <SafeAreaView className="flex-1 bg-gray-100">
+      {/* Header and Search Bar */}
       <LinearGradient
         colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-        {/* Header */}
-        <View
-          className={`flex-row justify-center items-center py-3 px-10 pb-4`}
-        >
-          {/* Home Icon */}
-          <Ionicons
-            name="home"
-            size={24}
-            color="#ffffff"
-            className="mr-5 mt-2 "
-          />
-
-          {/* Search Bar */}
-          <View className="flex-row items-center border border-white rounded-full px-4 mt-2 bg-white">
-            <Ionicons name="search" size={24} color="#000000" />
+        <View className="px-5 pt-4">
+          <View className="flex-row items-center bg-white rounded-full px-4 py-2 shadow-md">
+            <Ionicons name="search" size={20} color="#000" />
             <TextInput
-              className="flex-1 ml-2 p-2 justify-center items-center text-black"
+              className="flex-1 ml-2 text-black"
               placeholder="Start Search"
-              placeholderTextColor="#000000"
+              placeholderTextColor="#777"
             />
-            {/* Filter Icon */}
-            <Ionicons
-              name="filter"
-              size={24}
-              color="#000000"
-              className="ml-4"
-            />
+            <Ionicons name="filter" size={20} color="#000" />
           </View>
         </View>
       </LinearGradient>
+
       <View
-        className="flex-1 rounded-3xl bg-white"
+        className="bg-white"
         style={{
-          marginTop: -screenHeight * 0.25, 
+          marginTop: -screenHeight * 0.45,
           width: postContentWidth,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+         
+          top: screenHeight * 0.17,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
+          overflow: "hidden",
         }}
       >
-        <View className="rounded-3xl mt-1 bg-white p-2">
-          {/* Welcome Message */}
-          <View className="flex-row justify-center items-center mt-2">
-            <Text className="text-sky-950 text-lg">Welcome,</Text>
-            <Text className="text-sky-950 text-lg font-semibold">
-              {userName && userName.name ? userName.name : "Unknown"}
+        <View className="px-4 pb-4">
+          <View className="mt-6 flex-row justify-center items-center">
+            <Text className="text-lg text-gray-800">Welcome, </Text>
+            <Text className="text-lg font-semibold text-sky-950">
+              {userName?.name || "User"}
             </Text>
           </View>
 
-          {/* Action Buttons (Search) */}
+          {/* Action Buttons */}
           <View className="flex-row justify-between mt-5">
-            {/* Search using Map */}
             <TouchableOpacity
-              className="bg-gray-200 rounded-xl  h-24 items-center p-3"
+              className="flex-1 bg-gray-200 rounded-xl p-4 items-center mx-2"
               onPress={() => router.push("MapScreen")}
             >
-              <Ionicons
-                name="map-outline"
-                size={28}
-                color="#111827"
-                className="mb-2"
-              />
-              <Text className="text-gray-700 text-lg">Search using Map</Text>
+              <Ionicons name="map-outline" size={28} color="#111827" />
+              <Text className="text-gray-700 mt-2 text-sm">
+                Search using Map
+              </Text>
             </TouchableOpacity>
 
-            {/* Search using Images */}
             <TouchableOpacity
+              className="flex-1 bg-gray-200 rounded-xl p-4 items-center mx-2"
               onPress={() => router.push("FloorMapScreen")}
-              className="bg-gray-200 rounded-xl h-24 items-center p-3"
             >
-              <Ionicons
-                name="image-outline"
-                size={28}
-                color="#111827"
-                className="mb-2"
-              />
-              <Text className="text-gray-700 text-lg">Search using Images</Text>
+              <Ionicons name="image-outline" size={28} color="#111827" />
+              <Text className="text-gray-700 mt-2 text-sm">
+                Search using Images
+              </Text>
             </TouchableOpacity>
-          </View>
-
-          {/* Top Contractors Section */}
-          <View className="mt-4 h-full">
-            <Text className="text-xl text-sky-950 text-center">
-              Top Contractors
-            </Text>
-            <View className="flex-row gap-5 justify-center mt-4">
-              <TouchableOpacity
-                onPress={() => setSelectedCategory("general")}
-                className={`${
-                  selectedCategory === "general"
-                    ? "bg-sky-950 text-white"
-                    : "bg-gray-200 text-white"
-                } rounded-xl p-2`}
-              >
-                <Text className="text-lg">General Contractors</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => setSelectedCategory("real-estate")}
-                className={`${
-                  selectedCategory === "real-estate"
-                    ? "bg-sky-950 text-white"
-                    : "bg-gray-200 text-black"
-                } rounded-xl p-2`}
-              >
-                <Text className="text-lg">Real Estate Contractors</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Conditional Rendering */}
-            {selectedCategory === "general" ? (
-              <CardSlider />
-            ) : (
-              <View className="mt-5 p-4">
-             
-                <EsateSlider/>
-              </View>
-            )}
           </View>
         </View>
+
+        {/* Contractor Section Title & Category Tabs */}
+        <View className="px-4">
+          <Text className="text-xl text-center text-sky-950 font-semibold">
+            Top Contractors
+          </Text>
+
+          <View className="flex-row justify-center gap-2 px-4 mt-4 space-x-3">
+            <TouchableOpacity
+              onPress={() => setSelectedCategory("general")}
+              className={`px-4 py-2 rounded-xl ${
+                selectedCategory === "general"
+                  ? "bg-sky-950 text-white"
+                  : "bg-gray-300"
+              }`}
+            >
+              <Text
+                className={`text-lg ${
+                  selectedCategory === "general" ? "text-white" : "text-black"
+                }`}
+              >
+                General Contractors
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setSelectedCategory("real-estate")}
+              className={`px-4 py-2 rounded-xl ${
+                selectedCategory === "real-estate"
+                  ? "bg-sky-950 text-white"
+                  : "bg-gray-300"
+              }`}
+            >
+              <Text
+                className={`text-lg ${
+                  selectedCategory === "real-estate"
+                    ? "text-white"
+                    : "text-black"
+                }`}
+              >
+                Real Estate Contractors
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* FlatList for Contractors */}
+        <FlatList
+          data={[{ key: "contractors" }]} 
+          keyExtractor={(item) => item.key}
+          renderItem={() =>
+            selectedCategory === "general" ? <CardSlider /> : <EstateSlider />
+          }
+        />
       </View>
     </SafeAreaView>
   );

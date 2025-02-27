@@ -141,9 +141,7 @@ export default function MyPosts() {
             >
               <Text className="text-white text-center py-2">Edit</Text>
             </TouchableOpacity>
-            <Text className="text-center text-gray-600">
-              Days-{item.number_of_days}
-            </Text>
+          
           </View>
         </View>
       </View>
@@ -171,6 +169,7 @@ export default function MyPosts() {
               placeholderTextColor="#000000"
               value={searchQuery}
               onChangeText={handleSearch}
+              style={Platform.OS === "ios" ? { paddingVertical: 12 } : {}}
             />
             <Ionicons name="filter" size={24} color="#000000" className="ml-4" />
           </View>
@@ -181,8 +180,9 @@ export default function MyPosts() {
 
         className="flex-1 rounded-3xl bg-white"
         style={{
-          marginTop: -screenHeight * 0.25,
+          marginTop: -screenHeight * 0.30,
           width: postContentWidth,
+          
           marginHorizontal: (screenWidth - postContentWidth) / 2,
           overflow: 'hidden'
         }}

@@ -108,18 +108,7 @@ export default function PropertyDetails() {
   );
 
   return (
-    <ScrollView className="bg-white flex-1 mt-8 p-4">
-      <View className="w-full bg-sky-950 h-20 mb-2 flex justify-start px-5 gap-4 flex-row items-center rounded-lg">
-        <TouchableOpacity
-          onPress={() =>
-            navigation.goBack()
-          }
-        >
-          <Ionicons name="arrow-back" size={28} color="white" />
-        </TouchableOpacity>
-
-        <Text className="text-white text-2xl font-bold">Property Details</Text>
-      </View>
+    <ScrollView className="bg-white flex-1 mt-8 p-4">   
       <View className="relative">
         <Image source={{ uri: mainImage }} className="w-full h-60 rounded-lg" />
       </View>

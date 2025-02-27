@@ -166,13 +166,16 @@ export default function PropertyCalculator() {
         style={{ height: screenHeight * 0.4 }}
       >
         <View className={`py-6`}>
-          <Text className="text-3xl font-extrabold text-center text-white tracking-wide">Cost Calculator</Text>
+          <Text className="text-3xl font-extrabold text-center mt-5 text-white tracking-wide">Cost Calculator</Text>
         </View>
       </LinearGradient>
       <View
-        className="flex-1 rounded-3xl bg-white"
+        className="h-full bg-white"
         style={{
-          marginTop: -screenHeight * 0.25, 
+          position: 'absolute',
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          marginTop: screenHeight * 0.17, 
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
         }}
@@ -303,7 +306,7 @@ export default function PropertyCalculator() {
 
               <TouchableOpacity
                 onPress={handleSubmit}
-                className="bg-sky-900 py-3 rounded-md shadow-md"
+                className="bg-sky-900 mt-8 py-3 rounded-md shadow-md"
                 disabled={loading}
               >
                 <Text className="text-white text-center text-lg font-bold">CALCULATE</Text>
