@@ -7,10 +7,6 @@ import React, { useEffect, useState } from 'react';
 import { API, baseUrl } from '../../config/apiConfig';
 import Swiper from 'react-native-swiper';
 
-
-
-
-
 export default function Index() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const postContentWidth = screenWidth * 0.92;
@@ -192,10 +188,12 @@ export default function Index() {
         style={{ height: screenHeight * 0.4 }}
       >
         <View className="mt-10 px-4 gap-2 flex-row items-center">
+          <TouchableOpacity onPress={()=>router.push('EstateContractorProfile')}>
           <Image
             source={{ uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg" }}
             className="w-14 h-14 border-2 border-white rounded-full"
           />
+          </TouchableOpacity>
           <View className="gap-1">
             <Text className="text-2xl font-semibold text-white">
               Welcome! {userName?.name || "User"}
@@ -204,14 +202,14 @@ export default function Index() {
           </View>
         </View>
 
-        <View className="mt-2 items-end">
-          <View className="bg-gray-100 w-52 h-12 mr-5 rounded-full px-3 flex-row items-center justify-between">
+        <View className="mt-10 items-center px-5">
+          <View className="bg-gray-100  h-12 rounded-full p-3 flex-row items-center justify-between">
             <Ionicons name="search" size={18} color="black" />
             <TextInput
-              placeholder="Home Search"
+              placeholder="Search"
               placeholderTextColor={"gray"}
               style={{ fontSize: 14 }}
-              className="flex-1 ml-2 text-lg text-sm"
+              className="flex-1 ml-2 text-lg"
             />
           </View>
         </View>
@@ -221,7 +219,7 @@ export default function Index() {
       <View className="rounded-3xl "
         style={{
           position: 'absolute',
-          top: screenHeight * 0.20,
+          top: screenHeight * 0.25,
           width: postContentWidth,
           height: screenHeight * 0.80,
           left: (screenWidth - postContentWidth) / 2,

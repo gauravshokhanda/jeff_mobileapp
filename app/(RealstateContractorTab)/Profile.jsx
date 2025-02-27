@@ -15,14 +15,10 @@ import { setLogout } from "../../redux/slice/authSlice";
 const imageData = [
   // { id: 1, label: "Portfolio", icon: "arrow-up", screen: "", source: Box },
   { id: 2, label: "My Listing", icon: "rss", screen: "MyListing", source: Box },
-  { id: 4, label: "Profile", icon: "user", screen: "ContractorPortfolio", source: Box },
+  { id: 4, label: "Profile", icon: "user", screen: "EstateContractorProfile", source: Box },
   { id: 6, label: "Chat", icon: "comments", screen: "RealStateChatList", source: Box },
   { id: 8, label: "Log Out", icon: "sign-out-alt", screen: 'logout', source: Box },
 ];
-
-
-
-
 
 export default function Index() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
@@ -42,7 +38,7 @@ export default function Index() {
           },
         },
       ]);
-    } else if (screen === "ContractorPortfolio") {  // Profile screen
+    } else if (screen === "ContractorPortfolio") {  
       router.push({ pathname: screen, params: { edit: "true" } });
     } else if (screen) {
       router.push(screen);
@@ -55,7 +51,7 @@ export default function Index() {
 
       <LinearGradient
         colors={['#082f49', 'transparent']}
-        className="h-[40%]"
+        style={{ height: screenHeight * 0.4 }}
       >
         <View className="mt-10 px-4 gap-2 flex-row items-center">
           <Image
@@ -69,15 +65,13 @@ export default function Index() {
             <Text className="text-gray-400">📍 Florida, USA</Text>
           </View>
         </View>
-
-
       </LinearGradient>
 
 
       <View className="rounded-3xl "
         style={{
           position: 'absolute',
-          top: screenHeight * 0.16,
+          top: screenHeight * 0.20,
           width: postContentWidth,
           height: screenHeight * 0.84,
           left: (screenWidth - postContentWidth) / 2,
@@ -112,8 +106,6 @@ export default function Index() {
                 </TouchableOpacity>
               ))}
             </View>
-
-
 
           </ScrollView>
         </KeyboardAvoidingView>

@@ -124,6 +124,12 @@ export default function TabRoot() {
             href: null,
           }}
         />
+         <Tabs.Screen
+          name="EstateContractorProfile"
+          options={{
+            href: null,
+          }}
+        />
       </Tabs>
     </ProtectedRoute>
   );

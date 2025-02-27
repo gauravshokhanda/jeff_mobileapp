@@ -35,6 +35,18 @@ export default function RealStateChatList() {
         <View className="mt-8 px-4  items-center justify-center">
           <Text className="text-3xl font-bold text-white">Chats</Text>
         </View>
+        <View className="mx-5 mt-5 items-end">
+          <View className="bg-gray-100 h-12 rounded-full px-3 flex-row items-center justify-between">
+            <Ionicons name="search" size={18} color="black" />
+            <TextInput
+              placeholder="Search"
+              placeholderTextColor={"gray"}
+              style={{ fontSize: 14 }}
+              className="flex-1 ml-5 text-lg"
+            />
+            <Ionicons name="filter-sharp" size={26} color="black" />
+          </View>
+       </View>
 
 
       </LinearGradient>
@@ -43,9 +55,8 @@ export default function RealStateChatList() {
       <View className="rounded-3xl"
         style={{
           position: 'absolute',
-          top: screenHeight * 0.12,
+          top: screenHeight * 0.20,
           width: postContentWidth,
-          height: screenHeight * 0.85,
           left: (screenWidth - postContentWidth) / 2,
           backgroundColor: 'white',
           borderRadius: 25,
