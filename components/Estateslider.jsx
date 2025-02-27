@@ -1,50 +1,56 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, FlatList, Alert,ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Ionicons from '@expo/vector-icons/Ionicons'; 
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { API, baseUrl } from "../config/apiConfig";
 import { useSelector } from "react-redux";
 import { router } from "expo-router";
 
 const EstateSlider = () => {
   const [contractors, setContractors] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const navigation = useNavigation();
   const token = useSelector((state) => state.auth.token);
 
-  useEffect(() => {
-    const fetchContractors = async () => {
-      try {
-        const response = await API.get('get/real-state-contractors', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-  
-        console.log("🚀 API Response:", response.data);
-  
-        if (!response.data.contractors || !Array.isArray(response.data.contractors.data)) {
-          console.error("❌ No valid contractors data found");
-          return;
-        }
-  
-        const contractorsData = response.data.contractors.data.map((item) => ({
-          id: item.id.toString(),
-          image: item.image ? { uri: `${baseUrl}${item.image}` } : null,
-          name: item.name || "Unknown",
-          title: item.company_name || "No Company",
-          description: item.description || "No description available",
-          profileLink: item.upload_organisation ? `${baseUrl}${item.upload_organisation}` : null,
-          contact: item.company_registered_number || "Not Available",
-        }));
-  
-        console.log("✅ Processed Contractors:", contractorsData);
-        setContractors(contractorsData);
-      } catch (error) {
-        console.error("🚨 API Fetch Error:", error);
+  const fetchContractors = async () => {
+    setLoading(true)
+    try {
+      const response = await API.get('get/real-state-contractors', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("🚀 API Response:", response.data);
+
+      if (!response.data.contractors || !Array.isArray(response.data.contractors.data)) {
+        console.error("❌ No valid contractors data found");
+        return;
       }
-    };
-  
+
+      const contractorsData = response.data.contractors.data.map((item) => ({
+        id: item.id.toString(),
+        image: item.image ? { uri: `${baseUrl}${item.image}` } : null,
+        name: item.name || "Unknown",
+        title: item.company_name || "No Company",
+        description: item.description || "No description available",
+        profileLink: item.upload_organisation ? `${baseUrl}${item.upload_organisation}` : null,
+        contact: item.company_registered_number || "Not Available",
+      }));
+
+      console.log("✅ Processed Contractors:", contractorsData);
+      setContractors(contractorsData);
+    } catch (error) {
+      console.error("🚨 API Fetch Error:", error);
+    }
+    finally {
+      setLoading(false)
+    }
+  };
+  useEffect(() => {
+
     fetchContractors();
   }, []);
-  
+
 
   const handleVisitProfile = (id) => {
     router.push(`/ContractorProfile?id=${id}`);
@@ -59,10 +65,11 @@ const EstateSlider = () => {
   };
 
   const renderCard = ({ item }) => {
-    console.log("🖼 Rendering Contractor:", item);
-  
+
     return (
-      <View style={{ backgroundColor: 'white', padding: 10, margin: 10, borderRadius: 8 }}>
+
+      <View
+        style={{ backgroundColor: 'white', padding: 10, margin: 10, borderRadius: 8 }}>
         {item.image ? (
           <Image source={item.image} style={{ width: 100, height: 100, borderRadius: 8 }} />
         ) : (
@@ -77,24 +84,27 @@ const EstateSlider = () => {
       </View>
     );
   };
-  
-  
+
+
 
   return (
-    <View className="flex-1 p-4">
-      {contractors.length > 0 ? (
+    <View className="p-4">
+      {loading ? (
+        <ActivityIndicator size="large" color="#000" className="mt-10" />
+      ) : contractors.length > 0 ? (
         <FlatList
           data={contractors}
           renderItem={renderCard}
           keyExtractor={(item) => item.id}
-          horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 10 }}
+          refreshing={loading}
+          onRefresh={fetchContractors}
+        contentContainerStyle={{ paddingVertical: 10 }}
         />
       ) : (
         <Text className="text-center text-gray-700 mt-4">No contractors available.</Text>
       )}
-  
+
       <View className="mt-4 items-center">
         <TouchableOpacity className="bg-sky-600 rounded-md px-6 py-2 flex-row items-center" onPress={handleViewAll}>
           <Ionicons name="eye" size={20} color="white" className="mr-2" />
@@ -103,7 +113,7 @@ const EstateSlider = () => {
       </View>
     </View>
   );
-  
+
 };
 
 export default EstateSlider;
