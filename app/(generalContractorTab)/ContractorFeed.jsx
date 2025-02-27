@@ -98,7 +98,7 @@ export default function PropertyList() {
       >
         <View className={`flex-row items-center  px-4 `}>
           <TouchableOpacity className="mr-4">
-            <Ionicons name="notifications" size={24} color="white" />
+            <Ionicons name="notifications" size={25} color="white" />
           </TouchableOpacity>
           <View className="flex-row flex-1 items-center bg-white rounded-xl px-3 my-3">
             <Ionicons name="search" size={20} color="gray" className="mr-2" />
@@ -107,7 +107,9 @@ export default function PropertyList() {
               placeholderTextColor="#999"
               value={searchQuery}
               onChangeText={setSearchQuery}
-              className="flex-1 text-black text-base"
+              className={`flex-1 text-black text-base ${
+                Platform.OS === "ios" ? "py-3" : ""
+              }`}
             />
             <TouchableOpacity>
               <Ionicons name="filter" size={20} color="gray" />
@@ -119,7 +121,7 @@ export default function PropertyList() {
       <View
         className="flex-1 rounded-3xl bg-white"
         style={{
-          marginTop: -screenHeight * 0.25,
+          marginTop: -screenHeight * 0.27,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
           overflow: 'hidden',
@@ -187,10 +189,7 @@ export default function PropertyList() {
                           >
                             <Text className="text-white font-semibold text-lg">View</Text>
                           </TouchableOpacity>
-                          <View className="flex-row items-center">
-                            <Ionicons name="time-outline" size={18} color="gray" />
-                            <Text className="text-gray-600 text-base ml-1">Days - {property.number_of_days}</Text>
-                          </View>
+                         
                         </View>
                       </View>
                     </View>

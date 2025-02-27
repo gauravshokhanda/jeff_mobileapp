@@ -6,6 +6,8 @@ import { API, baseUrl } from "../config/apiConfig";
 import { useSelector } from "react-redux";
 import { router } from "expo-router";
 
+const { width } = Dimensions.get("window");
+
 const EstateSlider = () => {
   const [contractors, setContractors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -102,7 +104,9 @@ const EstateSlider = () => {
         contentContainerStyle={{ paddingVertical: 10 }}
         />
       ) : (
-        <Text className="text-center text-gray-700 mt-4">No contractors available.</Text>
+        <Text style={{ textAlign: "center", color: "gray", marginTop: 20 }}>
+          No contractors available.
+        </Text>
       )}
 
       <View className="mt-4 items-center">
@@ -113,7 +117,6 @@ const EstateSlider = () => {
       </View>
     </View>
   );
-
 };
 
 export default EstateSlider;
