@@ -154,7 +154,7 @@ const PropertyPost = () => {
         },
       });
 
-      console.log("response job post data", response.data);
+      // console.log("response job post data", response.data);
 
       Alert.alert(
         "Success",

@@ -182,7 +182,7 @@ const Portfolio = ({ navigation }) => {
           },
         }
       );
-      console.log("response", response.data)
+      // console.log("response", response.data)
 
       if (response.data) {
         Alert.alert("Success", "Portfolio added successfully!", [
@@ -260,7 +260,7 @@ const Portfolio = ({ navigation }) => {
         }
       );
 
-      console.log("Full API Response:", response.data);
+      // console.log("Full API Response:", response.data);
 
       if (!response.data || !response.data.cities) {
         throw new Error("Empty response or missing 'cities' field");

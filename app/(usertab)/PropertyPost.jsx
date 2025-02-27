@@ -135,7 +135,7 @@ const PropertyPost = () => {
                 },
             });
 
-            console.log("Response:", response.data);
+            // console.log("Response:", response.data);
 
             Alert.alert("Success", "Your job application has been posted successfully!", [
                 { text: "Ok", onPress: () => router.replace("/") }
