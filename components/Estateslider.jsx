@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, Alert,ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, FlatList, Alert,ActivityIndicator, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { API, baseUrl } from "../config/apiConfig";
