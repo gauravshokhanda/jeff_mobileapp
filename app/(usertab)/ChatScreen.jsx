@@ -17,6 +17,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
+import { API } from "../../config/apiConfig";
 
 const ChatScreen = () => {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -32,52 +33,64 @@ const ChatScreen = () => {
   const router = useRouter();
 
   useEffect(() => {
+    setDraftAttachment(null);
     const fetchData = async () => {
+      // console.log(`id ${id} user_id ${user_id}`)
       try {
-        if (!user_id || !id) return;
-
         setLoading(true);
+        if (user_id) {
+          const userResponse = await API.get(
+            `users/listing/${user_id}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          // console.log("userResponse", userResponse.data.data)
 
-        const userResponse = await axios.get(
-          `https://g32.iamdeveloper.in/api/users/listing/${user_id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+          if (userResponse.status === 200) {
+            setUser(userResponse.data.data);
 
-        if (userResponse.status === 200) {
-          setUser(userResponse.data.data);
+          }
+
         }
 
-        const propertyResponse = await axios.get(
-          `https://g32.iamdeveloper.in/api/realstate-property/${id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        if (id) {
+          const propertyResponse = await axios.get(
+            `https://g32.iamdeveloper.in/api/realstate-property/${id}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
 
-        if (propertyResponse.status === 200) {
-          console.log("API working");
-          console.log(propertyResponse.data);
 
-          const propertyData = propertyResponse.data.property;
-          setProperty(propertyData);
+          if (propertyResponse.status === 200) {
+            // console.log("API working");
+            // console.log(propertyResponse.data);
 
-          setDraftAttachment({
-            id: propertyData.id,
-            title: `${propertyData.bhk} in ${propertyData.city}`,
-            image: "https://via.placeholder.com/200",
-            price: `₹${propertyData.price}`,
-            address: propertyData.address,
-          });
+            const propertyData = propertyResponse.data.property;
+            setProperty(propertyData);
+
+            setDraftAttachment({
+              id: propertyData.id,
+              title: `${propertyData.bhk} in ${propertyData.city}`,
+              image: "https://via.placeholder.com/200",
+              price: `₹${propertyData.price}`,
+              address: propertyData.address,
+            });
+          }
+          else {
+            setDraftAttachment(null);
+          }
         }
+
       } catch (error) {
-        console.error("Error fetching data:", error.response?.data || error.message);
+        console.log("Error fetching data:", error.response?.data || error.message);
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
 
-    if (user_id && id) {
+    if (user_id || id) {
       fetchData();
     }
-  }, [user_id, id]);
+  }, [id,user_id]);
 
   const sendMessage = () => {
     if (inputText.trim() === "") return;
@@ -91,7 +104,10 @@ const ChatScreen = () => {
 
     setMessages([newMessage, ...messages]);
     setInputText("");
-    setDraftAttachment(null);
+    // Only reset draftAttachment if it was used in the message
+    
+      setDraftAttachment(null);
+    
   };
 
   return (
@@ -142,9 +158,8 @@ const ChatScreen = () => {
             inverted
             renderItem={({ item }) => (
               <View
-                className={`flex-row items-end mx-3 my-2 ${
-                  item.sender === "me" ? "self-end flex-row-reverse" : "self-start"
-                }`}
+                className={`flex-row items-end mx-3 my-2 ${item.sender === "me" ? "self-end flex-row-reverse" : "self-start"
+                  }`}
               >
                 <Image
                   source={{
@@ -156,11 +171,10 @@ const ChatScreen = () => {
                   className="w-8 h-8 rounded-full mx-1"
                 />
                 <View
-                  className={`p-3 w-[80%] rounded-lg ${
-                    item.sender === "me"
-                      ? "bg-sky-950 self-end"
-                      : "bg-white border border-gray-300 self-start"
-                  }`}
+                  className={`p-3 w-[80%] rounded-lg ${item.sender === "me"
+                    ? "bg-sky-950 self-end"
+                    : "bg-white border border-gray-300 self-start"
+                    }`}
                 >
                   <Text
                     className={`${item.sender === "me" ? "text-white" : "text-gray-900"} text-lg`}
@@ -188,7 +202,7 @@ const ChatScreen = () => {
           />
 
           {/* Draft Property Attachment */}
-          {draftAttachment && (
+          {draftAttachment ? (
             <View className="flex-row items-center bg-white p-3 border-t border-gray-300">
               <View className="flex-1">
                 <Text className="text-gray-900 font-semibold">{draftAttachment.title}</Text>
@@ -199,7 +213,7 @@ const ChatScreen = () => {
                 <AntDesign name="closecircle" size={24} color="red" />
               </TouchableOpacity>
             </View>
-          )}
+          ) : ""}
 
           {/* Chat Input Box */}
           <View className="flex-row items-center p-4 bg-white border-t border-gray-300">

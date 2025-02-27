@@ -9,6 +9,7 @@ import {
   Platform,
   SafeAreaView,
   Image,
+  ActivityIndicator
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -26,32 +27,37 @@ export default function Index() {
   const [selectedTab, setSelectedTab] = useState("realEstate");
   const [realEstateList, setRealEstateList] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
 
+  const fetchContractors = async () => {
+    setLoading(true)
+    try {
+      const response = await API.get("contractors/listing", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const formattedData = response.data.data.map((item) => ({
+        id: item.id.toString(),
+        image: { uri: `${baseUrl}${item.image}` },
+        banner: { uri: `${baseUrl}${item.upload_organisation}` },
+        name: item.name,
+        email: item.email,
+        city: item.city,
+        contactNumber: item.company_registered_number,
+        company: item.company_name,
+        address: item.company_address,
+        createdAt: moment(item.created_at).fromNow(),
+      }));
+
+      setContractors(formattedData);
+    } catch (error) {
+      console.error("Error fetching contractors:", error);
+    }finally{
+      setLoading(false)
+    }
+  };
   useEffect(() => {
-    const fetchContractors = async () => {
-      try {
-        const response = await API.get("contractors/listing", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const formattedData = response.data.data.map((item) => ({
-          id: item.id.toString(),
-          image: { uri: `${baseUrl}${item.image}` },
-          banner: { uri: `${baseUrl}${item.upload_organisation}` },
-          name: item.name,
-          email: item.email,
-          city: item.city,
-          contactNumber: item.company_registered_number,
-          company: item.company_name,
-          address: item.company_address,
-          createdAt: moment(item.created_at).fromNow(),
-        }));
-
-        setContractors(formattedData);
-      } catch (error) {
-        console.error("Error fetching contractors:", error);
-      }
-    };
+  
 
     fetchContractors();
   }, []);
@@ -107,7 +113,7 @@ export default function Index() {
         </TouchableOpacity>
         <View className="gap-5 flex-row">
           <TouchableOpacity
-            onPress={() => router.push(`/ChatScreen?id=${item.id}`)}
+            onPress={() => router.push(`/ChatScreen?user_id=${item.id}`)}
           >
             <Ionicons name="mail-outline" size={30} color="black" />
           </TouchableOpacity>
@@ -121,55 +127,55 @@ export default function Index() {
     </View>
   );
 
-  useEffect(() => {
-    const fetchRealEstateProperties = async (page = 1) => {
-      try {
-        const response = await API.get(`get-property/type?page=${page}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+  const fetchRealEstateProperties = async (page = 1) => {
+    try {
+      const response = await API.get(`get-property/type?page=${page}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        // Check if response and properties exist
-        if (
-          !response.data ||
-          !response.data.properties ||
-          !response.data.properties.data
-        ) {
-          console.error("Invalid API response:", response.data);
-          return;
-        }
-
-        // Extracting correct data
-        const { data, last_page } = response.data.properties;
-
-        // Ensure data is an array before mapping
-        if (!Array.isArray(data)) {
-          console.error("Unexpected data format:", data);
-          return;
-        }
-
-        const formattedProperties = data.map((item) => ({
-          id: item.id?.toString() || "N/A",
-          user_id: item.user_id?.toString() || "N/A",
-          property_type: item.property_type || "Unknown",
-          city: item.city || "Unknown",
-          house_type: item.house_type || "Unknown",
-          address: item.address || "Unknown",
-          locality: item.locale || "Unknown",
-          bhk: item.bhk || "N/A",
-          area: item.area ? `${item.area} sqft` : "N/A",
-          furnish_type: item.furnish_type || "N/A",
-          price: item.price ? `₹${item.price}/month` : "N/A",
-          available_from: item.available_from
-            ? moment(item.available_from).format("MMMM D, YYYY")
-            : "N/A",
-        }));
-
-        setRealEstateList(formattedProperties);
-        setTotalPages(last_page || 1);
-      } catch (error) {
-        console.error("Error fetching real estate properties:", error);
+      // Check if response and properties exist
+      if (
+        !response.data ||
+        !response.data.properties ||
+        !response.data.properties.data
+      ) {
+        console.error("Invalid API response:", response.data);
+        return;
       }
-    };
+
+      // Extracting correct data
+      const { data, last_page } = response.data.properties;
+
+      // Ensure data is an array before mapping
+      if (!Array.isArray(data)) {
+        console.error("Unexpected data format:", data);
+        return;
+      }
+
+      const formattedProperties = data.map((item) => ({
+        id: item.id?.toString() || "N/A",
+        user_id: item.user_id?.toString() || "N/A",
+        property_type: item.property_type || "Unknown",
+        city: item.city || "Unknown",
+        house_type: item.house_type || "Unknown",
+        address: item.address || "Unknown",
+        locality: item.locale || "Unknown",
+        bhk: item.bhk || "N/A",
+        area: item.area ? `${item.area} sqft` : "N/A",
+        furnish_type: item.furnish_type || "N/A",
+        price: item.price ? `₹${item.price}/month` : "N/A",
+        available_from: item.available_from
+          ? moment(item.available_from).format("MMMM D, YYYY")
+          : "N/A",
+      }));
+
+      setRealEstateList(formattedProperties);
+      setTotalPages(last_page || 1);
+    } catch (error) {
+      console.error("Error fetching real estate properties:", error);
+    }
+  };
+  useEffect(() => {
 
     fetchRealEstateProperties();
   }, [token]);
@@ -218,9 +224,8 @@ export default function Index() {
           <View className="flex-row justify-around mb-4">
             <TouchableOpacity
               onPress={() => setSelectedTab("realEstate")}
-              className={`px-4 py-2 rounded-xl ${
-                selectedTab === "realEstate" ? "bg-sky-950" : "bg-gray-300"
-              }`}
+              className={`px-4 py-2 rounded-xl ${selectedTab === "realEstate" ? "bg-sky-950" : "bg-gray-300"
+                }`}
             >
               <Text
                 className={
@@ -232,9 +237,8 @@ export default function Index() {
             </TouchableOpacity >
             <TouchableOpacity
               onPress={() => setSelectedTab("contractors")}
-              className={`px-4 py-2 rounded-xl ${
-                selectedTab === "contractors" ? "bg-sky-950" : "bg-gray-300"
-              }`}
+              className={`px-4 py-2 rounded-xl ${selectedTab === "contractors" ? "bg-sky-950" : "bg-gray-300"
+                }`}
             >
               <Text
                 className={
@@ -246,98 +250,105 @@ export default function Index() {
             </TouchableOpacity >
           </View>
 
-          {selectedTab === "realEstate" ? (
+          {loading ? (
+            <View className="flex-1 justify-center items-center">
+              <ActivityIndicator size="large" color="#007AFF" />
+            </View>
+          ) :  selectedTab === "realEstate" ? (
             <FlatList
               data={realEstateList}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
-                <TouchableOpacity  onPress={() => router.push(`/RealEstateDetails?id=${item.id}`)}>
-                <View className="bg-sky-950 p-3 rounded-lg mb-4">
-                  {/* Header: Location & Tags */}
-                  <View className="flex-row items-center justify-between">
-                    <View className="flex-row items-center">
-                      <Ionicons
-                        name="location-outline"
-                        size={16}
-                        color="white"
-                      />
-                      <Text className="text-white ml-2 font-semibold text-base">
-                        {item.city}
-                      </Text>
-                    </View>
-                    <View className="flex-row gap-2">
-                      <View className="bg-white px-3 py-1 rounded-full">
-                        <Text className="text-sky-950 text-xs font-semibold">
-                          {item.property_type}
-                        </Text>
-                      </View>
-                      <View className="bg-white px-3 py-1 rounded-full">
-                        <Text className="text-sky-950 text-xs font-semibold">
-                          {item.house_type}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-
-                  {/* Property Icon & Details */}
-                  <View className="flex-row items-center mt-2">
-                    <Ionicons name="home-outline" size={60} color="white" />
-                    <View className="ml-4">
-                      <Text className="text-white text-2xl font-bold">
-                        ${item.price} USD
-                      </Text>
-                      <View className="flex-row items-center mt-1">
+                <TouchableOpacity onPress={() => router.push(`/RealEstateDetails?id=${item.id}`)}>
+                  <View className="bg-sky-950 p-3 rounded-lg mb-4">
+                    {/* Header: Location & Tags */}
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-row items-center">
                         <Ionicons
-                          name="calendar-outline"
+                          name="location-outline"
                           size={16}
                           color="white"
                         />
-                        <Text className="text-white ml-2 text-sm">
-                          Available from {item.available_from}
+                        <Text className="text-white ml-2 font-semibold text-base">
+                          {item.city}
                         </Text>
                       </View>
-                      <View className="flex-row items-center mt-1">
-                        <Ionicons
-                          name="resize-outline"
-                          size={16}
-                          color="white"
-                        />
-                        <Text className="text-white ml-2 text-sm">
-                          Area: {item.area}
-                        </Text>
-                      </View>
-                      <View className="flex-row items-center mt-1">
-                        <Ionicons name="bed-outline" size={16} color="white" />
-                        <Text className="text-white ml-2 text-sm">
-                          {item.furnish_type}
-                        </Text>
+                      <View className="flex-row gap-2">
+                        <View className="bg-white px-3 py-1 rounded-full">
+                          <Text className="text-sky-950 text-xs font-semibold">
+                            {item.property_type}
+                          </Text>
+                        </View>
+                        <View className="bg-white px-3 py-1 rounded-full">
+                          <Text className="text-sky-950 text-xs font-semibold">
+                            {item.house_type}
+                          </Text>
+                        </View>
                       </View>
                     </View>
-                  </View>
 
-                  {/* Bottom Section: CTA */}
-                  <View className="p-3 mt-3 rounded-lg flex-row items-center justify-between">
-                  <TouchableOpacity className="bg-white px-4 py-2 rounded-lg"  onPress={() =>
+                    {/* Property Icon & Details */}
+                    <View className="flex-row items-center mt-2">
+                      <Ionicons name="home-outline" size={60} color="white" />
+                      <View className="ml-4">
+                        <Text className="text-white text-2xl font-bold">
+                          ${item.price} USD
+                        </Text>
+                        <View className="flex-row items-center mt-1">
+                          <Ionicons
+                            name="calendar-outline"
+                            size={16}
+                            color="white"
+                          />
+                          <Text className="text-white ml-2 text-sm">
+                            Available from {item.available_from}
+                          </Text>
+                        </View>
+                        <View className="flex-row items-center mt-1">
+                          <Ionicons
+                            name="resize-outline"
+                            size={16}
+                            color="white"
+                          />
+                          <Text className="text-white ml-2 text-sm">
+                            Area: {item.area}
+                          </Text>
+                        </View>
+                        <View className="flex-row items-center mt-1">
+                          <Ionicons name="bed-outline" size={16} color="white" />
+                          <Text className="text-white ml-2 text-sm">
+                            {item.furnish_type}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+
+                    {/* Bottom Section: CTA */}
+                    <View className="p-3 mt-3 rounded-lg flex-row items-center justify-between">
+                      <TouchableOpacity className="bg-white px-4 py-2 rounded-lg" onPress={() =>
                         router.push(
                           `/ContractorProfile?user_id=${item.user_id}`
                         )
                       }>
-                      <Text className="text-sky-950 font-semibold">View Contractor</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      className=" bg-white py-2 px-4 rounded-lg"
-                      onPress={() =>
-                        router.push(
-                          `/ChatScreen?user_id=${item.user_id}&id=${item.id}`
-                        )
-                      }
-                    >
-                      <Text className="text-sky-950 font-semibold">Chat</Text>
-                    </TouchableOpacity>
+                        <Text className="text-sky-950 font-semibold">View Contractor</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        className=" bg-white py-2 px-4 rounded-lg"
+                        onPress={() =>
+                          router.push(
+                            `/ChatScreen?user_id=${item.user_id}&id=${item.id}`
+                          )
+                        }
+                      >
+                        <Text className="text-sky-950 font-semibold">Chat</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
                 </TouchableOpacity>
               )}
+              refreshing={loading}
+              onRefresh={fetchRealEstateProperties}
+
             />
           ) : (
             <FlatList
@@ -345,6 +356,8 @@ export default function Index() {
               renderItem={renderContractor}
               keyExtractor={(item) => item.id}
               contentContainerStyle={{ padding: 10 }}
+              refreshing={loading}
+              onRefresh={fetchContractors}
             />
           )}
         </KeyboardAvoidingView>

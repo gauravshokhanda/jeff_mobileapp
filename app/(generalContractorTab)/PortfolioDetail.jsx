@@ -8,15 +8,15 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  Modal,
   FlatList,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import { Feather } from "@expo/vector-icons";
 import Swiper from "react-native-swiper";
 import * as ImagePicker from "expo-image-picker";
+import EditPortfolioModal from "../../components/EditPortfolioModal"
+import { API } from "../../config/apiConfig";
 
 const PortfolioDetail = () => {
   const { id } = useLocalSearchParams();
@@ -38,8 +38,7 @@ const PortfolioDetail = () => {
     const fetchPortfolioDetails = async () => {
       if (!id || !token) return;
       try {
-        const response = await axios.get(
-          `https://g32.iamdeveloper.in/api/portfolios/${id}`,
+        const response = await API.get(`portfolios/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -60,10 +59,10 @@ const PortfolioDetail = () => {
         setLoading(false);
       }
     };
-  
+
     fetchPortfolioDetails();
   }, [id, token, modalVisible]); // 🔹 Added modalVisible as dependency
-  
+
 
   const handleDelete = () => {
     Alert.alert(
@@ -75,8 +74,7 @@ const PortfolioDetail = () => {
           text: "Delete",
           onPress: async () => {
             try {
-              await axios.delete(
-                `https://g32.iamdeveloper.in/api/portfolio/delete/${id}`,
+              await API.delete(`portfolio/delete/${id}`,
                 {
                   headers: { Authorization: `Bearer ${token}` },
                 }
@@ -96,31 +94,30 @@ const PortfolioDetail = () => {
   const handleUpdate = async () => {
     try {
       const formDataToSend = new FormData();
-  
+
       // Append other form data fields
       Object.keys(formData).forEach((key) => {
         formDataToSend.append(key, formData[key]);
       });
-  
+
       // Append image if selected
       if (selectedImage) {
         const fileName = selectedImage.split("/").pop();
         const fileType = fileName.split(".").pop();
         const mimeType = fileType === "jpg" ? "image/jpeg" : `image/${fileType}`;
-  
+
         formDataToSend.append("image", {
           uri: selectedImage,
           name: fileName,
           type: mimeType,
         });
-  
+
         console.log("Uploading image:", { uri: selectedImage, name: fileName, type: mimeType });
       } else {
         console.log("No new image selected");
       }
-  
-      const response = await axios.post(
-        `https://g32.iamdeveloper.in/api/portfolio/update/${id}`,
+
+      const response = await API.post(`portfolio/update/${id}`,
         formDataToSend,
         {
           headers: {
@@ -129,20 +126,20 @@ const PortfolioDetail = () => {
           },
         }
       );
-  
+
       console.log("Server response:", response.data);
-      
+
       Alert.alert("Success", "Portfolio updated successfully!", [
         { text: "OK", onPress: () => setModalVisible(false) },
       ]);
-  
+
     } catch (error) {
       console.error("Update failed:", error.response?.data || error.message);
       Alert.alert("Error", "Failed to update portfolio. Try again.");
     }
   };
-  
-  
+
+
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" className="mt-10" />;
   }
@@ -202,11 +199,11 @@ const PortfolioDetail = () => {
             <Swiper
               showsPagination={true} // Dots indicator
               autoplay={true} // Auto-slide
-              autoplayTimeout={3} // Slide every 3 seconds
+              autoplayTimeout={2} // Slide every 3 seconds
               loop={true} // Infinite loop
-              dot={<View className="w-3 h-3 bg-gray-400 mx-1 rounded-full" />}
+              dot={<View className="w-2 h-2 bg-gray-400 mx-1 rounded-full" />}
               activeDot={
-                <View className="w-3 h-3 bg-blue-500 mx-1 rounded-full" />
+                <View className="w-2 h-2 bg-blue-950 mx-1 rounded-full" />
               }
             >
               {JSON.parse(portfolio.portfolio_images).map((image, index) => (
@@ -239,90 +236,17 @@ const PortfolioDetail = () => {
       </ScrollView>
 
       {/* EDIT MODAL */}
-      <Modal visible={modalVisible} animationType="slide" transparent={true}>
-        <View className="flex-1 justify-center bg-black/50 p-6">
-          <View className="bg-white p-6 rounded-lg">
-            {/* Modal Header */}
-            <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-xl font-semibold">Edit Portfolio</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Feather name="x" size={24} color="black" />
-              </TouchableOpacity>
-            </View>
+      <EditPortfolioModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        portfolio={portfolio}
+        formData={formData}
+        setFormData={setFormData}
+        handleUpdate={handleUpdate}
+        pickImage={pickImage}
+      />
 
-            {/* Form Fields */}
-            <View className="h-72 w-full rounded-lg overflow-hidden">
-              <Swiper
-                showsPagination={true} // Dots indicator
-                autoplay={true} // Auto-slide
-                autoplayTimeout={3} // Slide every 3 seconds
-                loop={true} // Infinite loop
-                dot={<View className="w-3 h-3 bg-gray-400 mx-1 rounded-full" />}
-                activeDot={
-                  <View className="w-3 h-3 bg-blue-500 mx-1 rounded-full" />
-                }
-              >
-                {JSON.parse(portfolio.portfolio_images).map((image, index) => (
-                  <Image
-                    key={index}
-                    source={{
-                      uri: `https://g32.iamdeveloper.in/public/${image}`,
-                    }}
-                    className="w-full h-72"
-                    resizeMode="cover"
-                  />
-                ))}
-              </Swiper>
-            </View>
-            <TextInputField
-              label="Project Name"
-              value={formData.project_name}
-              onChange={(text) =>
-                setFormData({ ...formData, project_name: text })
-              }
-            />
-            <TextInputField
-              label="Description"
-              value={formData.description}
-              onChange={(text) =>
-                setFormData({ ...formData, description: text })
-              }
-            />
-            <TextInputField
-              label="Address"
-              value={formData.address}
-              onChange={(text) => setFormData({ ...formData, address: text })}
-            />
-            <TextInputField
-              label="City"
-              value={formData.city}
-              onChange={(text) => setFormData({ ...formData, city: text })}
-            />
-            <TouchableOpacity
-              onPress={pickImage}
-              className="p-3 bg-sky-950 rounded-lg"
-            >
-              <Text className="text-white text-center">Pick an Image</Text>
-            </TouchableOpacity>
 
-            {/* Buttons */}
-            <View className="flex-row justify-end mt-4">
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                className="px-4 py-2 bg-gray-300 rounded-lg mr-2"
-              >
-                <Text className="text-black">Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleUpdate}
-                className="px-4 py-2 bg-sky-950 rounded-lg"
-              >
-                <Text className="text-white">Save</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };
@@ -334,15 +258,6 @@ const DetailRow = ({ label, value }) => (
   </View>
 );
 
-const TextInputField = ({ label, value, onChange }) => (
-  <View className="mb-4">
-    <Text className="text-gray-700 mb-1">{label}</Text>
-    <TextInput
-      value={value}
-      onChangeText={onChange}
-      className="border border-gray-300 p-2 rounded-lg"
-    />
-  </View>
-);
+
 
 export default PortfolioDetail;
