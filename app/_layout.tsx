@@ -1,5 +1,10 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import * as Notifications from "expo-notifications";
+import { useEffect, useState } from "react";
+import { Platform } from "react-native";
+import { getMessaging, getToken } from "firebase/messaging";
+import { firebaseApp } from "./firebaseConfig";
 import { Stack } from "expo-router";
 import '../global.css';
 import { Provider } from 'react-redux';
@@ -10,6 +15,35 @@ import React from "react";
 
 
 export default function RootLayout() {
+  async function registerForPushNotificationsAsync() {
+    const { status } = await Notifications.requestPermissionsAsync();
+    if (status !== "granted") {
+      alert("Permission for notifications was denied!");
+      return;
+    }
+  
+    if (Platform.OS === "android") {
+      await Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#FF231F7C",
+      });
+    }
+  
+    // Get FCM Token
+    const messaging = getMessaging(firebaseApp);
+    const token = await getToken(messaging, {
+      vapidKey: "YOUR_VAPID_KEY",
+    });
+  
+    console.log("FCM Token:", token);
+    return token;
+  }
+
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+  }, []);
   return <>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
