@@ -8,15 +8,21 @@ import {
   ActivityIndicator,
   Platform,
   TextInput,
-  SafeAreaView
+  SafeAreaView,
+  Modal
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../../config/apiConfig";
 import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import axios from "axios";
 import { LinearGradient } from 'expo-linear-gradient';
+import SortingModal from "../../components/SortingModal"
+import { useWindowDimensions } from "react-native";
+
+
+
 
 
 export default function MyPosts() {
@@ -29,24 +35,82 @@ export default function MyPosts() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const flatListRef = useRef(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [sortOrder, setSortOrder] = useState("");
+
+
+  const [scrollOffset, setScrollOffset] = useState(0);
+
+  const iconRef = useRef(null);
+  const { width, height } = useWindowDimensions();
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+
+  const openModal = () => {
+    iconRef.current?.measure((_fx, _fy, _width, _height, px, py) => {
+      // Ensure dropdown does not overflow the screen
+      const leftPosition = Math.min(px, width - 150);
+      const topPosition = Math.min(py + _height + 5, height - 100);
+
+      setPosition({ top: topPosition, left: leftPosition });
+    });
+    setModalVisible(true);
+  };
+
+  const handleSort = (order) => {
+    setSortOrder(order);
+    setModalVisible(false);
+    setCurrentPage(1);
+    fetchPosts(1)
+  };
 
   useEffect(() => {
-    fetchPosts();
-  }, [userId, token]);
+    fetchPosts(1);
+  }, [userId, token, searchQuery]);
 
-  const fetchPosts = async () => {
+  const fetchPosts = async (page = 1, append = false, order = sortOrder) => {
     setLoading(true);
     try {
-      const response = await API.get(`job-posts/${userId}`, {
+      const response = await API.get(`job-posts/${userId}&sort_order=${order}`, {
+        params: {
+          page,
+          city: searchQuery,
+          sort_order: order  
+        },
         headers: { Authorization: `Bearer ${token}` },
       });
-      setResults(response.data.data.data || []);
+      const newPosts = response.data.data.data || [];
+      setResults(append ? [...results, ...newPosts] : newPosts);
+      setLastPage(response.data.data.last_page || 1);
     } catch (error) {
       console.error("Error fetching posts:", error);
-      setResults([]);
+      if (!append) setResults([]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadNextPage = () => {
+    if (!loading && currentPage < lastPage) {
+      const prevScrollOffset = scrollOffset;
+      setCurrentPage((prev) => prev + 1);
+      fetchPosts(currentPage + 1, true);
+
+      setTimeout(() => {
+        flatListRef.current?.scrollToOffset({ offset: prevScrollOffset, animated: false });
+      }, 200);
+    }
+  };
+
+  const handleRefresh = () => {
+    setCurrentPage(1);
+    fetchPosts(1, false);
+  };
+
+  const onScroll = (event) => {
+    setScrollOffset(event.nativeEvent.contentOffset.y);
   };
 
   const handleSearch = async (query) => {
@@ -118,7 +182,7 @@ export default function MyPosts() {
             showsHorizontalScrollIndicator={false}
             snapToInterval={postContentWidth}
             decelerationRate="fast"
-        
+
           />
         )}
         <View className="flex-row justify-between p-3">
@@ -141,7 +205,7 @@ export default function MyPosts() {
             >
               <Text className="text-white text-center py-2">Edit</Text>
             </TouchableOpacity>
-          
+
           </View>
         </View>
       </View>
@@ -171,7 +235,13 @@ export default function MyPosts() {
               onChangeText={handleSearch}
               style={Platform.OS === "ios" ? { paddingVertical: 12 } : {}}
             />
-            <Ionicons name="filter" size={24} color="#000000" className="ml-4" />
+            <TouchableOpacity ref={iconRef} onPress={openModal}>
+              <Ionicons name="filter-sharp" size={26} color="black" />
+            </TouchableOpacity>
+            <SortingModal
+              visible={modalVisible}
+              onClose={() => setModalVisible(false)}
+              onSelect={handleSort} position={position} />
           </View>
         </View>
       </LinearGradient>
@@ -182,7 +252,7 @@ export default function MyPosts() {
         style={{
           marginTop: -screenHeight * 0.30,
           width: postContentWidth,
-          
+
           marginHorizontal: (screenWidth - postContentWidth) / 2,
           overflow: 'hidden'
         }}
@@ -194,12 +264,17 @@ export default function MyPosts() {
             </View>
           ) : (
             <FlatList
+              ref={flatListRef}
               showsVerticalScrollIndicator={false}
               data={results}
               keyExtractor={(item) => item.id.toString()}
               renderItem={renderItem}
               refreshing={loading}
-              onRefresh={fetchPosts}
+              onRefresh={handleRefresh}
+              onScroll={onScroll}
+              onEndReached={loadNextPage}
+              onEndReachedThreshold={0.1}
+              ListFooterComponent={loading && currentPage > 1 ? <ActivityIndicator size="small" color="#0000ff" /> : null}
             />
           )}
         </View>
