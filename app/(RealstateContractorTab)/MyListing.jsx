@@ -34,8 +34,8 @@ export default function Listing() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log("response", response.data.properties.data)
-      console.log("response", response.data.properties.last_page)
+      // console.log("response", response.data.properties.data)
+      // console.log("response", response.data.properties.last_page)
       // console.log("response", response.data.properties)
       setProperties((prev) =>
         page === 1 ? response.data.properties.data : [...prev, ...response.data.properties.data]

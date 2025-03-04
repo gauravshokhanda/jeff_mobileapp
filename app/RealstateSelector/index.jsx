@@ -235,7 +235,7 @@ export default function Index() {
 
         },
       })
-      console.log("response", response.data.property)
+      // console.log("response", response.data.property)
       dispatch(
         setRealStateProperty(response.data.property)
       );
@@ -355,20 +355,25 @@ export default function Index() {
                     placeholder="Building/Project/Society(Optional)"
                     value={address}
                     onChangeText={setAddress}
+                    textLabel=""
                   />
                   <CustomTextInput
                     placeholder="Enter Locality"
                     value={locality}
                     onChangeText={setLocality}
+                    textLabel=""
                   />
                   <CustomTextInput
                     value={price}
                     onChangeText={setPrice}
-                    placeholder="Price" />
+                    placeholder="Price"
+                    textLabel="$"
+                  />
                   <CustomTextInput
                     placeholder="Built Up Area"
                     value={area}
                     onChangeText={setArea}
+                    textLabel="sq"
                   />
 
                 </View>

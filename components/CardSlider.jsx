@@ -16,7 +16,7 @@ const CardSlider = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const formattedData = response.data.data.map((item) => ({
+      const formattedData = response.data?.data?.data?.map((item) => ({
         id: item.id.toString(),
         image: item.image ? { uri: `${baseUrl}${item.image}` } : null,
         name: item.name,

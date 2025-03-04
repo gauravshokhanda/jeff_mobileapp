@@ -22,7 +22,7 @@ const EstateSlider = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("🚀 API Response:", response.data);
+      // console.log("🚀 API Response:", response.data);
 
       if (!response.data.contractors || !Array.isArray(response.data.contractors.data)) {
         console.error("❌ No valid contractors data found");
@@ -39,7 +39,7 @@ const EstateSlider = () => {
         contact: item.company_registered_number || "Not Available",
       }));
 
-      console.log("✅ Processed Contractors:", contractorsData);
+      // console.log("✅ Processed Contractors:", contractorsData);
       setContractors(contractorsData);
     } catch (error) {
       console.error("🚨 API Fetch Error:", error);
