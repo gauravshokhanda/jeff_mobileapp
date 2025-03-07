@@ -69,27 +69,20 @@ export default function Index() {
   ];
   const renderPropertyTypeItem = ({ item }) => {
     const isSelected = selectedPropertyType === item.id;
-
+  
     return (
       <View className="rounded-lg overflow-hidden">
         <TouchableOpacity
-
+          className={`px-4 py-2 rounded-lg items-center justify-center ${
+            isSelected ? "bg-sky-950" : "bg-gray-300"
+          }`}
           onPress={() => setSelectedPropertyType(item.id)}
         >
-          <LinearGradient
-            colors={isSelected ? ['#93C5FD', '#1E3A8A'] : ['#F3F4F6', '#D1D5DB']} // Blue when selected, Gray otherwise
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            className="px-8 py-4 flex items-center justify-center"
-          >
-            <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-900"}`}>
-              {item.label}
-            </Text>
-          </LinearGradient>
+          <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-900"}`}>
+            {item.label}
+          </Text>
         </TouchableOpacity>
-
       </View>
-
     );
   };
 
@@ -113,28 +106,21 @@ export default function Index() {
   ];
   const renderHomeTypeItem = ({ item }) => {
     const isSelected = selectedHomeType === item.name;
-
+  
     return (
       <View className="mx-2 rounded-full overflow-hidden">
         <TouchableOpacity
-
-          style={{ width: 100, height: 100 }}
+          className={`w-24 h-24 rounded-full flex items-center justify-center ${
+            isSelected ? "bg-sky-950" : "bg-gray-300"
+          }`}
           onPress={() => setSelectedHomeType(item.name)}
         >
-          <LinearGradient
-            colors={isSelected ? ['#93C5FD', '#1E3A8A'] : ['#F3F4F6', '#D1D5DB']} // Blue gradient when selected, Gray otherwise
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            className="flex items-center justify-center rounded-full w-full h-full"
-          >
-            <Image source={item.image} style={{ width: 50, height: 50 }} resizeMode="contain" />
-            <Text className={`text-sm font-medium mt-2 mx-1 text-center ${isSelected ? "text-white" : "text-gray-900"}`}>
-              {item.name}
-            </Text>
-          </LinearGradient>
+          <Image source={item.image} className="w-12 h-12" resizeMode="contain" />
+          <Text className={`text-sm font-medium mt-2 mx-1 text-center ${isSelected ? "text-white" : "text-gray-900"}`}>
+            {item.name}
+          </Text>
         </TouchableOpacity>
       </View>
-
     );
   };
 
@@ -144,20 +130,10 @@ export default function Index() {
     const isSelected = selectedBHK === item;
     return (
       <View className="mx-2 rounded-lg overflow-hidden" >
-        <TouchableOpacity
-          onPress={() => setSelectedBHK(item)}
-
-        >
-          <LinearGradient
-            colors={isSelected ? ['#93C5FD', '#1E3A8A'] : ['#F3F4F6', '#D1D5DB']} // Blue when selected, Gray otherwise
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            className="px-6 py-4 flex items-center justify-center rounded-lg border border-gray-300"
-          >
-            <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-900"}`}>
-              {item}
-            </Text>
-          </LinearGradient>
+        <TouchableOpacity onPress={() => setSelectedBHK(item)} className="bg-gray-500 p-2">
+          <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-900"}`}>
+            {item}
+          </Text>
         </TouchableOpacity>
       </View>
     )
@@ -174,27 +150,22 @@ export default function Index() {
   const renderFurnishItem = ({ item }) => {
     const isSelected = selectedType === item.id;
     return (
-      <View className="mx-2 rounded-lg overflow-hidden" >
-
-        <TouchableOpacity
-
-          onPress={() => setSelectedType(item.id)}
-        >
-          <LinearGradient
-            colors={isSelected ? ['#93C5FD', '#1E3A8A'] : ['#F3F4F6', '#D1D5DB']} // Blue when selected, Gray otherwise
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            className="px-6 py-4 flex-row items-center rounded-lg border border-gray-300"
-          >
-            {item.icon && <Image source={item.icon} className="w-6 h-6 mr-3" />}
-            <Text className={`text-lg ${isSelected ? "text-white" : "text-gray-900"}`}>
-              {item.label}
-            </Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+      <View className="gap-2">
+      <TouchableOpacity
+      onPress={() => setSelectedType(item.id)}
+      className={`flex flex-row gap-1 items-center space-x-3 p-4  rounded-lg border ${
+        isSelected ? "bg-sky-950 border-sky-900" : "bg-gray-100 border-gray-300"
+      }`}
+    >
+    
+      <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-900"}`}>
+        {item.label}
+      </Text>
+    </TouchableOpacity>
+    </View>
     );
   };
+
 
   // handle submit
   const token = useSelector((state) => state.auth.token);
@@ -391,6 +362,7 @@ export default function Index() {
                   />
                 </View>
 
+
                 <View className="mb-10">
                   <Text className="text-lg font-medium mb-4">Furnish Type</Text>
 
@@ -416,7 +388,7 @@ export default function Index() {
                 <View className="mt-10">
                   {images.length === 0 && (
                     <TouchableOpacity
-                      className="border border-gray-400 bg-white p-4 rounded-2xl shadow-lg flex items-center justify-center"
+                      className="border border-gray-400 bg-white p-4 rounded-2xl  flex items-center justify-center"
                       onPress={() => handleImagePick()}
                     >
                       <Text className="text-sky-500">Upload Property Images</Text>
@@ -455,7 +427,6 @@ export default function Index() {
 
 
                 </View>
-
               </View>
 
             </View>

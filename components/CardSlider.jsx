@@ -99,7 +99,8 @@ const CardSlider = () => {
   );
 
   return (
-    <View className="py-3 px-4">
+    <View className="flex-1 py-3 px-4">
+
       {loading ? (
         <View className="flex-1 justify-center items-center mt-5">
           <ActivityIndicator size="large" color="#000" />
@@ -112,7 +113,7 @@ const CardSlider = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 10 }}
           refreshing={loading}
-          onRefresh={getContractors}
+          onRefresh={getContractors}  
         />
       )}
 

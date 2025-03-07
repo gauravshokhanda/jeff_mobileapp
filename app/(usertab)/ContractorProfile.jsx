@@ -83,7 +83,6 @@ const ContractorProfile = () => {
           <Text className="font-bold text-xl text-sky-950 tracking-widest">Portfolio</Text>
           <Ionicons name="images" size={30} color="gray" />
         </View>
-
         {contractor.portfolio.length > 0 ? (
           <FlatList
             data={contractor.portfolio}
