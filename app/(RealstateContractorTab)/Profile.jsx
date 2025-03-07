@@ -52,6 +52,7 @@ export default function Index() {
       <LinearGradient
         colors={['#082f49', 'transparent']}
         style={{ height: screenHeight * 0.4 }}
+        className="h-[40%]"
       >
         <View className="mt-10 px-4 gap-2 flex-row items-center">
           <Image
