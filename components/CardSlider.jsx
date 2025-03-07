@@ -28,7 +28,7 @@ const CardSlider = () => {
 
       setContractors(formattedData);
     } catch (error) {
-      console.log("Error fetching contractors:", error);
+      console.log("Error fetching contractor:", error);
     } finally {
       setLoading(false);
     }
