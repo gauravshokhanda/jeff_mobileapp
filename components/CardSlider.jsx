@@ -20,6 +20,8 @@ const CardSlider = () => {
         id: item.id.toString(),
         image: item.image ? { uri: `${baseUrl}${item.image}` } : null,
         name: item.name,
+        email: item.email,
+        address: item.address,
         title: item.company_name,
         description: item.description,
         profileLink: `${baseUrl}${item.upload_organisation}`,
@@ -74,7 +76,8 @@ const CardSlider = () => {
 
       {/* Contractor Info */}
       <Text className="text-lg font-semibold text-gray-900 text-center">{item.name}</Text>
-      <Text className="text-sm text-gray-500 text-center">{item.title}</Text>
+      <Text className="text-sm text-black text-center">{item.email}</Text>
+      <Text className="text-sm text-black text-center">{item.address}</Text>
       <Text className="text-xs text-gray-600 text-center mt-1 mb-3" numberOfLines={2}>
         {item?.description?.length > 50 ? `${item.description.substring(0, 50)}...` : item.description}
       </Text>
