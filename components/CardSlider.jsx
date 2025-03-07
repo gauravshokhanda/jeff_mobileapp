@@ -124,7 +124,7 @@ const CardSlider = () => {
             onPress={() => router.push("ContractorLists")}
             className="bg-blue-600 rounded-full py-3 px-8 items-center"
           >
-            <Text className="text-white font-bold">View All Contractors</Text>
+            <Text className="text-white font-bold">View All Contractorss</Text>
           </TouchableOpacity>
         </View>
       )}
