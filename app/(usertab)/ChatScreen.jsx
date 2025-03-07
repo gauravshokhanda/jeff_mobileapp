@@ -57,10 +57,6 @@ const ChatScreen = () => {
 
           if (propertyResponse.status === 200) {
             // console.log("API working");
-            // console.log(propertyResponse.data);
-
-            const propertyData = propertyResponse.data.property;
-            setProperty(propertyData);
 
             setDraftAttachment({
               id: propertyData.id,

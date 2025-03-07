@@ -23,9 +23,6 @@ export default function Index() {
     { id: "12", name: "Michael Johnson", lastMessage: "Can we reschedule?", image: "https://randomuser.me/api/portraits/men/3.jpg" },
   ]);
 
-
-
-
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
 

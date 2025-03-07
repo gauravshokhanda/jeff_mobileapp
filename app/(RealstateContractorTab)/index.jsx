@@ -188,12 +188,10 @@ export default function Index() {
         style={{ height: screenHeight * 0.4 }}
       >
         <View className="mt-10 px-4 gap-2 flex-row items-center">
-          <TouchableOpacity onPress={()=>router.push('EstateContractorProfile')}>
           <Image
             source={{ uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg" }}
             className="w-14 h-14 border-2 border-white rounded-full"
           />
-          </TouchableOpacity>
           <View className="gap-1">
             <Text className="text-2xl font-semibold text-white">
               Welcome! {userName?.name || "User"}
