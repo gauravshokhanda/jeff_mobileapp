@@ -1,34 +1,34 @@
-import * as Notifications from "expo-notifications";
-import { useEffect } from "react";
-import { Platform } from "react-native";
-import firebaseApp from "./firebaseConfig"; // Import Firebase
-import { getApps, getApp, initializeApp } from "firebase/app";
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { Stack } from "expo-router";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import { store, persistor } from "../redux/store";
+import '../global.css';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from '../redux/store';
 import React from "react";
 import '../global.css';
 
 
 
-export default function _layout() {
-
-
-  return (
+export default function RootLayout() {
+  return <>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" options={{ title: "Get Started", headerShown: false }} />
-          <Stack.Screen name="SignIn" options={{ headerShown: false }} />
-          <Stack.Screen name="SignUp/index" options={{ title: "Sign up" }} />
-          <Stack.Screen name="ContractorProfileComplete/index" options={{ title: "ContractorProfileComplete" }} />
-          <Stack.Screen name="RealstateSelector/index" options={{ title: "RealstateSelector" }} />
-          <Stack.Screen name="(usertab)" />
-          <Stack.Screen name="(generalContractorTab)" />
-          <Stack.Screen name="(RealstateContractorTab)" />
+          <Stack.Screen name="index" options={{ title: 'Get Started', headerShown: false }} />
+          <Stack.Screen
+            name="SignIn"
+            options={{ headerShown: false }}
+            
+            />
+          <Stack.Screen name="SignUp/index" options={{ title: 'Sign up', headerShown: false }} />
+          <Stack.Screen name="ContractorProfileComplete/index" options={{ title: 'ContractorProfileComplete', headerShown: false }} />
+          <Stack.Screen name="RealstateSelector/index" options={{ title: 'RealstateSelector', headerShown: false }} />
+          <Stack.Screen name='(usertab)' options={{ headerShown: false }} />
+          <Stack.Screen name='(generalContractorTab)' options={{ headerShown: false }} />
+          <Stack.Screen name='(RealstateContractorTab)' options={{ headerShown: false }} />
         </Stack>
       </PersistGate>
     </Provider>
-  );
+  </>;
 }
