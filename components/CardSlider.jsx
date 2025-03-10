@@ -41,7 +41,7 @@ const CardSlider = () => {
   }, []);
 
   const handleVisitProfile = (id) => {
-    router.push(`/ContractorProfile?id=${id}`);
+    router.push(`/ContractorProfile?user_id=${id}`);
   };
 
   const handleCall = (phone) => {
