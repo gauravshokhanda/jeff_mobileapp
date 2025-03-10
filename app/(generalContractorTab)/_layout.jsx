@@ -24,16 +24,24 @@ export default function TabRoot() {
   // Handle back button behavior (prevent exiting the app)
   useFocusEffect(
     useCallback(() => {
-      const onBackPress = () => true; // Disable back button default behavior
-
+      const onBackPress = () => {
+        if (router.canGoBack()) {
+          router.back();
+          return true;
+        }
+        return false; // Allow default behavior (exit app)
+      };
+  
       BackHandler.addEventListener("hardwareBackPress", onBackPress);
       return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress);
     }, [])
   );
+  
 
   return (
     <ProtectedRoute>
       <Tabs
+      backBehavior="history"
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
