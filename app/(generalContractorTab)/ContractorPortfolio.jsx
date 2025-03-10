@@ -18,6 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AddPortfolioModal from "../../components/addPortfolioModal";
 import * as ImagePicker from "expo-image-picker";
+import {  useRouter } from "expo-router";
 
 const ProfileCard = () => {
   const token = useSelector((state) => state.auth.token);
@@ -30,6 +31,7 @@ const ProfileCard = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [organizationImage, setOrganizationImage] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const router = useRouter();
   const [pagination, setPagination] = useState({
     currentPage: 1,
     lastPage: null,
@@ -272,7 +274,7 @@ const ProfileCard = () => {
             />
             <TouchableOpacity
               className="absolute top-4 left-4 bg-white p-2 rounded-full shadow"
-              onPress={() => navigation.goBack()}
+              onPress={() => router.back()}
             >
               <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
