@@ -88,7 +88,7 @@ android {
 
     namespace 'com.android.ac5dconstruction'
     defaultConfig {
-        applicationId 'com.android.ac5dconstruction'
+        applicationId 'com.ac5dconstruction'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -101,15 +101,19 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+         release {
+            storeFile file(System.getenv("MYAPP_RELEASE_STORE_FILE") ?: "my-release-key.jks")
+            storePassword System.getenv("MYAPP_RELEASE_STORE_PASSWORD") ?: "gaurav@2001"
+            keyAlias System.getenv("MYAPP_RELEASE_KEY_ALIAS") ?: "my-key-alias"
+            keyPassword System.getenv("MYAPP_RELEASE_KEY_PASSWORD") ?: "gaurav@2001"
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release  // <-- Fix: Use release signing, not debug!
             shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
