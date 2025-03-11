@@ -13,16 +13,18 @@ import {
   Text,
   SafeAreaView,
   Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import { setLogin } from "../redux/slice/authSlice";
 import { API } from "../config/apiConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AuthInput from "../components/AuthInput";
-import { LinearGradient } from 'expo-linear-gradient';
-import fetchUserData from './utils/fetchUserData';
+import { LinearGradient } from "expo-linear-gradient";
+import fetchUserData from "./utils/fetchUserData";
 
 export default function SignIn() {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+
   const postContentWidth = screenWidth * 0.92;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,7 +41,7 @@ export default function SignIn() {
       setIsCheckingAuth(true);
       try {
         // Check for persisted token
-        const storedData = await AsyncStorage.getItem('persist:root');
+        const storedData = await AsyncStorage.getItem("persist:root");
         if (!storedData || !token || !user?.id) {
           setIsCheckingAuth(false);
           return;
@@ -55,9 +57,17 @@ export default function SignIn() {
         if (isAuthenticated && token && userData?.data) {
           const { role, id } = user;
           if (role === 3) {
-            router.replace(userData.data.is_profile_complete ? "/(generalContractorTab)" : "/ContractorProfileComplete");
+            router.replace(
+              userData.data.is_profile_complete
+                ? "/(generalContractorTab)"
+                : "/ContractorProfileComplete"
+            );
           } else if (role === 4) {
-            router.replace(userData.data.is_profile_complete ? "/(RealstateContractorTab)" : "/RealstateSelector");
+            router.replace(
+              userData.data.is_profile_complete
+                ? "/(RealstateContractorTab)"
+                : "/RealstateSelector"
+            );
           } else {
             router.replace("/(usertab)");
           }
@@ -92,9 +102,15 @@ export default function SignIn() {
 
       // Navigate based on role and profile completion
       if (user.role === 3) {
-        router.replace(profileComplete ? "/(generalContractorTab)" : "/ContractorProfileComplete");
+        router.replace(
+          profileComplete
+            ? "/(generalContractorTab)"
+            : "/ContractorProfileComplete"
+        );
       } else if (user.role === 4) {
-        router.replace(profileComplete ? "/(RealstateContractorTab)" : "/RealstateSelector");
+        router.replace(
+          profileComplete ? "/(RealstateContractorTab)" : "/RealstateSelector"
+        );
       } else {
         router.replace("/(usertab)");
       }
@@ -125,7 +141,10 @@ export default function SignIn() {
   // Render sign-in form only if auth check is complete and user is not authenticated
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
-      <LinearGradient colors={['#082f49', 'transparent']} style={{ height: screenHeight * 0.4 }} />
+      <LinearGradient
+        colors={["#082f49", "transparent"]}
+        style={{ height: screenHeight * 0.4 }}
+      />
       <View
         className="flex-1 rounded-3xl bg-white"
         style={{
@@ -135,50 +154,88 @@ export default function SignIn() {
         }}
       >
         <KeyboardAvoidingView
-          className="flex-1"
           behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1"
         >
-          <View className="flex-1 rounded-3xl">
-            <View className="items-center justify-center relative">
+          <ScrollView>
+            <View className="items-center">
               <View
-                style={{ height: screenHeight * 0.2, width: screenWidth * 0.4, position: "absolute" }}
-                className="rounded-full border-4 border-sky-950 overflow-hidden items-center justify-center"
+                style={{
+                  width: screenWidth * 0.38,
+                  height: screenWidth * 0.38,
+                  borderRadius: screenWidth * 0.19, // Ensures always a perfect circle
+                  borderWidth: 4,
+                  borderColor: "#082f49",
+                  overflow: "hidden",
+                  marginTop: screenHeight * 0.01,
+                }}
+                className="items-center justify-center"
               >
-                <Image source={require("../assets/images/AC5D_Logo.jpg")} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />
+                <Image
+                  source={require("../assets/images/AC5D_Logo.jpg")}
+                  style={{ width: "100%", height: "100%", resizeMode: "cover" }}
+                />
               </View>
             </View>
-            <View className="w-full max-w-md p-12" style={{ marginTop: screenHeight * 0.12 }}>
-              <View className="w-full space-y-4">
-                <AuthInput placeholder="Email Address" secureTextEntry={false} onChangeText={setEmail} value={email} />
-                <AuthInput placeholder="Password" secureTextEntry={true} onChangeText={setPassword} value={password} />
-              </View>
-              <View className="items-center justify-center mt-6">
-                <TouchableOpacity
-                  onPress={handleSignIn}
-                  className="text-center rounded-3xl bg-sky-950 px-5 py-3 w-full max-w-xs"
+            <View
+              className="flex-1 px-6"
+              style={{ marginTop: screenHeight * 0.03 }}
+            >
+              <AuthInput
+                placeholder="Email Address"
+                secureTextEntry={false}
+                onChangeText={setEmail}
+                value={email}
+              />
+              <AuthInput
+                placeholder="Password"
+                secureTextEntry={true}
+                onChangeText={setPassword}
+                value={password}
+              />
+              <TouchableOpacity
+                onPress={handleSignIn}
+                className="rounded-2xl bg-sky-950 items-center"
+                style={{
+                  paddingVertical: screenHeight * 0.015,
+                  fontSize: screenWidth * 0.04,
+                  borderRadius: screenWidth * 0.03,
+                  marginTop: screenHeight * 0.03,
+                }}
+              >
+                <Text
+                  className="text-white font-bold"
+                  style={{ fontSize: screenHeight * 0.02 }}
                 >
-                  <Text className="text-center text-white text-lg">
-                    SIGN IN
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View className="w-full max-w-md mt-10 items-center">
-              <View className="items-center pb-2">
-                <Link href={""} className="text-slate-500">
-                  Forgot Your Password
-                </Link>
-              </View>
-              <View className="flex-row items-center justify-center">
-                <Text className="text-gray-700 text-lg">
-                  Already Have an Account?
+                  SIGN IN
                 </Text>
-                <Link className="text-blue-600 text-lg pl-1" href={"/SignUp"}>
-                  Sign up
+              </TouchableOpacity>
+              <View className="items-center mt-8">
+                <Link
+                  href={""}
+                  className="text-gray-500 font-medium"
+                  style={{ fontSize: screenHeight * 0.02 }}
+                >
+                  Forgot Your Password ?
                 </Link>
+                <View className="flex-row mt-8">
+                  <Text
+                    style={{ fontSize: screenHeight * 0.018 }}
+                    className="text-gray-700 text-lg"
+                  >
+                    Don’t have an account?
+                  </Text>
+                  <Link
+                    style={{ fontSize: screenHeight * 0.018 }}
+                    className="text-blue-600 text-lg pl-1"
+                    href={"/SignUp"}
+                  >
+                    Sign up
+                  </Link>
+                </View>
               </View>
             </View>
-          </View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </View>
     </SafeAreaView>
