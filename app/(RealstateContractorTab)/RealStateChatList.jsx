@@ -74,18 +74,6 @@ const ChatListScreen = ({ navigation }) => {
     },
     {
       id: "10",
-      name: "John Doe",
-      lastMessage: "Hey, how are you?",
-      image: "https://randomuser.me/api/portraits/men/1.jpg",
-    },
-    {
-      id: "11",
-      name: "Alice Smith",
-      lastMessage: "See you tomorrow!",
-      image: "https://randomuser.me/api/portraits/women/2.jpg",
-    },
-    {
-      id: "12",
       name: "Michael Johnson",
       lastMessage: "Can we reschedule?",
       image: "https://randomuser.me/api/portraits/men/3.jpg",
@@ -100,16 +88,22 @@ const ChatListScreen = ({ navigation }) => {
       >
         {/* Header */}
         <View className="p-4 flex-row justify-center items-center">
-          <Text className="text-white text-2xl mt-5 font-bold ">Chats</Text>
+          <Text className="text-white text-2xl mt-5 font-bold">Chats</Text>
         </View>
-        <View className="mx-5 mt-5 items-end">
-          <View className="bg-gray-100 h-12 rounded-full px-3 flex-row items-center justify-between">
+        <View className="mx-5" style={{ marginTop: screenHeight * 0.02 }}>
+          <View
+            className="bg-gray-100 h-12 rounded-full px-3 flex-row items-center justify-between"
+            style={{
+              paddingHorizontal: screenWidth * 0.04,
+              height: screenHeight * 0.06,
+            }}
+          >
             <Ionicons name="search" size={18} color="black" />
             <TextInput
               placeholder="Search"
               placeholderTextColor={"gray"}
-              style={{ fontSize: 14 }}
-              className="flex-1 ml-5 text-lg"
+              style={{ fontSize: 14, flex: 1, marginLeft: screenWidth * 0.03 }}
+              className="text-lg"
             />
             <Ionicons name="filter-sharp" size={26} color="black" />
           </View>
@@ -118,10 +112,11 @@ const ChatListScreen = ({ navigation }) => {
       <View
         className="flex-1 rounded-3xl bg-white"
         style={{
-          marginTop: -screenHeight * 0.23,
+          marginTop: -screenHeight * 0.18,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
           overflow: "hidden",
+          paddingTop: screenHeight * 0.02, // Added padding to avoid overlap
         }}
       >
         <View className="flex-1 mt-3">
@@ -160,4 +155,5 @@ const ChatListScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
+
 export default ChatListScreen;

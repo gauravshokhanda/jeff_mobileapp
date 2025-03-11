@@ -10,7 +10,7 @@ import {
 import axios from "axios";
 import { useSelector } from "react-redux";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import {  useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -63,41 +63,50 @@ export default function EstateContractorProfile() {
 
       {/* User Info */}
       <View className="bg-gray-300 h-full rounded-t-full">
-      <View className="items-center mt-6">
-        <View
-          style={{ width: width * 0.3, height: width * 0.3, borderRadius: (width * 0.3) / 2 }}
-          className="bg-sky-950 justify-center items-center"
-        >
-          <Text className="text-white text-4xl font-bold">
-            {userData?.name ? userData.name.charAt(0).toUpperCase() : "N"}
-          </Text>
-        </View>
-        <Text className="text-lg font-semibold text-sky-950 mt-2">{userData?.name || "N/A"}</Text>
-        <Text className="text-gray-600">{userData?.email}</Text>
-      </View>
-
-      {/* Details Section */}
-      <View className="mt-6  p-6 rounded-lg ">
-        <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-sky-950 font-semibold text-lg">Details</Text>
-          <TouchableOpacity>
-            <Ionicons name="create-outline" size={24} color="#0369A1" />
-          </TouchableOpacity>
-        </View>
-
-        {[
-          { label: "Company Name", value: userData?.company_name },
-          { label: "Address", value: userData?.address },
-          { label: "City", value: userData?.city },
-          { label: "Phone Number", value: userData?.number },
-          { label: "Description", value: userData?.description },
-        ].map((item, index) => (
-          <View key={index} className="bg-sky-950 p-4 rounded-lg shadow-md mb-2">
-            <Text className="text-white font-semibold">{item.label}:</Text>
-            <Text className="text-white">{item.value || "N/A"}</Text>
+        <View className="items-center mt-6">
+          <View
+            style={{
+              width: width * 0.3,
+              height: width * 0.3,
+              borderRadius: (width * 0.3) / 2,
+            }}
+            className="bg-sky-950 justify-center items-center"
+          >
+            <Text className="text-white text-4xl font-bold">
+              {userData?.name ? userData.name.charAt(0).toUpperCase() : "N"}
+            </Text>
           </View>
-        ))}
-      </View>
+          <Text className="text-lg font-semibold text-sky-950 mt-2">
+            {userData?.name || "N/A"}
+          </Text>
+          <Text className="text-gray-600">{userData?.email}</Text>
+        </View>
+
+        {/* Details Section */}
+        <View className="mt-6  p-6 rounded-lg ">
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-sky-950 font-semibold text-lg">Details</Text>
+            <TouchableOpacity>
+              <Ionicons name="create-outline" size={24} color="#0369A1" />
+            </TouchableOpacity>
+          </View>
+
+          {[
+            { label: "Company Name", value: userData?.company_name },
+            { label: "Address", value: userData?.address },
+            { label: "City", value: userData?.city },
+            { label: "Phone Number", value: userData?.number },
+            { label: "Description", value: userData?.description },
+          ].map((item, index) => (
+            <View
+              key={index}
+              className="bg-sky-950 p-4 rounded-lg shadow-md mb-2"
+            >
+              <Text className="text-white font-semibold">{item.label}:</Text>
+              <Text className="text-white">{item.value || "N/A"}</Text>
+            </View>
+          ))}
+        </View>
       </View>
     </SafeAreaView>
   );

@@ -234,7 +234,9 @@ export default function Listing() {
             <TouchableOpacity>
               <Ionicons name="call" size={30} color="gray" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>router.push(`ChatScreen?id=${item.user_id}`)}>
+            <TouchableOpacity
+              onPress={() => router.push(`ChatScreen?id=${item.user_id}`)}
+            >
               <Ionicons name="chatbubble" size={30} color="gray" />
             </TouchableOpacity>
           </View>
@@ -245,75 +247,89 @@ export default function Listing() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
-      <LinearGradient
-        colors={["#082f49", "transparent"]}
-        style={{ height: screenHeight * 0.4 }}
-      >
-        <View className="mt-8 px-4 ">
-          <Text className="text-2xl font-semibold text-white">
-            Property Listing
-          </Text>
-        </View>
-        <View className="mx-5 mt-5 items-end">
-          <View className="bg-gray-100  h-12 mr-5 rounded-full px-3 flex-row items-center justify-between ">
-            <Ionicons name="search" size={18} color="black" />
-            <TextInput
-              placeholder="Search by City"
-              placeholderTextColor={"gray"}
-              style={{ fontSize: 14 }}
-              className="flex-1 ml-5 text-lg "
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-            <Ionicons name="filter-sharp" size={26} color="black" />
-          </View>
-        </View>
-      </LinearGradient>
+    <LinearGradient
+      colors={["#082f49", "transparent"]}
+      style={{ height: screenHeight * 0.4 }}
+    >
+      {/* Header */}
+      <View className="mt-8 px-4">
+        <Text className="text-2xl font-semibold text-white">
+          Property Listing
+        </Text>
+      </View>
 
-      <View
-        className="rounded-3xl"
-        style={{
-          position: "absolute",
-          top: screenHeight * 0.2,
-          width: postContentWidth,
-          height: screenHeight * 0.75,
-          left: (screenWidth - postContentWidth) / 2,
-          backgroundColor: "white",
-        }}
-      >
-        <View className="flex-1 m-5">
-          <View className="p-3 rounded-lg">
-            <FlatList
-              data={propertyTypes}
-              keyExtractor={(item) => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              renderItem={renderPropertyTypeItem}
-              contentContainerStyle={{ flexGrow: 1, gap: 10 }}
-            />
-          </View>
-          <View className="flex-1 mt-2 mb-3">
-            {loading ? (
-              <ActivityIndicator size="large" color="#082f49" />
-            ) : properties.length === 0 ? (
-              <View className="flex-1 justify-center items-center">
-                <Text className="text-gray-500 text-lg font-semibold">
-                  No Listings Found
-                </Text>
-              </View>
-            ) : (
-              <FlatList
-                showsVerticalScrollIndicator={false}
-                data={properties}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={renderListening}
-                onEndReached={loadMore}
-                onEndReachedThreshold={0.5}
-              />
-            )}
-          </View>
+      {/* Search Bar */}
+      <View className="mx-5" style={{ marginTop: screenHeight * 0.02 }}>
+        <View
+          className="bg-gray-100 rounded-full flex-row items-center justify-between"
+          style={{
+            height: screenHeight * 0.06,
+            paddingHorizontal: screenWidth * 0.04,
+          }}
+        >
+          <Ionicons name="search" size={18} color="black" />
+          <TextInput
+            placeholder="Search by City"
+            placeholderTextColor={"gray"}
+            className="flex-1 text-lg"
+            style={{ fontSize: 14, marginLeft: screenWidth * 0.03 }}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          <Ionicons name="filter-sharp" size={26} color="black" />
         </View>
       </View>
-    </SafeAreaView>
+    </LinearGradient>
+
+    {/* Content Section */}
+    <View
+      className="rounded-3xl"
+      style={{
+        position: "absolute",
+        top: screenHeight * 0.22, // Adjusted to prevent overlap
+        width: postContentWidth,
+        height: screenHeight * 0.75,
+        left: (screenWidth - postContentWidth) / 2,
+        backgroundColor: "white",
+        paddingTop: screenHeight * 0.02, // Added extra spacing
+      }}
+    >
+      <View className="flex-1 m-5">
+        {/* Property Types */}
+        <View className="p-3 rounded-lg">
+          <FlatList
+            data={propertyTypes}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            renderItem={renderPropertyTypeItem}
+            contentContainerStyle={{ flexGrow: 1, gap: 10 }}
+          />
+        </View>
+
+        {/* Property Listings */}
+        <View className="flex-1 mt-2 mb-3">
+          {loading ? (
+            <ActivityIndicator size="large" color="#082f49" />
+          ) : properties.length === 0 ? (
+            <View className="flex-1 justify-center items-center">
+              <Text className="text-gray-500 text-lg font-semibold">
+                No Listings Found
+              </Text>
+            </View>
+          ) : (
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              data={properties}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={renderListening}
+              onEndReached={loadMore}
+              onEndReachedThreshold={0.5}
+            />
+          )}
+        </View>
+      </View>
+    </View>
+  </SafeAreaView>
   );
 }
