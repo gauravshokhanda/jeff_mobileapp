@@ -5,6 +5,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
+import { baseUrl } from "../../config/apiConfig";
 
 const ChatScreen = () => {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -58,7 +59,7 @@ const ChatScreen = () => {
           </TouchableOpacity>
           {user ? (
             <>
-              <Image source={{ uri: user.profile_photo || "https://via.placeholder.com/50" }} className="w-10 h-10 rounded-full mr-3" />
+              <Image source={{ uri: baseUrl + user.image || "https://via.placeholder.com/50" }} className="w-10 h-10 rounded-full mr-3" />
               <Text className="text-white text-lg font-bold">{user.name}</Text>
             </>
           ) : (

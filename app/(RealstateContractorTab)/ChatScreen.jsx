@@ -13,7 +13,7 @@ import { Ionicons, Entypo } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import API from "../../config/apiConfig";
+import API, { baseUrl } from "../../config/apiConfig";
 
 const ChatScreen = () => {
   const { user_id } = useLocalSearchParams();
@@ -72,9 +72,8 @@ const ChatScreen = () => {
       className="flex-1 bg-gray-100"
     >
       <View
-        className={`bg-sky-950  flex-row items-center p-4 ${
-          Platform.OS === "ios" ? "mt-12" : ""
-        }`}
+        className={`bg-sky-950  flex-row items-center p-4 ${Platform.OS === "ios" ? "mt-12" : ""
+          }`}
       >
         <TouchableOpacity onPress={() => router.back()} className="mr-3">
           <Ionicons name="arrow-back" size={28} color="white" />
@@ -83,7 +82,7 @@ const ChatScreen = () => {
           <>
             <Image
               source={{
-                uri: user.profile_photo || "https://via.placeholder.com/50",
+                uri: baseUrl + user.image || "https://via.placeholder.com/50",
               }}
               className="w-10 h-10 rounded-full mr-3"
             />
@@ -100,9 +99,8 @@ const ChatScreen = () => {
         inverted // Messages start from bottom
         renderItem={({ item }) => (
           <View
-            className={`flex-row items-end mx-3 my-2 ${
-              item.sender === "me" ? "self-end flex-row-reverse" : "self-start"
-            }`}
+            className={`flex-row items-end mx-3 my-2 ${item.sender === "me" ? "self-end flex-row-reverse" : "self-start"
+              }`}
           >
             <Image
               source={{
@@ -114,16 +112,14 @@ const ChatScreen = () => {
               className="w-8 h-8 rounded-full mx-2"
             />
             <View
-              className={`p-3 max-w-[75%] rounded-lg ${
-                item.sender === "me"
+              className={`p-3 max-w-[75%] rounded-lg ${item.sender === "me"
                   ? "bg-sky-950"
                   : "bg-white border border-gray-300"
-              }`}
+                }`}
             >
               <Text
-                className={`${
-                  item.sender === "me" ? "text-white" : "text-gray-900"
-                } text-lg`}
+                className={`${item.sender === "me" ? "text-white" : "text-gray-900"
+                  } text-lg`}
               >
                 {item.text}
               </Text>
