@@ -12,13 +12,13 @@ import {
   Alert,
   Button,
 } from "react-native";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AddPortfolioModal from "../../components/addPortfolioModal";
 import * as ImagePicker from "expo-image-picker";
-import {  useRouter } from "expo-router";
+import { useRouter } from "expo-router";
+import { API } from "../../config/apiConfig";
 
 const ProfileCard = () => {
   const token = useSelector((state) => state.auth.token);
@@ -42,8 +42,8 @@ const ProfileCard = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.post(
-          "https://g32.iamdeveloper.in/api/user-detail",
+        const response = await API.post(
+          "user-detail",
           {},
           {
             headers: {
@@ -75,8 +75,8 @@ const ProfileCard = () => {
     try {
       setPagination((prev) => ({ ...prev, fetching: true }));
 
-      const response = await axios.get(
-        `https://g32.iamdeveloper.in/api/portfolios/contractor/${userData.id}?page=${page}`,
+      const response = await API.get(
+        `portfolios/contractor/${userData.id}?page=${page}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -116,8 +116,8 @@ const ProfileCard = () => {
 
       console.log("Form Data being sent:", formData);
 
-      const response = await axios.post(
-        "https://g32.iamdeveloper.in/api/portfolio/store",
+      const response = await API.post(
+        "portfolio/store",
         formData,
         {
           headers: {
@@ -232,8 +232,8 @@ const ProfileCard = () => {
         formData.append("portfolio", JSON.stringify(userData.portfolio));
       }
 
-      const response = await axios.post(
-        `https://g32.iamdeveloper.in/api/contractors/update/${userData.id}`,
+      const response = await API.post(
+        `contractors/update/${userData.id}`,
         formData,
         {
           headers: {
@@ -298,10 +298,10 @@ const ProfileCard = () => {
               </TouchableOpacity>
             </View>
             <Text className="text-gray-600 mt-2">{userData.name}</Text>
-            <Text className="text-gray-600">{userData.email}</Text>
-            <Text className="text-gray-600">{userData.number}</Text>
+            <Text className="text-gray-600">{userData.email ? userData.email : ""}</Text>
+            <Text className="text-gray-600">{userData.number ? userData.number : ""}</Text>
             <Text className="text-gray-600">
-              {userData.address}, {userData.city}
+              {userData.address ? userData.address : ""}, {userData.city ? userData.city : ""}
             </Text>
             <Text className="text-gray-600 font-semibold mt-2">
               {userData.company_name}
@@ -330,9 +330,8 @@ const ProfileCard = () => {
               >
                 <Image
                   source={{
-                    uri: `https://g32.iamdeveloper.in/public/${
-                      JSON.parse(item.portfolio_images)[0]
-                    }`,
+                    uri: `https://g32.iamdeveloper.in/public/${JSON.parse(item.portfolio_images)[0]
+                      }`,
                   }}
                   className="w-24 h-24 rounded-lg mr-4"
                   resizeMode="cover"
@@ -490,7 +489,7 @@ const ProfileCard = () => {
             {/* Upload Organization Image */}
             <View className="mb-4 items-center">
               {editableData.upload_organisation?.uri ||
-              userData?.upload_organisation ? (
+                userData?.upload_organisation ? (
                 <Image
                   source={{
                     uri:

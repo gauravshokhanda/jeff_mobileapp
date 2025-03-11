@@ -17,7 +17,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
-import { API } from "../../config/apiConfig";
+import { API, baseUrl } from "../../config/apiConfig";
 
 const ChatScreen = () => {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -42,7 +42,7 @@ const ChatScreen = () => {
           const userResponse = await API.get(`users/listing/${user_id}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          // console.log("userResponse", userResponse.data.data)
+          console.log("userResponse", userResponse.data.data)
 
           if (userResponse.status === 200) {
             setUser(userResponse.data.data);
@@ -50,13 +50,13 @@ const ChatScreen = () => {
         }
 
         if (id) {
-          const propertyResponse = await axios.get(
-            `https://g32.iamdeveloper.in/api/realstate-property/${id}`,
+          const propertyResponse = await API.get(
+            `realstate-property/${id}`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
 
           if (propertyResponse.status === 200) {
-            // console.log("API working");
+            console.log("API working");
 
             setDraftAttachment({
               id: propertyData.id,
@@ -118,7 +118,7 @@ const ChatScreen = () => {
             <>
               <Image
                 source={{
-                  uri: user.profile_photo || "https://via.placeholder.com/50",
+                  uri: baseUrl + user.image || "https://via.placeholder.com/50",
                 }}
                 className="w-10 h-10 rounded-full mr-3"
               />
@@ -150,11 +150,10 @@ const ChatScreen = () => {
             inverted
             renderItem={({ item }) => (
               <View
-                className={`flex-row items-end mx-3 my-2 ${
-                  item.sender === "me"
-                    ? "self-end flex-row-reverse"
-                    : "self-start"
-                }`}
+                className={`flex-row items-end mx-3 my-2 ${item.sender === "me"
+                  ? "self-end flex-row-reverse"
+                  : "self-start"
+                  }`}
               >
                 <Image
                   source={{
@@ -162,21 +161,19 @@ const ChatScreen = () => {
                       item.sender === "me"
                         ? "https://randomuser.me/api/portraits/men/2.jpg"
                         : user?.profile_photo ||
-                          "https://via.placeholder.com/50",
+                        "https://via.placeholder.com/50",
                   }}
                   className="w-8 h-8 rounded-full mx-1"
                 />
                 <View
-                  className={`p-3  rounded-lg ${
-                    item.sender === "me"
-                      ? "bg-sky-950 self-end"
-                      : "bg-white border border-gray-300 self-start"
-                  }`}
+                  className={`p-3  rounded-lg ${item.sender === "me"
+                    ? "bg-sky-950 self-end"
+                    : "bg-white border border-gray-300 self-start"
+                    }`}
                 >
                   <Text
-                    className={`${
-                      item.sender === "me" ? "text-white" : "text-gray-900"
-                    } text-lg`}
+                    className={`${item.sender === "me" ? "text-white" : "text-gray-900"
+                      } text-lg`}
                   >
                     {item.text}
                   </Text>
