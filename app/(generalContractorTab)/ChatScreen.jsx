@@ -80,9 +80,6 @@ const ChatScreen = () => {
             marginTop: -screenHeight * 0.25,
           }}
         >
-
-
-
           <FlatList
             data={messages}
             keyExtractor={(item) => item.id}

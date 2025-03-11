@@ -130,7 +130,7 @@ const DashboardScreen = () => {
             <Text className="text-2xl font-semibold text-white">
               Welcome! {user?.name || "User"}
             </Text>
-            <Text className="text-gray-400">📍 Florida, USA</Text>
+            {/* <Text className="text-gray-400">📍 Florida, USA</Text> */}
           </View>
         </View>
       </LinearGradient>
