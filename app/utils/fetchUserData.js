@@ -13,7 +13,7 @@ export default async function fetchUserData( token, userId,setLoading) {
         return response.data;
     }
     catch (error) {
-        console.error("Error while fetching userData:", error);
+        console.log("Error while fetching userData:", error);
         return null;
     }
     finally{
