@@ -138,6 +138,7 @@ export default function ContractorProfileComplete() {
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{ flex: 1, backgroundColor: "white" }}
+      className="mt-10"
     >
       {/* Blur Overlay */}
       {modalVisible && (
@@ -162,7 +163,7 @@ export default function ContractorProfileComplete() {
           <TouchableOpacity
             onPress={() => pickImage(setProfileImage)}
             activeOpacity={0.7}
-            className="mt-4 size-32 rounded-full overflow-hidden shadow-lg"
+            className="mt-4 flex justify-center items-center size-32 rounded-full overflow-hidden shadow-lg"
 
           >
             {profileImage ? (
