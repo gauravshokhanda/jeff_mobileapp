@@ -230,21 +230,24 @@ export default function Index() {
           </View>
         </View>
 
-        <View className="mt-10 items-center px-5">
+        <View className="mx-5" style={{ marginTop: screenHeight * 0.02 }}>
           <View
-            className="bg-gray-100 h-12 rounded-full p-3 flex-row items-center justify-between"
+            className="bg-gray-100 rounded-full flex-row items-center justify-between"
             style={{
-              marginBottom: screenHeight * 0.05,
-              width: screenWidth * 0.9, 
+              height: screenHeight * 0.06,
+              paddingHorizontal: screenWidth * 0.04,
             }}
           >
             <Ionicons name="search" size={18} color="black" />
             <TextInput
               placeholder="Search"
               placeholderTextColor={"gray"}
-              style={{ fontSize: 14 }}
-              className="flex-1 ml-2 text-lg"
+              className="flex-1 text-lg"
+              style={{ fontSize: 18, marginLeft: screenWidth * 0.03 }}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
             />
+           
           </View>
         </View>
       </LinearGradient>
