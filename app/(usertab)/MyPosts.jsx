@@ -9,7 +9,7 @@ import {
   Platform,
   TextInput,
   SafeAreaView,
-  Modal
+  Modal,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
@@ -17,16 +17,12 @@ import { API, baseUrl } from "../../config/apiConfig";
 import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import axios from "axios";
-import { LinearGradient } from 'expo-linear-gradient';
-import SortingModal from "../../components/SortingModal"
+import { LinearGradient } from "expo-linear-gradient";
+import SortingModal from "../../components/SortingModal";
 import { useWindowDimensions } from "react-native";
 
-
-
-
-
 export default function MyPosts() {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
 
   const userId = useSelector((state) => state.auth.user.id);
@@ -40,7 +36,6 @@ export default function MyPosts() {
   const flatListRef = useRef(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [sortOrder, setSortOrder] = useState("");
-
 
   const [scrollOffset, setScrollOffset] = useState(0);
 
@@ -63,7 +58,7 @@ export default function MyPosts() {
     setSortOrder(order);
     setModalVisible(false);
     setCurrentPage(1);
-    fetchPosts(1)
+    fetchPosts(1);
   };
 
   useEffect(() => {
@@ -73,14 +68,17 @@ export default function MyPosts() {
   const fetchPosts = async (page = 1, append = false, order = sortOrder) => {
     setLoading(true);
     try {
-      const response = await API.get(`job-posts/${userId}&sort_order=${order}`, {
-        params: {
-          page,
-          city: searchQuery,
-          sort_order: order  
-        },
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await API.get(
+        `job-posts/${userId}&sort_order=${order}`,
+        {
+          params: {
+            page,
+            city: searchQuery,
+            sort_order: order,
+          },
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const newPosts = response.data.data.data || [];
       setResults(append ? [...results, ...newPosts] : newPosts);
       setLastPage(response.data.data.last_page || 1);
@@ -99,7 +97,10 @@ export default function MyPosts() {
       fetchPosts(currentPage + 1, true);
 
       setTimeout(() => {
-        flatListRef.current?.scrollToOffset({ offset: prevScrollOffset, animated: false });
+        flatListRef.current?.scrollToOffset({
+          offset: prevScrollOffset,
+          animated: false,
+        });
       }, 200);
     }
   };
@@ -124,12 +125,12 @@ export default function MyPosts() {
     try {
       const response = await axios.post(
         `https://g32.iamdeveloper.in/api/citie-search`,
-        { city: query },  // API expects city name in request body
+        { city: query }, // API expects city name in request body
         {
           headers: {
-            Authorization: `Bearer ${token}`,  // Include the token
-            "Content-Type": "application/json"
-          }
+            Authorization: `Bearer ${token}`, // Include the token
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -140,7 +141,6 @@ export default function MyPosts() {
       setResults([]);
     }
   };
-
 
   const renderItem = ({ item }) => {
     let imageUrls = [];
@@ -182,7 +182,6 @@ export default function MyPosts() {
             showsHorizontalScrollIndicator={false}
             snapToInterval={postContentWidth}
             decelerationRate="fast"
-
           />
         )}
         <View className="flex-row justify-between p-3">
@@ -205,7 +204,6 @@ export default function MyPosts() {
             >
               <Text className="text-white text-center py-2">Edit</Text>
             </TouchableOpacity>
-
           </View>
         </View>
       </View>
@@ -214,16 +212,16 @@ export default function MyPosts() {
 
   return (
     <SafeAreaView className="flex-1">
-
       <LinearGradient
-        colors={['#082f49', 'transparent']}
+        colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-
-
         <View
           className={`flex-row justify-center items-center py-3 px-10 pb-4`}
         >
+          <TouchableOpacity onPress={() => router.back()} className="mr-3">
+            <Ionicons name="arrow-back" size={28} color="white" />
+          </TouchableOpacity>
           {/* Search Bar */}
           <View className="flex-row items-center border border-white rounded-full px-4  mt-2 bg-white">
             <Ionicons name="search" size={24} color="#000000" />
@@ -241,20 +239,21 @@ export default function MyPosts() {
             <SortingModal
               visible={modalVisible}
               onClose={() => setModalVisible(false)}
-              onSelect={handleSort} position={position} />
+              onSelect={handleSort}
+              position={position}
+            />
           </View>
         </View>
       </LinearGradient>
 
       <View
-
         className="flex-1 rounded-3xl bg-white"
         style={{
-          marginTop: -screenHeight * 0.30,
+          marginTop: -screenHeight * 0.3,
           width: postContentWidth,
 
           marginHorizontal: (screenWidth - postContentWidth) / 2,
-          overflow: 'hidden'
+          overflow: "hidden",
         }}
       >
         <View style={{ flex: 1, backgroundColor: "#f5f5f5" }}>
@@ -274,7 +273,11 @@ export default function MyPosts() {
               onScroll={onScroll}
               onEndReached={loadNextPage}
               onEndReachedThreshold={0.1}
-              ListFooterComponent={loading && currentPage > 1 ? <ActivityIndicator size="small" color="#0000ff" /> : null}
+              ListFooterComponent={
+                loading && currentPage > 1 ? (
+                  <ActivityIndicator size="small" color="#0000ff" />
+                ) : null
+              }
             />
           )}
         </View>
