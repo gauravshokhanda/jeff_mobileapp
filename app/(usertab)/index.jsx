@@ -29,17 +29,12 @@ export default function Dashboard() {
         colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-        <View className="px-5 pt-4">
-          <View className="flex-row items-center bg-white rounded-full px-4 py-2 shadow-md">
-            <Ionicons name="search" size={20} color="#000" />
-            <TextInput
-              className="flex-1 ml-2 text-black"
-              placeholder="Start Search"
-              placeholderTextColor="#777"
-            />
-            <Ionicons name="filter" size={20} color="#000" />
+       <View className="mt-6 mx-5 flex-row justify-center items-center">
+            <Text className="text-3xl text-white">Welcome, </Text>
+            <Text className="text-3xl font-semibold text-white">
+              {userName?.name || "User"}
+            </Text>
           </View>
-        </View>
       </LinearGradient>
 
       <View
@@ -56,12 +51,7 @@ export default function Dashboard() {
         }}
       >
         <View className="px-4 pb-4">
-          <View className="mt-6 flex-row justify-center items-center">
-            <Text className="text-lg text-gray-800">Welcome, </Text>
-            <Text className="text-lg font-semibold text-sky-950">
-              {userName?.name || "User"}
-            </Text>
-          </View>
+         
 
           {/* Action Buttons */}
           <View className="flex-row justify-between mt-5">

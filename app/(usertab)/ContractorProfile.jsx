@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 const ContractorProfile = () => {
-  const { id } = useLocalSearchParams();
+  const { user_id } = useLocalSearchParams();
   const [contractor, setContractor] = useState(null);
   const [loading, setLoading] = useState(true);
   const token = useSelector((state) => state.auth.token);
@@ -15,7 +15,7 @@ const ContractorProfile = () => {
     const fetchContractorDetails = async () => {
       setLoading(true);
       try {
-        const response = await API.get(`contractors/${id}`, {
+        const response = await API.get(`contractors/${user_id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -43,10 +43,10 @@ const ContractorProfile = () => {
       }
     };
 
-    if (id) {
+    if (user_id) {
       fetchContractorDetails();
     }
-  }, [id]);
+  }, [user_id]);
 
   if (loading) {
     return <ActivityIndicator size="large" color="#000" />;
@@ -83,7 +83,6 @@ const ContractorProfile = () => {
           <Text className="font-bold text-xl text-sky-950 tracking-widest">Portfolio</Text>
           <Ionicons name="images" size={30} color="gray" />
         </View>
-
         {contractor.portfolio.length > 0 ? (
           <FlatList
             data={contractor.portfolio}

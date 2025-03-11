@@ -30,7 +30,7 @@ const CardSlider = () => {
 
       setContractors(formattedData);
     } catch (error) {
-      console.log("Error fetching contractors:", error);
+      console.log("Error fetching contractor:", error);
     } finally {
       setLoading(false);
     }
@@ -41,7 +41,7 @@ const CardSlider = () => {
   }, []);
 
   const handleVisitProfile = (id) => {
-    router.push(`/ContractorProfile?id=${id}`);
+    router.push(`/ContractorProfile?user_id=${id}`);
   };
 
   const handleCall = (phone) => {
@@ -102,7 +102,8 @@ const CardSlider = () => {
   );
 
   return (
-    <View className="py-3 px-4">
+    <View className="flex-1 py-3 px-4">
+
       {loading ? (
         <View className="flex-1 justify-center items-center mt-5">
           <ActivityIndicator size="large" color="#000" />
@@ -115,7 +116,7 @@ const CardSlider = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 10 }}
           refreshing={loading}
-          onRefresh={getContractors}
+          onRefresh={getContractors}  
         />
       )}
 
@@ -126,7 +127,7 @@ const CardSlider = () => {
             onPress={() => router.push("ContractorLists")}
             className="bg-blue-600 rounded-full py-3 px-8 items-center"
           >
-            <Text className="text-white font-bold">View All Contractors</Text>
+            <Text className="text-white font-bold">View All Contractorss</Text>
           </TouchableOpacity>
         </View>
       )}

@@ -208,7 +208,12 @@ const PropertyPost = () => {
       <LinearGradient
         colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
-      ></LinearGradient>
+      >
+         <TouchableOpacity onPress={() => router.back()} className="mt-12 px-5">
+            <Ionicons name="arrow-back" size={28} color="white" />
+          </TouchableOpacity>
+      </LinearGradient>
+      
       <View
         className="p-4 pt-8 bg-white"
         style={{
@@ -221,6 +226,7 @@ const PropertyPost = () => {
           overflow: "hidden",
         }}
       >
+        
         <View className="flex-row mb-6 space-x-4">
           <View className="flex-1">
             <Text className="pl-4 pb-2 text-gray-600">Number of Days</Text>

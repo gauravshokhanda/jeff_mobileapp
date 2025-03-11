@@ -31,7 +31,10 @@ const EstateSlider = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!response.data.contractors || !Array.isArray(response.data.contractors.data)) {
+      if (
+        !response.data.contractors ||
+        !Array.isArray(response.data.contractors.data)
+      ) {
         console.error("❌ No valid contractors data found");
         return;
       }
@@ -103,9 +106,17 @@ const EstateSlider = () => {
 
         {/* Contractor Details */}
         <View style={{ flex: 1 }}>
-          <TouchableOpacity>
-          <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 2 }}>{item.name}</Text>
-          <Text style={{ color: "gray", marginBottom: 2 }}>📍 {item.address}</Text>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("ContractorProfile", { user_id: item.id })
+            }
+          >
+            <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 2 }}>
+              {item.name}
+            </Text>
+            <Text style={{ color: "gray", marginBottom: 2 }}>
+              📍 {item.address}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

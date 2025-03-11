@@ -108,8 +108,17 @@ export default function PropertyDetails() {
   );
 
   return (
-    <ScrollView className="bg-white flex-1 mt-8 p-4">   
-      <View className="relative">
+    <ScrollView className="bg-white flex-1 mt-8 p-4">
+      <View className="relative w-full">
+        {/* Back Button */}
+        <TouchableOpacity
+          onPress={() => router.back()} // Navigate back
+          className="absolute top-3 left-3 p-2 bg-white rounded-full shadow-md z-10"
+        >
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
+
+        {/* Main Image */}
         <Image source={{ uri: mainImage }} className="w-full h-60 rounded-lg" />
       </View>
 
@@ -174,7 +183,7 @@ export default function PropertyDetails() {
           }
           className="bg-sky-950 p-3 w-48 rounded-lg justify-center items-center flex-row gap-2 shadow-md active:bg-sky-800"
         >
-          <FontAwesome name="phone" size={20} color="white" />
+           <Ionicons name={"chatbubble"} size={25} color="white" />
           <Text className="text-center text-white text-lg font-semibold">
             Chat
           </Text>

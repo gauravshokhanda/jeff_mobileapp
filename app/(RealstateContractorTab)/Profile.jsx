@@ -20,10 +20,6 @@ const imageData = [
   { id: 8, label: "Log Out", icon: "sign-out-alt", screen: 'logout', source: Box },
 ];
 
-
-
-
-
 export default function Index() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const postContentWidth = screenWidth * 0.92;
@@ -42,7 +38,7 @@ export default function Index() {
           },
         },
       ]);
-    } else if (screen === "ContractorPortfolio") {  // Profile screen
+    } else if (screen === "ContractorPortfolio") {  
       router.push({ pathname: screen, params: { edit: "true" } });
     } else if (screen) {
       router.push(screen);
@@ -70,15 +66,13 @@ export default function Index() {
             <Text className="text-gray-400">📍 Florida, USA</Text>
           </View>
         </View>
-
-
       </LinearGradient>
 
 
       <View className="rounded-3xl "
         style={{
           position: 'absolute',
-          top: screenHeight * 0.16,
+          top: screenHeight * 0.20,
           width: postContentWidth,
           height: screenHeight * 0.84,
           left: (screenWidth - postContentWidth) / 2,
@@ -113,8 +107,6 @@ export default function Index() {
                 </TouchableOpacity>
               ))}
             </View>
-
-
 
           </ScrollView>
         </KeyboardAvoidingView>

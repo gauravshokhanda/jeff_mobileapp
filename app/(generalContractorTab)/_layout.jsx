@@ -6,14 +6,17 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useState, useEffect, useCallback } from "react";
 import { BackHandler, Keyboard } from "react-native";
 
-
 export default function TabRoot() {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   // Detect keyboard visibility
   useEffect(() => {
-    const showSubscription = Keyboard.addListener("keyboardDidShow", () => setKeyboardVisible(true));
-    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => setKeyboardVisible(false));
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () =>
+      setKeyboardVisible(true)
+    );
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardVisible(false)
+    );
 
     return () => {
       showSubscription.remove();
@@ -24,16 +27,24 @@ export default function TabRoot() {
   // Handle back button behavior (prevent exiting the app)
   useFocusEffect(
     useCallback(() => {
-      const onBackPress = () => true; // Disable back button default behavior
+      const onBackPress = () => {
+        if (router.canGoBack()) {
+          router.back();
+          return true;
+        }
+        return false; // Allow default behavior (exit app)
+      };
 
       BackHandler.addEventListener("hardwareBackPress", onBackPress);
-      return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+      return () =>
+        BackHandler.removeEventListener("hardwareBackPress", onBackPress);
     }, [])
   );
 
   return (
     <ProtectedRoute>
       <Tabs
+        backBehavior="history"
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
