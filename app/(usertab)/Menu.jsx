@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect,useState} from "react";
 import { View, Text, Image, Platform, TouchableOpacity, Alert, Dimensions, SafeAreaView } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useSelector, useDispatch } from "react-redux";
@@ -7,6 +7,7 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 import Box from "../../assets/images/MD.png";
 import { setLogout } from "../../redux/slice/authSlice";
 import { LinearGradient } from 'expo-linear-gradient';
+import { API, baseUrl } from "../../config/apiConfig";
 
 const imageData = [
   { id: 1, label: "Contractor Lists", icon: "list", screen: "/ContractorLists", source: Box },
@@ -21,8 +22,13 @@ const MenuHeader = () => {
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const postContentWidth = screenWidth * 0.92;
   const userName = useSelector((state) => state.auth.user);
+  const userId = useSelector((state) => state.auth.user.id);
   const router = useRouter(); 
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState([]);
 
   const handlePress = (screen) => {
     if (screen === "logout") {
@@ -40,6 +46,22 @@ const MenuHeader = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await API.get(`user/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUserData(response.data.data);
+      } catch (error) {
+        Alert.alert("API Error", "Failed to fetch user data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (token) fetchUserData();
+  }, [token]);
+
   return (
     <SafeAreaView className="bg-gray-200">
 
@@ -49,9 +71,13 @@ const MenuHeader = () => {
       >
         <View className="mt-10 px-4 gap-2 flex-row items-center">
         <TouchableOpacity  onPress={() => router.push("UserProfile")}>
-          <Image
-            source={{ uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg" }}
-            className="w-14 h-14 border-2 border-white rounded-full"
+        <Image
+            source={{
+              uri: userData?.image
+                ? `${baseUrl}/${userData.image}`
+                : "https://xsgames.co/randomusers/assets/avatars/male/74.jpg",
+            }}
+            className="w-16 h-16 border-2 border-white rounded-full"
           />
           </TouchableOpacity>
           <View className="gap-1">

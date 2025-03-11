@@ -8,9 +8,11 @@ import {
   FlatList,
   Dimensions,
   SafeAreaView,
+  TouchableOpacity
 } from "react-native";
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../../config/apiConfig";
+import {  useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -23,6 +25,7 @@ const MenuHeader = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     const getMyPosts = async () => {
@@ -58,18 +61,32 @@ const MenuHeader = () => {
   }, [token]);
 
   if (loading) return <ActivityIndicator size="large" color="#000" />;
-  if (!userData) return <Text className="text-center text-red-500">User not found</Text>;
+  if (!userData)
+    return <Text className="text-center text-red-500">User not found</Text>;
 
   return (
     <SafeAreaView className="flex-1">
-      <LinearGradient colors={["#082f49", "transparent"]} style={{ height: screenHeight * 0.35 }}>
-        <View className="mt-12 px-6 flex-row items-center gap-4">
+      <LinearGradient
+        colors={["#082f49", "transparent"]}
+        style={{ height: screenHeight * 0.35 }}
+      >
+        <View className="mt-12 px-3 flex-row items-center gap-4">
+        <TouchableOpacity onPress={() => router.back()} >
+            <Ionicons name="arrow-back" size={28} color="white" />
+          </TouchableOpacity>
           <Image
-            source={{ uri: userData?.avatar || "https://xsgames.co/randomusers/assets/avatars/male/74.jpg" }}
+            source={{
+              uri: userData?.image
+                ? `${baseUrl}/${userData.image}`
+                : "https://xsgames.co/randomusers/assets/avatars/male/74.jpg",
+            }}
             className="w-16 h-16 border-2 border-white rounded-full"
           />
+
           <View>
-            <Text className="text-2xl font-semibold text-white">Welcome, {userData?.name || "User"}!</Text>
+            <Text className="text-2xl font-semibold text-white">
+              Welcome, {userData?.name || "User"}!
+            </Text>
             <Text className="text-gray-300">{userData?.email}</Text>
           </View>
         </View>
@@ -77,9 +94,15 @@ const MenuHeader = () => {
 
       <View
         className="flex-1 bg-white rounded-3xl p-6 shadow-lg"
-        style={{ marginTop: -screenHeight * 0.18, width: postContentWidth, marginHorizontal: (screenWidth - postContentWidth) / 2 }}
+        style={{
+          marginTop: -screenHeight * 0.18,
+          width: postContentWidth,
+          marginHorizontal: (screenWidth - postContentWidth) / 2,
+        }}
       >
-        <Text className="text-xl font-semibold tracking-widest text-sky-950">My Posts</Text>
+        <Text className="text-xl font-semibold tracking-widest text-sky-950">
+          My Posts
+        </Text>
         <View className="w-full h-1 bg-gray-300 my-2" />
 
         {posts.length > 0 ? (
@@ -89,26 +112,36 @@ const MenuHeader = () => {
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <View className="m-2 p-4 bg-white rounded-xl shadow-md flex-row items-center gap-4 border border-gray-200">
-                {item.design_image && JSON.parse(item.design_image).length > 0 && (
-                  <Image
-                    source={{ uri: `${baseUrl}/${JSON.parse(item.design_image)[0]}` }}
-                    className="w-24 h-24 rounded-lg"
-                    resizeMode="cover"
-                  />
-                )}
+                {item.design_image &&
+                  JSON.parse(item.design_image).length > 0 && (
+                    <Image
+                      source={{
+                        uri: `${baseUrl}/${JSON.parse(item.design_image)[0]}`,
+                      }}
+                      className="w-24 h-24 rounded-lg"
+                      resizeMode="cover"
+                    />
+                  )}
                 <View className="flex-1">
-                  <Text className="text-lg font-semibold text-gray-900">{item.description}</Text>
-                  <Text className="text-gray-600">Project Type: {item.project_type}</Text>
+                  <Text className="text-lg font-semibold text-gray-900">
+                    {item.description}
+                  </Text>
+                  <Text className="text-gray-600">
+                    Project Type: {item.project_type}
+                  </Text>
                   <Text className="text-gray-600">City: {item.city}</Text>
-                  <Text className="text-gray-800 font-bold">Total Cost: ${item.total_cost}</Text>
+                  <Text className="text-gray-800 font-bold">
+                    Total Cost: ${item.total_cost}
+                  </Text>
                 </View>
-               
               </View>
             )}
             contentContainerStyle={{ paddingBottom: 20 }}
           />
         ) : (
-          <Text className="text-gray-500 mt-3 text-center">No job posts available.</Text>
+          <Text className="text-gray-500 mt-3 text-center">
+            No job posts available.
+          </Text>
         )}
       </View>
     </SafeAreaView>
