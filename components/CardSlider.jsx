@@ -16,7 +16,10 @@ const CardSlider = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const formattedData = response.data?.data?.data?.map((item) => ({
+      // Filtering first for better performance
+      const filteredData = response.data?.data?.data?.filter((item) => item.role === 3) || [];
+
+      const formattedData = filteredData.map((item) => ({
         id: item.id.toString(),
         image: item.image ? { uri: `${baseUrl}${item.image}` } : null,
         name: item.name,
@@ -30,13 +33,13 @@ const CardSlider = () => {
 
       setContractors(formattedData);
     } catch (error) {
-      console.log("Error fetching contractor:", error);
+      console.error("Error fetching contractors:", error);
     } finally {
       setLoading(false);
     }
   };
-  useEffect(() => {
 
+  useEffect(() => {
     getContractors();
   }, []);
 
@@ -103,7 +106,6 @@ const CardSlider = () => {
 
   return (
     <View className="flex-1 py-3 px-4">
-
       {loading ? (
         <View className="flex-1 justify-center items-center mt-5">
           <ActivityIndicator size="large" color="#000" />
@@ -127,7 +129,7 @@ const CardSlider = () => {
             onPress={() => router.push("ContractorLists")}
             className="bg-blue-600 rounded-full py-3 px-8 items-center"
           >
-            <Text className="text-white font-bold">View All Contractorss</Text>
+            <Text className="text-white font-bold">View All Contractors</Text>
           </TouchableOpacity>
         </View>
       )}

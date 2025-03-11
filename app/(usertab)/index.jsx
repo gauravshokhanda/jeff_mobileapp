@@ -97,7 +97,7 @@ export default function Dashboard() {
                   selectedCategory === "general" ? "text-white" : "text-black"
                 }`}
               >
-                General Contractors
+                General
               </Text>
             </TouchableOpacity>
 
@@ -116,7 +116,7 @@ export default function Dashboard() {
                     : "text-black"
                 }`}
               >
-                Real Estate Contractors
+                Real Estate 
               </Text>
             </TouchableOpacity>
           </View>
