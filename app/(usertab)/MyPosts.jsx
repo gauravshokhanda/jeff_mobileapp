@@ -198,12 +198,12 @@ export default function MyPosts() {
             <Text className="text-lg font-bold">
               {item.project_type} Apartment
             </Text>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               className="bg-sky-950 w-20 rounded-xl ml-14"
               onPress={() => router.push(`/EditPost?id=${item.id}`)}
             >
               <Text className="text-white text-center py-2">Edit</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
       </View>
