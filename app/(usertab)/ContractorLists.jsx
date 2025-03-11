@@ -356,8 +356,11 @@ export default function Index() {
             Properties & Contractors
           </Text>
         </View>
-        <View className="mx-5 mt-5 items-end">
-          <View className="bg-gray-100 h-12 rounded-full px-3 flex-row items-center justify-between">
+        <View className="mx-5 mt-5 items-end" style={{ marginTop: screenHeight * 0.02 }}>
+          <View className="bg-gray-100 h-12 rounded-full px-3 flex-row items-center justify-between"  style={{
+              height: screenHeight * 0.06,
+              paddingHorizontal: screenWidth * 0.04,
+            }}>
             <Ionicons name="search" size={18} color="black" />
             <TextInput
               placeholder="Search"
