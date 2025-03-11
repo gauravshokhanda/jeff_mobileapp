@@ -1,14 +1,28 @@
-import { View, Dimensions, Text, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert, SafeAreaView, ActivityIndicator } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import {
+  View,
+  Dimensions,
+  Text,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Alert,
+  SafeAreaView,
+  ActivityIndicator,
+} from "react-native";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSelector } from "react-redux";
-import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { API, baseUrl } from '../../config/apiConfig';
-import Swiper from 'react-native-swiper';
+import { router } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { API, baseUrl } from "../../config/apiConfig";
+import Swiper from "react-native-swiper";
 
 export default function Index() {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const userName = useSelector((state) => state.auth.user);
   const token = useSelector((state) => state.auth.token);
@@ -17,10 +31,8 @@ export default function Index() {
   const [properties, setProperties] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
-
-
 
   const fetchProperties = async (page = 1) => {
     if (loading || page > totalPages) return;
@@ -36,7 +48,11 @@ export default function Index() {
       // console.log("response", response.data.properties.data)
       // console.log("response", response.data.properties.last_page)
       // console.log("response", response.data.properties)
-      setProperties(page === 1 ? [response.data.properties.data[0]] : [...prev, response.data.properties.data[0]]);
+      setProperties(
+        page === 1
+          ? [response.data.properties.data[0]]
+          : [...prev, response.data.properties.data[0]]
+      );
 
       setCurrentPage(response.data.properties.current_page);
       setTotalPages(response.data.properties.last_page);
@@ -61,8 +77,7 @@ export default function Index() {
 
     return (
       <View
-        style={{
-        }}
+        style={{}}
         className="rounded-xl bg-white shadow-md overflow-hidden mb-4"
       >
         <TouchableOpacity
@@ -77,17 +92,23 @@ export default function Index() {
                 <Text className="text-white font-bold ml-2">{item.city}</Text>
               </View>
               <View className="flex-row gap-2">
-                <View className="bg-white rounded-full p-1 justify-center items-center"
-                >
-                  <Text className="text-slate-700 text-sm "
-                    style={{ fontSize: screenWidth * 0.022 }}
-                  >{item.house_type}</Text>
-                </View>
                 <View className="bg-white rounded-full p-1 justify-center items-center">
-                  <Text className="text-slate-700"
+                  <Text
+                    className="text-slate-700 text-sm "
                     style={{ fontSize: screenWidth * 0.022 }}
                   >
-                    {(item.locale.split(" ").slice(0, 2).join(" ") + (item.locale.split(" ").length > 2 ? "..." : "")).trim()}
+                    {item.house_type}
+                  </Text>
+                </View>
+                <View className="bg-white rounded-full p-1 justify-center items-center">
+                  <Text
+                    className="text-slate-700"
+                    style={{ fontSize: screenWidth * 0.022 }}
+                  >
+                    {(
+                      item.locale.split(" ").slice(0, 2).join(" ") +
+                      (item.locale.split(" ").length > 2 ? "..." : "")
+                    ).trim()}
                   </Text>
                 </View>
               </View>
@@ -118,9 +139,9 @@ export default function Index() {
                         <Image
                           className="rounded-full"
                           source={{
-                            uri: `${baseUrl}${image.replace(/\\/g, '/')}`,
+                            uri: `${baseUrl}${image.replace(/\\/g, "/")}`,
                           }}
-                          style={{ width: '100%', height: '100%' }}
+                          style={{ width: "100%", height: "100%" }}
                           resizeMode="cover"
                         />
                       </View>
@@ -129,7 +150,7 @@ export default function Index() {
                 ) : (
                   <Image
                     source={require("../../assets/images/realState/checkoutProperty.png")}
-                    style={{ width: '100%', height: '100%', borderRadius: 10 }}
+                    style={{ width: "100%", height: "100%", borderRadius: 10 }}
                     resizeMode="cover"
                   />
                 )}
@@ -138,7 +159,9 @@ export default function Index() {
               <View className="flex-1 space-y-2 mt-2">
                 <View className="flex-row items-center justify-start">
                   <View className="flex-row items-center justify-center gap-2">
-                    <Text className="text-white text-2xl font-bold">${item.price}</Text>
+                    <Text className="text-white text-2xl font-bold">
+                      ${item.price}
+                    </Text>
                     <Text className="text-gray-300 text-lg">USD</Text>
                   </View>
                 </View>
@@ -146,18 +169,23 @@ export default function Index() {
                 <View className="flex-row items-center">
                   <Ionicons name="calendar-outline" size={16} color="white" />
                   <Text className="text-gray-300 ml-2">
-                    Available from {new Date(item.available_from).toISOString().split('T')[0]}
+                    Available from{" "}
+                    {new Date(item.available_from).toISOString().split("T")[0]}
                   </Text>
                 </View>
 
                 <View className="flex-row items-center">
                   <Ionicons name="resize-outline" size={16} color="white" />
-                  <Text className="text-gray-300 ml-2">Area - {item.area} sq ft</Text>
+                  <Text className="text-gray-300 ml-2">
+                    Area - {item.area} sq ft
+                  </Text>
                 </View>
 
                 <View className="flex-row items-center">
                   <Ionicons name="bed-outline" size={16} color="white" />
-                  <Text className="text-gray-300 ml-2">{item.furnish_type}</Text>
+                  <Text className="text-gray-300 ml-2">
+                    {item.furnish_type}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -166,7 +194,9 @@ export default function Index() {
 
         {/* Bottom Section with Button */}
         <View className="bg-gray-200 rounded-b-2xl p-4 flex-row justify-between items-center">
-          <Text className="text-lg font-semibold text-gray-600">Get ready list of buyers</Text>
+          <Text className="text-lg font-semibold text-gray-600">
+            Get ready list of buyers
+          </Text>
           <TouchableOpacity className="bg-white px-4 py-2 rounded-lg shadow-md">
             <Text className="text-indigo-900 font-semibold">Update</Text>
           </TouchableOpacity>
@@ -175,24 +205,22 @@ export default function Index() {
     );
   };
 
-
-
-
-
-
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
-
       <LinearGradient
-        colors={['#082f49', 'transparent']}
+        colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
         <View className="mt-10 px-4 gap-2 flex-row items-center">
-          <TouchableOpacity onPress={()=>router.push('EstateContractorProfile')}>
-          <Image
-            source={{ uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg" }}
-            className="w-14 h-14 border-2 border-white rounded-full"
-          />
+          <TouchableOpacity
+            onPress={() => router.push("EstateContractorProfile")}
+          >
+            <Image
+              source={{
+                uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg",
+              }}
+              className="w-14 h-14 border-2 border-white rounded-full"
+            />
           </TouchableOpacity>
           <View className="gap-1">
             <Text className="text-2xl font-semibold text-white">
@@ -203,7 +231,13 @@ export default function Index() {
         </View>
 
         <View className="mt-10 items-center px-5">
-          <View className="bg-gray-100  h-12 rounded-full p-3 flex-row items-center justify-between">
+          <View
+            className="bg-gray-100 h-12 rounded-full p-3 flex-row items-center justify-between"
+            style={{
+              marginBottom: screenHeight * 0.05,
+              width: screenWidth * 0.9, 
+            }}
+          >
             <Ionicons name="search" size={18} color="black" />
             <TextInput
               placeholder="Search"
@@ -215,36 +249,28 @@ export default function Index() {
         </View>
       </LinearGradient>
 
-
-      <View className="rounded-3xl "
+      <View
+        className="rounded-3xl "
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: screenHeight * 0.25,
           width: postContentWidth,
-          height: screenHeight * 0.80,
+          height: screenHeight * 0.8,
           left: (screenWidth - postContentWidth) / 2,
-          backgroundColor: 'white',
-
-
+          backgroundColor: "white",
         }}
       >
-
-
-
-
-
         <View className="m-5">
-
           <View className="rounded-2xl p-2">
-
-
             {loading == true ? (
               <ActivityIndicator size="large" color="#082f49" />
             ) : (
               <FlatList
                 ListHeaderComponent={
                   <View>
-                    <Text className="text-2xl font-semibold tracking-widest mb-4 text-black">Checkout your properties.</Text>
+                    <Text className="text-2xl font-semibold tracking-widest mb-4 text-black">
+                      Checkout your properties.
+                    </Text>
                   </View>
                 }
                 showsVerticalScrollIndicator={false}
@@ -256,8 +282,12 @@ export default function Index() {
                     <View className="bg-[#505C3F] py-4 rounded-2xl  mt-6 shadow-lg flex-row  justify-between w-full">
                       {/* Left Section - Text */}
                       <View className="pl-2">
-                        <Text className="text-white text-2xl font-semibold tracking-widest">New Properties!</Text>
-                        <Text className="text-gray-100 text-lg tracking-wider">house and land packages</Text>
+                        <Text className="text-white text-2xl font-semibold tracking-widest">
+                          New Properties!
+                        </Text>
+                        <Text className="text-gray-100 text-lg tracking-wider">
+                          house and land packages
+                        </Text>
                       </View>
 
                       {/* Right Section - Image */}
@@ -277,15 +307,21 @@ export default function Index() {
                           className="w-12 h-12 mr-3"
                         />
                         <View className="flex-1">
-                          <Text className="text-xl font-bold text-black tracking-widest">Caution!</Text>
+                          <Text className="text-xl font-bold text-black tracking-widest">
+                            Caution!
+                          </Text>
                           <Text className="text-gray-700 text-lg">
-                            Be cautious of suspicious calls received from users posing as
-                            ‘armyman’ or ‘Public Service’ & asking to transfer money.
+                            Be cautious of suspicious calls received from users
+                            posing as ‘armyman’ or ‘Public Service’ & asking to
+                            transfer money.
                           </Text>
                           <TouchableOpacity
                             onPress={() => router.push("/KnowMore")}
-                            className="mt-2">
-                            <Text className="text-black font-bold">Know more &gt;</Text>
+                            className="mt-2"
+                          >
+                            <Text className="text-black font-bold">
+                              Know more &gt;
+                            </Text>
                           </TouchableOpacity>
                         </View>
                       </View>
@@ -297,11 +333,17 @@ export default function Index() {
                           className="w-10 h-10 rounded-full mr-3"
                         />
                         <View className="flex-1">
-                          <Text className="text-black font-semibold text-xl tracking-widest">Jimmy Brooke</Text>
+                          <Text className="text-black font-semibold text-xl tracking-widest">
+                            Jimmy Brooke
+                          </Text>
                           <Text className="text-gray-600 mt-1 tracking-wider text-lg w-[90%]">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                            eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                            <Text className="font-bold text-black"> Read more...</Text>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing
+                            elit, sed do eiusmod tempor incididunt ut labore et
+                            dolore magna aliqua.
+                            <Text className="font-bold text-black">
+                              {" "}
+                              Read more...
+                            </Text>
                           </Text>
                         </View>
                       </View>
@@ -314,7 +356,9 @@ export default function Index() {
                           <Ionicons name="call" size={20} color="black" />
                         </View>
                         <View className=" items-center ml-5">
-                          <Text className="text-lg font-bold text-black">Call Us</Text>
+                          <Text className="text-lg font-bold text-black">
+                            Call Us
+                          </Text>
                           <Text className="text-gray-700">1800-131-56677</Text>
                         </View>
                       </TouchableOpacity>
@@ -322,27 +366,28 @@ export default function Index() {
                       {/* Email Us Card */}
                       <TouchableOpacity className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center">
                         <View className="bg-gray-200 p-2 rounded-full mr-3">
-                          <Ionicons name="chatbubble-ellipses" size={20} color="black" />
+                          <Ionicons
+                            name="chatbubble-ellipses"
+                            size={20}
+                            color="black"
+                          />
                         </View>
                         <View className=" items-center ml-5">
-                          <Text className="text-lg font-bold text-black">Email Us</Text>
-                          <Text className="text-gray-700">Supportjeff@gmail.com</Text>
+                          <Text className="text-lg font-bold text-black">
+                            Email Us
+                          </Text>
+                          <Text className="text-gray-700">
+                            Supportjeff@gmail.com
+                          </Text>
                         </View>
                       </TouchableOpacity>
                     </View>
-                  </View>}
-
+                  </View>
+                }
               />
             )}
-
-
-
-
           </View>
-
         </View>
-
-
       </View>
     </SafeAreaView>
   );
