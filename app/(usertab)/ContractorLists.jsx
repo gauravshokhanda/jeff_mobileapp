@@ -432,7 +432,7 @@ export default function Index() {
             </View>
           ) : selectedTab === "realEstate" ? (
             <FlatList
-              data={realEstateList}
+              data={properties}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <TouchableOpacity
