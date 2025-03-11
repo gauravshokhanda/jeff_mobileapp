@@ -63,7 +63,7 @@ export default function Index() {
             <Text className="text-2xl font-semibold text-white">
               Welcome! {userName?.name || "User"}
             </Text>
-            <Text className="text-gray-400">📍 Florida, USA</Text>
+            {/* <Text className="text-gray-400">📍 Florida, USA</Text> */}
           </View>
         </View>
       </LinearGradient>
