@@ -20,18 +20,18 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 
 export default function PropertyList() {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-  const postContentWidth = screenWidth * 0.92;
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
+  const postContentWidth = screenWidth * 0.92
   const router = useRouter();
   const token = useSelector((state) => state.auth.token);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [scrollY, setScrollY] = useState(0);
-  const [refreshing, setRefreshing] = useState(false);
-  const [page, setPage] = useState(1);
+  const [scrollY, setScrollY] = useState(0)
+  const [refreshing, setRefreshing] = useState(false)
+  const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true);
-  const [isFetching, setIsFetching] = useState(false);
+  const [isFetching, setIsFetching] = useState(false)
 
   useEffect(() => {
     fetchProperties(1, true);
@@ -67,16 +67,16 @@ export default function PropertyList() {
   };
 
   // page refresh on scroll from the top 
-  const handleScroll = (event) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    setScrollY(offsetY);
-
-    if (offsetY <= -160 && !refreshing) {
-      setRefreshing(true);
-      fetchProperties(1, true);
-      setPage(1);
-    }
-  };
+  const handleScroll = (event) => { 
+    const offsetY = event.nativeEvent.contentOffset.y; 
+    setScrollY(offsetY); 
+ 
+    if (offsetY <= -160 && !refreshing) { 
+      setRefreshing(true); 
+      fetchProperties(1, true); 
+      setPage(1); 
+    } 
+  }; 
 
   const handleLoadMore = ({ nativeEvent }) => {
     if (
@@ -189,7 +189,6 @@ export default function PropertyList() {
                           >
                             <Text className="text-white font-semibold text-lg">View</Text>
                           </TouchableOpacity>
-                         
                         </View>
                       </View>
                     </View>
