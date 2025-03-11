@@ -217,7 +217,7 @@ export default function Index() {
       <View className="flex-row justify-between items-center px-4 pb-4 gap-2">
         <TouchableOpacity
           className="bg-sky-950 p-2 rounded-lg"
-          onPress={() => router.push(`ContractorProfile/?id=${item.id}`)}
+          onPress={() => router.push(`ContractorProfile/?user_id=${item.id}`)}
         >
           <Text className="text-white">Visit Profile</Text>
         </TouchableOpacity>
@@ -227,9 +227,7 @@ export default function Index() {
           >
             <Ionicons name="mail-outline" size={30} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => router.push(`/ChatScreen?id=${item.id}`)}
-          >
+          <TouchableOpacity>
             <Ionicons name="call-outline" size={30} color="black" />
           </TouchableOpacity>
         </View>
@@ -525,7 +523,7 @@ export default function Index() {
                         className=" bg-white py-2 px-4 rounded-lg"
                         onPress={() =>
                           router.push(
-                            `/ChatScreen?user_id=${item.user_id}&id=${item.id}`
+                            `/ChatScreen?user_id=${item.user_id}`
                           )
                         }
                       >
