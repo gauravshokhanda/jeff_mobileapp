@@ -87,21 +87,29 @@ export default function FloorMapScreen() {
                         headers: { Authorization: `Bearer ${token}` },
                     }
                 );
-
+    
                 const cityData = response.data.data.map((city) => ({
                     key: city.id.toString(),
                     label: city.city,
                     zip: city.pincode,
                 }));
-
-                if (currentPage === 1) {
-                    setCities(cityData);
-                } else {
-                    setCities((prevCities) => [...prevCities, ...cityData]);
-                }
+    
+                setCities((prevCities) => {
+                    const combinedCities = currentPage === 1 
+                        ? cityData 
+                        : [...prevCities, ...cityData];
+    
+                    // Filter out duplicate keys
+                    const uniqueCities = combinedCities.filter(
+                        (city, index, self) =>
+                            index === self.findIndex((c) => c.key === city.key)
+                    );
+    
+                    return uniqueCities;
+                });
+    
                 setHasMoreCities(currentPage < response.data.pagination.last_page);
             } catch (error) {
-
                 if (error.response?.data?.message) {
                     Alert.alert('Error', error.response.data.message);
                 } else {
@@ -114,6 +122,7 @@ export default function FloorMapScreen() {
         }, 500),
         [token]
     );
+    
 
 
     const loadMoreCities = () => {
