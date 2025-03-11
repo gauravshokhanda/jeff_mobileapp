@@ -34,6 +34,8 @@ export default function SignUp() {
   const router = useRouter();
   const isToken = useSelector((state) => state.auth.token);
 
+
+  const { width, height } = Dimensions.get("window");
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const token = useSelector((state) => state.auth.token);
 
@@ -87,147 +89,61 @@ export default function SignUp() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
-      <LinearGradient
-        colors={["#082f49", "transparent"]}
-        style={{ height: screenHeight * 0.4 }}
-      />
-
-      <View
-        className="flex-1 rounded-3xl bg-white"
-        style={{
-          marginTop: -screenHeight * 0.2,
-          width: postContentWidth,
-          marginHorizontal: (screenWidth - postContentWidth) / 2,
-        }}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
       >
-        <View className="flex-1 rounded-3xl bg-white px-6 py-8">
-          {/* Logo Section */}
-          <View className="items-center justify-center">
-            <View
-              style={{
-                width: screenWidth * 0.38,
-                height: screenWidth * 0.38,
-                borderRadius: screenWidth * 0.19, // Ensures it remains a perfect circle
-                borderWidth: 4,
-                borderColor: "#082f49",
-                overflow: "hidden",
-                marginTop: screenHeight * 0.01, // Adjusted positioning
-              }}
-              className="items-center justify-center"
-            >
-              <Image
-                source={Logo}
-                style={{ width: "100%", height: "100%", resizeMode: "cover" }}
-              />
-            </View>
-          </View>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+          <LinearGradient colors={["#082f49", "transparent"]} style={{ height: height * 0.4 }} />
 
-          <ScrollView
-            contentContainerStyle={{ paddingBottom: screenHeight * 0.1 }}
-            showsVerticalScrollIndicator={false}
+          <View
+            className="flex-1 rounded-3xl bg-white px-6 py-6"
+            style={{ marginTop: -height * 0.2, marginHorizontal: width * 0.05 }}
           >
-            {/* Input Fields */}
-            <View
-              style={{ marginTop: screenHeight * 0.04 }}
-              className="w-full space-y-4"
-            >
-              <AuthInput
-                placeholder="Name"
-                secureTextEntry={false}
-                onChangeText={setName}
-                value={name}
-              />
-              <AuthInput
-                placeholder="Email Address"
-                secureTextEntry={false}
-                onChangeText={setEmail}
-                value={email}
-              />
-              <AuthInput
-                placeholder="Password"
-                secureTextEntry={true}
-                onChangeText={setPassword}
-                value={password}
-              />
-              <AuthInput
-                placeholder="Confirm Password"
-                secureTextEntry={true}
-                onChangeText={setPasswordConfirmation}
-                value={passwordConfirmation}
-              />
-
-              {/* Role Selection Dropdown */}
-              <ModalSelector
-                data={[
-                  { key: 2, label: "Customer" },
-                  { key: 3, label: "General Contractor" },
-                  { key: 4, label: "Real Estate Contractor" },
-                ]}
-                initValue="Select Role"
-                onChange={(option) =>
-                  setRole({ key: option.key, label: option.label })
-                }
+            <View className="items-center mb-6">
+              <View
+                style={{
+                  width: width * 0.3,
+                  height: width * 0.3,
+                  borderRadius: width * 0.15,
+                  borderWidth: 3,
+                  borderColor: "#082f49",
+                  overflow: "hidden",
+                }}
               >
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "#e2e8f0",
-                    paddingVertical: screenHeight * 0.02,
-                    borderRadius: screenWidth * 0.03,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: screenWidth * 0.03,
-                    }}
-                    className={role.label ? "text-gray-700" : "text-gray-500"}
-                  >
-                    {role.label || "Select Role"}
-                  </Text>
+                <Image source={Logo} style={{ width: "100%", height: "100%", resizeMode: "cover" }} />
+              </View>
+            </View>
+
+            <View className="space-y-4">
+              <AuthInput placeholder="Name" value={name} onChangeText={setName} />
+              <AuthInput placeholder="Email Address" value={email} onChangeText={setEmail} />
+              <AuthInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
+              <AuthInput placeholder="Confirm Password" value={passwordConfirmation} onChangeText={setPasswordConfirmation} secureTextEntry />
+
+              <ModalSelector
+                data={[{ key: 2, label: "Customer" }, { key: 3, label: "General Contractor" }, { key: 4, label: "Real Estate Contractor" }]}
+                initValue="Select Role"
+                onChange={(option) => setRole(option)}
+              >
+                <TouchableOpacity className="bg-gray-300 p-3 rounded-lg items-center">
+                  <Text className={role?.label ? "text-gray-700" : "text-gray-500"}>{role?.label || "Select Role"}</Text>
                 </TouchableOpacity>
               </ModalSelector>
             </View>
 
-            {/* Sign Up Button */}
-            <TouchableOpacity
-              onPress={handleSignUp}
-              className="rounded-2xl bg-sky-950 items-center"
-              style={{
-                paddingVertical: screenHeight * 0.015,
-                fontSize: screenWidth * 0.04,
-                borderRadius: screenWidth * 0.03,
-                marginTop: screenHeight * 0.03,
-              }}
-            >
-              <Text
-                className="text-white font-bold"
-                style={{ fontSize: screenHeight * 0.02 }}
-              >
-                SIGN UP
-              </Text>
+            <TouchableOpacity onPress={handleSignUp} className="bg-sky-950 rounded-xl items-center py-3 mt-5">
+              <Text className="text-white font-bold text-lg">SIGN UP</Text>
             </TouchableOpacity>
 
-            {/* Sign In Link */}
-            <View className="items-center mt-8">
-              <View className="flex-row mt-4">
-                <Text
-                  style={{ fontSize: screenHeight * 0.018 }}
-                  className="text-gray-700 text-lg"
-                >
-                  Already have an account?
-                </Text>
-                <Link
-                  href="/SignIn"
-                  style={{ fontSize: screenHeight * 0.018 }}
-                  className="text-blue-600 text-lg pl-1"
-                >
-                  Sign In
-                </Link>
-              </View>
+            <View className="items-center mt-4">
+              <Text className="text-gray-700">Already have an account?
+                <Link href="/SignIn" className="text-blue-600"> Sign In</Link>
+              </Text>
             </View>
-          </ScrollView>
-        </View>
-      </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
