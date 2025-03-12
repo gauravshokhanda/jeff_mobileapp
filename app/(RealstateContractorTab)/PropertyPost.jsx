@@ -250,8 +250,8 @@ export default function Index() {
               setSelectedType("");
               setPrice("");
               setAvailableFrom("");
-              setImages(null)
-              // router.replace("/");
+              setImages([])
+              router.replace("/");
             },
           },
         ],
