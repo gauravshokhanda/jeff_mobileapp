@@ -69,10 +69,10 @@ export default function Index() {
 
           onPress={() => setSelectedPropertyType(item.id)}
         >
-          
-            <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-400"}`}>
-              {item.label}
-            </Text>
+
+          <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-400"}`}>
+            {item.label}
+          </Text>
         </TouchableOpacity>
 
       </View>
@@ -103,35 +103,35 @@ export default function Index() {
 
     return (
       <TouchableOpacity
-      onPress={() => setSelectedHomeType(item.name)}
-      style={{
-        alignItems: "center",
-        justifyContent: "center",
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        backgroundColor: isSelected ? "gray" : "#F3F4F6", // Sky blue when selected, light gray otherwise
-        overflow: "hidden",
-        marginHorizontal: 8,
-        elevation: isSelected ? 5 : 0, // Add shadow when selected
-      }}
-    >
-      {/* Image */}
-      <Image source={item.image} style={{ width: 50, height: 50 }} resizeMode="contain" />
-
-      {/* Text */}
-      <Text
+        onPress={() => setSelectedHomeType(item.name)}
         style={{
-          fontSize: 14,
-          fontWeight: "500",
-          marginTop: 6,
-          textAlign: "center",
-          color: isSelected ? "white" : "#374151", // White text when selected, gray otherwise
+          alignItems: "center",
+          justifyContent: "center",
+          width: 100,
+          height: 100,
+          borderRadius: 50,
+          backgroundColor: isSelected ? "gray" : "#F3F4F6", // Sky blue when selected, light gray otherwise
+          overflow: "hidden",
+          marginHorizontal: 8,
+          elevation: isSelected ? 5 : 0, // Add shadow when selected
         }}
       >
-        {item.name}
-      </Text>
-    </TouchableOpacity>
+        {/* Image */}
+        <Image source={item.image} style={{ width: 50, height: 50 }} resizeMode="contain" />
+
+        {/* Text */}
+        <Text
+          style={{
+            fontSize: 14,
+            fontWeight: "500",
+            marginTop: 6,
+            textAlign: "center",
+            color: isSelected ? "white" : "#374151", // White text when selected, gray otherwise
+          }}
+        >
+          {item.name}
+        </Text>
+      </TouchableOpacity>
 
     );
   };
@@ -143,13 +143,13 @@ export default function Index() {
     return (
       <View className="mx-2 rounded-lg overflow-hidden" >
         <TouchableOpacity
-        className="bg-gray-500 p-4"
+          className="bg-gray-500 p-4"
           onPress={() => setSelectedBHK(item)}
 
         >
-            <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-400"}`}>
-              {item}
-            </Text>
+          <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-400"}`}>
+            {item}
+          </Text>
         </TouchableOpacity>
       </View>
     )
@@ -168,15 +168,15 @@ export default function Index() {
     return (
       <View className="mx-2 rounded-lg overflow-hidden" >
 
-      <TouchableOpacity
-        className="bg-gray-400 p-3"
-        onPress={() => setSelectedType(item.id)}
-      >
-         
+        <TouchableOpacity
+          className="bg-gray-400 p-3"
+          onPress={() => setSelectedType(item.id)}
+        >
+
           <Text className={`text-lg ${isSelected ? "text-white" : "text-gray-900"}`}>
             {item.label}
           </Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -198,7 +198,7 @@ export default function Index() {
     formData.append("available_from", availableFrom.toISOString());
     images.forEach((uri, index) => {
       console.log("add floormap images", uri)
-      formData.append('property_images[ ]', {
+      formData.append('property_images[]', {
         uri: uri,
         type: 'image/jpeg',
         name: `property_image_${index}_${Date.now()}.jpg`
@@ -249,8 +249,8 @@ export default function Index() {
               setSelectedType("");
               setPrice("");
               setAvailableFrom("");
-              setImages(null)
-              // router.replace("/");
+              setImages([])
+              router.replace("/(RealstateContractorTab)");
             },
           },
         ],
@@ -392,7 +392,7 @@ export default function Index() {
                     renderItem={renderFurnishItem}
                   />
                 </View>
-              
+
                 <View>
                   <CustomDatePicker
                     label="Available From"
@@ -402,7 +402,7 @@ export default function Index() {
                 </View>
 
                 <View className="mt-10">
-                  {images.length === 0 && (
+                  {images && images.length === 0 && (
                     <TouchableOpacity
                       className="border-2 border-gray-400 bg-white p-4 rounded-2xl flex items-center justify-center"
                       onPress={() => handleImagePick()}
@@ -413,7 +413,7 @@ export default function Index() {
                   <View className="flex-row flex-wrap m-3 ">
 
 
-                    {images.length > 0 && (
+                    {images && images.length > 0 && (
                       <View>
                         <Text className="ml-4 text-gray-600">Design Images</Text>
                         <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3 bg-white">
@@ -422,22 +422,22 @@ export default function Index() {
                               <View key={index} className="relative w-24 h-24 m-1">
                                 <Image source={{ uri }} className="w-full h-full rounded-2xl" />
                                 <TouchableOpacity
-                                  onPress={() => removeImage('designImages', index)}
+                                  onPress={() => removeImage(index)} 
                                   className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
                                 >
                                   <Ionicons name="close" size={16} color="white" />
                                 </TouchableOpacity>
                               </View>
                             ))}
-                            <TouchableOpacity onPress={() => handleImagePick('designImages')} className="w-24 h-24 m-1 flex items-center justify-center bg-gray-200 rounded-2xl">
+                            <TouchableOpacity
+                              onPress={() => handleImagePick()}
+                              className="w-24 h-24 m-1 flex items-center justify-center bg-gray-200 rounded-2xl"
+                            >
                               <Text className="text-4xl text-gray-600">+</Text>
                             </TouchableOpacity>
                           </View>
-
                         </View>
-
                       </View>
-
                     )}
                   </View>
 
