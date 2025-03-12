@@ -3,10 +3,11 @@ import { View, Text, Image, TouchableOpacity, FlatList, Alert, ActivityIndicator
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../config/apiConfig";
 import { router } from "expo-router";
-
 const CardSlider = () => {
   const token = useSelector((state) => state.auth.token);
+
   const [contractors, setContractors] = useState([]);
+
   const [loading, setLoading] = useState(true);
 
   const getContractors = async () => {
@@ -136,5 +137,4 @@ const CardSlider = () => {
     </View>
   );
 };
-
 export default CardSlider;

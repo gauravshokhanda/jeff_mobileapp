@@ -144,7 +144,7 @@ const EstateSlider = () => {
       )}
 
       {/* View All Button */}
-      <View className="mt-4 items-center">
+      {/* <View className="mt-4 items-center">
         <TouchableOpacity
           className="bg-sky-950 rounded-md px-6 py-2 flex-row items-center"
           onPress={() => navigation.navigate("ContractorPage")}
@@ -152,7 +152,7 @@ const EstateSlider = () => {
           <Ionicons name="eye" size={20} color="white" className="mr-2" />
           <Text className="text-white text-base font-semibold">View All</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 };
