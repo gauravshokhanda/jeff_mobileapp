@@ -18,7 +18,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import AddPortfolioModal from "../../components/addPortfolioModal";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import { API } from "../../config/apiConfig";
+import { API, baseUrl } from "../../config/apiConfig";
 
 const ProfileCard = () => {
   const token = useSelector((state) => state.auth.token);
@@ -32,6 +32,7 @@ const ProfileCard = () => {
   const [organizationImage, setOrganizationImage] = useState(null);
   const [updating, setUpdating] = useState(false);
   const router = useRouter();
+  const defaultHomeImage = require("../../assets/images/AC5D_Logo.jpg");
   const [pagination, setPagination] = useState({
     currentPage: 1,
     lastPage: null,
@@ -52,7 +53,12 @@ const ProfileCard = () => {
             },
           }
         );
+        // console.log("profile response", response.data)
         setUserData(response.data);
+        const organizationImage = userData.upload_organisation
+          ? { uri: `${baseUrl}${userData.upload_organisation}` }
+          : defaultHomeImage;
+          setOrganizationImage(organizationImage);
       } catch (error) {
         setError("Failed to load user data");
       }
@@ -266,12 +272,12 @@ const ProfileCard = () => {
         <>
           <View className="relative">
             <Image
-              source={{
-                uri: `https://g32.iamdeveloper.in/public/${userData.upload_organisation}`,
-              }}
+              source={organizationImage}
               className="w-full h-48"
               resizeMode="cover"
             />
+           
+
             <TouchableOpacity
               className="absolute top-4 left-4 bg-white p-2 rounded-full shadow"
               onPress={() => router.back()}
@@ -280,7 +286,7 @@ const ProfileCard = () => {
             </TouchableOpacity>
             <Image
               source={{
-                uri: `https://g32.iamdeveloper.in/public/${userData.image}`,
+                uri: `${baseUrl}${userData.image}`,
               }}
               className="absolute bottom-[-20] left-4 w-20 h-20 rounded-full border-4 border-white"
             />
@@ -301,12 +307,12 @@ const ProfileCard = () => {
             <Text className="text-gray-600">{userData.email ? userData.email : ""}</Text>
             <Text className="text-gray-600">{userData.number ? userData.number : ""}</Text>
             <Text className="text-gray-600">
-              {userData.address ? userData.address : ""}, {userData.city ? userData.city : ""}
+              {userData.address ? userData.address + "," : ""} {userData.city ? userData.city : ""}
             </Text>
             <Text className="text-gray-600 font-semibold mt-2">
-              {userData.company_name}
+              {userData.company_name ? userData.company_name : ""}
             </Text>
-            <Text className="text-gray-600">{userData.company_address}</Text>
+            <Text className="text-gray-600">{userData?.company_address}</Text>
           </View>
 
           {/* Portfolio Section */}

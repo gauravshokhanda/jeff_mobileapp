@@ -73,7 +73,14 @@ export default function Index() {
   }, [token]);
 
   const renderListening = ({ item }) => {
-    const propertyImages = JSON.parse(item.property_images) || [];
+    const propertyImages = (() => {
+      try {
+        return JSON.parse(item?.property_images) || [];
+      } catch {
+        console.error("Invalid property images data");
+        return [];
+      }
+    })();
 
     return (
       <View
@@ -106,8 +113,8 @@ export default function Index() {
                     style={{ fontSize: screenWidth * 0.022 }}
                   >
                     {(
-                      item.locale.split(" ").slice(0, 2).join(" ") +
-                      (item.locale.split(" ").length > 2 ? "..." : "")
+                      item.locale.split(" ")?.slice(0, 2).join(" ") +
+                      (item.locale.split(" ")?.length > 2 ? "..." : "")
                     ).trim()}
                   </Text>
                 </View>
@@ -126,7 +133,7 @@ export default function Index() {
                 }}
                 className="mr-4"
               >
-                {propertyImages.length > 0 ? (
+                {propertyImages?.length > 0 ? (
                   <Swiper
                     className="w-full h-full"
                     loop
@@ -247,7 +254,7 @@ export default function Index() {
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
-           
+
           </View>
         </View>
       </LinearGradient>

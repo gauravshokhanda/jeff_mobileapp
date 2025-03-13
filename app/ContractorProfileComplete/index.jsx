@@ -66,7 +66,23 @@ export default function ContractorProfileComplete() {
   };
 
   const handleSubmit = async () => {
-    console.log("contractor profile complete")
+    if (!userName.trim()) return Alert.alert("Error", "Name is required.");
+    if (!userEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail)) {
+        return Alert.alert("Error", "Please enter a valid email address.");
+    }
+    if (!companyName.trim()) return Alert.alert("Error", "Company name is required.");
+    if (!companyContactNumber.trim() || !/^[0-9]{10}$/.test(companyContactNumber)) {
+        return Alert.alert("Error", "Please enter a valid 10-digit contact number.");
+    }
+    if (!portfolioData.projectName.trim()) return Alert.alert("Error", "Project name is required.");
+    if (!portfolioData.description.trim()) return Alert.alert("Error", "Project description is required.");
+    if (!portfolioData.cityName.trim()) return Alert.alert("Error", "City name is required.");
+
+    // Image Validation
+    if (!profileImage) return Alert.alert("Error", "Please upload a profile image.");
+    if (!organizationImage) return Alert.alert("Error", "Please upload an organization image.");
+
+
     const formData = new FormData();
 
     formData.append("name", userName);
@@ -108,14 +124,14 @@ export default function ContractorProfileComplete() {
     setLoading(true);
 
     try {
-      const response = await API.post('portfolio/store', formData, {
+      const response = await API.post('setup-profile', formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      // console.log("Profile submitted successfully:", response.data);
+      console.log("Profile submitted successfully:", response.data);
       dispatch(updateUserProfile(response.data));
       router.replace("/(generalContractorTab)");
     } catch (error) {
