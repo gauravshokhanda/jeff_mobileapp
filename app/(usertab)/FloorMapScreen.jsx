@@ -46,7 +46,11 @@ export default function FloorMapScreen() {
     const [searchLoading, setSearchLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [hasMoreCities, setHasMoreCities] = useState(true);
+    const [localeCities, setLocaleCities] = useState(true);
+    const [hasMoreLocaleCities, setHasMoreLocaleCities] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
+    const [localeCity, setLocaleCity] = useState(false);
+
 
 
     const token = useSelector((state) => state.auth.token);
@@ -87,27 +91,27 @@ export default function FloorMapScreen() {
                         headers: { Authorization: `Bearer ${token}` },
                     }
                 );
-    
+
                 const cityData = response.data.data.map((city) => ({
                     key: city.id.toString(),
                     label: city.city,
                     zip: city.pincode,
                 }));
-    
+
                 setCities((prevCities) => {
-                    const combinedCities = currentPage === 1 
-                        ? cityData 
+                    const combinedCities = currentPage === 1
+                        ? cityData
                         : [...prevCities, ...cityData];
-    
+
                     // Filter out duplicate keys
                     const uniqueCities = combinedCities.filter(
                         (city, index, self) =>
                             index === self.findIndex((c) => c.key === city.key)
                     );
-    
+
                     return uniqueCities;
                 });
-    
+
                 setHasMoreCities(currentPage < response.data.pagination.last_page);
             } catch (error) {
                 if (error.response?.data?.message) {
@@ -122,7 +126,7 @@ export default function FloorMapScreen() {
         }, 500),
         [token]
     );
-    
+
 
 
     const loadMoreCities = () => {
@@ -134,6 +138,37 @@ export default function FloorMapScreen() {
                 handleCitySearch(city, nextPage);
                 return nextPage;
             });
+        }
+    };
+
+    const handleLocaleCitySearch = async (selectedCity, currentPage = 1) => {
+        setSearchLoading(true)
+        setLocaleCity([])
+        try {
+            const response = await API.get(
+                `/city-local-names?page=${currentPage}&city=${encodeURIComponent(selectedCity)}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            console.log("response data", response.data.local_names.data)
+            console.log("last page", response.data.local_names.last_page)
+
+            const localeCityData = response.data.local_names.data.map((locale) => ({
+                key: locale.id.toString(),
+                label: locale.LOCALE_NAME,
+                zip: locale.zip,
+            }));
+
+            setLocaleCities((prevLocaleCities) =>
+                currentPage === 1
+                    ? localeCityData
+                    : [...prevLocaleCities, ...localeCityData]
+            );
+
+            setHasMoreLocaleCities(currentPage < response.data.local_names.last_page);
+        } catch (error) {
+            console.error('Error fetching locale cities:', error);
+        } finally {
+            setSearchLoading(false);
         }
     };
 
@@ -327,6 +362,7 @@ export default function FloorMapScreen() {
                                             placeholderTextColor="#A0AEC0"
                                             onChangeText={(text) => {
                                                 setCity(text);
+                                                setLocaleCity('');
                                                 setPage(1);
                                                 handleCitySearch(text, 1);
                                             }}
@@ -349,6 +385,8 @@ export default function FloorMapScreen() {
                                                             setCity(item.label);
                                                             setZipCode(item.zip);
                                                             setCities([]);
+                                                            setLocaleCities([]);
+                                                            handleLocaleCitySearch(item.label, 1);
                                                         }}
                                                         style={{
                                                             padding: 10,
@@ -391,6 +429,39 @@ export default function FloorMapScreen() {
                                                         </View>
                                                     )
                                                 }
+                                            />
+                                        )}
+                                        {/* Locale Cities List */}
+                                     
+
+                                        {localeCity && (
+                                            <View className="my-4">
+                                                <Text className="text-gray-800 font-semibold">Locale City</Text>
+                                                <TextInput
+                                                    className="border border-gray-300 rounded-lg p-4"
+                                                    value={localeCity}
+                                                    editable={false} // Read-only field
+                                                />
+                                            </View>
+                                        )}
+                                           {localeCities.length > 0 && (
+                                            <FlashList
+                                                data={localeCities}
+                                                keyExtractor={(item) => item.key}
+                                                renderItem={({ item }) => (
+                                                    <TouchableOpacity
+                                                        onPress={() => {
+                                                            setLocaleCity(item.label);
+                                                            setZipCode(item.zip);
+                                                            setCities([]);
+                                                            setLocaleCities([]);
+                                                        }}
+                                                        className="p-2 border-b border-gray-300"
+                                                    >
+                                                        <Text>{item.label} - {item.zip}</Text>
+                                                    </TouchableOpacity>
+                                                )}
+                                                estimatedItemSize={50}
                                             />
                                         )}
                                     </View>

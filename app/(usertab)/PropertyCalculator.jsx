@@ -36,6 +36,9 @@ export default function PropertyCalculator() {
   const [page, setPage] = useState(1);
   const [hasMoreCities, setHasMoreCities] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [localeCities, setLocaleCities] = useState(true);
+  const [hasMoreLocaleCities, setHasMoreLocaleCities] = useState(true);
+  const [localeCity, setLocaleCity] = useState(false);
 
   const token = useSelector((state) => state.auth.token);
 
@@ -43,7 +46,7 @@ export default function PropertyCalculator() {
     debounce(async (query, currentPage = 1) => {
       if (!query) return;
       setSearchLoading(true);
-      console.log("current page", currentPage)
+      // console.log("current page", currentPage)
       try {
         const response = await API.post(
           `/citie-search?page=${currentPage}`,
@@ -64,7 +67,7 @@ export default function PropertyCalculator() {
         } else {
           setCities((prevCities) => [...prevCities, ...cityData]);
         }
-        console.log("next data", response.data.pagination.total)
+        // console.log("next data", response.data.pagination.total)
         setHasMoreCities(currentPage < response.data.pagination.last_page);
       } catch (error) {
         console.log('City search error:', error);
@@ -84,14 +87,45 @@ export default function PropertyCalculator() {
 
 
   const loadMoreCities = () => {
-    console.log("load more")
+    // console.log("load more")
     if (hasMoreCities && !searchLoading && !loadingMore) {
-      setLoadingMore(true); // Mark loading as true
+      setLoadingMore(true);
       setPage(prevPage => {
         const nextPage = prevPage + 1;
         handleCitySearch(city, nextPage);
         return nextPage;
       });
+    }
+  };
+
+  const handleLocaleCitySearch = async (selectedCity, currentPage = 1) => {
+    setSearchLoading(true)
+    setLocaleCity([])
+    try {
+      const response = await API.get(
+        `/city-local-names?page=${currentPage}&city=${encodeURIComponent(selectedCity)}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // console.log("response data", response.data.local_names.data)
+      // console.log("last page", response.data.local_names.last_page)
+
+      const localeCityData = response.data.local_names.data.map((locale) => ({
+        key: locale.id.toString(),
+        label: locale.LOCALE_NAME,
+        zip: locale.zip,
+      }));
+
+      setLocaleCities((prevLocaleCities) =>
+        currentPage === 1
+          ? localeCityData
+          : [...prevLocaleCities, ...localeCityData]
+      );
+
+      setHasMoreLocaleCities(currentPage < response.data.local_names.last_page);
+    } catch (error) {
+      console.error('Error fetching locale cities:', error);
+    } finally {
+      setSearchLoading(false);
     }
   };
 
@@ -118,7 +152,7 @@ export default function PropertyCalculator() {
 
 
   const handleSubmit = async () => {
-    console.log("handle function")
+    // console.log("handle function")
     if (!city || !zipCode || !area || !projectType) {
       Alert.alert('Error', 'All fields are required');
       return;
@@ -134,7 +168,6 @@ export default function PropertyCalculator() {
     };
 
     try {
-
       const response = await API.post("regional_multipliers/details", data, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -175,7 +208,7 @@ export default function PropertyCalculator() {
           position: 'absolute',
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
-          marginTop: screenHeight * 0.17, 
+          marginTop: screenHeight * 0.12,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
         }}
@@ -186,7 +219,7 @@ export default function PropertyCalculator() {
           keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
         >
           <ScrollView
-            contentContainerStyle={{ paddingBottom: 20 }}
+            // contentContainerStyle={{ paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
           >
 
@@ -221,6 +254,8 @@ export default function PropertyCalculator() {
                           setCity(item.label);
                           setZipCode(item.zip);
                           setCities([]);
+                          setLocaleCities([]);
+                          handleLocaleCitySearch(item.label, 1);
                         }}
                         style={{
                           padding: 10,
@@ -265,6 +300,37 @@ export default function PropertyCalculator() {
                     }
                   />
                 )}
+
+                {localeCity && (
+                  <View className="my-4">
+                    <Text className="text-gray-800 font-semibold">Locale City</Text>
+                    <TextInput
+                      className="border border-gray-300 rounded-lg p-4"
+                      value={localeCity}
+                      editable={false} // Read-only field
+                    />
+                  </View>
+                )}
+                {localeCities.length > 0 && (
+                  <FlashList
+                    data={localeCities}
+                    keyExtractor={(item) => item.key}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        onPress={() => {
+                          setLocaleCity(item.label);
+                          setZipCode(item.zip);
+                          setCities([]);
+                          setLocaleCities([]);
+                        }}
+                        className="p-2 border-b border-gray-300"
+                      >
+                        <Text>{item.label} - {item.zip}</Text>
+                      </TouchableOpacity>
+                    )}
+                    estimatedItemSize={50}
+                  />
+                )}
               </View>
 
               <Text className="text-gray-700 mb-1 text-lg font-bold">Zip Code:</Text>
@@ -306,7 +372,7 @@ export default function PropertyCalculator() {
 
               <TouchableOpacity
                 onPress={handleSubmit}
-                className="bg-sky-900 mt-8 py-3 rounded-md shadow-md"
+                className="bg-sky-900 mt-2 py-3 rounded-md shadow-md"
                 disabled={loading}
               >
                 <Text className="text-white text-center text-lg font-bold">CALCULATE</Text>

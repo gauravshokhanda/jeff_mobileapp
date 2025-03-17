@@ -15,7 +15,7 @@ import {
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import AddPortfolioModal from "../../components/addPortfolioModal";
+import ContractorPortfoliomodal from "../../components/ContractorPortfolioModal"
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { API, baseUrl } from "../../config/apiConfig";
@@ -58,7 +58,7 @@ const ProfileCard = () => {
         const organizationImage = userData.upload_organisation
           ? { uri: `${baseUrl}${userData.upload_organisation}` }
           : defaultHomeImage;
-          setOrganizationImage(organizationImage);
+        setOrganizationImage(organizationImage);
       } catch (error) {
         setError("Failed to load user data");
       }
@@ -105,14 +105,15 @@ const ProfileCard = () => {
   };
 
   const addPortfolioItem = async (newData) => {
+    console.log("new data", newData)
     try {
       let formData = new FormData();
       formData.append("project_name", newData.projectName);
-      formData.append("city", newData.cityName);
+      formData.append("city", newData.city);
       formData.append("address", newData.address);
       formData.append("description", newData.description);
 
-      newData.selectedImages.forEach((uri, index) => {
+      newData.images.forEach((uri, index) => {
         formData.append(`portfolio_images[]`, {
           uri,
           name: `image_${index}.jpg`,
@@ -276,7 +277,7 @@ const ProfileCard = () => {
               className="w-full h-48"
               resizeMode="cover"
             />
-           
+
 
             <TouchableOpacity
               className="absolute top-4 left-4 bg-white p-2 rounded-full shadow"
@@ -305,12 +306,12 @@ const ProfileCard = () => {
             </View>
             <Text className="text-gray-600 mt-2">{userData.name}</Text>
             <Text className="text-gray-600">{userData.email ? userData.email : ""}</Text>
-            <Text className="text-gray-600">{userData.number ? userData.number : ""}</Text>
+            {/* <Text className="text-gray-600">{userData.number ? userData.number : ""}</Text> */}
             <Text className="text-gray-600">
               {userData.address ? userData.address + "," : ""} {userData.city ? userData.city : ""}
             </Text>
             <Text className="text-gray-600 font-semibold mt-2">
-              {userData.company_name ? userData.company_name : ""}
+              {userData && userData.company_name ? userData.company_name : ""}
             </Text>
             <Text className="text-gray-600">{userData?.company_address}</Text>
           </View>
@@ -368,8 +369,8 @@ const ProfileCard = () => {
       )}
 
       {modalVisible && (
-        <AddPortfolioModal
-          modalVisible={modalVisible}
+        <ContractorPortfoliomodal
+          visible={modalVisible}
           setModalVisible={setModalVisible}
           onClose={() => setModalVisible(false)}
           addPortfolioItem={addPortfolioItem}

@@ -59,6 +59,7 @@ const Portfolio = ({ navigation }) => {
 
   // Fetch Portfolio Function
   const fetchPortfolio = async (page = 1) => {
+    setLoading(true)
     try {
       // console.log("Fetching user details...");
 
@@ -142,27 +143,26 @@ const Portfolio = ({ navigation }) => {
   }, [token]);
 
   const addPortfolioItem = async (newData) => {
+    console.log("new data", newData)
     if (
       !newData.projectName.trim() ||
-      !newData.cityName.trim() ||
+      !newData.city.trim() ||
       !newData.address.trim() ||
       !newData.description.trim() ||
-      newData.selectedImages.length === 0
+      newData.images.length === 0
     ) {
       Alert.alert("Error", "All fields are required, including at least one image.");
       return;
     }
-
-
-
+    setLoading(true)
     try {
       let formData = new FormData();
       formData.append("project_name", newData.projectName);
-      formData.append("city", newData.cityName);
+      formData.append("city", newData.city);
       formData.append("address", newData.address);
       formData.append("description", newData.description);
 
-      newData.selectedImages.forEach((uri, index) => {
+      newData.images.forEach((uri, index) => {
         formData.append(`portfolio_images[]`, {
           uri,
           name: `image_${index}.jpg`,
@@ -182,7 +182,7 @@ const Portfolio = ({ navigation }) => {
           },
         }
       );
-      // console.log("response", response.data)
+      console.log("response", response.data)
 
       if (response.data) {
         Alert.alert("Success", "Portfolio added successfully!", [
@@ -199,7 +199,9 @@ const Portfolio = ({ navigation }) => {
       console.error("API Error:", error.response?.data || error);
       Alert.alert("API Error", error.response?.data?.message || "An error occurred");
     }
-
+    finally {
+      setLoading(false)
+    }
   };
 
 
@@ -210,8 +212,6 @@ const Portfolio = ({ navigation }) => {
       fetchPortfolio();
     }, [])
   );
-
-  // Pick Image Function
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -252,6 +252,7 @@ const Portfolio = ({ navigation }) => {
 
   };
   const fetchCities = async (page = 1, query = "") => {
+    setLoading(true)
     try {
       const response = await axios.post(
         `https://g32.iamdeveloper.in/api/citie-search?page=${page}&search=${query}`,
@@ -276,6 +277,9 @@ const Portfolio = ({ navigation }) => {
     } catch (error) {
       console.error("Error fetching cities:", error.response || error);
       Alert.alert("Error", "Failed to fetch cities.");
+    }
+    finally {
+      setLoading(false)
     }
   };
 
