@@ -10,8 +10,9 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
+      "buldleIdentifier":"dev.expo.jeffContructionApp",
       "config": {
-        "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY" 
+        "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
       }
     },
     "android": {
@@ -19,6 +20,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "googleServicesFile":"./google-services.json",
+      "package":"dev.expo.jeffContructionApp",
       "config": {
         "googleMaps": {
           "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
@@ -44,6 +47,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "456005e1-c5be-4510-8f9e-5a478a95100c"
+      }
+    },
+    "owner": "gauravshokhanda"
   }
 }
