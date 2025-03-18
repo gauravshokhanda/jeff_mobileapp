@@ -8,10 +8,35 @@ import { store, persistor } from '../redux/store';
 import React from "react";
 import '../global.css';
 
+import { NotificationProvider } from "@/context/NotificationContext";
+import * as Notifications from "expo-notifications";
+import * as TaskManager from "expo-task-manager";
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+const BACKGROUND_NOTIFICATION_TASK = "BACKGROUND-NOTIFICATION-TASK";
+TaskManager.defineTask(
+  BACKGROUND_NOTIFICATION_TASK,
+  ({ data, error, executionInfo }) => {
+    console.log("✅ Received a notification in the background!", {
+      data,
+      error,
+      executionInfo,
+    });
+    // Do something with the notification data
+  }
+);
+
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 
 export default function RootLayout() {
   return <>
+   <NotificationProvider>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Stack screenOptions={{ headerShown: false }}>
@@ -30,5 +55,6 @@ export default function RootLayout() {
         </Stack>
       </PersistGate>
     </Provider>
+    </NotificationProvider>
   </>;
 }

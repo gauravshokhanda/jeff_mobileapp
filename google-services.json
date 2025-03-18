@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "99535253661",
+    "firebase_url": "https://ac5d-533ea-default-rtdb.firebaseio.com",
+    "project_id": "ac5d-533ea",
+    "storage_bucket": "ac5d-533ea.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:99535253661:android:b0fb8c5a46f5c9b0a2a474",
+        "android_client_info": {
+          "package_name": "com.android.ac5d"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJz96AlMJOnmTQusq3R0qL38yOdsJ_60Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:99535253661:android:6f342703da4c19dda2a474",
+        "android_client_info": {
+          "package_name": "com.android.ac5dconstruction"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJz96AlMJOnmTQusq3R0qL38yOdsJ_60Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:99535253661:android:984a8d773c8cb8fba2a474",
+        "android_client_info": {
+          "package_name": "dev.expo.jeffContructionApp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJz96AlMJOnmTQusq3R0qL38yOdsJ_60Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
