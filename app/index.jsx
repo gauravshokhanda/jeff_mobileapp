@@ -1,37 +1,49 @@
-import { View, Image, Text, TouchableOpacity } from 'react-native';
-import React, { useEffect } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { View, Image, Text, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 
+import { useNotification } from "@/context/NotificationContext";
+import * as Updates from "expo-updates";
+
 export default function Index() {
-    const navigation = useNavigation();
-    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-    const token = useSelector((state) => state.auth.token);
+  //   const { notification, expoPushToken, error } = useNotification();
 
-    return (
-        <View className="flex-1 items-center bg-white">
-            <View className='items-center'>
-                <Image
-                    source={require('../assets/images/homescreen/homeImage.png')}
-                />
-            </View>
+  //   if (error) {
+  //     return <Text>Error: {error.message}</Text>;
+  //   }
 
-            <View className=" h-[20%] w-[100%] justify-between items-center">
-                <Image
-                    className='h-[60%] w-[80%] rounded-lg '
-                    source={require('../assets/images/homescreen/MainLogo.jpg')} />
-                <TouchableOpacity
-                    onPress={() => navigation.navigate('SignIn')}
-                    className="text-center rounded-3xl px-10 bg-sky-950"
-                >
-                    <Text className="font-semibold text-center mx-10 my-3 text-lg text-white">
-                        Get Started
-                    </Text>
-                </TouchableOpacity>
+  const navigation = useNavigation();
 
-            </View>
+  return (
+    <View className="flex-1 items-center bg-white">
+      <View className="items-center">
+        <Image source={require("../assets/images/homescreen/homeImage.png")} />
+      </View>
 
-        </View>
-    );
+      <View className=" h-[20%] w-[100%] justify-between items-center">
+        <Image
+          className="h-[60%] w-[80%] rounded-lg"
+          source={require("../assets/images/homescreen/MainLogo.jpg")}
+        />
+        {/* <Text type="subtitle" style={{ color: "red" }}>
+          Your push token:
+        </Text>
+        <Text>{expoPushToken}</Text> */}
+
+        {/* <Text>s
+          {JSON.stringify(notification?.request.content.data, null, 2)}
+        </Text> */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate("SignIn")}
+          className="text-center rounded-3xl px-10 bg-sky-950"
+        >
+          <Text className="font-semibold text-center mx-10 my-3 text-lg text-white">
+            Get Started
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 }
