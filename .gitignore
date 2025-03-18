@@ -8,6 +8,8 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
+ac5d-533ea-firebase-adminsdk-fbsvc-77319d5414.json
+google-services.json
 
 # Native
 *.orig.*
