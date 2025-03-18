@@ -20,13 +20,12 @@ import { router } from "expo-router";
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../../config/apiConfig";
 import Swiper from "react-native-swiper";
+
 export default function Listing() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
 
-  const [selectedPropertyType, setSelectedPropertyType] =
-    useState("residential");
-
+  const [selectedPropertyType, setSelectedPropertyType] = useState("residential");
   const [properties, setProperties] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -47,9 +46,6 @@ export default function Listing() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      // console.log("response", response.data.properties.data)
-      // console.log("response", response.data.properties.last_page)
-      // console.log("response", response.data.properties)
       setProperties((prev) =>
         page === 1
           ? response.data.properties.data
@@ -108,16 +104,12 @@ export default function Listing() {
     const propertyImages = JSON.parse(item.property_images) || [];
 
     return (
-      <View
-        style={{}}
-        className="rounded-xl bg-white shadow-md overflow-hidden mb-4"
-      >
+      <View className="rounded-xl bg-white shadow-md overflow-hidden mb-4">
         <TouchableOpacity
           className="bg-sky-950 p-4 flex-row items-start"
           onPress={() => router.push(`SingleListing?id=${item.id}`)}
         >
           <View className="flex-1">
-            {/* Location and Tags */}
             <View className="flex-row justify-between items-center">
               <View className="flex-row items-center">
                 <Ionicons name="location" size={20} color="white" />
@@ -224,7 +216,6 @@ export default function Listing() {
           </View>
         </TouchableOpacity>
 
-        {/* Bottom Section with Button */}
         <View className="bg-gray-200 rounded-b-2xl p-4 flex-row justify-between items-center">
           <Text className="text-lg font-semibold text-gray-600">
             Get ready list of buyers
@@ -243,7 +234,6 @@ export default function Listing() {
         colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-        {/* Header */}
         <View className="mt-2">
           <TouchableOpacity
             className="absolute top-6 z-10 left-5"
@@ -256,7 +246,6 @@ export default function Listing() {
           </Text>
         </View>
 
-        {/* Search Bar */}
         <View className="mx-5" style={{ marginTop: screenHeight * 0.02 }}>
           <View
             className="bg-gray-100 rounded-full flex-row items-center justify-between"
@@ -268,7 +257,7 @@ export default function Listing() {
             <Ionicons name="search" size={18} color="black" />
             <TextInput
               placeholder="Search by City"
-              placeholderTextColor={"gray"}
+              placeholderTextColor="gray"
               className="flex-1 text-lg"
               style={{ fontSize: 14, marginLeft: screenWidth * 0.03 }}
               value={searchQuery}
@@ -279,21 +268,19 @@ export default function Listing() {
         </View>
       </LinearGradient>
 
-      {/* Content Section */}
       <View
         className="rounded-3xl"
         style={{
           position: "absolute",
-          top: screenHeight * 0.22, // Adjusted to prevent overlap
+          top: screenHeight * 0.22,
           width: postContentWidth,
           height: screenHeight * 0.75,
           left: (screenWidth - postContentWidth) / 2,
           backgroundColor: "white",
-          paddingTop: screenHeight * 0.02, // Added extra spacing
+          paddingTop: screenHeight * 0.02,
         }}
       >
         <View className="flex-1 m-5">
-          {/* Property Types */}
           <View className="p-3 rounded-lg">
             <FlatList
               data={propertyTypes}
@@ -305,10 +292,15 @@ export default function Listing() {
             />
           </View>
 
-          {/* Property Listings */}
           <View className="flex-1 mt-2 mb-3">
             {loading ? (
               <ActivityIndicator size="large" color="#082f49" />
+            ) : properties.length === 0 ? ( // ➡️ Added condition for no properties
+              <View className="flex-1 justify-center items-center">
+                <Text className="text-gray-500 text-lg font-semibold">
+                  No Listings Found
+                </Text>
+              </View>
             ) : (
               <FlatList
                 showsVerticalScrollIndicator={false}

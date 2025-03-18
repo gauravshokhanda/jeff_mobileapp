@@ -8,6 +8,7 @@ import {
   Dimensions,
   SafeAreaView,
   FlatList,
+  Platform,
 } from "react-native";
 import { useRouter, useLocalSearchParams, router } from "expo-router";
 import { API, baseUrl } from "../../config/apiConfig";
@@ -67,15 +68,13 @@ export default function PropertyDetails() {
     return (
       <View>
         <TouchableOpacity
-          className={`px-8 py-2 flex-row items-center justify-between border-b-2 ${
-            isSelected ? "border-sky-900" : "border-gray-300"
-          }`}
+          className={`px-8 py-2 flex-row items-center justify-between border-b-2 ${isSelected ? "border-sky-900" : "border-gray-300"
+            }`}
           onPress={() => setSelectedPropertyType(item.id)}
         >
           <Text
-            className={`text-lg mx-10 font-medium ${
-              isSelected ? "text-sky-900" : "text-gray-400"
-            }`}
+            className={`text-lg mx-10 font-medium ${isSelected ? "text-sky-900" : "text-gray-400"
+              }`}
           >
             {item.label}
           </Text>
@@ -88,20 +87,20 @@ export default function PropertyDetails() {
   const propertyDetails = useMemo(() => {
     return property
       ? [
-          { label: "City", value: property.city },
-          { label: "Address", value: property.address },
-          {
-            label: "Available from",
-            value: property.available_from.split("T")[0],
-          },
-          { label: "Property Type", value: property.property_type },
-          { label: "Building Type", value: property.house_type },
-          { label: "Area", value: `${property.area} sqft` },
-          { label: "Locality", value: property.locale },
-          { label: "Price", value: `₹${property.price}` },
-          { label: "Furnish Type", value: property.furnish_type },
-          { label: "BHK", value: property.bhk },
-        ]
+        { label: "City", value: property.city },
+        { label: "Address", value: property.address },
+        {
+          label: "Available from",
+          value: property.available_from.split("T")[0],
+        },
+        { label: "Property Type", value: property.property_type },
+        { label: "Building Type", value: property.house_type },
+        { label: "Area", value: `${property.area} sqft` },
+        { label: "Locality", value: property.locale },
+        { label: "Price", value: `₹${property.price}` },
+        { label: "Furnish Type", value: property.furnish_type },
+        { label: "BHK", value: property.bhk },
+      ]
       : [];
   }, [property]);
 
@@ -115,7 +114,10 @@ export default function PropertyDetails() {
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       {/* backbutton and chatbutton */}
-      <View className="w-[100%] flex-row mt-12 items-center justify-between p-3 absolute z-10 bg-black/40">
+      <View className={`w-[100%] flex-row  items-center justify-between p-3 absolute z-10 bg-black/40 
+         ${Platform.OS === "ios" ? "mt-12" : ""
+        }
+        `}>
         <TouchableOpacity onPress={() => router.back()} className="mr-4">
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>

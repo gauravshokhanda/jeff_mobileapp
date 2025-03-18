@@ -13,25 +13,26 @@ import {
   SafeAreaView,
   ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../../config/apiConfig";
 import Swiper from "react-native-swiper";
+import { handleCallPress } from "../../config/BasicFunctions";
+
 export default function Listing() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
 
-  const [selectedPropertyType, setSelectedPropertyType] =
-    useState("residential");
-
+  const [selectedPropertyType, setSelectedPropertyType] = useState("residential");
   const [properties, setProperties] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const flatListRef = useRef(null); // ➡️ Ref to control FlatList
 
   const token = useSelector((state) => state.auth.token);
 
@@ -46,13 +47,9 @@ export default function Listing() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      // console.log("response", response.data.properties.data)
-      // console.log("response", response.data.properties.last_page)
-      // console.log("response", response.data.properties)
+      const newData = response.data.properties.data;
       setProperties((prev) =>
-        page === 1
-          ? response.data.properties.data
-          : [...prev, ...response.data.properties.data]
+        page === 1 ? newData : [...prev, ...newData] // Append new data
       );
       setCurrentPage(response.data.properties.current_page);
       setTotalPages(response.data.properties.last_page);
@@ -73,7 +70,7 @@ export default function Listing() {
   }, [searchQuery, selectedPropertyType]);
 
   const loadMore = () => {
-    if (currentPage < totalPages) {
+    if (currentPage < totalPages && !loading) {
       fetchProperties(currentPage + 1);
     }
   };
@@ -107,16 +104,12 @@ export default function Listing() {
     const propertyImages = JSON.parse(item.property_images) || [];
 
     return (
-      <View
-        style={{}}
-        className="rounded-xl bg-white shadow-md overflow-hidden mb-4"
-      >
+      <View className="rounded-xl bg-white shadow-md overflow-hidden mb-4">
         <TouchableOpacity
           className="bg-sky-950 p-4 flex-row items-start"
           onPress={() => router.push(`SingleListing?id=${item.id}`)}
         >
           <View className="flex-1">
-            {/* Location and Tags */}
             <View className="flex-row justify-between items-center">
               <View className="flex-row items-center">
                 <Ionicons name="location" size={20} color="white" />
@@ -223,15 +216,9 @@ export default function Listing() {
           </View>
         </TouchableOpacity>
 
-        {/* Bottom Section with Button */}
         <View className="bg-gray-200 rounded-b-2xl p-4 flex-row justify-between items-center">
-          <TouchableOpacity className="border p-2 rounded-lg">
-            <Text className="text-lg font-semibold text-gray-600">
-              View Contractor
-            </Text>
-          </TouchableOpacity>
           <View className="flex-row gap-4">
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => handleCallPress("180013156677")}>
               <Ionicons name="call" size={30} color="gray" />
             </TouchableOpacity>
             <TouchableOpacity
@@ -251,14 +238,12 @@ export default function Listing() {
         colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-        {/* Header */}
         <View className="mt-8 px-4">
           <Text className="text-2xl font-semibold text-white">
             Property Listing
           </Text>
         </View>
 
-        {/* Search Bar */}
         <View className="mx-5" style={{ marginTop: screenHeight * 0.02 }}>
           <View
             className="bg-gray-100 rounded-full flex-row items-center justify-between"
@@ -281,21 +266,19 @@ export default function Listing() {
         </View>
       </LinearGradient>
 
-      {/* Content Section */}
       <View
         className="rounded-3xl"
         style={{
           position: "absolute",
-          top: screenHeight * 0.22, // Adjusted to prevent overlap
+          top: screenHeight * 0.22,
           width: postContentWidth,
           height: screenHeight * 0.75,
           left: (screenWidth - postContentWidth) / 2,
           backgroundColor: "white",
-          paddingTop: screenHeight * 0.02, // Added extra spacing
+          paddingTop: screenHeight * 0.02,
         }}
       >
         <View className="flex-1 m-5">
-          {/* Property Types */}
           <View className="p-3 rounded-lg">
             <FlatList
               data={propertyTypes}
@@ -307,7 +290,6 @@ export default function Listing() {
             />
           </View>
 
-          {/* Property Listings */}
           <View className="flex-1 mt-2 mb-3">
             {loading ? (
               <ActivityIndicator size="large" color="#082f49" />
@@ -319,12 +301,19 @@ export default function Listing() {
               </View>
             ) : (
               <FlatList
+                ref={flatListRef} // ➡️ Attach ref
                 showsVerticalScrollIndicator={false}
                 data={properties}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={renderListening}
                 onEndReached={loadMore}
                 onEndReachedThreshold={0.5}
+                maintainVisibleContentPosition={{ // ➡️ Preserve scroll position
+                  minIndexForVisible: 0,
+                }}
+                initialNumToRender={10} // ➡️ Optimize initial render
+                maxToRenderPerBatch={10} // ➡️ Control batch rendering
+                windowSize={5} // ➡️ Optimize rendering window
               />
             )}
           </View>

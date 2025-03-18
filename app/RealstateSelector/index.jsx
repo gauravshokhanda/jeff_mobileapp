@@ -31,6 +31,8 @@ export default function Index() {
 
 
   const [city, setCity] = useState('');
+  const [localeCity, setLocaleCity] = useState("");
+
   const [address, setAddress] = useState('');
   const [locality, setLocality] = useState('');
   const [price, setPrice] = useState('');
@@ -209,7 +211,7 @@ export default function Index() {
     dispatch(
       setRealStateProperty({
         property_type: selectedPropertyType,
-        city,
+        city:localeCity,
         house_type: selectedHomeType,
         address,
         locale: locality,
@@ -248,6 +250,7 @@ export default function Index() {
               setArea("");
               setSelectedType("");
               setPrice("");
+              setLocaleCity("")
               setAvailableFrom("");
               setImages([])
               router.replace("/(RealstateContractorTab)");
@@ -315,16 +318,12 @@ export default function Index() {
                 />
 
                 <View className="flex-row items-center border-b border-gray-300 mt-5">
-                  <CitySearch city={city} setCity={setCity} />
-                  {/* <Ionicons name="search" size={18} color="black" />
-                                     <TextInput
-                                        value={city}
-                                        onChangeText={(text) => setCity(text)}
-                                        placeholder="Search City"
-                                        placeholderTextColor="gray"
-                                        className="flex-1 text-lg text-gray-800 ml-5"
-                                    />
-                                    //  <MaterialCommunityIcons name="crosshairs-gps" size={25} color="#0C4A6E" />  */}
+                  <CitySearch
+                    city={city}
+                    setCity={setCity}
+                    localeCity={localeCity}
+                    setLocaleCity={setLocaleCity}
+                  />
                 </View>
 
                 {/* House Type */}
@@ -347,20 +346,29 @@ export default function Index() {
                     placeholder="Building/Project/Society(Optional)"
                     value={address}
                     onChangeText={setAddress}
+                    textLabel={""}
+
                   />
                   <CustomTextInput
                     placeholder="Enter Locality"
                     value={locality}
                     onChangeText={setLocality}
+                    textLabel={""}
+
                   />
                   <CustomTextInput
                     value={price}
                     onChangeText={setPrice}
-                    placeholder="Price" />
+                    placeholder="Price"
+                    textLabel={"$"}
+                    keyboardType="numeric"
+                    />
                   <CustomTextInput
                     placeholder="Built Up Area"
                     value={area}
                     onChangeText={setArea}
+                    textLabel={"sq ft"}
+                    keyboardType="numeric"
                   />
 
                 </View>
@@ -422,7 +430,7 @@ export default function Index() {
                               <View key={index} className="relative w-24 h-24 m-1">
                                 <Image source={{ uri }} className="w-full h-full rounded-2xl" />
                                 <TouchableOpacity
-                                  onPress={() => removeImage(index)} 
+                                  onPress={() => removeImage(index)}
                                   className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
                                 >
                                   <Ionicons name="close" size={16} color="white" />

@@ -6,7 +6,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import CustomTextInput from "../../components/CustomTextInput"
 import CustomDatePicker from "../../components/CustomDatePicker"
-import API from "../../config/apiConfig"
+import { API } from "../../config/apiConfig"
 import { useSelector, useDispatch } from 'react-redux';
 import CitySearch from '../../components/CitySearch';
 import axios from 'axios';
@@ -31,6 +31,7 @@ export default function Index() {
 
 
   const [city, setCity] = useState('');
+  const [localeCity, setLocaleCity] = useState("");
   const [address, setAddress] = useState('');
   const [locality, setLocality] = useState('');
   const [price, setPrice] = useState('');
@@ -69,10 +70,10 @@ export default function Index() {
 
           onPress={() => setSelectedPropertyType(item.id)}
         >
-          
-            <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-400"}`}>
-              {item.label}
-            </Text>
+
+          <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-400"}`}>
+            {item.label}
+          </Text>
         </TouchableOpacity>
 
       </View>
@@ -103,35 +104,35 @@ export default function Index() {
 
     return (
       <TouchableOpacity
-      onPress={() => setSelectedHomeType(item.name)}
-      style={{
-        alignItems: "center",
-        justifyContent: "center",
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        backgroundColor: isSelected ? "gray" : "#F3F4F6", // Sky blue when selected, light gray otherwise
-        overflow: "hidden",
-        marginHorizontal: 8,
-        elevation: isSelected ? 5 : 0, // Add shadow when selected
-      }}
-    >
-      {/* Image */}
-      <Image source={item.image} style={{ width: 50, height: 50 }} resizeMode="contain" />
-
-      {/* Text */}
-      <Text
+        onPress={() => setSelectedHomeType(item.name)}
         style={{
-          fontSize: 14,
-          fontWeight: "500",
-          marginTop: 6,
-          textAlign: "center",
-          color: isSelected ? "white" : "#374151", // White text when selected, gray otherwise
+          alignItems: "center",
+          justifyContent: "center",
+          width: 100,
+          height: 100,
+          borderRadius: 50,
+          backgroundColor: isSelected ? "gray" : "#F3F4F6", // Sky blue when selected, light gray otherwise
+          overflow: "hidden",
+          marginHorizontal: 8,
+          elevation: isSelected ? 5 : 0, // Add shadow when selected
         }}
       >
-        {item.name}
-      </Text>
-    </TouchableOpacity>
+        {/* Image */}
+        <Image source={item.image} style={{ width: 50, height: 50 }} resizeMode="contain" />
+
+        {/* Text */}
+        <Text
+          style={{
+            fontSize: 14,
+            fontWeight: "500",
+            marginTop: 6,
+            textAlign: "center",
+            color: isSelected ? "white" : "#374151", // White text when selected, gray otherwise
+          }}
+        >
+          {item.name}
+        </Text>
+      </TouchableOpacity>
 
     );
   };
@@ -143,13 +144,13 @@ export default function Index() {
     return (
       <View className="mx-2 rounded-lg overflow-hidden" >
         <TouchableOpacity
-        className="bg-gray-500 p-4"
+          className="bg-gray-500 p-4"
           onPress={() => setSelectedBHK(item)}
 
         >
-            <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-400"}`}>
-              {item}
-            </Text>
+          <Text className={`text-lg font-medium ${isSelected ? "text-white" : "text-gray-400"}`}>
+            {item}
+          </Text>
         </TouchableOpacity>
       </View>
     )
@@ -168,15 +169,15 @@ export default function Index() {
     return (
       <View className="mx-2 rounded-lg overflow-hidden" >
 
-      <TouchableOpacity
-        className="bg-gray-400 p-3"
-        onPress={() => setSelectedType(item.id)}
-      >
-         
+        <TouchableOpacity
+          className="bg-gray-400 p-3"
+          onPress={() => setSelectedType(item.id)}
+        >
+
           <Text className={`text-lg ${isSelected ? "text-white" : "text-gray-900"}`}>
             {item.label}
           </Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -185,7 +186,56 @@ export default function Index() {
   // handle submit
   const token = useSelector((state) => state.auth.token);
   const handleSubmit = async () => {
-    console.log("handle submit function")
+    if (!selectedPropertyType) {
+      Alert.alert("Error", "Please select a property type.");
+      return;
+    }
+    if (!city) {
+      Alert.alert("Error", "Please enter a city.");
+      return;
+    }
+    if (!selectedHomeType) {
+      Alert.alert("Error", "Please select a house type.");
+      return;
+    }
+    if (!address) {
+      Alert.alert("Error", "Please enter an address.");
+      return;
+    }
+    if (!locality) {
+      Alert.alert("Error", "Please enter a locality.");
+      return;
+    }
+    if (!selectedBHK) {
+      Alert.alert("Error", "Please select a BHK option.");
+      return;
+    }
+    if (!area) {
+      Alert.alert("Error", "Please enter the built-up area.");
+      return;
+    } else if (!/^\d+$/.test(area)) {
+      Alert.alert("Error", "Built-up area must be a valid number.");
+      return;
+    }
+    if (!selectedType) {
+      Alert.alert("Error", "Please select a furnish type.");
+      return;
+    }
+    if (!price) {
+      Alert.alert("Error", "Please enter a price.");
+      return;
+    } else if (!/^\d+(\.\d{1,2})?$/.test(price)) {
+      Alert.alert("Error", "Price must be a valid number (e.g., 50000 or 50000.99).");
+      return;
+    }
+    if (!availableFrom) {
+      Alert.alert("Error", "Please select an available from date.");
+      return;
+    }
+    if (images.length === 0) {
+      Alert.alert("Error", "Please upload at least one property image.");
+      return;
+    }
     const formData = new FormData();
     formData.append("property_type", selectedPropertyType);
     formData.append("city", city);
@@ -210,7 +260,7 @@ export default function Index() {
     dispatch(
       setRealStateProperty({
         property_type: selectedPropertyType,
-        city,
+        city: localeCity,
         house_type: selectedHomeType,
         address,
         locale: locality,
@@ -223,7 +273,7 @@ export default function Index() {
     );
 
     try {
-      const response = await axios.post("https://g32.iamdeveloper.in/api/realstate-property", formData, {
+      const response = await API.post("realstate-property", formData, {
         headers:
         {
           Authorization: `Bearer ${token}`,
@@ -249,7 +299,8 @@ export default function Index() {
               setArea("");
               setSelectedType("");
               setPrice("");
-              setAvailableFrom("");
+              setAvailableFrom(null);
+              setLocaleCity("")
               setImages([])
               router.replace("/");
             },
@@ -276,7 +327,7 @@ export default function Index() {
         </View>
 
       </LinearGradient>
-
+      
       <View className="rounded-3xl border border-gray-400"
         style={{
           position: 'absolute',
@@ -316,16 +367,12 @@ export default function Index() {
                 />
 
                 <View className="flex-row items-center border-b border-gray-300 mt-5">
-                  <CitySearch city={city} setCity={setCity} />
-                  {/* <Ionicons name="search" size={18} color="black" />
-                                     <TextInput
-                                        value={city}
-                                        onChangeText={(text) => setCity(text)}
-                                        placeholder="Search City"
-                                        placeholderTextColor="gray"
-                                        className="flex-1 text-lg text-gray-800 ml-5"
-                                    />
-                                    //  <MaterialCommunityIcons name="crosshairs-gps" size={25} color="#0C4A6E" />  */}
+                  <CitySearch
+                    city={city}
+                    setCity={setCity}
+                    localeCity={localeCity}
+                    setLocaleCity={setLocaleCity}
+                  />
                 </View>
 
                 {/* House Type */}
@@ -357,11 +404,16 @@ export default function Index() {
                   <CustomTextInput
                     value={price}
                     onChangeText={setPrice}
-                    placeholder="Price" />
+                    placeholder="Price"
+                    textLabel={"$"}
+                    keyboardType="numeric"
+                  />
                   <CustomTextInput
                     placeholder="Built Up Area"
                     value={area}
                     onChangeText={setArea}
+                    textLabel={"sq ft"}
+                    keyboardType="numeric"
                   />
 
                 </View>
@@ -394,7 +446,7 @@ export default function Index() {
                     renderItem={renderFurnishItem}
                   />
                 </View>
-              
+
                 <View>
                   <CustomDatePicker
                     label="Available From"
@@ -424,7 +476,7 @@ export default function Index() {
                               <View key={index} className="relative w-24 h-24 m-1">
                                 <Image source={{ uri }} className="w-full h-full rounded-2xl" />
                                 <TouchableOpacity
-                                  onPress={() => removeImage('designImages', index)}
+                                  onPress={() => removeImage(index)}
                                   className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
                                 >
                                   <Ionicons name="close" size={16} color="white" />

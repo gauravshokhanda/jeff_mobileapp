@@ -12,6 +12,7 @@ import {
   Alert,
   SafeAreaView,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -20,6 +21,7 @@ import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { API, baseUrl } from "../../config/apiConfig";
 import Swiper from "react-native-swiper";
+import { handleCallPress } from "../../config/BasicFunctions";
 
 export default function Index() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -33,6 +35,30 @@ export default function Index() {
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // const handleCallPress = (phoneNumber) => {
+  //   const phoneUrl = `tel:${phoneNumber}`;
+  //   Linking.canOpenURL(phoneUrl)
+  //     .then((supported) => {
+  //       if (supported) {
+  //         return Linking.openURL(phoneUrl);
+  //       } else {
+  //         Alert.alert("Error", "Phone calls are not supported on this device.");
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log("Error opening phone dialer:", err);
+  //       Alert.alert("Error", "Failed to open phone dialer.");
+  //     });
+  // };
+
+  const handleEmailPress = (email, subject, body) => {
+    Alert.alert("Send Email", `Do you want to email ${email}?`, [
+      { text: "Cancel", style: "cancel" },
+      { text: "Email", onPress: () => Linking.openURL(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`) }
+    ])
+
+  }
 
   const fetchProperties = async (page = 1) => {
     if (loading || page > totalPages) return;
@@ -84,7 +110,6 @@ export default function Index() {
 
     return (
       <View
-        style={{}}
         className="rounded-xl bg-white shadow-md overflow-hidden mb-4"
       >
         <TouchableOpacity
@@ -200,14 +225,14 @@ export default function Index() {
         </TouchableOpacity>
 
         {/* Bottom Section with Button */}
-        <View className="bg-gray-200 rounded-b-2xl p-4 flex-row justify-between items-center">
+        {/* <View className="bg-gray-200 rounded-b-2xl p-4 flex-row justify-between items-center">
           <Text className="text-lg font-semibold text-gray-600">
             Get ready list of buyers
           </Text>
           <TouchableOpacity className="bg-white px-4 py-2 rounded-lg shadow-md">
             <Text className="text-indigo-900 font-semibold">Update</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
     );
   };
@@ -237,7 +262,7 @@ export default function Index() {
           </View>
         </View>
 
-        <View className="mx-5" style={{ marginTop: screenHeight * 0.02 }}>
+        {/* <View className="mx-5" style={{ marginTop: screenHeight * 0.02 }}>
           <View
             className="bg-gray-100 rounded-full flex-row items-center justify-between"
             style={{
@@ -256,14 +281,14 @@ export default function Index() {
             />
 
           </View>
-        </View>
+        </View> */}
       </LinearGradient>
 
       <View
         className="rounded-3xl "
         style={{
           position: "absolute",
-          top: screenHeight * 0.25,
+          top: screenHeight * 0.15,
           width: postContentWidth,
           height: screenHeight * 0.8,
           left: (screenWidth - postContentWidth) / 2,
@@ -288,7 +313,7 @@ export default function Index() {
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={renderListening}
                 ListFooterComponent={
-                  <View>
+                  <View className="flex-1">
                     <View className="bg-[#505C3F] py-4 rounded-2xl  mt-6 shadow-lg flex-row  justify-between w-full">
                       {/* Left Section - Text */}
                       <View className="pl-2">
@@ -361,7 +386,9 @@ export default function Index() {
 
                     <View className="p-8 bg-gray-100 rounded-xl mb-5">
                       {/* Call Us Card */}
-                      <TouchableOpacity className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center mb-3">
+                      <TouchableOpacity
+                        onPress={() => handleCallPress("180013156677")}
+                        className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center mb-3">
                         <View className="bg-gray-200 p-2 rounded-full mr-5">
                           <Ionicons name="call" size={20} color="black" />
                         </View>
@@ -374,7 +401,9 @@ export default function Index() {
                       </TouchableOpacity>
 
                       {/* Email Us Card */}
-                      <TouchableOpacity className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center">
+                      <TouchableOpacity
+                        onPress={() => handleEmailPress("Supportjeff@gmail.com", "Support Request", "Please assist me with my account.")}
+                        className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center">
                         <View className="bg-gray-200 p-2 rounded-full mr-3">
                           <Ionicons
                             name="chatbubble-ellipses"
