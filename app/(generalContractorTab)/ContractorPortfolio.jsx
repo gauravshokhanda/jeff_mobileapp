@@ -54,7 +54,7 @@ const ProfileCard = () => {
           }
         );
         // console.log("profile response", response.data)
-        setUserData(response.data);
+        setUserData(response?.data);
         const organizationImage = userData.upload_organisation
           ? { uri: `${baseUrl}${userData.upload_organisation}` }
           : defaultHomeImage;

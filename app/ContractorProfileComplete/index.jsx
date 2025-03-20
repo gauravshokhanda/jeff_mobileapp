@@ -8,7 +8,8 @@ import {
   KeyboardAvoidingView,
   Image,
   ActivityIndicator,
-  StyleSheet
+  StyleSheet,
+  SafeAreaView
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
@@ -68,11 +69,11 @@ export default function ContractorProfileComplete() {
   const handleSubmit = async () => {
     if (!userName.trim()) return Alert.alert("Error", "Name is required.");
     if (!userEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail)) {
-        return Alert.alert("Error", "Please enter a valid email address.");
+      return Alert.alert("Error", "Please enter a valid email address.");
     }
     if (!companyName.trim()) return Alert.alert("Error", "Company name is required.");
     if (!companyContactNumber.trim() || !/^[0-9]{10}$/.test(companyContactNumber)) {
-        return Alert.alert("Error", "Please enter a valid 10-digit contact number.");
+      return Alert.alert("Error", "Please enter a valid 10-digit contact number.");
     }
     if (!portfolioData.projectName.trim()) return Alert.alert("Error", "Project name is required.");
     if (!portfolioData.description.trim()) return Alert.alert("Error", "Project description is required.");
@@ -151,63 +152,64 @@ export default function ContractorProfileComplete() {
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={{ flex: 1, backgroundColor: "white" }}
-      className="mt-10"
-    >
-      {/* Blur Overlay */}
-      {modalVisible && (
-        <BlurView
-          style={[StyleSheet.absoluteFillObject, { zIndex: 1 }]}
-          intensity={50}
-          tint="light"
-        />
-      )}
-
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
-        keyboardShouldPersistTaps="handled"
+    <SafeAreaView className="flex-1 bg-gray-200">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{ flex: 1, backgroundColor: "white" }}
+        className=""
       >
-        {/* Header */}
-        <View className="p-4 bg-sky-950">
-          <Text className="text-gray-100 text-xl font-bold text-center">
-            Complete Your Profile
-          </Text>
-        </View>
-        <View className="justify-center items-center relative">
-          <TouchableOpacity
-            onPress={() => pickImage(setProfileImage)}
-            activeOpacity={0.7}
-            className="mt-4 flex justify-center items-center size-32 rounded-full overflow-hidden shadow-lg"
+        {/* Blur Overlay */}
+        {modalVisible && (
+          <BlurView
+            style={[StyleSheet.absoluteFillObject, { zIndex: 1 }]}
+            intensity={50}
+            tint="light"
+          />
+        )}
 
-          >
-            {profileImage ? (
-              <Image source={{ uri: profileImage }} className="w-full h-full rounded-full" />
-            ) : (
-              <LinearGradient
-                colors={["#e0e0e0", "#cfcfcf"]}
-                className="w-full h-full flex justify-center items-center"
-              >
-                <Ionicons name="person-circle-outline" size={60} color="#7c7c7c" />
-                <Text className="text-gray-600 text-xs mt-2">Tap to Upload</Text>
-              </LinearGradient>
-            )}
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Header */}
+          <View className="p-4">
+            <Text className="text-sky-900 text-xl font-bold text-center">
+              Complete Your Profile
+            </Text>
+          </View>
+          <View className="justify-center items-center relative">
+            <TouchableOpacity
+              onPress={() => pickImage(setProfileImage)}
+              activeOpacity={0.7}
+              className="mt-4 flex justify-center items-center size-32 rounded-full overflow-hidden shadow-lg"
+
+            >
+              {profileImage ? (
+                <Image source={{ uri: profileImage }} className="w-full h-full rounded-full" />
+              ) : (
+                <LinearGradient
+                  colors={["#e0e0e0", "#cfcfcf"]}
+                  className="w-full h-full flex justify-center items-center"
+                >
+                  <Ionicons name="person-circle-outline" size={60} color="#7c7c7c" />
+                  <Text className="text-gray-600 text-xs mt-2">Tap to Upload</Text>
+                </LinearGradient>
+              )}
 
 
-          </TouchableOpacity>
-          {/* 📷 Camera Icon for Upload (Fixed Visibility) */}
-          {/* <View
+            </TouchableOpacity>
+            {/* 📷 Camera Icon for Upload (Fixed Visibility) */}
+            {/* <View
             className="absolute bg-blue-500 bottom-0 right-40 p-2 rounded-full border-2 border-white shadow-md"
             style={{ zIndex: 10, elevation: 10 }}
           >
             <Ionicons name="camera" size={22} color="white" />
           </View> */}
-        </View>
+          </View>
 
-        {/* Form Content */}
-        <View className="flex-1 m-6">
-          {/* <View>
+          {/* Form Content */}
+          <View className="flex-1 m-6">
+            {/* <View>
             <Text className="text-gray-600 mb-1 ml-3 text-sm">Full Name</Text>
             <TextInput
               className="border border-gray-400 rounded-2xl pl-3 bg-white py-4"
@@ -217,140 +219,141 @@ export default function ContractorProfileComplete() {
               onChangeText={setFullName}
             />
           </View> */}
-          {/* <View className="border-b border-gray-400">
+            {/* <View className="border-b border-gray-400">
             <Text>Company Name</Text>
           </View> */}
 
-          <View className="mt-14 border-b border-gray-400 flex-row justify-between items-center pb-1">
-            <Text className="text-gray-400 text-lg">Company Name :</Text>
+            <View className="mt-14 border-b border-gray-400 flex-row justify-between items-center pb-1">
+              <Text className="text-gray-400 text-lg">Company Name :</Text>
 
-            <TextInput
-              className="flex-1  px-3 bg-white py-2 text-gray-700"
-              value={companyName}
-              onChangeText={setCompanyName}
-            />
+              <TextInput
+                className="flex-1  px-3 bg-white py-2 text-gray-700"
+                value={companyName}
+                onChangeText={setCompanyName}
+              />
 
-          </View>
-
-          <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
-            <Text className="text-gray-400 text-lg">Company Contact Number :</Text>
-            <TextInput
-              className="flex-1  px-3 bg-white py-2 text-gray-700"
-              keyboardType="numeric"
-              value={companyContactNumber}
-              onChangeText={setCompanyContactNumber}
-            />
-          </View>
-
-
-
-          <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
-            <Text className="text-gray-400 text-lg">Company Registration No. :</Text>
-            <TextInput
-              className="flex-1  px-3 bg-white py-2 text-gray-700"
-              keyboardType="numeric"
-              value={registrationNo}
-              onChangeText={setRegistrationNo}
-            />
-          </View>
-
-          <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
-            <Text className="text-gray-400 text-lg">Company Address :</Text>
-            <TextInput
-              className="flex-1 px-3 bg-white py-2 text-gray-700"
-              value={companyAddress}
-              onChangeText={setCompanyAddress}
-            />
-          </View>
-
-
-          <View className="flex-row mt-10 justify-between items-center">
-
-
-            {/* portfolio section */}
-            <View className="items-start">
-              {portfolioData.images.length > 0 ? (
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
-                  <View className="flex-col border border-dashed border-gray-400 items-center ">
-                    <Text className="text-gray-500 text-lg">Portfolio Image</Text>
-                    {portfolioData.images.map((uri, index) => (
-                      <View key={index} className="relative m-5">
-                        <Image source={{ uri }} className="w-32 h-32 rounded-lg" />
-                        <TouchableOpacity
-                          className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
-                          onPress={() => setPortfolioData(prevData => ({
-                            ...prevData,
-                            images: prevData.images.filter((_, i) => i !== index),
-                          }))}
-                        >
-                          <Ionicons name="close" size={16} color="white" />
-                        </TouchableOpacity>
-                      </View>
-                    ))}
-                  </View>
-
-                </ScrollView>
-              ) : (
-                <TouchableOpacity
-                  className="border border-gray-500 rounded-lg py-3 flex-row items-center px-6"
-                  onPress={() => setModalVisible(true)}
-                >
-                  <Text className="text-gray-600 font-semibold mr-2">Add Portfolio</Text>
-                  <Image source={require('../../assets/images/shortUploadIcon.png')} />
-                </TouchableOpacity>
-              )}
             </View>
 
-            {/* Organization Image Section */}
-            <View className="items-center">
-              {!organizationImage ? (
-                <TouchableOpacity
-                  onPress={() => pickImage(setOrganizationImage)}
-                  className="border border-gray-500 rounded-lg py-3 px-4 flex-row items-center justify-center"
-                >
-                  <Ionicons name="cloud-upload-outline" size={20} color="black" />
-                  <Text className="text-gray-600 font-semibold ml-2">Upload Organization</Text>
-                </TouchableOpacity>
-              ) : (
-                <View className="relative">
-
-                  <View className="border border-dashed border-gray-400 items-center">
-                    <Text className="text-lg text-gray-500">Organization Image</Text>
-                    <Image source={{ uri: organizationImage }} className="w-32 h-32 rounded-lg m-5" />
-
-                    {/* Replace Icon */}
-                    <TouchableOpacity
-                      className="absolute top-7 right-5  rounded-full p-1"
-                      onPress={() => pickImage(setOrganizationImage)}
-                    >
-                      <Ionicons name="refresh" size={16} color="black" />
-                    </TouchableOpacity>
-                  </View>
-
-                </View>
-
-              )}
+            <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
+              <Text className="text-gray-400 text-lg">Company Contact Number :</Text>
+              <TextInput
+                className="flex-1  px-3 bg-white py-2 text-gray-700"
+                keyboardType="numeric"
+                value={companyContactNumber}
+                onChangeText={setCompanyContactNumber}
+              />
             </View>
 
-          </View>
 
-          <View className="mt-9 items-center">
-            <TouchableOpacity
-              className="bg-sky-950 w-[45%] rounded-2xl"
-              onPress={handleSubmit}
-            >
-              <Text className="p-3 text-white text-center">Save Profile</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ScrollView>
 
-      {/* Portfolio Modal */}
-      <PortfolioModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        setPortfolioData={setPortfolioData}
-      />
-    </KeyboardAvoidingView>
+            <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
+              <Text className="text-gray-400 text-lg">Company Registration No. :</Text>
+              <TextInput
+                className="flex-1  px-3 bg-white py-2 text-gray-700"
+                keyboardType="numeric"
+                value={registrationNo}
+                onChangeText={setRegistrationNo}
+              />
+            </View>
+
+            <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
+              <Text className="text-gray-400 text-lg">Company Address :</Text>
+              <TextInput
+                className="flex-1 px-3 bg-white py-2 text-gray-700"
+                value={companyAddress}
+                onChangeText={setCompanyAddress}
+              />
+            </View>
+
+
+            <View className="flex-row mt-10 justify-between items-center">
+
+
+              {/* portfolio section */}
+              <View className="items-start">
+                {portfolioData.images.length > 0 ? (
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+                    <View className="flex-col border border-dashed border-gray-400 items-center ">
+                      <Text className="text-gray-500 text-lg">Portfolio Image</Text>
+                      {portfolioData.images.map((uri, index) => (
+                        <View key={index} className="relative m-5">
+                          <Image source={{ uri }} className="w-32 h-32 rounded-lg" />
+                          <TouchableOpacity
+                            className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
+                            onPress={() => setPortfolioData(prevData => ({
+                              ...prevData,
+                              images: prevData.images.filter((_, i) => i !== index),
+                            }))}
+                          >
+                            <Ionicons name="close" size={16} color="white" />
+                          </TouchableOpacity>
+                        </View>
+                      ))}
+                    </View>
+
+                  </ScrollView>
+                ) : (
+                  <TouchableOpacity
+                    className="border border-gray-500 rounded-lg py-3 flex-row items-center px-6"
+                    onPress={() => setModalVisible(true)}
+                  >
+                    <Text className="text-gray-600 font-semibold mr-2">Add Portfolio</Text>
+                    <Image source={require('../../assets/images/shortUploadIcon.png')} />
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {/* Organization Image Section */}
+              <View className="items-center">
+                {!organizationImage ? (
+                  <TouchableOpacity
+                    onPress={() => pickImage(setOrganizationImage)}
+                    className="border border-gray-500 rounded-lg py-3 px-4 flex-row items-center justify-center"
+                  >
+                    <Ionicons name="cloud-upload-outline" size={20} color="black" />
+                    <Text className="text-gray-600 font-semibold ml-2">Upload Organization</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <View className="relative">
+
+                    <View className="border border-dashed border-gray-400 items-center">
+                      <Text className="text-lg text-gray-500">Organization Image</Text>
+                      <Image source={{ uri: organizationImage }} className="w-32 h-32 rounded-lg m-5" />
+
+                      {/* Replace Icon */}
+                      <TouchableOpacity
+                        className="absolute top-7 right-5  rounded-full p-1"
+                        onPress={() => pickImage(setOrganizationImage)}
+                      >
+                        <Ionicons name="refresh" size={16} color="black" />
+                      </TouchableOpacity>
+                    </View>
+
+                  </View>
+
+                )}
+              </View>
+
+            </View>
+
+            <View className="mt-9 items-center">
+              <TouchableOpacity
+                className="bg-sky-950 w-[45%] rounded-2xl"
+                onPress={handleSubmit}
+              >
+                <Text className="p-3 text-white text-center">Save Profile</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+
+        {/* Portfolio Modal */}
+        <PortfolioModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          setPortfolioData={setPortfolioData}
+        />
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
