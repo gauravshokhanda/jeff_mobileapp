@@ -1,11 +1,11 @@
-import { View, Image, Text, TouchableOpacity, Alert } from "react-native";
-import React, { useEffect } from "react";
+import { View, Image, Text, TouchableOpacity, Alert, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import messaging from "@react-native-firebase/messaging";
 import { API } from "../config/apiConfig";
 import { useSelector, useDispatch } from "react-redux";
 import Constants from "expo-constants";
-import { setLogin } from "../redux/slice/AuthSlice";
+import { setFcmToken, markFcmSentAfterLogin, markFcmSentBeforeLogin } from "../redux/slice/authSlice";
 
 export default function Index() {
   const dispatch = useDispatch();
@@ -17,7 +17,10 @@ export default function Index() {
   const fcmSentBeforeLogin = useSelector((state) => state.auth.fcmSentBeforeLogin);
   const fcmSentAfterLogin = useSelector((state) => state.auth.fcmSentAfterLogin);
 
-  // Fetch FCM Token Immediately When App Starts
+  const [beforeLoginResponse, setBeforeLoginResponse] = useState(null);
+  const [afterLoginResponse, setAfterLoginResponse] = useState(null);
+
+  // Fetch FCM Token
   useEffect(() => {
     const initializeFCM = async () => {
       try {
@@ -32,8 +35,6 @@ export default function Index() {
         if (token) {
           console.log("🔥 FCM Token:", token);
           dispatch(setFcmToken(token));
-        } else {
-          console.log("Failed to get FCM Token.");
         }
       } catch (error) {
         console.error("Error fetching FCM Token:", error);
@@ -43,7 +44,7 @@ export default function Index() {
     initializeFCM();
   }, [dispatch]);
 
-  // Send FCM Token to API Immediately (Without User ID)
+  // Send FCM Token Before Login
   useEffect(() => {
     const sendFcmTokenBeforeLogin = async () => {
       if (fcmToken && !fcmSentBeforeLogin) {
@@ -52,20 +53,27 @@ export default function Index() {
           const response = await API.post(
             "https://g32.iamdeveloper.in/api/save-fcm-token",
             { token: fcmToken },
-            { headers: { Authorization: `Bearer ${Authtoken}`, "Content-Type": "application/json" } }
+            { 
+              headers: { 
+                Authorization: Authtoken ? `Bearer ${Authtoken}` : undefined,
+                "Content-Type": "application/json" 
+              } 
+            }
           );
           console.log("✅ FCM Token sent before login:", response.data);
-          dispatch(markFcmSentBeforeLogin()); // Mark as sent
+          setBeforeLoginResponse(response.data);
+          dispatch(markFcmSentBeforeLogin());
         } catch (error) {
           console.error("❌ Error sending FCM token before login:", error);
+          setBeforeLoginResponse({ error: error.message });
         }
       }
     };
 
     sendFcmTokenBeforeLogin();
-  }, [fcmToken, fcmSentBeforeLogin, dispatch]);
+  }, [fcmToken, fcmSentBeforeLogin, dispatch, Authtoken]);
 
-  // Send FCM Token to API Again After Login (Only Once)
+  // Send FCM Token After Login
   useEffect(() => {
     const sendFcmTokenAfterLogin = async () => {
       if (user?.id && fcmToken && !fcmSentAfterLogin) {
@@ -77,37 +85,65 @@ export default function Index() {
             { headers: { Authorization: `Bearer ${Authtoken}`, "Content-Type": "application/json" } }
           );
           console.log("✅ FCM Token sent after login:", response.data);
-          dispatch(markFcmSentAfterLogin()); // Mark as sent
+          setAfterLoginResponse(response.data);
+          dispatch(markFcmSentAfterLogin());
         } catch (error) {
           console.error("❌ Error sending FCM token after login:", error);
+          setAfterLoginResponse({ error: error.message });
         }
       }
     };
 
     sendFcmTokenAfterLogin();
-  }, [user?.id, fcmToken, fcmSentAfterLogin, dispatch]);
+  }, [user?.id, fcmToken, fcmSentAfterLogin, dispatch, Authtoken]);
 
   return (
     <View className="flex-1 items-center bg-white">
-      <View className="items-center">
-        <Image source={require("../assets/images/homescreen/homeImage.png")} />
-      </View>
+      <ScrollView className="w-full">
+        <View className="items-center mt-4">
+          <Image source={require("../assets/images/homescreen/homeImage.png")} />
+        </View>
 
-      <View className="h-[20%] w-[100%] justify-between items-center">
-        <Image className="h-[60%] w-[80%] rounded-lg" source={require("../assets/images/homescreen/MainLogo.jpg")} />
+        <View className="w-full items-center p-4">
+          <Image 
+            className="h-40 w-[80%] rounded-lg mb-4" 
+            source={require("../assets/images/homescreen/MainLogo.jpg")} 
+          />
 
-        {fcmToken && (
-          <Text className="text-center text-sm text-gray-700 p-2">📌 FCM Token: {fcmToken}</Text>
-        )}
+          {fcmToken && (
+            <Text className="text-center text-sm text-gray-700 p-2">
+              📌 FCM Token: {fcmToken.slice(0, 20)}...
+            </Text>
+          )}
 
-        {user?.id && (
-          <Text className="text-center text-sm text-gray-700 p-2">👤 User ID: {user.id}</Text>
-        )}
+          {user?.id && (
+            <Text className="text-center text-sm text-gray-700 p-2">
+              👤 User ID: {user.id}
+            </Text>
+          )}
 
-        <TouchableOpacity onPress={() => navigation.navigate("SignIn")} className="text-center rounded-3xl px-10 bg-sky-950 mt-2">
-          <Text className="font-semibold text-center mx-10 my-3 text-lg text-white">Get Started</Text>
-        </TouchableOpacity>
-      </View>
+          {beforeLoginResponse && (
+            <Text className="text-center text-sm text-gray-700 p-2">
+              Before Login Response: {JSON.stringify(beforeLoginResponse).slice(0, 50)}...
+            </Text>
+          )}
+
+          {afterLoginResponse && (
+            <Text className="text-center text-sm text-gray-700 p-2">
+              After Login Response: {JSON.stringify(afterLoginResponse).slice(0, 50)}...
+            </Text>
+          )}
+
+          <TouchableOpacity 
+            onPress={() => navigation.navigate("SignIn")} 
+            className="rounded-3xl px-10 bg-sky-950 mt-4 mb-4"
+          >
+            <Text className="font-semibold text-center mx-10 my-3 text-lg text-white">
+              Get Started
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 }
