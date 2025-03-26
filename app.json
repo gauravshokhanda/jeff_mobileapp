@@ -10,18 +10,19 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "buldleIdentifier":"dev.expo.jeffContructionApp",
+      "buldleIdentifier": "dev.expo.jeffContructionApp",
       "config": {
         "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
-      }
+      },
+      "bundleIdentifier": "dev.expo.jeffContructionApp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "googleServicesFile":"./google-services.json",
-      "package":"dev.expo.jeffContructionApp",
+      "googleServicesFile": "./google-services.json",
+      "package": "dev.expo.jeffContructionApp",
       "config": {
         "googleMaps": {
           "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"

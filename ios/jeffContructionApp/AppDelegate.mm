@@ -7,6 +7,7 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
+#import <Firebase.h>
 
 @implementation AppDelegate
 
@@ -17,6 +18,7 @@
   [GMSServices provideAPIKey:@"YOUR_GOOGLE_MAPS_API_KEY"];
 #endif
 // @generated end react-native-maps-init
+[FIRApp configure];
   self.moduleName = @"main";
 
   // You can add your custom initial props in the dictionary below.
