@@ -1,24 +1,13 @@
 import { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  Image,
-  ActivityIndicator,
-  Dimensions,
-  SafeAreaView,
-} from "react-native";
-import { Ionicons, Entypo, AntDesign } from "@expo/vector-icons";
+import { View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, Image, SafeAreaView, Dimensions } from "react-native";
+import { Ionicons, Entypo } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
-import { API, baseUrl } from "../../config/apiConfig";
+import { baseUrl } from "../../config/apiConfig";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, push, set, serverTimestamp } from "firebase/database";
+import axios from "axios";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -35,84 +24,56 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+const POST_CONTENT_WIDTH = SCREEN_WIDTH * 0.92;
+
 const ChatScreen = () => {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-  const postContentWidth = screenWidth * 0.92;
-  const { user_id, id } = useLocalSearchParams();
+  const { user_id } = useLocalSearchParams();
   const [user, setUser] = useState(null);
-  const [property, setProperty] = useState(null);
-  const [draftAttachment, setDraftAttachment] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const [statusMessage, setStatusMessage] = useState({ type: '', message: '' });
+  const [isLoading, setIsLoading] = useState(true);
   const token = useSelector((state) => state.auth.token);
   const currentUserId = useSelector((state) => state.auth.user.id);
   const router = useRouter();
 
   const chatRoomId = [currentUserId, user_id].sort().join('_');
 
+  // Fetch user details
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUser = async () => {
       try {
-        setLoading(true);
-        if (user_id) {
-          const userResponse = await API.get(`users/listing/${user_id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (userResponse.status === 200) {
-            setUser(userResponse.data.data);
-          }
-        }
-
-        if (id) {
-          const propertyResponse = await API.get(`realstate-property/${id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
-          if (propertyResponse.status === 200) {
-            const propertyData = propertyResponse.data;
-            setDraftAttachment({
-              id: propertyData.id,
-              title: `${propertyData.bhk} in ${propertyData.city}`,
-              image: "https://via.placeholder.com/200",
-              price: `₹${propertyData.price}`,
-              address: propertyData.address,
-            });
-          } else {
-            setDraftAttachment(null);
-          }
-        }
+        const response = await axios.get(`https://g32.iamdeveloper.in/api/users/listing/${user_id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("User data:", response.data.data); // Debug log
+        setUser(response.data.data);
       } catch (error) {
-        console.log("Error fetching data:", error.response?.data || error.message);
         setStatusMessage({
           type: 'error',
-          message: 'Failed to fetch data: ' + (error.response?.data?.message || error.message)
+          message: 'Failed to fetch user details: ' + (error.response?.data?.message || error.message)
         });
-        setUser(null);
-      } finally {
-        setLoading(false);
       }
     };
 
-    if (user_id || id) {
-      fetchData();
-    }
-  }, [id, user_id, token]);
+    if (user_id) fetchUser();
+  }, [user_id, token]);
 
   // Real-time message listener
   useEffect(() => {
-    setLoading(true);
+    setIsLoading(true);
     const messagesRef = ref(database, `chats/${chatRoomId}`);
     
     const unsubscribe = onValue(messagesRef, (snapshot) => {
-      setLoading(false);
+      setIsLoading(false);
       const data = snapshot.val();
       if (data) {
         const messagesArray = Object.entries(data).map(([id, msg]) => ({
           id,
           text: msg.text,
           sender: msg.senderId === currentUserId ? "me" : "other",
+          seen: msg.seen || false,
           timestamp: msg.timestamp
         }));
         setMessages(messagesArray.sort((a, b) => a.timestamp - b.timestamp).reverse());
@@ -122,7 +83,7 @@ const ChatScreen = () => {
         setStatusMessage({ type: 'info', message: 'No messages yet' });
       }
     }, (error) => {
-      setLoading(false);
+      setIsLoading(false);
       setStatusMessage({
         type: 'error',
         message: 'Failed to fetch messages: ' + error.message
@@ -133,28 +94,74 @@ const ChatScreen = () => {
   }, [chatRoomId, currentUserId]);
 
   const sendMessage = async () => {
-    if (inputText.trim() === "") return;
+    if (!inputText.trim()) return;
 
     const newMessage = {
       text: inputText,
       senderId: currentUserId,
       timestamp: serverTimestamp(),
+      seen: false,
     };
 
     try {
+      // 1. Send to Firebase for real-time updates
       const messagesRef = ref(database, `chats/${chatRoomId}`);
       const newMessageRef = push(messagesRef);
       await set(newMessageRef, newMessage);
+
+      // 2. Send to your backend API
+      const messagePayload = {
+        message: inputText,
+        receiver_id: user_id,
+      };
+
+      const apiResponse = await axios.post('https://g32.iamdeveloper.in/api/send-message', messagePayload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      // Clear input and show API response
       setInputText("");
-      setStatusMessage({ type: 'success', message: 'Message sent successfully' });
-      // Note: draftAttachment is not sent to Firebase, kept local
+      setStatusMessage({ 
+        type: 'success', 
+        message: `Message sent successfully. API Response: ${JSON.stringify(apiResponse.data)}`
+      });
     } catch (error) {
+      console.error('Error sending message:', error);
       setStatusMessage({
         type: 'error',
-        message: 'Failed to send message: ' + error.message
+        message: `Failed to send message: ${error.response?.data?.message || error.message}`
       });
     }
   };
+
+  const renderMessage = ({ item }) => (
+    <View className={`flex-row items-end mx-3 my-2 ${item.sender === "me" ? "self-end flex-row-reverse" : "self-start"}`}>
+      <Image
+        source={{
+          uri: item.sender === "me" 
+            ? "https://randomuser.me/api/portraits/men/2.jpg" 
+            : user?.image ? `${baseUrl}${user.image}` : "https://via.placeholder.com/50"
+        }}
+        defaultSource={{ uri: "https://via.placeholder.com/50" }}
+        onError={(e) => console.log("Message avatar error:", e.nativeEvent.error)}
+        className="w-8 h-8 rounded-full mx-2"
+      />
+      <View className={`p-3 max-w-[75%] rounded-lg flex-row items-end ${item.sender === "me" ? "bg-sky-950" : "bg-white border border-gray-300"}`}>
+        <Text className={`${item.sender === "me" ? "text-white" : "text-gray-900"} text-lg`}>{item.text}</Text>
+        {item.sender === "me" && (
+          <Ionicons 
+            name="checkmark-done" 
+            size={16} 
+            color={item.seen ? "white" : "gray"} 
+            style={{ marginLeft: 5 }}
+          />
+        )}
+      </View>
+    </View>
+  );
 
   const renderStatusMessage = () => {
     if (!statusMessage.message) return null;
@@ -172,54 +179,27 @@ const ChatScreen = () => {
     );
   };
 
-  const renderMessage = ({ item }) => (
-    <View
-      className={`flex-row items-end mx-3 my-2 ${item.sender === "me" ? "self-end flex-row-reverse" : "self-start"}`}
-    >
-      <Image
-        source={{
-          uri: item.sender === "me"
-            ? "https://randomuser.me/api/portraits/men/2.jpg"
-            : user?.profile_photo || "https://via.placeholder.com/50",
-        }}
-        className="w-8 h-8 rounded-full mx-1"
-      />
-      <View
-        className={`p-3 rounded-lg ${item.sender === "me" ? "bg-sky-950 self-end" : "bg-white border border-gray-300 self-start"}`}
-      >
-        <Text
-          className={`${item.sender === "me" ? "text-white" : "text-gray-900"} text-lg`}
-        >
-          {item.text}
-        </Text>
-      </View>
-    </View>
-  );
-
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
-      <LinearGradient
-        colors={["#082f49", "transparent"]}
-        style={{ height: screenHeight * 0.4 }}
-      >
+      <LinearGradient colors={["#082f49", "transparent"]} style={{ height: SCREEN_HEIGHT * 0.4 }}>
         <View className="flex-row items-center p-4">
           <TouchableOpacity onPress={() => router.back()} className="mr-3">
             <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
-          {loading ? (
-            <ActivityIndicator size="small" color="white" />
-          ) : user ? (
+          {user ? (
             <>
-              <Image
-                source={{
-                  uri: baseUrl + user.image || "https://via.placeholder.com/50",
+              <Image 
+                source={{ 
+                  uri: user.image ? `${baseUrl}${user.image}` : "https://via.placeholder.com/50"
                 }}
+                defaultSource={{ uri: "https://via.placeholder.com/50" }}
+                onError={(e) => console.log("Header image error:", e.nativeEvent.error)}
                 className="w-10 h-10 rounded-full mr-3"
               />
               <Text className="text-white text-lg font-bold">{user.name}</Text>
             </>
           ) : (
-            <Text className="text-white text-lg font-bold">User Not Found</Text>
+            <Text className="text-white text-lg font-bold">Loading...</Text>
           )}
         </View>
       </LinearGradient>
@@ -232,12 +212,12 @@ const ChatScreen = () => {
         <View
           className="flex-1 rounded-3xl bg-white"
           style={{
-            width: postContentWidth,
-            marginHorizontal: (screenWidth - postContentWidth) / 2,
-            marginTop: -screenHeight * 0.25,
+            width: POST_CONTENT_WIDTH,
+            marginHorizontal: (SCREEN_WIDTH - POST_CONTENT_WIDTH) / 2,
+            marginTop: -SCREEN_HEIGHT * 0.25,
           }}
         >
-          {loading ? (
+          {isLoading ? (
             <View className="flex-1 justify-center items-center">
               <Text className="text-gray-700 text-lg">Loading messages...</Text>
             </View>
@@ -254,19 +234,6 @@ const ChatScreen = () => {
             </>
           )}
 
-          {draftAttachment && (
-            <View className="flex-row items-center bg-white p-3 border-t border-gray-300">
-              <View className="flex-1">
-                <Text className="text-gray-900 font-semibold">{draftAttachment.title}</Text>
-                <Text className="text-gray-600">{draftAttachment.address}</Text>
-                <Text className="text-green-600 font-bold">{draftAttachment.price}</Text>
-              </View>
-              <TouchableOpacity onPress={() => setDraftAttachment(null)} className="ml-2">
-                <AntDesign name="closecircle" size={24} color="red" />
-              </TouchableOpacity>
-            </View>
-          )}
-
           <View className="flex-row items-center p-4 bg-white border-t border-gray-300">
             <TouchableOpacity className="mr-2">
               <Entypo name="emoji-happy" size={28} color="gray" />
@@ -276,11 +243,10 @@ const ChatScreen = () => {
               onChangeText={setInputText}
               placeholder="Type a message..."
               className="flex-1 p-3 bg-gray-200 rounded-full text-gray-900"
+              returnKeyType="send"
+              onSubmitEditing={sendMessage}
             />
-            <TouchableOpacity
-              onPress={sendMessage}
-              className="ml-3 bg-sky-950 p-3 rounded-full"
-            >
+            <TouchableOpacity onPress={sendMessage} className="ml-3 bg-sky-950 p-3 rounded-full">
               <Ionicons name="send" size={24} color="white" />
             </TouchableOpacity>
           </View>
