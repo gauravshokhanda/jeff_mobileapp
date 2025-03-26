@@ -7,6 +7,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { baseUrl } from "../../config/apiConfig";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, push, set, serverTimestamp } from "firebase/database";
+import axios from "axios";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -46,6 +47,7 @@ const ChatScreen = () => {
         const response = await axios.get(`https://g32.iamdeveloper.in/api/users/listing/${user_id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log("User data:", response.data.data); // Debug log
         setUser(response.data.data);
       } catch (error) {
         setStatusMessage({
@@ -102,15 +104,35 @@ const ChatScreen = () => {
     };
 
     try {
+      // 1. Send to Firebase for real-time updates
       const messagesRef = ref(database, `chats/${chatRoomId}`);
       const newMessageRef = push(messagesRef);
       await set(newMessageRef, newMessage);
+
+      // 2. Send to your backend API
+      const messagePayload = {
+        message: inputText,
+        receiver_id: user_id,
+      };
+
+      const apiResponse = await axios.post('https://g32.iamdeveloper.in/api/send-message', messagePayload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      // Clear input and show API response
       setInputText("");
-      setStatusMessage({ type: 'success', message: 'Message sent successfully' });
+      setStatusMessage({ 
+        type: 'success', 
+        message: `Message sent successfully. API Response: ${JSON.stringify(apiResponse.data)}`
+      });
     } catch (error) {
+      console.error('Error sending message:', error);
       setStatusMessage({
         type: 'error',
-        message: 'Failed to send message: ' + error.message
+        message: `Failed to send message: ${error.response?.data?.message || error.message}`
       });
     }
   };
@@ -118,8 +140,14 @@ const ChatScreen = () => {
   const renderMessage = ({ item }) => (
     <View className={`flex-row items-end mx-3 my-2 ${item.sender === "me" ? "self-end flex-row-reverse" : "self-start"}`}>
       <Image
-        source={{ uri: item.sender === "me" ? "https://randomuser.me/api/portraits/men/2.jpg" : user?.profile_photo || "https://via.placeholder.com/50" }}
-        className="w-8 h-8 rounded-full mx-2" 
+        source={{
+          uri: item.sender === "me" 
+            ? "https://randomuser.me/api/portraits/men/2.jpg" 
+            : user?.image ? `${baseUrl}${user.image}` : "https://via.placeholder.com/50"
+        }}
+        defaultSource={{ uri: "https://via.placeholder.com/50" }}
+        onError={(e) => console.log("Message avatar error:", e.nativeEvent.error)}
+        className="w-8 h-8 rounded-full mx-2"
       />
       <View className={`p-3 max-w-[75%] rounded-lg flex-row items-end ${item.sender === "me" ? "bg-sky-950" : "bg-white border border-gray-300"}`}>
         <Text className={`${item.sender === "me" ? "text-white" : "text-gray-900"} text-lg`}>{item.text}</Text>
@@ -160,7 +188,14 @@ const ChatScreen = () => {
           </TouchableOpacity>
           {user ? (
             <>
-              <Image source={{ uri: baseUrl + user.image || "https://via.placeholder.com/50" }} className="w-10 h-10 rounded-full mr-3" />
+              <Image 
+                source={{ 
+                  uri: user.image ? `${baseUrl}${user.image}` : "https://via.placeholder.com/50"
+                }}
+                defaultSource={{ uri: "https://via.placeholder.com/50" }}
+                onError={(e) => console.log("Header image error:", e.nativeEvent.error)}
+                className="w-10 h-10 rounded-full mr-3"
+              />
               <Text className="text-white text-lg font-bold">{user.name}</Text>
             </>
           ) : (
