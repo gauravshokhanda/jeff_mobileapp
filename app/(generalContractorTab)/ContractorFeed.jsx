@@ -65,7 +65,6 @@ export default function PropertyList() {
       setLoading(false);
     }
   };
-
   // page refresh on scroll from the top 
   const handleScroll = (event) => { 
     const offsetY = event.nativeEvent.contentOffset.y; 
@@ -108,7 +107,7 @@ export default function PropertyList() {
               value={searchQuery}
               onChangeText={setSearchQuery}
               className={`flex-1 text-black text-base ${
-                Platform.OS === "ios" ? "py-3" : ""
+                Platform.OS === "ios" ? "py-3" : "py-3"
               }`}
             />
             <TouchableOpacity>

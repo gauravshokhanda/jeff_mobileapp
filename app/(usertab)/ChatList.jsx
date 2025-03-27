@@ -8,7 +8,7 @@ import {
   TextInput,
   SafeAreaView,
   Dimensions,
-} from "react-native";  
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -24,10 +24,8 @@ const ChatListScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Get token from Redux store
   const token = useSelector((state) => state.auth.token);
 
-  // Fetch chats from API
   const fetchChats = async () => {
     try {
       setLoading(true);
@@ -72,86 +70,86 @@ const ChatListScreen = () => {
     }
   }, [token]);
 
-  // Render chat item
   const renderChatItem = ({ item }) => (
     <TouchableOpacity
       onPress={() =>
         router.push(`/ChatScreen?user_id=${item.id}&name=${item.name}&image=${item.image}`)
       }
-      className="flex-row items-center p-4 bg-white rounded-lg shadow-md mb-3"
+      className="flex-row items-center p-4 bg-white rounded-xl shadow-sm mb-3 border border-gray-100"
     >
       <Image
         source={{ uri: item.image }}
-        className="w-12 h-12 rounded-full mr-3"
+        className="w-14 h-14 rounded-full mr-4"
         onError={() => console.log(`Failed to load image for ${item.name}`)}
       />
       <View className="flex-1">
-        <Text className="text-lg font-bold text-sky-950">{item.name}</Text>
-        <Text className="text-gray-700 mt-1">{item.lastMessage}</Text>
+        <Text className="text-lg font-semibold text-gray-800">{item.name}</Text>
+        <Text className="text-sm text-gray-600 mt-1" numberOfLines={1}>
+          {item.lastMessage}
+        </Text>
       </View>
-      <Ionicons name="chevron-forward" size={20} color="#0284c7" />
+      <Ionicons name="chevron-forward" size={20} color="#0369a1" />
     </TouchableOpacity>
   );
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-sky-950 text-lg">Loading...</Text>
+      <View className="flex-1 justify-center items-center bg-gray-50">
+        <Text className="text-sky-950 text-lg font-medium">Loading...</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View className="flex-1 justify-center items-center p-4">
-        <Text className="text-red-500 text-lg">{error}</Text>
+      <View className="flex-1 justify-center items-center p-4 bg-gray-50">
+        <Text className="text-red-500 text-lg font-medium">{error}</Text>
         <TouchableOpacity 
           onPress={fetchChats} 
-          className="mt-4 bg-sky-950 p-3 rounded-lg"
+          className="mt-6 bg-sky-900 px-6 py-3 rounded-full shadow-md"
         >
-          <Text className="text-white">Retry</Text>
+          <Text className="text-white font-semibold">Retry</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-gray-50">
+      {/* Header Section */}
       <LinearGradient
-        colors={["#082f49", "transparent"]}
-        style={{ height: screenHeight * 0.3 }}
+        colors={["#082f49", "#0c4a6e"]}
+        className="pt-12 pb-6"
       >
-        <View className="p-4 flex-row items-center justify-center mt-8">
+        <View className="px-4 flex-row items-center justify-between">
           <TouchableOpacity
             onPress={() => router.back()}
-            className="absolute left-4 p-2 bg-white rounded-full shadow-md"
+            className="p-2 bg-white rounded-full shadow-md"
           >
-            <Ionicons name="arrow-back" size={24} color="#0284c7" />
+            <Ionicons name="arrow-back" size={24} color="#0369a1" />
           </TouchableOpacity>
-          <Text className="text-white text-2xl font-bold">Chats</Text>
+          <Text className="text-white text-2xl font-bold flex-1 text-center">
+            Messages
+          </Text>
+          <View className="w-10" /> {/* Spacer for symmetry */}
         </View>
 
-        <View className="mx-5 mt-5 items-center">
-          <View className="bg-white p-3 w-full rounded-lg flex-row items-center shadow-md">
-            <Ionicons name="search" size={20} color="#0284c7" />
+        {/* Search Bar */}
+        <View className="px-4 mt-4">
+          <View className="bg-white p-3 rounded-xl flex-row items-center shadow-md">
+            <Ionicons name="search" size={20} color="#0369a1" />
             <TextInput
-              placeholder="Search Chats"
+              placeholder="Search Messages"
               placeholderTextColor="#64748b"
-              className="flex-1 ml-3 text-lg text-sky-950"
+              className="flex-1 ml-3 text-base text-gray-800"
             />
-            <Ionicons name="filter-sharp" size={24} color="#0284c7" />
+            <Ionicons name="filter-sharp" size={20} color="#0369a1" />
           </View>
         </View>
       </LinearGradient>
 
-      <View
-        className="flex-1 bg-white px-4"
-        style={{
-          marginTop: -screenHeight * 0.15,
-          width: postContentWidth,
-          marginHorizontal: (screenWidth - postContentWidth) / 2,
-        }}
-      >
+      {/* Chat List */}
+      <View className="flex-1 px-4 pt-4" style={{ width: postContentWidth, marginHorizontal: (screenWidth - postContentWidth) / 2 }}>
         <FlatList
           data={chats}
           renderItem={renderChatItem}
