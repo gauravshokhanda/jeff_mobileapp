@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../../config/apiConfig";
 
 const ContractorProfile = () => {
-  const { user_id } = useParams();
-  const navigate = useNavigate();
+  const { user_id } = useLocalSearchParams();
+  const router = useRouter();
   const token = useSelector((state) => state.auth.token);
   const [contractorData, setContractorData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +35,7 @@ const ContractorProfile = () => {
   }, [user_id, token]);
 
   const handleBackClick = () => {
-    navigate(-1);
+    router.back();
   };
 
   if (loading) {
