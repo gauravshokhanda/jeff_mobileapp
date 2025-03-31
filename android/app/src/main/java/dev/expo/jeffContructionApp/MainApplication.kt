@@ -1,4 +1,4 @@
-package com.android.ac5dconstruction
+package dev.expo.jeffContructionApp
 
 import android.app.Application
 import android.content.res.Configuration

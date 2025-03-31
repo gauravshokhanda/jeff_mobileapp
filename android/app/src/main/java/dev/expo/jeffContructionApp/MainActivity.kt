@@ -1,4 +1,4 @@
-package com.android.ac5dconstruction
+package dev.expo.jeffContructionApp
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

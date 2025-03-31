@@ -7,7 +7,6 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from '../redux/store';
 import React from "react";
 import '../global.css';
-
 import { NotificationProvider } from "@/context/NotificationContext";
 import * as Notifications from "expo-notifications";
 import * as TaskManager from "expo-task-manager";
