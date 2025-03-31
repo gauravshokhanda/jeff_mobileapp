@@ -15,11 +15,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import PortfolioModal from "../../components/PortfolioModal";
 import * as DocumentPicker from 'expo-document-picker';
-import { useSelector, dispatch, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { API } from '../../config/apiConfig';
 import { BlurView } from 'expo-blur';
 import { updateUserProfile } from "../../redux/slice/authSlice";
 import { LinearGradient } from "expo-linear-gradient";
+import { Alert } from 'react-native';
 
 export default function ContractorProfileComplete() {
   const dispatch = useDispatch();
@@ -65,65 +66,94 @@ export default function ContractorProfileComplete() {
     }
   };
 
-  const handleSubmit = async () => {
-    if (!userName.trim()) return Alert.alert("Error", "Name is required.");
-    if (!userEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail)) {
-        return Alert.alert("Error", "Please enter a valid email address.");
-    }
-    if (!companyName.trim()) return Alert.alert("Error", "Company name is required.");
-    if (!companyContactNumber.trim() || !/^[0-9]{10}$/.test(companyContactNumber)) {
-        return Alert.alert("Error", "Please enter a valid 10-digit contact number.");
-    }
-    if (!portfolioData.projectName.trim()) return Alert.alert("Error", "Project name is required.");
-    if (!portfolioData.description.trim()) return Alert.alert("Error", "Project description is required.");
-    if (!portfolioData.cityName.trim()) return Alert.alert("Error", "City name is required.");
+  const handlePortfolioSubmit = async () => {
+    const portfolioFormData = new FormData();
 
-    // Image Validation
-    if (!profileImage) return Alert.alert("Error", "Please upload a profile image.");
-    if (!organizationImage) return Alert.alert("Error", "Please upload an organization image.");
-
-
-    const formData = new FormData();
-
-    formData.append("name", userName);
-    formData.append("email", userEmail);
-    formData.append("address", portfolioData.address);
-    formData.append("company_name", companyName);
-    formData.append("number", companyContactNumber);
-
-    formData.append("company_registered_number", registrationNo);
-    formData.append("company_address", companyAddress);
-    formData.append("project_name", portfolioData.projectName);
-    formData.append("description", portfolioData.description);
-    formData.append("city", portfolioData.cityName);
-
-    if (profileImage) {
-      formData.append("image", {
-        uri: profileImage,
-        type: "image/jpeg",
-        name: "profile.jpg",
-      });
-    }
-
-    if (organizationImage) {
-      formData.append("upload_organisation", {
-        uri: organizationImage,
-        type: "image/jpeg",
-        name: "organisation.jpg",
-      });
-    }
+    portfolioFormData.append("project_name", portfolioData.projectName);
+    portfolioFormData.append("city", portfolioData.cityName);
+    portfolioFormData.append("address", portfolioData.address);
+    portfolioFormData.append("description", portfolioData.description);
 
     portfolioData.images.forEach((imageUri, index) => {
-      formData.append(`portfolio_images[${index}]`, {
+      portfolioFormData.append(`images[${index}]`, {
         uri: imageUri,
         type: "image/jpeg",
         name: `portfolio_${index}.jpg`,
       });
     });
 
+    try {
+      const response = await API.post(
+        'https://g32.iamdeveloper.in/api/portfolio/store',
+        portfolioFormData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Portfolio submitted successfully:", response.data);
+      return true;
+    } catch (error) {
+      console.error("Error submitting portfolio:", error.response?.data || error.message);
+      Alert.alert("Error", "Failed to save portfolio. Please try again.");
+      return false;
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!userName.trim()) return Alert.alert("Error", "Name is required.");
+    if (!userEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail)) {
+      return Alert.alert("Error", "Please enter a valid email address.");
+    }
+    if (!companyName.trim()) return Alert.alert("Error", "Company name is required.");
+    if (!companyContactNumber.trim() || !/^[0-9]{10}$/.test(companyContactNumber)) {
+      return Alert.alert("Error", "Please enter a valid 10-digit contact number.");
+    }
+    if (!portfolioData.projectName.trim()) return Alert.alert("Error", "Project name is required.");
+    if (!portfolioData.description.trim()) return Alert.alert("Error", "Project description is required.");
+    if (!portfolioData.cityName.trim()) return Alert.alert("Error", "City name is required.");
+    if (!profileImage) return Alert.alert("Error", "Please upload a profile image.");
+    if (!organizationImage) return Alert.alert("Error", "Please upload an organization image.");
+
     setLoading(true);
 
     try {
+      // Submit portfolio first
+      const portfolioSuccess = await handlePortfolioSubmit();
+      
+      if (!portfolioSuccess) {
+        setLoading(false);
+        return;
+      }
+
+      // Then submit profile
+      const formData = new FormData();
+      formData.append("name", userName);
+      formData.append("email", userEmail);
+      formData.append("address", portfolioData.address);
+      formData.append("company_name", companyName);
+      formData.append("number", companyContactNumber);
+      formData.append("company_registered_number", registrationNo);
+      formData.append("company_address", companyAddress);
+
+      if (profileImage) {
+        formData.append("image", {
+          uri: profileImage,
+          type: "image/jpeg",
+          name: "profile.jpg",
+        });
+      }
+
+      if (organizationImage) {
+        formData.append("upload_organisation", {
+          uri: organizationImage,
+          type: "image/jpeg",
+          name: "organisation.jpg",
+        });
+      }
+
       const response = await API.post('setup-profile', formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -136,6 +166,7 @@ export default function ContractorProfileComplete() {
       router.replace("/(generalContractorTab)");
     } catch (error) {
       console.error("Error submitting profile:", error.response?.data || error.message);
+      Alert.alert("Error", "Failed to save profile. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -156,7 +187,6 @@ export default function ContractorProfileComplete() {
       style={{ flex: 1, backgroundColor: "white" }}
       className="mt-10"
     >
-      {/* Blur Overlay */}
       {modalVisible && (
         <BlurView
           style={[StyleSheet.absoluteFillObject, { zIndex: 1 }]}
@@ -169,7 +199,6 @@ export default function ContractorProfileComplete() {
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header */}
         <View className="p-4 bg-sky-950">
           <Text className="text-gray-100 text-xl font-bold text-center">
             Complete Your Profile
@@ -180,7 +209,6 @@ export default function ContractorProfileComplete() {
             onPress={() => pickImage(setProfileImage)}
             activeOpacity={0.7}
             className="mt-4 flex justify-center items-center size-32 rounded-full overflow-hidden shadow-lg"
-
           >
             {profileImage ? (
               <Image source={{ uri: profileImage }} className="w-full h-full rounded-full" />
@@ -193,61 +221,33 @@ export default function ContractorProfileComplete() {
                 <Text className="text-gray-600 text-xs mt-2">Tap to Upload</Text>
               </LinearGradient>
             )}
-
-
           </TouchableOpacity>
-          {/* 📷 Camera Icon for Upload (Fixed Visibility) */}
-          {/* <View
-            className="absolute bg-blue-500 bottom-0 right-40 p-2 rounded-full border-2 border-white shadow-md"
-            style={{ zIndex: 10, elevation: 10 }}
-          >
-            <Ionicons name="camera" size={22} color="white" />
-          </View> */}
         </View>
 
-        {/* Form Content */}
         <View className="flex-1 m-6">
-          {/* <View>
-            <Text className="text-gray-600 mb-1 ml-3 text-sm">Full Name</Text>
-            <TextInput
-              className="border border-gray-400 rounded-2xl pl-3 bg-white py-4"
-              placeholder="Enter Your Full Name"
-              placeholderTextColor="gray"
-              value={fullName}
-              onChangeText={setFullName}
-            />
-          </View> */}
-          {/* <View className="border-b border-gray-400">
-            <Text>Company Name</Text>
-          </View> */}
-
           <View className="mt-14 border-b border-gray-400 flex-row justify-between items-center pb-1">
             <Text className="text-gray-400 text-lg">Company Name :</Text>
-
             <TextInput
-              className="flex-1  px-3 bg-white py-2 text-gray-700"
+              className="flex-1 px-3 bg-white py-2 text-gray-700"
               value={companyName}
               onChangeText={setCompanyName}
             />
-
           </View>
 
           <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
             <Text className="text-gray-400 text-lg">Company Contact Number :</Text>
             <TextInput
-              className="flex-1  px-3 bg-white py-2 text-gray-700"
+              className="flex-1 px-3 bg-white py-2 text-gray-700"
               keyboardType="numeric"
               value={companyContactNumber}
               onChangeText={setCompanyContactNumber}
             />
           </View>
 
-
-
           <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
             <Text className="text-gray-400 text-lg">Company Registration No. :</Text>
             <TextInput
-              className="flex-1  px-3 bg-white py-2 text-gray-700"
+              className="flex-1 px-3 bg-white py-2 text-gray-700"
               keyboardType="numeric"
               value={registrationNo}
               onChangeText={setRegistrationNo}
@@ -263,11 +263,7 @@ export default function ContractorProfileComplete() {
             />
           </View>
 
-
           <View className="flex-row mt-10 justify-between items-center">
-
-
-            {/* portfolio section */}
             <View className="items-start">
               {portfolioData.images.length > 0 ? (
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
@@ -288,7 +284,6 @@ export default function ContractorProfileComplete() {
                       </View>
                     ))}
                   </View>
-
                 </ScrollView>
               ) : (
                 <TouchableOpacity
@@ -301,7 +296,6 @@ export default function ContractorProfileComplete() {
               )}
             </View>
 
-            {/* Organization Image Section */}
             <View className="items-center">
               {!organizationImage ? (
                 <TouchableOpacity
@@ -313,25 +307,19 @@ export default function ContractorProfileComplete() {
                 </TouchableOpacity>
               ) : (
                 <View className="relative">
-
                   <View className="border border-dashed border-gray-400 items-center">
                     <Text className="text-lg text-gray-500">Organization Image</Text>
                     <Image source={{ uri: organizationImage }} className="w-32 h-32 rounded-lg m-5" />
-
-                    {/* Replace Icon */}
                     <TouchableOpacity
-                      className="absolute top-7 right-5  rounded-full p-1"
+                      className="absolute top-7 right-5 rounded-full p-1"
                       onPress={() => pickImage(setOrganizationImage)}
                     >
                       <Ionicons name="refresh" size={16} color="black" />
                     </TouchableOpacity>
                   </View>
-
                 </View>
-
               )}
             </View>
-
           </View>
 
           <View className="mt-9 items-center">
@@ -345,7 +333,6 @@ export default function ContractorProfileComplete() {
         </View>
       </ScrollView>
 
-      {/* Portfolio Modal */}
       <PortfolioModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}

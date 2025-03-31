@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,152 +12,162 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import { useSelector } from "react-redux";
 
-const ChatListScreen = ({ navigation }) => {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+const ChatListScreen = () => {
+  const { width: screenWidth } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const router = useRouter();
-  const [chats, setChats] = useState([
-    {
-      id: "1",
-      name: "John Doe",
-      lastMessage: "Hey, how are you?",
-      image: "https://randomuser.me/api/portraits/men/1.jpg",
-    },
-    {
-      id: "2",
-      name: "Alice Smith",
-      lastMessage: "See you tomorrow!",
-      image: "https://randomuser.me/api/portraits/women/2.jpg",
-    },
-    {
-      id: "3",
-      name: "Michael Johnson",
-      lastMessage: "Can we reschedule?",
-      image: "https://randomuser.me/api/portraits/men/3.jpg",
-    },
-    {
-      id: "4",
-      name: "John Doe",
-      lastMessage: "Hey, how are you?",
-      image: "https://randomuser.me/api/portraits/men/1.jpg",
-    },
-    {
-      id: "5",
-      name: "Alice Smith",
-      lastMessage: "See you tomorrow!",
-      image: "https://randomuser.me/api/portraits/women/2.jpg",
-    },
-    {
-      id: "6",
-      name: "Michael Johnson",
-      lastMessage: "Can we reschedule?",
-      image: "https://randomuser.me/api/portraits/men/3.jpg",
-    },
-    {
-      id: "7",
-      name: "John Doe",
-      lastMessage: "Hey, how are you?",
-      image: "https://randomuser.me/api/portraits/men/1.jpg",
-    },
-    {
-      id: "8",
-      name: "Alice Smith",
-      lastMessage: "See you tomorrow!",
-      image: "https://randomuser.me/api/portraits/women/2.jpg",
-    },
-    {
-      id: "9",
-      name: "Michael Johnson",
-      lastMessage: "Can we reschedule?",
-      image: "https://randomuser.me/api/portraits/men/3.jpg",
-    },
-    {
-      id: "10",
-      name: "John Doe",
-      lastMessage: "Hey, how are you?",
-      image: "https://randomuser.me/api/portraits/men/1.jpg",
-    },
-    {
-      id: "11",
-      name: "Alice Smith",
-      lastMessage: "See you tomorrow!",
-      image: "https://randomuser.me/api/portraits/women/2.jpg",
-    },
-    {
-      id: "12",
-      name: "Michael Johnson",
-      lastMessage: "Can we reschedule?",
-      image: "https://randomuser.me/api/portraits/men/3.jpg",
-    },
-  ]);
+  const token = useSelector((state) => state.auth.token);
+  const API_URL = "https://g32.iamdeveloper.in/api/recent-chats";
+  const BASE_URL = "https://g32.iamdeveloper.in/";
+
+  const [chats, setChats] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchChats = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(API_URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        const formattedChats = data.users.map(user => ({
+          id: user.id.toString(),
+          name: user.name,
+          lastMessage: "Start a conversation",
+          image: user.image
+            ? `${BASE_URL}${user.image}`
+            : `${BASE_URL}images/default-profile.jpg`,
+          email: user.email,
+        }));
+        setChats(formattedChats);
+      } else {
+        throw new Error("Failed to load chats");
+      }
+    } catch (error) {
+      console.error("Error fetching chats:", error.message);
+      setError("Error fetching chats");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      fetchChats();
+    } else {
+      setError("Please log in to view chats");
+      setLoading(false);
+    }
+  }, [token]);
+
+  const renderChatItem = ({ item }) => (
+    <TouchableOpacity
+      onPress={() =>
+        router.push({
+          pathname: "/ChatScreen",
+          params: { user_id: item.id, name: item.name, image: item.image }
+        })
+      }
+      className="flex-row items-center p-4 bg-white rounded-xl mb-3 border border-gray-100"
+    >
+      <Image
+        source={{ uri: item.image }}
+        defaultSource={{ uri: `${BASE_URL}images/default-profile.jpg` }}
+        className="w-14 h-14 rounded-full mr-4"
+        resizeMode="cover"
+        onError={() => console.log(`Failed to load image for ${item.name}`)}
+      />
+      <View className="flex-1">
+        <Text className="text-lg font-semibold text-gray-800">{item.name}</Text>
+        <Text className="text-sm text-gray-600 mt-1" numberOfLines={1}>
+          {item.lastMessage}
+        </Text>
+      </View>
+      <Ionicons name="chevron-forward" size={20} color="#0369a1" />
+    </TouchableOpacity>
+  );
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center bg-gray-50">
+        <Text className="text-sky-950 text-lg font-medium">Loading...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="flex-1 justify-center items-center p-4 bg-gray-50">
+        <Text className="text-red-500 text-lg font-medium">{error}</Text>
+        <TouchableOpacity
+          onPress={fetchChats}
+          className="mt-6 bg-sky-900 px-6 py-3 rounded-full"
+        >
+          <Text className="text-white font-semibold">Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
-    <SafeAreaView className="flex-1">
-      <LinearGradient
-        colors={["#082f49", "transparent"]}
-        style={{ height: screenHeight * 0.4 }}
-      >
-        {/* Header */}
-        <View className="p-4 flex-row justify-center items-center">
-          <Text className="text-white text-2xl mt-5 font-bold ">Chats</Text>
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <LinearGradient colors={["#082f49", "#0c4a6e"]} className="pt-12 pb-6">
+        <View className="px-4 flex-row items-center justify-between">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="p-2 bg-white rounded-full"
+          >
+            <Ionicons name="arrow-back" size={24} color="#0369a1" />
+          </TouchableOpacity>
+          <Text className="text-white text-2xl font-bold flex-1 text-center">
+            Messages
+          </Text>
+          <View className="w-10" />
         </View>
-        <View className="mx-5 mt-5 items-end">
-          <View className="bg-gray-100 h-12 rounded-full px-3 flex-row items-center justify-between">
-            <Ionicons name="search" size={18} color="black" />
+
+        <View className="px-4 mt-4">
+          <View className="bg-white p-3 rounded-xl flex-row items-center">
+            <Ionicons name="search" size={20} color="#0369a1" />
             <TextInput
-              placeholder="Search"
-              placeholderTextColor={"gray"}
-              style={{ fontSize: 14 }}
-              className="flex-1 ml-5 text-lg"
+              placeholder="Search Messages"
+              placeholderTextColor="#64748b"
+              className="flex-1 ml-3 text-base text-gray-800"
             />
-            <Ionicons name="filter-sharp" size={26} color="black" />
+            <Ionicons name="filter-sharp" size={20} color="#0369a1" />
           </View>
         </View>
       </LinearGradient>
+
       <View
-        className="flex-1 rounded-3xl bg-white"
+        className="flex-1 px-4 pt-4"
         style={{
-          marginTop: -screenHeight * 0.23,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
-          overflow: "hidden",
         }}
       >
-        <View className="flex-1 mt-3">
-          {/* Chat List */}
-          <FlatList
-            contentContainerStyle={{ borderRadius: 5 }}
-            showsVerticalScrollIndicator={false}
-            data={chats}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() =>
-                  router.push("ChatScreen", {
-                    name: item.name,
-                    image: item.image,
-                  })
-                }
-                className="flex-row items-center p-4 border-b border-gray-300 bg-white"
-              >
-                <Image
-                  source={{ uri: item.image }}
-                  className="w-12 h-12 rounded-full mr-3"
-                />
-                <View className="flex-1">
-                  <Text className="text-lg font-bold text-gray-900">
-                    {item.name}
-                  </Text>
-                  <Text className="text-gray-500">{item.lastMessage}</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color="gray" />
-              </TouchableOpacity>
-            )}
-          />
-        </View>
+        <FlatList
+          data={chats}
+          renderItem={renderChatItem}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        />
       </View>
     </SafeAreaView>
   );
 };
+
 export default ChatListScreen;

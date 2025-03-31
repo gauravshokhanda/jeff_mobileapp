@@ -120,7 +120,7 @@ const DashboardScreen = () => {
           <TouchableOpacity  onPress={() => router.push("ContractorPortfolio")}>
           <Image
             source={{
-              uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg",
+              uri: user?.image || "https://xsgames.co/randomusers/assets/avatars/male/74.jpg",
             }}
             className="w-14 h-14 border-2 border-white rounded-full"
           />
@@ -155,7 +155,7 @@ const DashboardScreen = () => {
             shadowOffset: { width: 0, height: 3 },
             shadowOpacity: 0.2,
             shadowRadius: 5,
-            elevation: 5, 
+            elevation: 5,
             overflow: "hidden",
           }}
         >

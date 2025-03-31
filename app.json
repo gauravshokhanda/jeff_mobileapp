@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "jeffContructionApp",
-    "slug": "jeffContructionApp",
+    "slug": "jeffconstructionapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/AC5D_Logo.jpg",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "buldleIdentifier":"dev.expo.jeffContructionApp",
+      "buldleIdentifier": "dev.expo.jeffContructionApp",
       "config": {
         "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
       }
@@ -20,8 +20,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "googleServicesFile":"./google-services.json",
-      "package":"dev.expo.jeffContructionApp",
+      "googleServicesFile": "./google-services.json",
+      "package": "dev.expo.jeffContructionApp",
       "config": {
         "googleMaps": {
           "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
@@ -53,9 +53,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "456005e1-c5be-4510-8f9e-5a478a95100c"
+        "projectId": "6ecb0fdd-6f76-46e9-9f22-b8313763cd80"
       }
     },
-    "owner": "gauravshokhanda"
+    "owner": "abhijeetsodlan"
   }
 }
