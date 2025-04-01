@@ -2624,12 +2624,17 @@
   resolved "https://registry.npmjs.org/@react-native-community/progress-bar-android/-/progress-bar-android-1.0.5.tgz"
   integrity sha512-/IYLHdoqeDqqGQMh9/qYgIReISBIu09lLNbrn70r98+IqQe9WFLuhAr/sdrDKxCUZDQyLqUc0p3rJ50VV0tR3g==
 
-"@react-native-firebase/app@^21.12.3", "@react-native-firebase/app@21.12.3":
-  version "21.12.3"
-  resolved "https://registry.npmjs.org/@react-native-firebase/app/-/app-21.12.3.tgz"
-  integrity sha512-q+FoAJ9yZrXg4hJDXQQputeO/b0yos3iMMV7nnhz3ZizVE9MxfpPCWACveYhs9Suni+c/+b44wPR9P6vS/kM/g==
+"@react-native-firebase/app@*", "@react-native-firebase/app@^21.13.0", "@react-native-firebase/app@21.12.3":
+  version "21.13.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/app/-/app-21.13.0.tgz"
+  integrity sha512-UjM+yTTuBTQkGQHSTmJtKoXumgWxN+G90q6TCBqf2fQzAGhWpeMQSKOpD3arW+gmmO2eNIb1P8wyMYQk9GeGVA==
   dependencies:
     firebase "11.3.1"
+
+"@react-native-firebase/in-app-messaging@^6.7.1":
+  version "6.7.1"
+  resolved "https://registry.npmjs.org/@react-native-firebase/in-app-messaging/-/in-app-messaging-6.7.1.tgz"
+  integrity sha512-485Co4UY7uOv2xiKWiws1QPlJwylQ/lPi+Y6qAcIJh3FVhXbfO5/899iXRnLrctrY829XvSKvdNDqlT+YEDR8Q==
 
 "@react-native-firebase/messaging@^21.12.3":
   version "21.12.3"
