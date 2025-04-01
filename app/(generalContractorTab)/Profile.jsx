@@ -24,11 +24,9 @@ const imageData = [
 const MenuHeader = () => {
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const postContentWidth = screenWidth * 0.92;
-  const dispatch = useDispatch();
+  const dispatch = useDispatch();6
   const userName = useSelector((state) => state.auth.user);
   const router = useRouter();
-
-
 
   const handlePress = (screen) => {
     if (screen === "logout") {
@@ -56,10 +54,10 @@ const MenuHeader = () => {
         style={{ height: screenHeight * 0.4 }}
       >
         <View className="mt-10 px-4 gap-2 flex-row items-center">
-          <Image
+          {/* <Image
             source={{ uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg" }}
             className="w-14 h-14 border-2 border-white rounded-full"
-          />
+          /> */}
           <View className="gap-1">
             <Text className="text-2xl font-semibold text-white">
               Welcome! {userName?.name || "User"}

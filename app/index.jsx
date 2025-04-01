@@ -74,7 +74,7 @@ export default function Index() {
   }, [fcmToken, fcmSentBeforeLogin, dispatch, Authtoken]);
 
   // Send FCM Token After Login
-  useEffect(() => {
+  useEffect(() => {             
     const sendFcmTokenAfterLogin = async () => {
       if (user?.id && fcmToken && !fcmSentAfterLogin) {
         console.log("📌 Sending FCM Token After Login:", { token: fcmToken, user_id: user.id });

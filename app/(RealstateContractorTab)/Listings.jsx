@@ -235,7 +235,7 @@ export default function Listing() {
               <Ionicons name="call" size={30} color="gray" />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => router.push(`ChatScreen?id=${item.user_id}`)}
+              onPress={() => router.push(`ChatScreen?user_id=${item.user_id}`)}
             >
               <Ionicons name="chatbubble" size={30} color="gray" />
             </TouchableOpacity>

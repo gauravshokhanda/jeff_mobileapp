@@ -223,11 +223,14 @@ export default function Index() {
             onPress={() => router.push("EstateContractorProfile")}
           >
             <Image
-              source={{
-                uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg",
-              }}
-              className="w-14 h-14 border-2 border-white rounded-full"
-            />
+            source={{
+              uri: user?.image
+                ? `${baseUrl}${user.image}`
+                : "https://xsgames.co/randomusers/assets/avatars/male/74.jpg",
+            }}
+            className="w-14 h-14 border-2 border-white rounded-full"
+          />
+
           </TouchableOpacity>
           <View className="gap-1">
             <Text className="text-2xl font-semibold text-white">
