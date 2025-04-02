@@ -4,6 +4,9 @@ const initialState = {
     token: null,
     isAuthenticated: false,
     user: null,
+    fcmToken: null, 
+    fcmSentBeforeLogin: false,  
+    fcmSentAfterLogin: false, 
 };
 
 const authSlice = createSlice({
@@ -25,6 +28,15 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
             state.user = null;
         },
+        setFcmToken: (state, action) => {
+            state.fcmToken = action.payload;
+        },
+        markFcmSentBeforeLogin: (state) => {
+            state.fcmSentBeforeLogin = true;
+        },
+        markFcmSentAfterLogin: (state) => {
+            state.fcmSentAfterLogin = true;
+        },
         updateUserProfile: (state, action) => {
             if (state.user) {
                 // Extract updated fields from `data`
@@ -42,7 +54,7 @@ const authSlice = createSlice({
                     description: updatedData.description ?? state.user.description,
                     email: updatedData.email ?? state.user.email,
                     image: updatedData.image ?? state.user.image,
-                    name: updatedData.name ?? state.user.name,
+                    name: updatedData.name ?? state.user.name,   
                     number: updatedData.number ?? state.user.number,
                     portfolio: updatedData.portfolio ?? state.user.portfolio,
                     project_name: updatedData.project_name ?? state.user.project_name,
@@ -54,5 +66,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { setLogin, setLogout, setSignUp,updateUserProfile  } = authSlice.actions;
+export const { setLogin, setLogout, setSignUp,updateUserProfile,setFcmToken, markFcmSentBeforeLogin, markFcmSentAfterLogin   } = authSlice.actions;
 export default authSlice.reducer;
