@@ -273,7 +273,7 @@ export default function Index() {
       >
         <View className="p-5">
           <Text className="text-3xl font-bold text-center text-white">Property Post</Text>
-        </View>
+        </View> 
 
       </LinearGradient>
 

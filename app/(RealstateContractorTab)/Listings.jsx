@@ -225,7 +225,7 @@ export default function Listing() {
 
         {/* Bottom Section with Button */}
         <View className="bg-gray-200 rounded-b-2xl p-4 flex-row justify-between items-center">
-          <TouchableOpacity className="border p-2 rounded-lg">
+          <TouchableOpacity className="border p-2 rounded-lg"  onPress={() => router.push(`contractorProfile?user_id=${item.user_id}`)}>
             <Text className="text-lg font-semibold text-gray-600">
               View Contractor
             </Text>
@@ -235,7 +235,7 @@ export default function Listing() {
               <Ionicons name="call" size={30} color="gray" />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => router.push(`ChatScreen?id=${item.user_id}`)}
+              onPress={() => router.push(`ChatScreen?user_id=${item.user_id}`)}
             >
               <Ionicons name="chatbubble" size={30} color="gray" />
             </TouchableOpacity>

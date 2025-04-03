@@ -108,7 +108,7 @@ export default function PropertyList() {
               value={searchQuery}
               onChangeText={setSearchQuery}
               className={`flex-1 text-black text-base ${
-                Platform.OS === "ios" ? "py-3" : ""
+                Platform.OS === "ios" ? "py-3" : "py-3"
               }`}
             />
             <TouchableOpacity>

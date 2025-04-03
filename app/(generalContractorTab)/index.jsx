@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Swiper from "react-native-swiper";
-import { API } from "../../config/apiConfig";
+import { baseUrl, API } from "../../config/apiConfig";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "expo-router";
@@ -115,17 +115,22 @@ const DashboardScreen = () => {
 
   return (
     <SafeAreaView className="bg-gray-100 flex-1">
-      <LinearGradient colors={["#082f49", "transparent"]}   style={{ height: screenHeight * 0.4 }}>
+      <LinearGradient
+        colors={["#082f49", "transparent"]}
+        style={{ height: screenHeight * 0.4 }}
+      >
         <View className="mt-10 px-4 gap-2 flex-row items-center">
-          <TouchableOpacity  onPress={() => router.push("ContractorPortfolio")}>
-          <Image
-            source={{
-              uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg",
-            }}
-            className="w-14 h-14 border-2 border-white rounded-full"
-          />
+          <TouchableOpacity onPress={() => router.push("ContractorPortfolio")}>
+            <Image
+              source={{
+                uri: user?.image
+                  ? `${baseUrl}${user.image}`
+                  : "https://xsgames.co/randomusers/assets/avatars/male/74.jpg",
+              }}
+              className="w-14 h-14 border-2 border-white rounded-full"
+            />
           </TouchableOpacity>
-        
+
           <View className="gap-1">
             <Text className="text-2xl font-semibold text-white">
               Welcome! {user?.name || "User"}
@@ -139,8 +144,8 @@ const DashboardScreen = () => {
         style={{
           marginTop: screenHeight * 0.0,
           width: postContentWidth,
-          position: 'absolute',
-          top: screenHeight * 0.20,
+          position: "absolute",
+          top: screenHeight * 0.2,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
           overflow: "hidden",
         }}
@@ -155,7 +160,7 @@ const DashboardScreen = () => {
             shadowOffset: { width: 0, height: 3 },
             shadowOpacity: 0.2,
             shadowRadius: 5,
-            elevation: 5, 
+            elevation: 5,
             overflow: "hidden",
           }}
         >
