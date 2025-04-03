@@ -1,4 +1,6 @@
 package dev.expo.jeffContructionApp
+import dev.expo.jeffContructionApp.BuildConfig
+
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

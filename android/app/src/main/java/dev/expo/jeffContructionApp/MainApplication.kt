@@ -1,4 +1,5 @@
 package dev.expo.jeffContructionApp
+import dev.expo.jeffContructionApp.BuildConfig
 
 import android.app.Application
 import android.content.res.Configuration
