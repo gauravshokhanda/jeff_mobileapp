@@ -1,0 +1,13 @@
+diff --git a/node_modules/@react-native-firebase/messaging/RNFBMessaging.podspec b/node_modules/@react-native-firebase/messaging/RNFBMessaging.podspec
+index 37c6d29..5c96803 100644
+--- a/node_modules/@react-native-firebase/messaging/RNFBMessaging.podspec
++++ b/node_modules/@react-native-firebase/messaging/RNFBMessaging.podspec
+@@ -1,6 +1,7 @@
+ require 'json'
+ package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+-appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
++appPackage = {}
++
+ 
+ coreVersionDetected = appPackage['version']
+ coreVersionRequired = package['peerDependencies'][appPackage['name']]

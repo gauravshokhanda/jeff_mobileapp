@@ -9,16 +9,16 @@ import {
   Image,
   ActivityIndicator,
   StyleSheet,
-  Alert,
-} from "react-native";
-import React, { useState, useEffect } from "react";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+  Alert
+} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import PortfolioModal from "../../components/PortfolioModal";
-import * as DocumentPicker from "expo-document-picker";
-import { useSelector, dispatch, useDispatch } from "react-redux";
-import { API } from "../../config/apiConfig";
-import { BlurView } from "expo-blur";
+import * as DocumentPicker from 'expo-document-picker';
+import { useSelector, dispatch, useDispatch } from 'react-redux';
+import { API } from '../../config/apiConfig';
+import { BlurView } from 'expo-blur';
 import { updateUserProfile } from "../../redux/slice/authSlice";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -27,22 +27,22 @@ export default function ContractorProfileComplete() {
   const token = useSelector((state) => state.auth.token);
   const user = useSelector((state) => state.auth.user);
 
-  const [userEmail, setUserEmail] = useState("");
-  const [userName, setUserFullName] = useState("");
+  const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserFullName] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const [companyContactNumber, setCompanyContactNumber] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [registrationNo, setRegistrationNo] = useState("");
-  const [companyAddress, setCompanyAddress] = useState("");
+  const [companyContactNumber, setCompanyContactNumber] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [registrationNo, setRegistrationNo] = useState('');
+  const [companyAddress, setCompanyAddress] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [organizationImage, setOrganizationImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const [portfolioData, setPortfolioData] = useState({
-    projectName: "",
-    cityName: "",
-    address: "",
-    description: "",
+    projectName: '',
+    cityName: '',
+    address: '',
+    description: '',
     images: [],
   });
 
@@ -57,8 +57,8 @@ export default function ContractorProfileComplete() {
 
   const pickImage = async (setImage) => {
     let result = await DocumentPicker.getDocumentAsync({
-      type: "image/*",
-      copyToCacheDirectory: true,
+      type: 'image/*',
+      copyToCacheDirectory: true
     });
 
     if (result.assets && result.assets.length > 0) {
@@ -69,29 +69,17 @@ export default function ContractorProfileComplete() {
   const handleSubmit = async () => {
     if (!userName.trim()) return Alert.alert("Error", "Name is required.");
     if (!userEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail)) {
-      return Alert.alert("Error", "Please enter a valid email address.");
+        return Alert.alert("Error", "Please enter a valid email address.");
     }
-    if (!companyName.trim())
-      return Alert.alert("Error", "Company name is required.");
-    if (
-      !companyContactNumber.trim() ||
-      !/^[0-9]{10}$/.test(companyContactNumber)
-    ) {
-      return Alert.alert(
-        "Error",
-        "Please enter a valid 10-digit contact number."
-      );
+    if (!companyName.trim()) return Alert.alert("Error", "Company name is required.");
+    if (!companyContactNumber.trim() || !/^[0-9]{10}$/.test(companyContactNumber)) {
+        return Alert.alert("Error", "Please enter a valid 10-digit contact number.");
     }
-    if (!portfolioData.projectName.trim())
-      return Alert.alert("Error", "Project name is required.");
-    if (!portfolioData.description.trim())
-      return Alert.alert("Error", "Project description is required.");
-    if (!portfolioData.cityName.trim())
-      return Alert.alert("Error", "City name is required.");
-    if (!profileImage)
-      return Alert.alert("Error", "Please upload a profile image.");
-    if (!organizationImage)
-      return Alert.alert("Error", "Please upload an organization image.");
+    if (!portfolioData.projectName.trim()) return Alert.alert("Error", "Project name is required.");
+    if (!portfolioData.description.trim()) return Alert.alert("Error", "Project description is required.");
+    if (!portfolioData.cityName.trim()) return Alert.alert("Error", "City name is required.");
+    if (!profileImage) return Alert.alert("Error", "Please upload a profile image.");
+    if (!organizationImage) return Alert.alert("Error", "Please upload an organization image.");
 
     setLoading(true);
 
@@ -133,7 +121,7 @@ export default function ContractorProfileComplete() {
         });
       });
 
-      const profileResponse = await API.post("setup-profile", formData, {
+      const profileResponse = await API.post('setup-profile', formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -146,7 +134,7 @@ export default function ContractorProfileComplete() {
       portfolioFormData.append("city", portfolioData.cityName);
       portfolioFormData.append("address", portfolioData.address);
       portfolioFormData.append("description", portfolioData.description);
-
+      
       portfolioData.images.forEach((imageUri, index) => {
         portfolioFormData.append(`images[${index}]`, {
           uri: imageUri,
@@ -155,27 +143,20 @@ export default function ContractorProfileComplete() {
         });
       });
 
-      const portfolioResponse = await API.post(
-        "portfolio/store",
-        portfolioFormData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const portfolioResponse = await API.post('portfolio/store', portfolioFormData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       console.log("Profile submitted successfully:", profileResponse.data);
       console.log("Portfolio submitted successfully:", portfolioResponse.data);
-
+      
       dispatch(updateUserProfile(profileResponse.data));
       router.replace("/(generalContractorTab)");
     } catch (error) {
-      console.error(
-        "Error submitting data:",
-        error.response?.data || error.message
-      );
+      console.error("Error submitting data:", error.response?.data || error.message);
       Alert.alert("Error", "Failed to submit data. Please try again.");
     } finally {
       setLoading(false);
@@ -193,7 +174,7 @@ export default function ContractorProfileComplete() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{ flex: 1, backgroundColor: "white" }}
       className="mt-10"
     >
@@ -223,23 +204,14 @@ export default function ContractorProfileComplete() {
             className="mt-4 flex justify-center items-center size-32 rounded-full overflow-hidden shadow-lg"
           >
             {profileImage ? (
-              <Image
-                source={{ uri: profileImage }}
-                className="w-full h-full rounded-full"
-              />
+              <Image source={{ uri: profileImage }} className="w-full h-full rounded-full" />
             ) : (
               <LinearGradient
                 colors={["#e0e0e0", "#cfcfcf"]}
                 className="w-full h-full flex justify-center items-center"
               >
-                <Ionicons
-                  name="person-circle-outline"
-                  size={60}
-                  color="#7c7c7c"
-                />
-                <Text className="text-gray-600 text-xs mt-2">
-                  Tap to Upload
-                </Text>
+                <Ionicons name="person-circle-outline" size={60} color="#7c7c7c" />
+                <Text className="text-gray-600 text-xs mt-2">Tap to Upload</Text>
               </LinearGradient>
             )}
           </TouchableOpacity>
@@ -257,9 +229,7 @@ export default function ContractorProfileComplete() {
           </View>
 
           <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
-            <Text className="text-gray-400 text-lg">
-              Company Contact Number :
-            </Text>
+            <Text className="text-gray-400 text-lg">Company Contact Number :</Text>
             <TextInput
               className="flex-1  px-3 bg-white py-2 text-gray-700"
               keyboardType="numeric"
@@ -269,9 +239,7 @@ export default function ContractorProfileComplete() {
           </View>
 
           <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
-            <Text className="text-gray-400 text-lg">
-              Company Registration No. :
-            </Text>
+            <Text className="text-gray-400 text-lg">Company Registration No. :</Text>
             <TextInput
               className="flex-1  px-3 bg-white py-2 text-gray-700"
               keyboardType="numeric"
@@ -293,31 +261,18 @@ export default function ContractorProfileComplete() {
             {/* portfolio section */}
             <View className="items-start">
               {portfolioData.images.length > 0 ? (
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  className="flex-row"
-                >
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
                   <View className="flex-col border border-dashed border-gray-400 items-center ">
-                    <Text className="text-gray-500 text-lg">
-                      Portfolio Image
-                    </Text>
+                    <Text className="text-gray-500 text-lg">Portfolio Image</Text>
                     {portfolioData.images.map((uri, index) => (
                       <View key={index} className="relative m-5">
-                        <Image
-                          source={{ uri }}
-                          className="w-32 h-32 rounded-lg"
-                        />
+                        <Image source={{ uri }} className="w-32 h-32 rounded-lg" />
                         <TouchableOpacity
                           className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
-                          onPress={() =>
-                            setPortfolioData((prevData) => ({
-                              ...prevData,
-                              images: prevData.images.filter(
-                                (_, i) => i !== index
-                              ),
-                            }))
-                          }
+                          onPress={() => setPortfolioData(prevData => ({
+                            ...prevData,
+                            images: prevData.images.filter((_, i) => i !== index),
+                          }))}
                         >
                           <Ionicons name="close" size={16} color="white" />
                         </TouchableOpacity>
@@ -330,12 +285,8 @@ export default function ContractorProfileComplete() {
                   className="border border-gray-500 rounded-lg py-3 flex-row items-center px-6"
                   onPress={() => setModalVisible(true)}
                 >
-                  <Text className="text-gray-600 font-semibold mr-2">
-                    Add Portfolio
-                  </Text>
-                  <Image
-                    source={require("../../assets/images/shortUploadIcon.png")}
-                  />
+                  <Text className="text-gray-600 font-semibold mr-2">Add Portfolio</Text>
+                  <Image source={require('../../assets/images/shortUploadIcon.png')} />
                 </TouchableOpacity>
               )}
             </View>
@@ -347,25 +298,14 @@ export default function ContractorProfileComplete() {
                   onPress={() => pickImage(setOrganizationImage)}
                   className="border border-gray-500 rounded-lg py-3 px-4 flex-row items-center justify-center"
                 >
-                  <Ionicons
-                    name="cloud-upload-outline"
-                    size={20}
-                    color="black"
-                  />
-                  <Text className="text-gray-600 font-semibold ml-2">
-                    Upload Organization
-                  </Text>
+                  <Ionicons name="cloud-upload-outline" size={20} color="black" />
+                  <Text className="text-gray-600 font-semibold ml-2">Upload Organization</Text>
                 </TouchableOpacity>
               ) : (
                 <View className="relative">
                   <View className="border border-dashed border-gray-400 items-center">
-                    <Text className="text-lg text-gray-500">
-                      Organization Image
-                    </Text>
-                    <Image
-                      source={{ uri: organizationImage }}
-                      className="w-32 h-32 rounded-lg m-5"
-                    />
+                    <Text className="text-lg text-gray-500">Organization Image</Text>
+                    <Image source={{ uri: organizationImage }} className="w-32 h-32 rounded-lg m-5" />
                     <TouchableOpacity
                       className="absolute top-7 right-5  rounded-full p-1"
                       onPress={() => pickImage(setOrganizationImage)}
