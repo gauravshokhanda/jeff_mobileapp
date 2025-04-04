@@ -5,24 +5,9 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
 import { baseUrl } from "../../config/apiConfig";
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, onValue, push, set, serverTimestamp } from "firebase/database";
+import { ref, onValue, push, set, serverTimestamp } from "firebase/database";
 import axios from "axios";
-
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyAsoO7K9oSJJHXFVuIxlRowg5MZQjHYAVM",
-  authDomain: "ac5d-533ea.firebaseapp.com",
-  databaseURL: "https://ac5d-533ea-default-rtdb.firebaseio.com/",
-  projectId: "ac5d-533ea",
-  storageBucket: "ac5d-533ea.appspot.com",
-  messagingSenderId: "99535253661",
-  appId: "1:99535253661:web:4bd8a9ed02839a49a2a474"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+import { database } from "../lib/firebaseConfig"
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const POST_CONTENT_WIDTH = SCREEN_WIDTH * 0.92;
