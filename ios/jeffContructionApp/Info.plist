@@ -28,7 +28,6 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>myapp</string>
-          <!-- <string>com.android.ac5dconstruction</string> -->
           <string>dev.expo.jeffContructionApp</string>
         </array>
       </dict>
