@@ -45,6 +45,10 @@ export default function SignUp() {
   //     }
   // }, [isAuthenticated, token, router]);
 
+  useEffect(() => {
+    console.log("Current Role:", role);
+  }, [role]);
+
   const handleSignUp = async () => {
     if (!name || !email || !password || !passwordConfirmation || !role.key) {
       Alert.alert("Error", "All fields are required.");
@@ -76,7 +80,7 @@ export default function SignUp() {
       if (role.key == 3) {
         router.replace("/ContractorProfileComplete");
       } else if (role.key == 4) {
-        router.replace("/RealstateSelector");
+        router.replace("/(RealstateContractorTab)");
       } else {
         router.replace("/(usertab)");
       }
@@ -94,7 +98,12 @@ export default function SignUp() {
         className="flex-1"
       >
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-          <LinearGradient colors={["#082f49", "transparent"]} style={{ height: height * 0.4 }} />
+          <LinearGradient
+            colors={["#082f49", "transparent"]}
+            style={{ height: height * 0.4 }}
+          >
+            <View style={{ flex: 1 }} />
+          </LinearGradient>
 
           <View
             className="flex-1 rounded-3xl bg-white px-6 py-6"
@@ -120,16 +129,18 @@ export default function SignUp() {
               <AuthInput placeholder="Email Address" value={email} onChangeText={setEmail} />
               <AuthInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
               <AuthInput placeholder="Confirm Password" value={passwordConfirmation} onChangeText={setPasswordConfirmation} secureTextEntry />
-
-              <ModalSelector
-                data={[{ key: 2, label: "Customer" }, { key: 3, label: "General Contractor" }, { key: 4, label: "Real Estate Contractor" }]}
-                initValue="Select Role"
-                onChange={(option) => setRole(option)}
-              >
-                <TouchableOpacity className="bg-gray-300 p-3 rounded-lg items-center">
-                  <Text className={role?.label ? "text-gray-700" : "text-gray-500"}>{role?.label || "Select Role"}</Text>
-                </TouchableOpacity>
-              </ModalSelector>
+              <View className="mb-4">
+                <ModalSelector
+                  key={role.key}
+                  data={[{ key: 2, label: "Customer" }, { key: 3, label: "General Contractor" }, { key: 4, label: "Real Estate Contractor" }]}
+                  initValue="Select Role"
+                  onChange={(option) => setRole(option)}
+                >
+                  <TouchableOpacity className="bg-gray-300 p-3 rounded-lg items-center">
+                    <Text className={role?.label ? "text-gray-700" : "text-gray-500"}>{role?.label || "Select Role"}</Text>
+                  </TouchableOpacity>
+                </ModalSelector>
+              </View>
             </View>
 
             <TouchableOpacity onPress={handleSignUp} className="bg-sky-950 rounded-xl items-center py-3 mt-5">
