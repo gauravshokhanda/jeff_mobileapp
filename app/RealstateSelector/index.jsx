@@ -180,13 +180,20 @@ export default function Index() {
       </View>
     );
   };
+  
+
 
   // handle submit
   const token = useSelector((state) => state.auth.token);
   const handleSubmit = async () => {
-    console.log("handle submit function")
+    console.log("handle submit function started")
+    console.log("availableFrom:", availableFrom);
+    if (!availableFrom) {
+      Alert.alert("Error", "Please select a valid date.");
+      return;
+    }
     const formData = new FormData();
-    formData.append("property_type", selectedPropertyType);
+    formData.append("available_from", availableFrom ? availableFrom.toISOString() : "");
     formData.append("city", city);
     formData.append("house_type", selectedHomeType);
     formData.append("address", address);
@@ -198,7 +205,7 @@ export default function Index() {
     formData.append("available_from", availableFrom.toISOString());
     images.forEach((uri, index) => {
       console.log("add floormap images", uri)
-      formData.append('property_images[]', {
+      formData.append('property_images[ ]', {
         uri: uri,
         type: 'image/jpeg',
         name: `property_image_${index}_${Date.now()}.jpg`
@@ -250,7 +257,7 @@ export default function Index() {
               setPrice("");
               setAvailableFrom("");
               setImages([])
-              router.replace("/(RealstateContractorTab)");
+              router.replace("/");
             },
           },
         ],
@@ -379,6 +386,7 @@ export default function Index() {
                   />
                 </View>
 
+
                 <View className="mb-10">
                   <Text className="text-lg font-medium mb-4">Furnish Type</Text>
 
@@ -402,7 +410,7 @@ export default function Index() {
                 </View>
 
                 <View className="mt-10">
-                  {images && images.length === 0 && (
+                  {images.length === 0 && (
                     <TouchableOpacity
                       className="border-2 border-gray-400 bg-white p-4 rounded-2xl flex items-center justify-center"
                       onPress={() => handleImagePick()}
@@ -413,7 +421,7 @@ export default function Index() {
                   <View className="flex-row flex-wrap m-3 ">
 
 
-                    {images && images.length > 0 && (
+                    {images.length > 0 && (
                       <View>
                         <Text className="ml-4 text-gray-600">Design Images</Text>
                         <View className="border-dashed border-2 border-gray-400 p-2 rounded-lg mt-3 bg-white">
@@ -422,22 +430,22 @@ export default function Index() {
                               <View key={index} className="relative w-24 h-24 m-1">
                                 <Image source={{ uri }} className="w-full h-full rounded-2xl" />
                                 <TouchableOpacity
-                                  onPress={() => removeImage(index)} 
+                                  onPress={() => removeImage('designImages', index)}
                                   className="absolute top-0 right-0 bg-red-500 rounded-full p-1"
                                 >
                                   <Ionicons name="close" size={16} color="white" />
                                 </TouchableOpacity>
                               </View>
                             ))}
-                            <TouchableOpacity
-                              onPress={() => handleImagePick()}
-                              className="w-24 h-24 m-1 flex items-center justify-center bg-gray-200 rounded-2xl"
-                            >
+                            <TouchableOpacity onPress={() => handleImagePick('designImages')} className="w-24 h-24 m-1 flex items-center justify-center bg-gray-200 rounded-2xl">
                               <Text className="text-4xl text-gray-600">+</Text>
                             </TouchableOpacity>
                           </View>
+
                         </View>
+
                       </View>
+
                     )}
                   </View>
 
