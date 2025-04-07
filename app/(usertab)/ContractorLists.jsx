@@ -75,9 +75,8 @@ export default function Index() {
     try {
       const url = `contractors/listing?${
         query ? `city=${encodeURIComponent(query)}&` : ""
-      }page=${page}&sort_order=${order}
+      }page=${page}&sort_order=${order}&role=3`;
 
-`;
       const response = await API.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -356,11 +355,17 @@ export default function Index() {
             Properties & Contractors
           </Text>
         </View>
-        <View className="mx-5 mt-5 items-end" style={{ marginTop: screenHeight * 0.02 }}>
-          <View className="bg-gray-100 h-12 rounded-full px-3 flex-row items-center justify-between"  style={{
+        <View
+          className="mx-5 mt-5 items-end"
+          style={{ marginTop: screenHeight * 0.02 }}
+        >
+          <View
+            className="bg-gray-100 h-12 rounded-full px-3 flex-row items-center justify-between"
+            style={{
               height: screenHeight * 0.06,
               paddingHorizontal: screenWidth * 0.04,
-            }}>
+            }}
+          >
             <Ionicons name="search" size={18} color="black" />
             <TextInput
               placeholder="Search"
@@ -394,7 +399,8 @@ export default function Index() {
         }}
       >
         <KeyboardAvoidingView
-          className="flex-1"x
+          className="flex-1"
+          x
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <View className="flex-row justify-around mb-4">
@@ -514,7 +520,7 @@ export default function Index() {
                         className="bg-white px-4 py-2 rounded-lg"
                         onPress={() =>
                           router.push(
-                            `/ContractorProfile?user_id=${item.user_id}`
+                            `/RealContractorProfile?user_id=${item.user_id}`
                           )
                         }
                       >
@@ -525,9 +531,7 @@ export default function Index() {
                       <TouchableOpacity
                         className=" bg-white py-2 px-4 rounded-lg"
                         onPress={() =>
-                          router.push(
-                            `/ChatScreen?user_id=${item.user_id}`
-                          )
+                          router.push(`/ChatScreen?user_id=${item.user_id}`)
                         }
                       >
                         <Text className="text-sky-950 font-semibold">Chat</Text>

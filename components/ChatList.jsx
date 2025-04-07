@@ -8,6 +8,8 @@ import {
   TextInput,
   SafeAreaView,
   Dimensions,
+  Platform,
+  StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -15,9 +17,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../config/apiConfig";
 
+const { width: screenWidth } = Dimensions.get("window");
+const postContentWidth = screenWidth * 0.92;
+
 const ChatListScreen = () => {
-  const { width: screenWidth } = Dimensions.get("window");
-  const postContentWidth = screenWidth * 0.92;
   const router = useRouter();
   const token = useSelector((state) => state.auth.token);
 
@@ -42,9 +45,7 @@ const ChatListScreen = () => {
           id: user.id.toString(),
           name: user.name,
           lastMessage: "Start a conversation",
-          image: user.image
-            ? `${baseUrl}${user.image}`
-            : `${baseUrl}images/default-profile.jpg`,
+          image: user.image ? `${baseUrl}${user.image}` : null,
           email: user.email,
         }));
         setChats(formattedChats);
@@ -69,9 +70,8 @@ const ChatListScreen = () => {
   }, [token]);
 
   const renderChatItem = ({ item }) => {
-    const hasImage = !!item.image;
     const firstLetter = item.name?.charAt(0)?.toUpperCase() || "?";
-  
+
     return (
       <TouchableOpacity
         onPress={() =>
@@ -80,9 +80,10 @@ const ChatListScreen = () => {
             params: { user_id: item.id, name: item.name, image: item.image },
           })
         }
-        className="flex-row items-center p-4 bg-white rounded-xl mb-3 border border-gray-100"
+        className="flex-row items-center p-4 bg-white rounded-2xl mb-3 border border-gray-200"
+        style={styles.shadow}
       >
-        {hasImage ? (
+        {item.image ? (
           <Image
             source={{ uri: item.image }}
             className="w-14 h-14 rounded-full mr-4"
@@ -93,10 +94,12 @@ const ChatListScreen = () => {
             <Text className="text-white text-lg font-bold">{firstLetter}</Text>
           </View>
         )}
-  
+
         <View className="flex-1">
-          <Text className="text-lg font-semibold text-gray-800">{item.name}</Text>
-          <Text className="text-sm text-gray-600 mt-1" numberOfLines={1}>
+          <Text className="text-base font-semibold text-gray-800">
+            {item.name}
+          </Text>
+          <Text className="text-sm text-gray-500 mt-1" numberOfLines={1}>
             {item.lastMessage}
           </Text>
         </View>
@@ -104,7 +107,6 @@ const ChatListScreen = () => {
       </TouchableOpacity>
     );
   };
-  
 
   if (loading) {
     return (
@@ -117,7 +119,9 @@ const ChatListScreen = () => {
   if (error) {
     return (
       <View className="flex-1 justify-center items-center p-4 bg-gray-50">
-        <Text className="text-red-500 text-lg font-medium">{error}</Text>
+        <Text className="text-red-500 text-lg font-medium text-center">
+          {error}
+        </Text>
         <TouchableOpacity
           onPress={fetchChats}
           className="mt-6 bg-sky-900 px-6 py-3 rounded-full"
@@ -130,7 +134,10 @@ const ChatListScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <LinearGradient colors={["#082f49", "#0c4a6e"]} className="pt-12 pb-6">
+      <LinearGradient
+        colors={["#082f49", "#0c4a6e"]}
+        style={styles.headerGradient}
+      >
         <View className="px-4 flex-row items-center justify-between">
           <TouchableOpacity
             onPress={() => router.back()}
@@ -145,7 +152,7 @@ const ChatListScreen = () => {
         </View>
 
         <View className="px-4 mt-4">
-          <View className="bg-white p-3 rounded-xl flex-row items-center">
+          <View className="bg-white px-3 py-2 rounded-xl flex-row items-center">
             <Ionicons name="search" size={20} color="#0369a1" />
             <TextInput
               placeholder="Search Messages"
@@ -158,7 +165,7 @@ const ChatListScreen = () => {
       </LinearGradient>
 
       <View
-        className="flex-1 px-4 pt-4"
+        className="flex-1 pt-4"
         style={{
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
@@ -175,5 +182,19 @@ const ChatListScreen = () => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  headerGradient: {
+    paddingTop: Platform.OS === "android" ? 40 : 60,
+    paddingBottom: 24,
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+});
 
 export default ChatListScreen;
