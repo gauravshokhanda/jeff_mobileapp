@@ -13,14 +13,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector } from "react-redux";
+import { API, baseUrl } from "../config/apiConfig";
 
 const ChatListScreen = () => {
   const { width: screenWidth } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const router = useRouter();
   const token = useSelector((state) => state.auth.token);
-  const API_URL = "https://g32.iamdeveloper.in/api/recent-chats";
-  const BASE_URL = "https://g32.iamdeveloper.in/";
 
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,27 +28,23 @@ const ChatListScreen = () => {
   const fetchChats = async () => {
     try {
       setLoading(true);
-      const response = await fetch(API_URL, {
+
+      const response = await API.get("recent-chats", {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const data = response.data;
 
-      const data = await response.json();
-      
       if (data.success) {
-        const formattedChats = data.users.map(user => ({
+        const formattedChats = data.users.map((user) => ({
           id: user.id.toString(),
           name: user.name,
           lastMessage: "Start a conversation",
           image: user.image
-            ? `${BASE_URL}${user.image}`
-            : `${BASE_URL}images/default-profile.jpg`,
+            ? `${baseUrl}${user.image}`
+            : `${baseUrl}images/default-profile.jpg`,
           email: user.email,
         }));
         setChats(formattedChats);
@@ -73,32 +68,43 @@ const ChatListScreen = () => {
     }
   }, [token]);
 
-  const renderChatItem = ({ item }) => (
-    <TouchableOpacity
-      onPress={() =>
-        router.push({
-          pathname: "/ChatScreen",
-          params: { user_id: item.id, name: item.name, image: item.image }
-        })
-      }
-      className="flex-row items-center p-4 bg-white rounded-xl mb-3 border border-gray-100"
-    >
-      <Image
-        source={{ uri: item.image }}
-        defaultSource={{ uri: `${BASE_URL}images/default-profile.jpg` }}
-        className="w-14 h-14 rounded-full mr-4"
-        resizeMode="cover"
-        onError={() => console.log(`Failed to load image for ${item.name}`)}
-      />
-      <View className="flex-1">
-        <Text className="text-lg font-semibold text-gray-800">{item.name}</Text>
-        <Text className="text-sm text-gray-600 mt-1" numberOfLines={1}>
-          {item.lastMessage}
-        </Text>
-      </View>
-      <Ionicons name="chevron-forward" size={20} color="#0369a1" />
-    </TouchableOpacity>
-  );
+  const renderChatItem = ({ item }) => {
+    const hasImage = !!item.image;
+    const firstLetter = item.name?.charAt(0)?.toUpperCase() || "?";
+  
+    return (
+      <TouchableOpacity
+        onPress={() =>
+          router.push({
+            pathname: "/ChatScreen",
+            params: { user_id: item.id, name: item.name, image: item.image },
+          })
+        }
+        className="flex-row items-center p-4 bg-white rounded-xl mb-3 border border-gray-100"
+      >
+        {hasImage ? (
+          <Image
+            source={{ uri: item.image }}
+            className="w-14 h-14 rounded-full mr-4"
+            resizeMode="cover"
+          />
+        ) : (
+          <View className="w-14 h-14 rounded-full bg-sky-900 mr-4 justify-center items-center">
+            <Text className="text-white text-lg font-bold">{firstLetter}</Text>
+          </View>
+        )}
+  
+        <View className="flex-1">
+          <Text className="text-lg font-semibold text-gray-800">{item.name}</Text>
+          <Text className="text-sm text-gray-600 mt-1" numberOfLines={1}>
+            {item.lastMessage}
+          </Text>
+        </View>
+        <Ionicons name="chevron-forward" size={20} color="#0369a1" />
+      </TouchableOpacity>
+    );
+  };
+  
 
   if (loading) {
     return (
