@@ -66,7 +66,7 @@ export default function SignIn() {
             router.replace(
               userData.data.is_profile_complete
                 ? "/(RealstateContractorTab)"
-                : "/RealstateSelector"
+                : "/(RealstateContractorTab)/PropertyPost"
             );
           } else {
             router.replace("/(usertab)");
