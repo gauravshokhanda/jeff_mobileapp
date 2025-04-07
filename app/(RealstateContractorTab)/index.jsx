@@ -222,13 +222,13 @@ export default function Index() {
           <TouchableOpacity
             onPress={() => router.push("EstateContractorProfile")}
           >
-            <Image
-              source={{
-                uri: "https://xsgames.co/randomusers/assets/avatars/male/74.jpg",
-              }}
-              className="w-14 h-14 border-2 border-white rounded-full"
-            />
+            <View className="w-14 h-14 bg-white rounded-full items-center justify-center border-2 border-white">
+              <Text className="text-xl font-bold text-sky-900">
+                {userName?.name?.charAt(0)?.toUpperCase() || "U"}
+              </Text>
+            </View>
           </TouchableOpacity>
+
           <View className="gap-1">
             <Text className="text-2xl font-semibold text-white">
               Welcome! {userName?.name || "User"}
@@ -254,7 +254,6 @@ export default function Index() {
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
-
           </View>
         </View>
       </LinearGradient>

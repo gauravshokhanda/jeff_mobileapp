@@ -83,30 +83,7 @@ export default function EstateContractorProfile() {
         </View>
 
         {/* Details Section */}
-        <View className="mt-6  p-6 rounded-lg ">
-          <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-sky-950 font-semibold text-lg">Details</Text>
-            <TouchableOpacity>
-              <Ionicons name="create-outline" size={24} color="#0369A1" />
-            </TouchableOpacity>
-          </View>
-
-          {[
-            { label: "Company Name", value: userData?.company_name },
-            { label: "Address", value: userData?.address },
-            { label: "City", value: userData?.city },
-            { label: "Phone Number", value: userData?.number },
-            { label: "Description", value: userData?.description },
-          ].map((item, index) => (
-            <View
-              key={index}
-              className="bg-sky-950 p-4 rounded-lg shadow-md mb-2"
-            >
-              <Text className="text-white font-semibold">{item.label}:</Text>
-              <Text className="text-white">{item.value || "N/A"}</Text>
-            </View>
-          ))}
-        </View>
+        <View className="mt-6  p-6 rounded-lg "></View>
       </View>
     </SafeAreaView>
   );
