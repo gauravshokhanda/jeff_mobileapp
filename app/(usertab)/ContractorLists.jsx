@@ -99,7 +99,7 @@ export default function Index() {
       setCurrentPage(response.data.data.current_page);
       setTotalPages(response.data.data.last_page);
     } catch (error) {
-      console.error("Error fetching contractors:", error);
+      console.log("Error fetching contractors:", error);
     } finally {
       setLoading(false);
     }

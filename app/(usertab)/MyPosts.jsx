@@ -45,10 +45,8 @@ export default function MyPosts() {
 
   const openModal = () => {
     iconRef.current?.measure((_fx, _fy, _width, _height, px, py) => {
-      // Ensure dropdown does not overflow the screen
       const leftPosition = Math.min(px, width - 150);
       const topPosition = Math.min(py + _height + 5, height - 100);
-
       setPosition({ top: topPosition, left: leftPosition });
     });
     setModalVisible(true);
@@ -83,7 +81,7 @@ export default function MyPosts() {
       setResults(append ? [...results, ...newPosts] : newPosts);
       setLastPage(response.data.data.last_page || 1);
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.log("Error fetching posts:", error);
       if (!append) setResults([]);
     } finally {
       setLoading(false);
@@ -118,17 +116,17 @@ export default function MyPosts() {
     setSearchQuery(query);
 
     if (query.length < 3) {
-      fetchPosts(); // Reset to all posts if query is too short
+      fetchPosts();
       return;
     }
 
     try {
       const response = await axios.post(
         `https://g32.iamdeveloper.in/api/citie-search`,
-        { city: query }, // API expects city name in request body
+        { city: query },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Include the token
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -198,12 +196,6 @@ export default function MyPosts() {
             <Text className="text-lg font-bold">
               {item.project_type} Apartment
             </Text>
-            {/* <TouchableOpacity
-              className="bg-sky-950 w-20 rounded-xl ml-14"
-              onPress={() => router.push(`/EditPost?id=${item.id}`)}
-            >
-              <Text className="text-white text-center py-2">Edit</Text>
-            </TouchableOpacity> */}
           </View>
         </View>
       </View>
@@ -216,14 +208,11 @@ export default function MyPosts() {
         colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-        <View
-          className={`flex-row justify-center items-center py-3 px-10 pb-4`}
-        >
+        <View className="flex-row justify-center items-center py-3 px-10 pb-4">
           <TouchableOpacity onPress={() => router.back()} className="mr-3">
             <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
-          {/* Search Bar */}
-          <View className="flex-row items-center border border-white rounded-full px-4  mt-2 bg-white">
+          <View className="flex-row items-center border border-white rounded-full px-4 mt-2 bg-white">
             <Ionicons name="search" size={24} color="#000000" />
             <TextInput
               className="flex-1 ml-2 text-black"
@@ -251,7 +240,6 @@ export default function MyPosts() {
         style={{
           marginTop: -screenHeight * 0.3,
           width: postContentWidth,
-
           marginHorizontal: (screenWidth - postContentWidth) / 2,
           overflow: "hidden",
         }}
@@ -261,7 +249,7 @@ export default function MyPosts() {
             <View className="flex-1 justify-center items-center">
               <ActivityIndicator size="large" color="#007AFF" />
             </View>
-          ) : (
+          ) : results.length > 0 ? (
             <FlatList
               ref={flatListRef}
               showsVerticalScrollIndicator={false}
@@ -279,6 +267,24 @@ export default function MyPosts() {
                 ) : null
               }
             />
+          ) : (
+            <View className="flex-1 justify-center items-center gap-4">
+              <Text className="text-gray-500 text-lg">
+                {searchQuery
+                  ? `No posts found for "${searchQuery}"`
+                  : "No posts available"}
+              </Text>
+              {!searchQuery && (
+                <TouchableOpacity
+                  className="bg-sky-950 px-6 py-3 rounded-lg"
+                  onPress={() => router.push("/CreatePost")} // Adjust route as needed
+                >
+                  <Text className="text-white font-semibold text-lg">
+                    Create a Post
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
           )}
         </View>
       </View>
