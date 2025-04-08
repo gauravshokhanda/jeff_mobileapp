@@ -2,7 +2,7 @@ import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { useState, useEffect, useCallback } from "react";
-import { Keyboard, BackHandler } from "react-native";
+import { Keyboard, BackHandler, Platform } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 export default function TabRoot() {
@@ -47,7 +47,7 @@ export default function TabRoot() {
           headerShown: false,
           tabBarStyle: {
             backgroundColor: "#082f49",
-            height: isKeyboardVisible ? 0 : 58,
+            height: isKeyboardVisible ? 0 : 68,
             paddingTop: isKeyboardVisible ? 0 : 10,
           },
         }}
@@ -67,20 +67,7 @@ export default function TabRoot() {
           }}
         />
 
-        <Tabs.Screen
-          name="RealStateChatList"
-          options={{
-            title: "RealStateChatList",
-            tabBarIcon: ({ color, focused }) => (
-              <Ionicons
-                name={focused ? "chatbubble" : "chatbubble-outline"}
-                size={25}
-                color={"white"}
-              />
-            ),
-            tabBarLabelStyle: { display: "none" },
-          }}
-        />
+
 
         <Tabs.Screen
           name="PropertyPost"
@@ -104,6 +91,20 @@ export default function TabRoot() {
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "newspaper" : "newspaper-outline"}
+                size={25}
+                color={"white"}
+              />
+            ),
+            tabBarLabelStyle: { display: "none" },
+          }}
+        />
+        <Tabs.Screen
+          name="RealStateChatList"
+          options={{
+            title: "RealStateChatList",
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons
+                name={focused ? "chatbubble" : "chatbubble-outline"}
                 size={25}
                 color={"white"}
               />
@@ -151,13 +152,13 @@ export default function TabRoot() {
             href: null,
           }}
         />
-          <Tabs.Screen
+        <Tabs.Screen
           name="EstateContractorProfile"
           options={{
             href: null,
           }}
         />
-         <Tabs.Screen
+        <Tabs.Screen
           name="contractorProfile"
           options={{
             href: null,

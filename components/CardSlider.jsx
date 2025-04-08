@@ -27,7 +27,7 @@ const CardSlider = () => {
       const response = await API.get("contractors/listing", {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+      console.log("general contrator data", response.data?.data?.data)
       // Filtering first for better performance
       const filteredData =
         response.data?.data?.data?.filter((item) => item.role === 3) || [];
