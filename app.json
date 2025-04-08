@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "jeffContructionApp",
-    "slug": "jeffContructionApp",
+    "slug": "jeffconstructionapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/AC5D_Logo.jpg",
@@ -54,9 +54,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "456005e1-c5be-4510-8f9e-5a478a95100c"
+        "projectId": "6ecb0fdd-6f76-46e9-9f22-b8313763cd80"
       }
     },
-    "owner": "gauravshokhanda"
+    "owner": "abhijeetsodlan"
   }
 }
