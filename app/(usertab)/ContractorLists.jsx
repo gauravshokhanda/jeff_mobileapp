@@ -43,6 +43,15 @@ export default function Index() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const flatListRef = useRef(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  {
+    isLoadingMore && (
+      <View className="py-4 items-center">
+        <ActivityIndicator size="small" color="#888" />
+      </View>
+    );
+  }
 
   const openModal = () => {
     iconRef.current?.measure((_fx, _fy, _width, _height, px, py) => {
@@ -98,7 +107,7 @@ export default function Index() {
       setCurrentPage(response.data.data.current_page);
       setTotalPages(response.data.data.last_page);
     } catch (error) {
-      console.error("Error fetching contractors:", error);
+      // console.log("fetching");
     } finally {
       setLoading(false);
     }
@@ -149,27 +158,23 @@ export default function Index() {
   const loadMore = () => {
     if (loading || currentPage >= totalPages) return;
 
-    console.log("Loading more data...");
+    setIsLoadingMore(true); // Start loading indicator
     const nextPage = currentPage + 1;
 
+    const handleScroll = () => {
+      if (flatListRef.current) {
+        flatListRef.current.scrollToOffset({
+          offset: scrollOffset,
+          animated: false,
+        });
+      }
+      setIsLoadingMore(false); // Stop loading indicator
+    };
+
     if (selectedTab === "realEstate") {
-      fetchRealEstateProperties(nextPage).then(() => {
-        if (flatListRef.current) {
-          flatListRef.current.scrollToOffset({
-            offset: scrollOffset,
-            animated: false,
-          });
-        }
-      });
+      fetchRealEstateProperties(nextPage).then(handleScroll);
     } else {
-      fetchContractors(searchTerm, nextPage).then(() => {
-        if (flatListRef.current) {
-          flatListRef.current.scrollToOffset({
-            offset: scrollOffset,
-            animated: false,
-          });
-        }
-      });
+      fetchContractors(searchTerm, nextPage).then(handleScroll);
     }
   };
 
@@ -312,8 +317,7 @@ export default function Index() {
                 <View className="flex-row items-center">
                   <Ionicons name="calendar-outline" size={16} color="white" />
                   <Text className="text-gray-300 ml-2">
-                    Available from{" "}
-                    {new Date(item.available_from).toISOString().split("T")[0]}
+                    Available from {item.available_from}
                   </Text>
                 </View>
                 <View className="flex-row items-center">
@@ -444,7 +448,7 @@ export default function Index() {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() =>
-                    router.push(`/RealEstateDetails?id=${item.id}`)
+                    router.push(`/RealContractorListing?id=${item.id}`)
                   }
                 >
                   <View className="bg-sky-950 p-3 rounded-lg mb-4">

@@ -11,7 +11,7 @@ import {
   Modal,
   ScrollView,
   SafeAreaView,
-  Dimensions
+  Dimensions,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import axios from "axios";
@@ -23,13 +23,11 @@ import { debounce } from "lodash";
 import CitySearch from "../../components/CitySearch";
 import { API } from "../../config/apiConfig";
 
-import { LinearGradient } from 'expo-linear-gradient';
-import ContractorPortfolioModal from "../../components/ContractorPortfolioModal"
-
-
+import { LinearGradient } from "expo-linear-gradient";
+import ContractorPortfolioModal from "../../components/ContractorPortfolioModal";
 
 const Portfolio = ({ navigation }) => {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const [portfolioItems, setPortfolioItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +37,6 @@ const Portfolio = ({ navigation }) => {
   const [lastPage, setLastPage] = useState(1);
   const [citySuggestions, setCitySuggestions] = useState([]);
   const [cityQuery, setCityQuery] = useState("");
-
 
   const router = useRouter();
 
@@ -51,9 +48,6 @@ const Portfolio = ({ navigation }) => {
     selectedImages: [],
     imageNames: [],
   });
-
-
-
 
   const token = useSelector((state) => state.auth.token);
 
@@ -149,11 +143,12 @@ const Portfolio = ({ navigation }) => {
       !newData.description.trim() ||
       newData.selectedImages.length === 0
     ) {
-      Alert.alert("Error", "All fields are required, including at least one image.");
+      Alert.alert(
+        "Error",
+        "All fields are required, including at least one image."
+      );
       return;
     }
-
-
 
     try {
       let formData = new FormData();
@@ -197,13 +192,12 @@ const Portfolio = ({ navigation }) => {
       }
     } catch (error) {
       console.error("API Error:", error.response?.data || error);
-      Alert.alert("API Error", error.response?.data?.message || "An error occurred");
+      Alert.alert(
+        "API Error",
+        error.response?.data?.message || "An error occurred"
+      );
     }
-
   };
-
-
-
 
   useFocusEffect(
     useCallback(() => {
@@ -245,12 +239,7 @@ const Portfolio = ({ navigation }) => {
     fetchPortfolio,
     pickImage,
     addPortfolioItem,
-  }) => {
-
-
-
-
-  };
+  }) => {};
   const fetchCities = async (page = 1, query = "") => {
     try {
       const response = await axios.post(
@@ -279,18 +268,16 @@ const Portfolio = ({ navigation }) => {
     }
   };
 
-
-
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
-
       <LinearGradient
-        colors={['#082f49', 'transparent']}
-
+        colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
         <View className="mt-8 px-4 ">
-          <Text className="text-2xl font-semibold text-white ml-5">My Portfolio</Text>
+          <Text className="text-2xl font-semibold text-white ml-5">
+            My Portfolio
+          </Text>
         </View>
         <View className="ml-5 mt-5 items-end">
           <View className="bg-gray-100  h-12 mr-5 rounded-full px-3 flex-row items-center justify-between">
@@ -302,24 +289,21 @@ const Portfolio = ({ navigation }) => {
               className="flex-1 ml-5 text-lg "
             />
             <Ionicons name="filter-sharp" size={26} color="black" />
-
           </View>
         </View>
       </LinearGradient>
 
-      <View className="rounded-3xl "
+      <View
+        className="rounded-3xl "
         style={{
-          position: 'absolute',
-          top: screenHeight * 0.20,
+          position: "absolute",
+          top: screenHeight * 0.2,
           width: postContentWidth,
-          height: screenHeight * 0.80,
+          height: screenHeight * 0.8,
           left: (screenWidth - postContentWidth) / 2,
-          backgroundColor: 'white',
-
-
+          backgroundColor: "white",
         }}
       >
-
         <View className="mt-6 px-4 w-full">
           <View className="flex-row gap-2 mb-2 items-center">
             <Text className="font-bold text-xl text-sky-950 tracking-widest">
@@ -369,16 +353,12 @@ const Portfolio = ({ navigation }) => {
         </View>
       </View>
 
-
-
       <ContractorPortfolioModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         setPortfolioData={setNewPortfolio}
         addPortfolioItem={addPortfolioItem}
       />
-
-
     </SafeAreaView>
   );
 };

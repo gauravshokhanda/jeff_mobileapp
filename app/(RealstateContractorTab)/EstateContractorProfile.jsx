@@ -11,6 +11,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useRouter } from "expo-router";
+import CompleteProfileModal from "../../components/CompleteProfileModal";
 
 const { width } = Dimensions.get("window");
 
@@ -19,6 +20,7 @@ export default function EstateContractorProfile() {
   const router = useRouter();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -44,6 +46,12 @@ export default function EstateContractorProfile() {
     fetchUserData();
   }, [token]);
 
+  const handleProfileSubmit = (data) => {
+    console.log("Submitted data:", data);
+    setModalVisible(false);
+    // Optionally send data to API
+  };
+
   if (loading) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center bg-white">
@@ -58,6 +66,9 @@ export default function EstateContractorProfile() {
       <View className="flex-row justify-between items-center ml-2 pb-3 border-gray-300">
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back-outline" size={30} color="#0369A1" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <Ionicons name="create-outline" size={26} color="#0369A1" />
         </TouchableOpacity>
       </View>
 
@@ -83,8 +94,15 @@ export default function EstateContractorProfile() {
         </View>
 
         {/* Details Section */}
-        <View className="mt-6  p-6 rounded-lg "></View>
+        <View className="mt-6 p-6 rounded-lg"></View>
       </View>
+
+      {/* Profile Completion Modal */}
+      <CompleteProfileModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSubmit={handleProfileSubmit}
+      />
     </SafeAreaView>
   );
 }

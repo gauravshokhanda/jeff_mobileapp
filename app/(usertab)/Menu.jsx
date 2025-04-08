@@ -110,15 +110,20 @@ const MenuHeader = () => {
       >
         <View className="mt-10 px-4 gap-2 flex-row items-center">
           <TouchableOpacity onPress={() => router.push("UserProfile")}>
-            <Image
-              source={{
-                uri: userData?.image
-                  ? `${baseUrl}/${userData.image}`
-                  : "https://xsgames.co/randomusers/assets/avatars/male/74.jpg",
-              }}
-              className="w-16 h-16 border-2 border-white rounded-full"
-            />
+            {userData?.image ? (
+              <Image
+                source={{ uri: `${baseUrl}/${userData.image}` }}
+                className="w-16 h-16 border-2 border-white rounded-full"
+              />
+            ) : (
+              <View className="w-16 h-16 rounded-full bg-white border-2 border-white justify-center items-center">
+                <Text className="text-2xl font-bold text-sky-800">
+                  {userData?.name?.charAt(0).toUpperCase() || "U"}
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
+
           <View className="gap-1">
             <Text className="text-2xl font-semibold text-white">
               Welcome! {userName?.name || "User"}

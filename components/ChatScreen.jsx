@@ -81,13 +81,13 @@ const ChatScreen = () => {
           setMessages(
             messagesArray.sort((a, b) => a.timestamp - b.timestamp).reverse()
           );
-          setStatusMessage({
-            type: "success",
-            message: "Messages loaded successfully",
-          });
+          // setStatusMessage({
+          //   type: "success",
+          //   message: "Messages loaded successfully",
+          // });
         } else {
-          setMessages([]);
-          setStatusMessage({ type: "info", message: "No messages yet" });
+          // setMessages([]);
+          // setStatusMessage({ type: "info", message: "No messages yet" });
         }
       },
       (error) => {
@@ -134,15 +134,16 @@ const ChatScreen = () => {
           },
         }
       );
+      console.log("message sent");
 
       // Clear input and show API response
       setInputText("");
-      setStatusMessage({
-        type: "success",
-        message: `Message sent successfully. API Response: ${JSON.stringify(
-          apiResponse.data
-        )}`,
-      });
+      // setStatusMessage({
+      //   type: "success",
+      //   message: `Message sent successfully. API Response: ${JSON.stringify(
+      //     apiResponse.data
+      //   )}`,
+      // });
     } catch (error) {
       console.error("Error sending message:", error);
       setStatusMessage({
@@ -231,20 +232,24 @@ const ChatScreen = () => {
           <TouchableOpacity onPress={() => router.back()} className="mr-3">
             <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
+
           {user ? (
             <>
-              <Image
-                source={{
-                  uri: user.image
-                    ? `${baseUrl}${user.image}`
-                    : "https://via.placeholder.com/50",
-                }}
-                defaultSource={{ uri: "https://via.placeholder.com/50" }}
-                onError={(e) =>
-                  console.log("Header image error:", e.nativeEvent.error)
-                }
-                className="w-10 h-10 rounded-full mr-3"
-              />
+              {user.image ? (
+                <Image
+                  source={{ uri: `${baseUrl}${user.image}` }}
+                  onError={(e) =>
+                    console.log("Header image error:", e.nativeEvent.error)
+                  }
+                  className="w-10 h-10 rounded-full mr-3"
+                />
+              ) : (
+                <View className="w-10 h-10 rounded-full bg-white mr-3 items-center justify-center">
+                  <Text className="text-sky-900 text-lg font-bold">
+                    {user.name?.charAt(0).toUpperCase()}
+                  </Text>
+                </View>
+              )}
               <Text className="text-white text-lg font-bold">{user.name}</Text>
             </>
           ) : (
