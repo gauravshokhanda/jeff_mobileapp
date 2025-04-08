@@ -204,9 +204,6 @@ export default function Index() {
           <Text className="text-lg font-semibold text-gray-600">
             Get ready list of buyers
           </Text>
-          <TouchableOpacity className="bg-white px-4 py-2 rounded-lg shadow-md">
-            <Text className="text-indigo-900 font-semibold">Update</Text>
-          </TouchableOpacity>
         </View>
       </View>
     );
@@ -359,7 +356,7 @@ export default function Index() {
                       </View>
                     </View>
 
-                    <View className="p-8 bg-gray-100 rounded-xl mb-5">
+                    <View className="p-8 bg-gray-100 rounded-xl mb-24">
                       {/* Call Us Card */}
                       <TouchableOpacity className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center mb-3">
                         <View className="bg-gray-200 p-2 rounded-full mr-5">

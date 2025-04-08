@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import { Feather } from "@expo/vector-icons";
 import Swiper from "react-native-swiper";
 import * as ImagePicker from "expo-image-picker";
-import EditPortfolioModal from "../../components/EditPortfolioModal"
+import EditPortfolioModal from "../../components/EditPortfolioModal";
 import { API } from "../../config/apiConfig";
 
 const PortfolioDetail = () => {
@@ -38,11 +38,9 @@ const PortfolioDetail = () => {
     const fetchPortfolioDetails = async () => {
       if (!id || !token) return;
       try {
-        const response = await API.get(`portfolios/${id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const response = await API.get(`portfolios/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (response.status === 200) {
           setPortfolio(response.data.portfolio);
           setFormData({
@@ -63,7 +61,6 @@ const PortfolioDetail = () => {
     fetchPortfolioDetails();
   }, [id, token, modalVisible]); // 🔹 Added modalVisible as dependency
 
-
   const handleDelete = () => {
     Alert.alert(
       "Confirm Delete",
@@ -74,11 +71,9 @@ const PortfolioDetail = () => {
           text: "Delete",
           onPress: async () => {
             try {
-              await API.delete(`portfolio/delete/${id}`,
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              );
+              await API.delete(`portfolio/delete/${id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
               Alert.alert("Success", "Portfolio deleted!", [
                 { text: "OK", onPress: () => router.push("Portfolio") },
               ]);
@@ -104,7 +99,8 @@ const PortfolioDetail = () => {
       if (selectedImage) {
         const fileName = selectedImage.split("/").pop();
         const fileType = fileName.split(".").pop();
-        const mimeType = fileType === "jpg" ? "image/jpeg" : `image/${fileType}`;
+        const mimeType =
+          fileType === "jpg" ? "image/jpeg" : `image/${fileType}`;
 
         formDataToSend.append("image", {
           uri: selectedImage,
@@ -112,12 +108,17 @@ const PortfolioDetail = () => {
           type: mimeType,
         });
 
-        console.log("Uploading image:", { uri: selectedImage, name: fileName, type: mimeType });
+        console.log("Uploading image:", {
+          uri: selectedImage,
+          name: fileName,
+          type: mimeType,
+        });
       } else {
         console.log("No new image selected");
       }
 
-      const response = await API.post(`portfolio/update/${id}`,
+      const response = await API.post(
+        `portfolio/update/${id}`,
         formDataToSend,
         {
           headers: {
@@ -132,13 +133,11 @@ const PortfolioDetail = () => {
       Alert.alert("Success", "Portfolio updated successfully!", [
         { text: "OK", onPress: () => setModalVisible(false) },
       ]);
-
     } catch (error) {
       console.error("Update failed:", error.response?.data || error.message);
       Alert.alert("Error", "Failed to update portfolio. Try again.");
     }
   };
-
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" className="mt-10" />;
@@ -169,10 +168,7 @@ const PortfolioDetail = () => {
       {/* HEADER */}
       <View className="bg-sky-950 py-4 mt-10 px-4 flex-row items-center justify-between">
         {/* Back Button */}
-        <TouchableOpacity
-          onPress={() => router.push("Portfolio")}
-          className="p-2"
-        >
+        <TouchableOpacity onPress={() => router.back()} className="p-2">
           <Feather name="arrow-left" size={24} color="white" />
         </TouchableOpacity>
 
@@ -245,8 +241,6 @@ const PortfolioDetail = () => {
         handleUpdate={handleUpdate}
         pickImage={pickImage}
       />
-
-
     </View>
   );
 };
@@ -257,7 +251,5 @@ const DetailRow = ({ label, value }) => (
     <Text className="text-gray-700">{value}</Text>
   </View>
 );
-
-
 
 export default PortfolioDetail;

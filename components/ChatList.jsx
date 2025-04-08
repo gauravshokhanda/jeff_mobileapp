@@ -155,7 +155,7 @@ const ChatListScreen = () => {
           <View className="bg-white px-3 py-2 rounded-xl flex-row items-center">
             <Ionicons name="search" size={20} color="#0369a1" />
             <TextInput
-              placeholder="Search Messages"
+              placeholder="Search"
               placeholderTextColor="#64748b"
               className="flex-1 ml-3 text-base text-gray-800"
             />
