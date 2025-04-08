@@ -2,18 +2,20 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
+  Image,
+  TouchableOpacity,
   FlatList,
   Alert,
   ActivityIndicator,
   Dimensions,
-  TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { API, baseUrl } from "../config/apiConfig";
 import { useSelector } from "react-redux";
+import { router } from "expo-router";
 
-const { width: screenWidth } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const EstateSlider = () => {
   const [contractors, setContractors] = useState([]);
@@ -39,6 +41,7 @@ const EstateSlider = () => {
 
       const contractorsData = response.data.contractors.data.map((item) => ({
         id: item.id.toString(),
+        image: item.image ? { uri: `${baseUrl}${item.image}` } : null,
         name: item.name || "Unknown",
         email: item.email || "No Email",
         number: item.number || "Not Available",
@@ -62,46 +65,57 @@ const EstateSlider = () => {
   };
 
   const renderCard = ({ item }) => {
-    const firstLetter = item.name?.charAt(0)?.toUpperCase() || "?";
-
     return (
-      <View className="rounded-xl bg-white shadow-md overflow-hidden mb-4 mx-4">
-        <TouchableOpacity
-          className="bg-sky-950 p-4 flex-row items-start"
-          onPress={() =>
-            navigation.navigate("RealContractorProfile", { user_id: item.id })
-          }
-        >
-          {/* Left Side Avatar */}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          backgroundColor: "white",
+          padding: 15,
+          marginHorizontal: 15,
+          marginVertical: 10,
+          borderRadius: 10,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 5,
+          elevation: 5,
+        }}
+      >
+        {/* Profile Image */}
+        {item.image ? (
+          <Image
+            source={item.image}
+            style={{ width: 70, height: 70, borderRadius: 35, marginRight: 15 }}
+          />
+        ) : (
           <View
-            className="w-14 h-14 rounded-full bg-white justify-center items-center mr-4"
-            style={{ shadowColor: "#000", shadowOpacity: 0.1, elevation: 4 }}
+            style={{
+              width: 70,
+              height: 70,
+              borderRadius: 35,
+              backgroundColor: "gray",
+              justifyContent: "center",
+              alignItems: "center",
+              marginRight: 15,
+            }}
           >
-            <Text className="text-sky-900 text-xl font-bold">
-              {firstLetter}
-            </Text>
+            <Text style={{ color: "white" }}>No Image</Text>
           </View>
+        )}
 
-          {/* Details */}
-          <View className="flex-1">
-            <Text className="text-white font-bold text-lg mb-1">
-              {item.name}
-            </Text>
-            <View className="flex-row items-center mb-1">
-              <Text className="text-gray-300  text-sm">{item.email}</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        {/* Bottom Row */}
-        <View className="bg-gray-200 rounded-b-2xl px-4 py-3 flex-row justify-between items-center">
+        {/* Contractor Details */}
+        <View style={{ flex: 1 }}>
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate("RealContractorProfile", { user_id: item.id })
+              navigation.navigate("ContractorProfile", { user_id: item.id })
             }
           >
-            <Text className="text-gray-700 text-l font-semibold">
-              view profile
+            <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 2 }}>
+              {item.name}
+            </Text>
+            <Text style={{ color: "gray", marginBottom: 2 }}>
+              📍 {item.address}
             </Text>
           </TouchableOpacity>
         </View>
@@ -110,9 +124,9 @@ const EstateSlider = () => {
   };
 
   return (
-    <View className="pt-4">
+    <View className="p-4">
       {loading ? (
-        <ActivityIndicator size="large" color="#0c4a6e" className="mt-10" />
+        <ActivityIndicator size="large" color="#000" className="mt-10" />
       ) : contractors.length > 0 ? (
         <FlatList
           data={contractors}
@@ -121,13 +135,24 @@ const EstateSlider = () => {
           showsVerticalScrollIndicator={false}
           refreshing={loading}
           onRefresh={fetchContractors}
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingBottom: 10 }}
         />
       ) : (
-        <Text className="text-center text-gray-400 mt-10">
+        <Text style={{ textAlign: "center", color: "gray", marginTop: 20 }}>
           No contractors available.
         </Text>
       )}
+
+      {/* View All Button */}
+      {/* <View className="mt-4 items-center">
+        <TouchableOpacity
+          className="bg-sky-950 rounded-md px-6 py-2 flex-row items-center"
+          onPress={() => navigation.navigate("ContractorPage")}
+        >
+          <Ionicons name="eye" size={20} color="white" className="mr-2" />
+          <Text className="text-white text-base font-semibold">View All</Text>
+        </TouchableOpacity>
+      </View> */}
     </View>
   );
 };

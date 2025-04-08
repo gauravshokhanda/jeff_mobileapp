@@ -10,12 +10,8 @@ export default function TabRoot() {
 
   // Detect keyboard visibility
   useEffect(() => {
-    const showSubscription = Keyboard.addListener("keyboardDidShow", () =>
-      setKeyboardVisible(true)
-    );
-    const hideSubscription = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardVisible(false)
-    );
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => setKeyboardVisible(true));
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => setKeyboardVisible(false));
 
     return () => {
       showSubscription.remove();
@@ -29,8 +25,7 @@ export default function TabRoot() {
       const onBackPress = () => true; // Disable back button default behavior
 
       BackHandler.addEventListener("hardwareBackPress", onBackPress);
-      return () =>
-        BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+      return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress);
     }, [])
   );
 
@@ -52,11 +47,7 @@ export default function TabRoot() {
           options={{
             title: "Home",
             tabBarIcon: ({ focused }) => (
-              <Ionicons
-                name={focused ? "home" : "home-outline"}
-                color="white"
-                size={25}
-              />
+              <Ionicons name={focused ? "home" : "home-outline"} color="white" size={25} />
             ),
             tabBarLabelStyle: { display: "none" },
           }}
@@ -66,11 +57,7 @@ export default function TabRoot() {
           options={{
             title: "PropertyCalculator",
             tabBarIcon: ({ focused }) => (
-              <Ionicons
-                name={focused ? "calculator" : "calculator-outline"}
-                size={25}
-                color="white"
-              />
+              <Ionicons name={focused ? "calculator" : "calculator-outline"} size={25} color="white" />
             ),
             tabBarLabelStyle: { display: "none" },
           }}
@@ -80,11 +67,7 @@ export default function TabRoot() {
           options={{
             title: "ContractorLists",
             tabBarIcon: ({ focused }) => (
-              <Ionicons
-                name={focused ? "newspaper" : "newspaper-outline"}
-                size={25}
-                color="white"
-              />
+              <Ionicons name={focused ? "newspaper" : "newspaper-outline"} size={25} color="white" />
             ),
             tabBarLabelStyle: { display: "none" },
           }}
@@ -94,11 +77,7 @@ export default function TabRoot() {
           options={{
             title: "ChatList",
             tabBarIcon: ({ focused }) => (
-              <Ionicons
-                name={focused ? "chatbubble" : "chatbubble-outline"}
-                size={25}
-                color="white"
-              />
+              <Ionicons name={focused ? "chatbubble" : "chatbubble-outline"} size={25} color="white" />
             ),
             tabBarLabelStyle: { display: "none" },
           }}
@@ -108,11 +87,7 @@ export default function TabRoot() {
           options={{
             title: "Menu",
             tabBarIcon: ({ focused }) => (
-              <Ionicons
-                name={focused ? "menu" : "menu-outline"}
-                size={25}
-                color="white"
-              />
+              <Ionicons name={focused ? "menu" : "menu-outline"} size={25} color="white" />
             ),
             tabBarLabelStyle: { display: "none" },
           }}
@@ -122,7 +97,6 @@ export default function TabRoot() {
         {[
           "MapScreen",
           "FloorMapScreen",
-          "RealContractorProfile",
           "Contractor",
           "AreaDetailsScreen",
           "CostDetail",
@@ -136,7 +110,6 @@ export default function TabRoot() {
           "ChatScreen",
           "ContractorProfile",
           "RealEstateDetails",
-          "RealContractorListing",
         ].map((screen) => (
           <Tabs.Screen key={screen} name={screen} options={{ href: null }} />
         ))}
