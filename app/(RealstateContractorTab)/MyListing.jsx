@@ -229,6 +229,9 @@ export default function Listing() {
           <Text className="text-lg font-semibold text-gray-600">
             Get ready list of buyers
           </Text>
+          <TouchableOpacity className="bg-white px-4 py-2 rounded-lg shadow-md">
+            <Text className="text-indigo-900 font-semibold">Update</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
