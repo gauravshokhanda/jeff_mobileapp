@@ -11,7 +11,7 @@ import {
   Modal,
   ScrollView,
   SafeAreaView,
-  Dimensions
+  Dimensions,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import axios from "axios";
@@ -26,7 +26,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import ContractorPortfolioModal from "../../components/ContractorPortfolioModal";
 
 const Portfolio = ({ navigation }) => {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const [portfolioItems, setPortfolioItems] = useState([]);
   const [loading, setLoading] = useState(false); // Changed to false initially
@@ -172,7 +172,10 @@ const Portfolio = ({ navigation }) => {
       !newData.description.trim() ||
       newData.selectedImages.length === 0
     ) {
-      Alert.alert("Error", "All fields are required, including at least one image.");
+      Alert.alert(
+        "Error",
+        "All fields are required, including at least one image."
+      );
       return;
     }
 
@@ -311,10 +314,10 @@ const Portfolio = ({ navigation }) => {
       <View
         className="rounded-3xl"
         style={{
-          position: 'absolute',
-          top: screenHeight * 0.20,
+          position: "absolute",
+          top: screenHeight * 0.2,
           width: postContentWidth,
-          height: screenHeight * 0.80,
+          height: screenHeight * 0.8,
           left: (screenWidth - postContentWidth) / 2,
           backgroundColor: 'white',
         }}

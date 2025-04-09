@@ -8,11 +8,11 @@ import {
   FlatList,
   Dimensions,
   SafeAreaView,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../../config/apiConfig";
-import {  useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -71,7 +71,7 @@ const MenuHeader = () => {
         style={{ height: screenHeight * 0.35 }}
       >
         <View className="mt-12 px-3 flex-row items-center gap-4">
-        <TouchableOpacity onPress={() => router.back()} >
+          <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
           <Image

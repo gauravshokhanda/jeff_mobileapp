@@ -4,24 +4,26 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { API,baseUrl } from "../../config/apiConfig";
 
 export default function PropertyDetails() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [mainImage, setMainImage] = useState("https://via.placeholder.com/600x400");
+  const [mainImage, setMainImage] = useState(
+    "https://via.placeholder.com/600x400"
+  );
   const [designImages, setDesignImages] = useState([]);
   const token = useSelector((state) => state.auth.token);
-  const baseUrl = "https://g32.iamdeveloper.in/public/";
 
   useEffect(() => {
     if (!id) return;
 
     const fetchProperty = async () => {
       try {
-        const response = await axios.get(
-          `https://g32.iamdeveloper.in/api/job-post/listing/${id}`,
+        const response = await API.get(
+          `job-post/listing/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -33,13 +35,19 @@ export default function PropertyDetails() {
           let designImageArray = [];
 
           try {
-            const parsedFloorMaps = JSON.parse(propertyData.floor_maps_image || "[]");
+            const parsedFloorMaps = JSON.parse(
+              propertyData.floor_maps_image || "[]"
+            );
             if (parsedFloorMaps.length > 0) {
               floorMapImage = `${baseUrl}${parsedFloorMaps[0]}`;
             }
 
-            const parsedDesignImages = JSON.parse(propertyData.design_image || "[]");
-            designImageArray = parsedDesignImages.map((img) => `${baseUrl}${img}`);
+            const parsedDesignImages = JSON.parse(
+              propertyData.design_image || "[]"
+            );
+            designImageArray = parsedDesignImages.map(
+              (img) => `${baseUrl}${img}`
+            );
           } catch (error) {
             console.error("Error parsing images:", error);
           }
@@ -49,7 +57,10 @@ export default function PropertyDetails() {
           setDesignImages(designImageArray);
         }
       } catch (error) {
-        console.error("Error fetching property:", error.response?.data || error.message);
+        console.error(
+          "Error fetching property:",
+          error.response?.data || error.message
+        );
       } finally {
         setLoading(false);
       }
@@ -74,7 +85,15 @@ export default function PropertyDetails() {
     );
   }
 
-  const { total_cost, number_of_days, area, city, project_type, description, user_id } = property;
+  const {
+    total_cost,
+    number_of_days,
+    area,
+    city,
+    project_type,
+    description,
+    user_id,
+  } = property;
 
   const handleCall = async () => {
     if (!user_id) {
@@ -83,9 +102,12 @@ export default function PropertyDetails() {
     }
 
     try {
-      const response = await axios.get(`https://g32.iamdeveloper.in/api/users/listing/${user_id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await API.get(
+        `users/listing/${user_id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (response.status === 200) {
         console.log(response);
@@ -98,7 +120,10 @@ export default function PropertyDetails() {
         }
       }
     } catch (error) {
-      console.error("Error fetching phone number:", error.response?.data || error.message);
+      console.error(
+        "Error fetching phone number:",
+        error.response?.data || error.message
+      );
       Alert.alert("Error", "Failed to fetch phone number.");
     }
   };
@@ -107,7 +132,10 @@ export default function PropertyDetails() {
     <SafeAreaView className="bg-white flex-1">
     <ScrollView className="p-4">
       <View className="w-full h-20 bg-sky-950 mb-2 flex justify-center flex-row items-center rounded-lg">
-        <TouchableOpacity onPress={() => router.back()} className="absolute left-2 p-2 rounded-full shadow-md">
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="absolute left-2 p-2 rounded-full shadow-md"
+        >
           <FontAwesome name="arrow-left" size={20} color="white" />
         </TouchableOpacity>
         <Text className="text-white text-2xl font-bold">Property Details</Text>
@@ -121,7 +149,10 @@ export default function PropertyDetails() {
         {designImages.length > 0 ? (
           designImages.map((img, index) => (
             <TouchableOpacity key={index} onPress={() => setMainImage(img)}>
-              <Image source={{ uri: img }} className="w-40 h-32 mr-2 rounded-lg" />
+              <Image
+                source={{ uri: img }}
+                className="w-40 h-32 mr-2 rounded-lg"
+              />
             </TouchableOpacity>
           ))
         ) : (
@@ -132,7 +163,9 @@ export default function PropertyDetails() {
       <View className="mt-4 bg-white p-4 rounded-lg shadow-md">
         <Text className="text-xl font-bold">Property Type: {project_type}</Text>
         <View className="flex-row items-center justify-between mt-2">
-          <Text className="bg-sky-950 text-white px-3 py-1 rounded-lg">For Sale</Text>
+          <Text className="bg-sky-950 text-white px-3 py-1 rounded-lg">
+            For Sale
+          </Text>
           <Text className="text-lg font-bold">${total_cost}</Text>
           <Text className="text-gray-500">Days: {number_of_days}</Text>
         </View>
@@ -161,7 +194,9 @@ export default function PropertyDetails() {
             <Text className="font-semibold">Total Cost:</Text> ${total_cost}
           </Text>
           <View>
-            <Text className="text-lg mt-4 font-semibold">Property Description</Text>
+            <Text className="text-lg mt-4 font-semibold">
+              Property Description
+            </Text>
             <Text className="text-gray-700">{description}</Text>
           </View>
         </View>
@@ -173,14 +208,18 @@ export default function PropertyDetails() {
           onPress={handleCall}
         >
           <FontAwesome name="phone" size={20} color="white" />
-          <Text className="text-center text-white text-lg font-semibold">Call to Number</Text>
+          <Text className="text-center text-white text-lg font-semibold">
+            Contact
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           className="bg-sky-950 p-3 flex-row w-48 gap-1 justify-center items-center rounded-lg shadow-md active:bg-sky-800"
           onPress={() => router.push(`/ChatScreen?user_id=${user_id}`)}
         >
           <FontAwesome name="comment" size={20} color="white" />
-          <Text className="text-center text-white text-lg font-semibold">Chat</Text>
+          <Text className="text-center text-white text-lg font-semibold">
+            Chat
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

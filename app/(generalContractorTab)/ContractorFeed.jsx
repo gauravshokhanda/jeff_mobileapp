@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   Platform,
   SafeAreaView,
-  Dimensions
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState, useRef } from "react";
@@ -118,7 +118,7 @@ export default function PropertyList() {
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       <LinearGradient
-        colors={['#082f49', 'transparent']}
+        colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
         <View className={`flex-row items-center px-4`}>
@@ -149,7 +149,7 @@ export default function PropertyList() {
           marginTop: -screenHeight * 0.27,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
-          overflow: 'hidden',
+          overflow: "hidden",
         }}
       >
         {loading ? (
@@ -185,15 +185,21 @@ export default function PropertyList() {
                       : null;
 
                   return (
-                    <View key={property.id} className="bg-white mt-5 shadow-lg rounded-2xl mb-4">
+                    <View
+                      key={property.id}
+                      className="bg-white mt-5 shadow-lg rounded-2xl mb-4"
+                    >
                       {imageUrl ? (
-                        <Image source={{ uri: imageUrl }} className="w-full h-52 rounded-t-2xl" />
+                        <Image
+                          source={{ uri: imageUrl }}
+                          className="w-full h-52 rounded-t-2xl"
+                        />
                       ) : (
-                        <Text className="text-center py-4 text-gray-500">No image available</Text>
+                        <Text className="text-center py-4 text-gray-500">
+                          No image available
+                        </Text>
                       )}
-                      <TouchableOpacity className="absolute top-4 right-4 bg-white p-2 rounded-full shadow-md">
-                        <Ionicons name="heart-outline" size={22} color="gray" />
-                      </TouchableOpacity>
+
                       <View className="p-4 flex flex-row justify-between">
                         <View className="flex flex-col gap-2">
                           <Text className="text-sky-950 text-3xl font-bold">
@@ -202,7 +208,9 @@ export default function PropertyList() {
                           <Text className="text-gray-600 text-xl">
                             #{property.zipcode}, {property.city}
                           </Text>
-                          <Text className="text-gray-400 text-base">📅 {new Date(property.created_at).toLocaleString()}</Text>
+                          <Text className="text-gray-400 text-base">
+                            📅 {new Date(property.created_at).toLocaleString()}
+                          </Text>
                         </View>
                         <View className="flex-col justify-between items-end gap-2 ">
                           <Text className="text-gray-900 font-semibold text-xl">
@@ -210,9 +218,13 @@ export default function PropertyList() {
                           </Text>
                           <TouchableOpacity
                             className="bg-sky-950 px-5 py-2 rounded-lg"
-                            onPress={() => router.push(`/PropertyDetails?id=${property.id}`)}
+                            onPress={() =>
+                              router.push(`/PropertyDetails?id=${property.id}`)
+                            }
                           >
-                            <Text className="text-white font-semibold text-lg">View</Text>
+                            <Text className="text-white font-semibold text-lg">
+                              View
+                            </Text>
                           </TouchableOpacity>
                         </View>
                       </View>

@@ -132,7 +132,7 @@ export default function Listing() {
                     {item.house_type}
                   </Text>
                 </View>
-                <View className="bg-white rounded-full p-1 justify-center items-center">
+                {/* <View className="bg-white rounded-full p-1 justify-center items-center">
                   <Text
                     className="text-slate-700"
                     style={{ fontSize: screenWidth * 0.03 }}
@@ -142,7 +142,7 @@ export default function Listing() {
                       (item.locale.split(" ").length > 2 ? "..." : "")
                     ).trim()}
                   </Text>
-                </View>
+                </View> */}
               </View>
             </View>
 
@@ -229,9 +229,6 @@ export default function Listing() {
           <Text className="text-lg font-semibold text-gray-600">
             Get ready list of buyers
           </Text>
-          <TouchableOpacity className="bg-white px-4 py-2 rounded-lg shadow-md">
-            <Text className="text-indigo-900 font-semibold">Update</Text>
-          </TouchableOpacity>
         </View>
       </View>
     );

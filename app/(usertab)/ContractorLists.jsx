@@ -43,6 +43,15 @@ export default function Index() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const flatListRef = useRef(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  {
+    isLoadingMore && (
+      <View className="py-4 items-center">
+        <ActivityIndicator size="small" color="#888" />
+      </View>
+    );
+  }
 
   const openModal = () => {
     iconRef.current?.measure((_fx, _fy, _width, _height, px, py) => {
@@ -75,9 +84,8 @@ export default function Index() {
     try {
       const url = `contractors/listing?${
         query ? `city=${encodeURIComponent(query)}&` : ""
-      }page=${page}&sort_order=${order}
+      }page=${page}&sort_order=${order}&role=3`;
 
-`;
       const response = await API.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -150,27 +158,23 @@ export default function Index() {
   const loadMore = () => {
     if (loading || currentPage >= totalPages) return;
 
-    console.log("Loading more data...");
+    setIsLoadingMore(true); // Start loading indicator
     const nextPage = currentPage + 1;
 
+    const handleScroll = () => {
+      if (flatListRef.current) {
+        flatListRef.current.scrollToOffset({
+          offset: scrollOffset,
+          animated: false,
+        });
+      }
+      setIsLoadingMore(false); // Stop loading indicator
+    };
+
     if (selectedTab === "realEstate") {
-      fetchRealEstateProperties(nextPage).then(() => {
-        if (flatListRef.current) {
-          flatListRef.current.scrollToOffset({
-            offset: scrollOffset,
-            animated: false,
-          });
-        }
-      });
+      fetchRealEstateProperties(nextPage).then(handleScroll);
     } else {
-      fetchContractors(searchTerm, nextPage).then(() => {
-        if (flatListRef.current) {
-          flatListRef.current.scrollToOffset({
-            offset: scrollOffset,
-            animated: false,
-          });
-        }
-      });
+      fetchContractors(searchTerm, nextPage).then(handleScroll);
     }
   };
 
@@ -313,8 +317,7 @@ export default function Index() {
                 <View className="flex-row items-center">
                   <Ionicons name="calendar-outline" size={16} color="white" />
                   <Text className="text-gray-300 ml-2">
-                    Available from{" "}
-                    {new Date(item.available_from).toISOString().split("T")[0]}
+                    Available from {item.available_from}
                   </Text>
                 </View>
                 <View className="flex-row items-center">
@@ -356,11 +359,17 @@ export default function Index() {
             Properties & Contractors
           </Text>
         </View>
-        <View className="mx-5 mt-5 items-end" style={{ marginTop: screenHeight * 0.02 }}>
-          <View className="bg-gray-100 h-12 rounded-full px-3 flex-row items-center justify-between"  style={{
+        <View
+          className="mx-5 mt-5 items-end"
+          style={{ marginTop: screenHeight * 0.02 }}
+        >
+          <View
+            className="bg-gray-100 h-12 rounded-full px-3 flex-row items-center justify-between"
+            style={{
               height: screenHeight * 0.06,
               paddingHorizontal: screenWidth * 0.04,
-            }}>
+            }}
+          >
             <Ionicons name="search" size={18} color="black" />
             <TextInput
               placeholder="Search"
@@ -394,7 +403,8 @@ export default function Index() {
         }}
       >
         <KeyboardAvoidingView
-          className="flex-1"x
+          className="flex-1"
+          x
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <View className="flex-row justify-around mb-4">
@@ -438,7 +448,7 @@ export default function Index() {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() =>
-                    router.push(`/RealEstateDetails?id=${item.id}`)
+                    router.push(`/RealContractorListing?id=${item.id}`)
                   }
                 >
                   <View className="bg-sky-950 p-3 rounded-lg mb-4">
@@ -514,7 +524,7 @@ export default function Index() {
                         className="bg-white px-4 py-2 rounded-lg"
                         onPress={() =>
                           router.push(
-                            `/ContractorProfile?user_id=${item.user_id}`
+                            `/RealContractorProfile?user_id=${item.user_id}`
                           )
                         }
                       >
@@ -525,9 +535,7 @@ export default function Index() {
                       <TouchableOpacity
                         className=" bg-white py-2 px-4 rounded-lg"
                         onPress={() =>
-                          router.push(
-                            `/ChatScreen?user_id=${item.user_id}`
-                          )
+                          router.push(`/ChatScreen?user_id=${item.user_id}`)
                         }
                       >
                         <Text className="text-sky-950 font-semibold">Chat</Text>
