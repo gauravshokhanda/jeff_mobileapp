@@ -128,7 +128,6 @@ export default function Index() {
       <Image
         source={require("../assets/images/homescreen/homeImage.png")}
         style={{ width: "100%" }}
-        className="h-[250px]"
         resizeMode="cover"
       />
 

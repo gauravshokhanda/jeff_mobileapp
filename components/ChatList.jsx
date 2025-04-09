@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../config/apiConfig";
+import { useFocusEffect } from "@react-navigation/native"; // ✅ NEW IMPORT
 
 const { width: screenWidth } = Dimensions.get("window");
 const postContentWidth = screenWidth * 0.92;
@@ -31,7 +32,6 @@ const ChatListScreen = () => {
   const fetchChats = async () => {
     try {
       setLoading(true);
-
       const response = await API.get("recent-chats", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -39,7 +39,6 @@ const ChatListScreen = () => {
       });
 
       const data = response.data;
-
       if (data.success) {
         const formattedChats = data.users.map((user) => ({
           id: user.id.toString(),
@@ -47,6 +46,7 @@ const ChatListScreen = () => {
           lastMessage: "Start a conversation",
           image: user.image ? `${baseUrl}${user.image}` : null,
           email: user.email,
+          unreadCount: user.message_unread_count,
         }));
         setChats(formattedChats);
       } else {
@@ -60,14 +60,17 @@ const ChatListScreen = () => {
     }
   };
 
-  useEffect(() => {
-    if (token) {
-      fetchChats();
-    } else {
-      setError("Please log in to view chats");
-      setLoading(false);
-    }
-  }, [token]);
+  // ✅ Fetch chats every time screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      if (token) {
+        fetchChats();
+      } else {
+        setError("Please log in to view chats");
+        setLoading(false);
+      }
+    }, [token])
+  );
 
   const renderChatItem = ({ item }) => {
     const firstLetter = item.name?.charAt(0)?.toUpperCase() || "?";
@@ -96,12 +99,18 @@ const ChatListScreen = () => {
         )}
 
         <View className="flex-1">
-          <Text className="text-base font-semibold text-gray-800">
-            {item.name}
-          </Text>
-          <Text className="text-sm text-gray-500 mt-1" numberOfLines={1}>
-            {item.lastMessage}
-          </Text>
+          <View className="flex-row items-center justify-between">
+            <Text className="text-base font-semibold text-gray-800">
+              {item.name}
+            </Text>
+            {item.unreadCount > 0 && (
+              <View className="bg-sky-950 p-2 rounded-full">
+                <Text className="text-white text-xs font-bold">
+                  {item.unreadCount}
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
         <Ionicons name="chevron-forward" size={20} color="#0369a1" />
       </TouchableOpacity>

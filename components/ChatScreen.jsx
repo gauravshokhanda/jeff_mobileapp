@@ -15,10 +15,10 @@ import { Ionicons, Entypo } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
-import { baseUrl } from "../config/apiConfig";
+import { API, baseUrl } from "../config/apiConfig";
 import { ref, onValue, push, set, serverTimestamp } from "firebase/database";
-import axios from "axios";
 import { database } from "../app/lib/firebaseConfig";
+
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const POST_CONTENT_WIDTH = SCREEN_WIDTH * 0.92;
 
@@ -35,17 +35,13 @@ const ChatScreen = () => {
 
   const chatRoomId = [currentUserId, user_id].sort().join("_");
 
-  // Fetch user details
+  // ✅ Fetch user details (using centralized API)
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(
-          `https://g32.iamdeveloper.in/api/users/listing/${user_id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        console.log("User data:", response.data.data); // Debug log
+        const response = await API.get(`users/listing/${user_id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setUser(response.data.data);
       } catch (error) {
         setStatusMessage({
@@ -60,7 +56,26 @@ const ChatScreen = () => {
     if (user_id) fetchUser();
   }, [user_id, token]);
 
-  // Real-time message listener
+  // ✅ Mark messages as read on screen open
+  useEffect(() => {
+    const markMessagesAsRead = async () => {
+      try {
+        await API.post(
+          "mark-messages-as-read",
+          { sender_id: user_id },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } catch (error) {
+        console.error("Failed to mark messages as read:", error.message);
+      }
+    };
+
+    if (user_id && token) {
+      markMessagesAsRead();
+    }
+  }, [user_id, token]);
+
+  // Real-time Firebase listener
   useEffect(() => {
     setIsLoading(true);
     const messagesRef = ref(database, `chats/${chatRoomId}`);
@@ -81,13 +96,6 @@ const ChatScreen = () => {
           setMessages(
             messagesArray.sort((a, b) => a.timestamp - b.timestamp).reverse()
           );
-          // setStatusMessage({
-          //   type: "success",
-          //   message: "Messages loaded successfully",
-          // });
-        } else {
-          // setMessages([]);
-          // setStatusMessage({ type: "info", message: "No messages yet" });
         }
       },
       (error) => {
@@ -102,6 +110,7 @@ const ChatScreen = () => {
     return () => unsubscribe();
   }, [chatRoomId, currentUserId]);
 
+  // ✅ Send message to Firebase + API
   const sendMessage = async () => {
     if (!inputText.trim()) return;
 
@@ -113,20 +122,13 @@ const ChatScreen = () => {
     };
 
     try {
-      // 1. Send to Firebase for real-time updates
       const messagesRef = ref(database, `chats/${chatRoomId}`);
       const newMessageRef = push(messagesRef);
       await set(newMessageRef, newMessage);
 
-      // 2. Send to your backend API
-      const messagePayload = {
-        message: inputText,
-        receiver_id: user_id,
-      };
-
-      const apiResponse = await axios.post(
-        "https://g32.iamdeveloper.in/api/send-message",
-        messagePayload,
+      await API.post(
+        "send-message",
+        { message: inputText, receiver_id: user_id },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -134,16 +136,8 @@ const ChatScreen = () => {
           },
         }
       );
-      console.log("message sent");
 
-      // Clear input and show API response
       setInputText("");
-      // setStatusMessage({
-      //   type: "success",
-      //   message: `Message sent successfully. API Response: ${JSON.stringify(
-      //     apiResponse.data
-      //   )}`,
-      // });
     } catch (error) {
       console.error("Error sending message:", error);
       setStatusMessage({
@@ -170,10 +164,6 @@ const ChatScreen = () => {
               ? `${baseUrl}${user.image}`
               : "https://via.placeholder.com/50",
         }}
-        defaultSource={{ uri: "https://via.placeholder.com/50" }}
-        onError={(e) =>
-          console.log("Message avatar error:", e.nativeEvent.error)
-        }
         className="w-8 h-8 rounded-full mx-2"
       />
       <View
@@ -238,9 +228,6 @@ const ChatScreen = () => {
               {user.image ? (
                 <Image
                   source={{ uri: `${baseUrl}${user.image}` }}
-                  onError={(e) =>
-                    console.log("Header image error:", e.nativeEvent.error)
-                  }
                   className="w-10 h-10 rounded-full mr-3"
                 />
               ) : (

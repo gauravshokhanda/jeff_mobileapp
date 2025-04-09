@@ -68,7 +68,8 @@ export default function EstateContractorProfile() {
           <Ionicons name="arrow-back-outline" size={30} color="#0369A1" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Ionicons name="create-outline" size={26} color="#0369A1" />
+          {/* <Ionicons name="create-outline" size={26} color="#0369A1" /> */}
+          <Text className="text-xl">Complete Profile</Text>
         </TouchableOpacity>
       </View>
 

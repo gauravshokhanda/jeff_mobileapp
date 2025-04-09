@@ -243,7 +243,7 @@ const ProfileCard = () => {
       </View>
 
       {/* Portfolio Section */}
-      <View className="mx-4 mt-6">
+      <View className="flex-1 mx-4 mt-6">
         <View className="flex-row justify-between items-center mb-4">
           <Text className="text-xl font-semibold text-gray-800">
             Portfolios
