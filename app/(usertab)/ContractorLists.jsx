@@ -107,7 +107,7 @@ export default function Index() {
       setCurrentPage(response.data.data.current_page);
       setTotalPages(response.data.data.last_page);
     } catch (error) {
-      // console.log("fetching");
+      console.log("Error fetching contractors:", error);
     } finally {
       setLoading(false);
     }

@@ -22,15 +22,14 @@ import { useFocusEffect } from "@react-navigation/native";
 import { debounce } from "lodash";
 import CitySearch from "../../components/CitySearch";
 import { API } from "../../config/apiConfig";
-
-import { LinearGradient } from "expo-linear-gradient";
+import { LinearGradient } from 'expo-linear-gradient';
 import ContractorPortfolioModal from "../../components/ContractorPortfolioModal";
 
 const Portfolio = ({ navigation }) => {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const [portfolioItems, setPortfolioItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Changed to false initially
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,6 +38,7 @@ const Portfolio = ({ navigation }) => {
   const [cityQuery, setCityQuery] = useState("");
 
   const router = useRouter();
+  const token = useSelector((state) => state.auth.token);
 
   const [newPortfolio, setNewPortfolio] = useState({
     projectName: "",
@@ -49,15 +49,30 @@ const Portfolio = ({ navigation }) => {
     imageNames: [],
   });
 
-  const token = useSelector((state) => state.auth.token);
+  // Function to parse search input into project name and city
+  const parseSearchInput = (input) => {
+    const words = input.trim().split(/\s+/);
+    let projectName = "";
+    let city = "";
 
-  // Fetch Portfolio Function
-  const fetchPortfolio = async (page = 1) => {
+    if (words.length > 1) {
+      city = words.pop();
+      projectName = words.join(" ");
+    } else {
+      projectName = words[0] || "";
+    }
+
+    return { projectName, city };
+  };
+
+  // Fetch Portfolio Function with search params
+  const fetchPortfolio = async (page = 1, searchQuery = "") => {
+    if (!token) return; // Prevent API call if no token
+
     try {
-      // console.log("Fetching user details...");
-
-      const userResponse = await axios.post(
-        "https://g32.iamdeveloper.in/api/user-detail",
+      setLoading(true);
+      const userResponse = await API.post(
+        "user-detail",
         {},
         {
           headers: {
@@ -70,30 +85,34 @@ const Portfolio = ({ navigation }) => {
       if (userResponse.status !== 200)
         throw new Error("Failed to fetch user details");
 
-      // console.log("User details fetched successfully:", userResponse.data);
       const contractorId = userResponse.data?.id;
 
       if (!contractorId) throw new Error("Contractor ID is missing");
 
-      // console.log(
-      //   `Fetching portfolios for contractor ID: ${contractorId}, Page: ${page}`
-      // );
+      const { projectName, city } = parseSearchInput(searchQuery);
 
-      const portfolioResponse = await axios.get(
-        `https://g32.iamdeveloper.in/api/portfolios/contractor/${contractorId}?page=${page}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
+      // Build the API URL with query parameters
+      let apiUrl = `portfolios/contractor/${contractorId}?page=${page}`;
+      if (projectName) apiUrl += `&project_name=${encodeURIComponent(projectName)}`;
+      if (city) apiUrl += `&city=${encodeURIComponent(city)}`;
+
+      const portfolioResponse = await API.get(apiUrl, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (portfolioResponse.status !== 200) {
+        if (portfolioResponse.status === 404) {
+          setPortfolioItems([]); // Clear items on 404 instead of throwing error
+          return;
         }
-      );
-
-      if (portfolioResponse.status !== 200)
         throw new Error("Failed to fetch portfolios");
+      }
 
-      // console.log("Fetched portfolio data:", portfolioResponse.data);
       const portfolios = portfolioResponse.data.portfolios;
 
       if (!portfolios?.data || !Array.isArray(portfolios.data)) {
-        throw new Error("Invalid portfolio data format");
+        setPortfolioItems([]); // Set empty array if data format is invalid
+        return;
       }
 
       const formattedData = portfolios.data.map((item) => {
@@ -101,7 +120,7 @@ const Portfolio = ({ navigation }) => {
         try {
           images = JSON.parse(item.portfolio_images || "[]");
         } catch (err) {
-          console.error("Error parsing portfolio images:", err);
+          console.log("Error parsing portfolio images:", err);
         }
 
         return {
@@ -118,22 +137,32 @@ const Portfolio = ({ navigation }) => {
       });
 
       setPortfolioItems(formattedData);
-
       setCurrentPage(portfolios.current_page);
       setLastPage(portfolios.last_page);
     } catch (error) {
-      console.error("API Error:", error);
-      Alert.alert("API Error", error.message || "An error occurred");
+      console.log("API Error:", error);
+      if (error.response?.status !== 404) {
+        Alert.alert("API Error", error.message || "An error occurred");
+      }
+      setPortfolioItems([]); // Clear items on error
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (token) {
-      fetchPortfolio();
-    }
-  }, [token]);
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    debounce((query) => {
+      fetchPortfolio(1, query);
+    }, 500),
+    [token]
+  );
+
+  // Handle search input changes
+  const handleSearch = (text) => {
+    setSearchText(text);
+    debouncedSearch(text);
+  };
 
   const addPortfolioItem = async (newData) => {
     if (
@@ -165,10 +194,8 @@ const Portfolio = ({ navigation }) => {
         });
       });
 
-      console.log("Form Data being sent:", formData);
-
-      const response = await axios.post(
-        "https://g32.iamdeveloper.in/api/portfolio/store",
+      const response = await API.post(
+        "portfolio/store",
         formData,
         {
           headers: {
@@ -177,7 +204,6 @@ const Portfolio = ({ navigation }) => {
           },
         }
       );
-      // console.log("response", response.data)
 
       if (response.data) {
         Alert.alert("Success", "Portfolio added successfully!", [
@@ -191,19 +217,10 @@ const Portfolio = ({ navigation }) => {
         ]);
       }
     } catch (error) {
-      console.error("API Error:", error.response?.data || error);
-      Alert.alert(
-        "API Error",
-        error.response?.data?.message || "An error occurred"
-      );
+      console.log("API Error:", error.response?.data || error);
+      Alert.alert("API Error", error.response?.data?.message || "An error occurred");
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchPortfolio();
-    }, [])
-  );
 
   // Pick Image Function
   const pickImage = async () => {
@@ -216,11 +233,9 @@ const Portfolio = ({ navigation }) => {
     });
 
     if (!result.canceled && result.assets) {
-      // console.log("Selected Images:", result.assets);
-
       setNewPortfolio((prev) => ({
         ...prev,
-        images: [...prev.images, ...result.assets.map((asset) => asset.uri)],
+        selectedImages: [...prev.selectedImages, ...result.assets.map((asset) => asset.uri)],
         imageNames: [
           ...prev.imageNames,
           ...result.assets.map(
@@ -231,31 +246,19 @@ const Portfolio = ({ navigation }) => {
     }
   };
 
-  const CitySearchModal = ({
-    modalVisible,
-    setModalVisible,
-    newPortfolio,
-    setNewPortfolio,
-    fetchPortfolio,
-    pickImage,
-    addPortfolioItem,
-  }) => {};
   const fetchCities = async (page = 1, query = "") => {
     try {
-      const response = await axios.post(
-        `https://g32.iamdeveloper.in/api/citie-search?page=${page}&search=${query}`,
+      const response = await API.post(
+        `citie-search?page=${page}&search=${query}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      // console.log("Full API Response:", response.data);
-
       if (!response.data || !response.data.cities) {
         throw new Error("Empty response or missing 'cities' field");
       }
 
-      // If first page, reset cities. Otherwise, append results.
       setCitySuggestions((prev) =>
         page === 1 ? response.data.cities : [...prev, ...response.data.cities]
       );
@@ -263,30 +266,45 @@ const Portfolio = ({ navigation }) => {
       setCurrentPage(response.data.current_page);
       setLastPage(response.data.last_page);
     } catch (error) {
-      console.error("Error fetching cities:", error.response || error);
+      console.log("Error fetching cities:", error.response || error);
       Alert.alert("Error", "Failed to fetch cities.");
     }
   };
 
+  useEffect(() => {
+    if (token) {
+      fetchPortfolio(); // Initial fetch
+    }
+  }, [token]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (token) {
+        fetchPortfolio();
+      }
+    }, [token])
+  );
+
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
       <LinearGradient
-        colors={["#082f49", "transparent"]}
+        colors={['#082f49', 'transparent']}
         style={{ height: screenHeight * 0.4 }}
       >
-        <View className="mt-8 px-4 ">
-          <Text className="text-2xl font-semibold text-white ml-5">
-            My Portfolio
-          </Text>
+        <View className="mt-8 px-4">
+    
+          <Text className="text-2xl font-semibold text-white ml-5">My Portfolio</Text>
         </View>
         <View className="ml-5 mt-5 items-end">
-          <View className="bg-gray-100  h-12 mr-5 rounded-full px-3 flex-row items-center justify-between">
+          <View className="bg-gray-100 h-12 mr-5 rounded-full px-3 flex-row items-center justify-between">
             <Ionicons name="search" size={18} color="black" />
             <TextInput
-              placeholder="Search Properties"
+              placeholder="Search (e.g., New project atlanta)"
               placeholderTextColor={"gray"}
               style={{ fontSize: 14 }}
-              className="flex-1 ml-5 text-lg "
+              className="flex-1 ml-5 text-lg"
+              value={searchText}
+              onChangeText={handleSearch}
             />
             <Ionicons name="filter-sharp" size={26} color="black" />
           </View>
@@ -294,14 +312,14 @@ const Portfolio = ({ navigation }) => {
       </LinearGradient>
 
       <View
-        className="rounded-3xl "
+        className="rounded-3xl"
         style={{
           position: "absolute",
           top: screenHeight * 0.2,
           width: postContentWidth,
           height: screenHeight * 0.8,
           left: (screenWidth - postContentWidth) / 2,
-          backgroundColor: "white",
+          backgroundColor: 'white',
         }}
       >
         <View className="mt-6 px-4 w-full">
@@ -316,12 +334,14 @@ const Portfolio = ({ navigation }) => {
 
           {loading ? (
             <ActivityIndicator size="large" color="skyblue" className="mt-10" />
+          ) : portfolioItems.length === 0 ? (
+            <Text className="text-center text-gray-500 mt-10">
+              No portfolios found
+            </Text>
           ) : (
             <FlatList
               className="mb-48"
-              data={portfolioItems.filter((item) =>
-                item.name.toLowerCase().includes(searchText.toLowerCase())
-              )}
+              data={portfolioItems}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <TouchableOpacity
@@ -347,7 +367,7 @@ const Portfolio = ({ navigation }) => {
                 </TouchableOpacity>
               )}
               refreshing={loading}
-              onRefresh={fetchPortfolio}
+              onRefresh={() => fetchPortfolio()}
             />
           )}
         </View>

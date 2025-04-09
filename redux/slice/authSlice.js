@@ -7,6 +7,7 @@ const initialState = {
     fcmToken: null, 
     fcmSentBeforeLogin: false,  
     fcmSentAfterLogin: false, 
+    onboardingCompleted: false,
 };
 
 const authSlice = createSlice({
@@ -62,9 +63,12 @@ const authSlice = createSlice({
                 };
             }
         },
+        setOnboardingCompleted: (state, action) => {
+            state.onboardingCompleted = action.payload; // Set onboarding as completed
+          },
         
     },
 });
 
-export const { setLogin, setLogout, setSignUp,updateUserProfile,setFcmToken, markFcmSentBeforeLogin, markFcmSentAfterLogin   } = authSlice.actions;
+export const { setLogin, setLogout, setSignUp,updateUserProfile,setFcmToken, markFcmSentBeforeLogin, markFcmSentAfterLogin,setOnboardingCompleted   } = authSlice.actions;
 export default authSlice.reducer;

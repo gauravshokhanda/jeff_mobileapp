@@ -2629,17 +2629,22 @@
   resolved "https://registry.npmjs.org/@react-native-community/progress-bar-android/-/progress-bar-android-1.0.5.tgz"
   integrity sha512-/IYLHdoqeDqqGQMh9/qYgIReISBIu09lLNbrn70r98+IqQe9WFLuhAr/sdrDKxCUZDQyLqUc0p3rJ50VV0tR3g==
 
-"@react-native-firebase/app@^21.12.3", "@react-native-firebase/app@21.12.3":
-  version "21.12.3"
-  resolved "https://registry.npmjs.org/@react-native-firebase/app/-/app-21.12.3.tgz"
-  integrity sha512-q+FoAJ9yZrXg4hJDXQQputeO/b0yos3iMMV7nnhz3ZizVE9MxfpPCWACveYhs9Suni+c/+b44wPR9P6vS/kM/g==
+"@react-native-firebase/app@*", "@react-native-firebase/app@^21.13.0", "@react-native-firebase/app@21.13.0":
+  version "21.13.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/app/-/app-21.13.0.tgz"
+  integrity sha512-UjM+yTTuBTQkGQHSTmJtKoXumgWxN+G90q6TCBqf2fQzAGhWpeMQSKOpD3arW+gmmO2eNIb1P8wyMYQk9GeGVA==
   dependencies:
     firebase "11.3.1"
 
+"@react-native-firebase/in-app-messaging@^6.7.1":
+  version "6.7.1"
+  resolved "https://registry.npmjs.org/@react-native-firebase/in-app-messaging/-/in-app-messaging-6.7.1.tgz"
+  integrity sha512-485Co4UY7uOv2xiKWiws1QPlJwylQ/lPi+Y6qAcIJh3FVhXbfO5/899iXRnLrctrY829XvSKvdNDqlT+YEDR8Q==
+
 "@react-native-firebase/messaging@^21.12.3":
-  version "21.12.3"
-  resolved "https://registry.npmjs.org/@react-native-firebase/messaging/-/messaging-21.12.3.tgz"
-  integrity sha512-ibrT9VPPPZggRN0a6qENsoU0kGTKNvGcXhjZ3YYB2B6TCDnTgI29vZOTT0KM5RgR7L8FBcT7Ie3NOT1OQWD7pw==
+  version "21.13.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/messaging/-/messaging-21.13.0.tgz"
+  integrity sha512-ZUc44XRPjVvg0os9TdcOB7GECewJXsEzsder8gJRgCrOL6wn96uAqqOOmzAja64SQeMxvnelbfOtDtwoltLCvA==
 
 "@react-native/assets-registry@0.76.3":
   version "0.76.3"
@@ -7107,28 +7112,28 @@ lightningcss-win32-x64-msvc@1.27.0:
   resolved "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.27.0.tgz"
   integrity sha512-/OJLj94Zm/waZShL8nB5jsNj3CfNATLCTyFxZyouilfTmSoLDX7VlVAmhPHoZWVFp4vdmoiEbPEYC8HID3m6yw==
 
-lightningcss-win32-x64-msvc@1.29.0:
-  version "1.29.0"
-  resolved "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.29.0.tgz"
-  integrity sha512-IOZBTx84bFf/V9QmHYIyUfnonmi1NxCbhUbgQW2U7cZYijwGVpDEaX8QRPmqUMt93a2yh4IQ5SMzbZ4/gPtqkA==
+lightningcss-win32-x64-msvc@1.29.3:
+  version "1.29.3"
+  resolved "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.29.3.tgz"
+  integrity sha512-IszwRPu2cPnDQsZpd7/EAr0x2W7jkaWqQ1SwCVIZ/tSbZVXPLt6k8s6FkcyBjViCzvB5CW0We0QbbP7zp2aBjQ==
 
-lightningcss@^1.27.0, lightningcss@1.29.0:
-  version "1.29.0"
-  resolved "https://registry.npmjs.org/lightningcss/-/lightningcss-1.29.0.tgz"
-  integrity sha512-4BkG0a3g6ZJ5F5iQ22lZsod0KJrIzYdbiBCMo9FgpDrxCx+uUapwkZmUVgisiZvHUj53BJGQiWWT+YXr1ZcZQQ==
+lightningcss@^1.27.0, lightningcss@^1.29.3:
+  version "1.29.3"
+  resolved "https://registry.npmjs.org/lightningcss/-/lightningcss-1.29.3.tgz"
+  integrity sha512-GlOJwTIP6TMIlrTFsxTerwC0W6OpQpCGuX1ECRLBUVRh6fpJH3xTqjCjRgQHTb4ZXexH9rtHou1Lf03GKzmhhQ==
   dependencies:
     detect-libc "^2.0.3"
   optionalDependencies:
-    lightningcss-darwin-arm64 "1.29.0"
-    lightningcss-darwin-x64 "1.29.0"
-    lightningcss-freebsd-x64 "1.29.0"
-    lightningcss-linux-arm-gnueabihf "1.29.0"
-    lightningcss-linux-arm64-gnu "1.29.0"
-    lightningcss-linux-arm64-musl "1.29.0"
-    lightningcss-linux-x64-gnu "1.29.0"
-    lightningcss-linux-x64-musl "1.29.0"
-    lightningcss-win32-arm64-msvc "1.29.0"
-    lightningcss-win32-x64-msvc "1.29.0"
+    lightningcss-darwin-arm64 "1.29.3"
+    lightningcss-darwin-x64 "1.29.3"
+    lightningcss-freebsd-x64 "1.29.3"
+    lightningcss-linux-arm-gnueabihf "1.29.3"
+    lightningcss-linux-arm64-gnu "1.29.3"
+    lightningcss-linux-arm64-musl "1.29.3"
+    lightningcss-linux-x64-gnu "1.29.3"
+    lightningcss-linux-x64-musl "1.29.3"
+    lightningcss-win32-arm64-msvc "1.29.3"
+    lightningcss-win32-x64-msvc "1.29.3"
 
 lightningcss@~1.27.0:
   version "1.27.0"

@@ -39,7 +39,7 @@ export default function RootLayout() {
    <NotificationProvider>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <Stack screenOptions={{ headerShown: false }}>
+        <Stack screenOptions={{ headerShown: false,gestureEnabled:false }}>
           <Stack.Screen name="index" options={{ title: 'Get Started', headerShown: false }} />
           <Stack.Screen
             name="SignIn"

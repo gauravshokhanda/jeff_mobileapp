@@ -11,30 +11,18 @@ import { useNavigation } from "@react-navigation/native";
 import messaging from "@react-native-firebase/messaging";
 import { API } from "../config/apiConfig";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  setFcmToken,
-  markFcmSentAfterLogin,
-  markFcmSentBeforeLogin,
-} from "../redux/slice/authSlice";
-
-const { width, height } = Dimensions.get("window");
+import Constants from "expo-constants";
+import { setFcmToken, markFcmSentAfterLogin, markFcmSentBeforeLogin, setOnboardingCompleted } from "../redux/slice/authSlice";
 
 export default function Index() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-
-  const Authtoken = useSelector((state) => state.auth.token);
-  const user = useSelector((state) => state.auth.user);
-  const fcmToken = useSelector((state) => state.auth.fcmToken);
-  const fcmSentBeforeLogin = useSelector(
-    (state) => state.auth.fcmSentBeforeLogin
-  );
-  const fcmSentAfterLogin = useSelector(
-    (state) => state.auth.fcmSentAfterLogin
-  );
+  
+  const { token: Authtoken, user, fcmToken, fcmSentBeforeLogin, fcmSentAfterLogin, onboardingCompleted } = useSelector((state) => state.auth);
 
   const [beforeLoginResponse, setBeforeLoginResponse] = useState(null);
   const [afterLoginResponse, setAfterLoginResponse] = useState(null);
+  const [screenNumber, setScreenNumber] = useState(onboardingCompleted ? 0 : 1); // Start with screen 1 if not completed
 
   useEffect(() => {
     const initializeFCM = async () => {
@@ -123,6 +111,91 @@ export default function Index() {
     sendFcmTokenAfterLogin();
   }, [user?.id, fcmToken, fcmSentAfterLogin, dispatch, Authtoken]);
 
+  const handleNextOrComplete = () => {
+    if (screenNumber === 3) {
+      dispatch(setOnboardingCompleted(true));
+      navigation.navigate("SignIn");
+    } else {
+      setScreenNumber(screenNumber + 1);
+    }
+  };
+
+  // Render based on screenNumber
+  if (!onboardingCompleted && screenNumber > 0) {
+    const screenData = {
+      1: {
+        image: require("../assets/images/onboarding_01.png"), // Adjust path
+        title: "Lorem Ipsum is simply dummy text",
+        description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+      },
+      2: {
+        image: require("../assets/images/onboarding_02.png"), // Adjust path
+        title: "Lorem Ipsum is simply dummy text",
+        description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+      },
+      3: {
+        image: require("../assets/images/onboarding_03.png"), // Adjust path
+        title: "Lorem Ipsum is simply dummy text",
+        description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+      },
+    };
+
+    const { image, title, description } = screenData[screenNumber];
+
+    return (
+      <View className="flex-1 bg-white justify-center items-center">
+        <Image
+          source={image}
+          className="w-3/4 h-1/2"
+          resizeMode="contain"
+        />
+
+        <View className="mt-8 px-4">
+          <Text className="text-center text-2xl font-bold text-gray-800">
+            {title}
+          </Text>
+          <Text className="text-center text-base text-gray-600 mt-4">
+            {description}
+          </Text>
+        </View>
+
+        <View className="flex-row mt-8">
+          <View className="w-3 h-3 bg-gray-300 rounded-full mx-1" />
+          <View className="w-3 h-3 bg-gray-300 rounded-full mx-1" />
+          <View
+            className={`w-3 h-3 bg-blue-500 rounded-full mx-1 ${screenNumber === 3 ? 'bg-blue-500' : 'bg-gray-300'}`}
+          />
+        </View>
+
+        <View className="flex-row justify-between w-full px-8 mt-12">
+          {screenNumber > 1 && (
+            <TouchableOpacity
+              onPress={() => setScreenNumber(screenNumber - 1)}
+              className="px-4 py-2"
+            >
+              <Text className="text-blue-500 text-base">Back</Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            onPress={handleNextOrComplete}
+            className="px-4 py-2"
+          >
+            <Text className="text-blue-500 text-base">Skip</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleNextOrComplete}
+            className="px-4 py-2"
+          >
+            <Text className="text-white bg-blue-500 rounded-full px-6 py-2">
+              {screenNumber === 3 ? 'Get Started' : 'Next'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
+  // Default "Get Started" screen when onboarding is completed or skipped
   return (
     <View className="flex-1 items-center justify-between bg-white pt-5 pb-1">
       <Image
