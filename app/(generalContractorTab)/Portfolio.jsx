@@ -120,7 +120,7 @@ const Portfolio = ({ navigation }) => {
         try {
           images = JSON.parse(item.portfolio_images || "[]");
         } catch (err) {
-          console.error("Error parsing portfolio images:", err);
+          console.log("Error parsing portfolio images:", err);
         }
 
         return {
@@ -140,7 +140,7 @@ const Portfolio = ({ navigation }) => {
       setCurrentPage(portfolios.current_page);
       setLastPage(portfolios.last_page);
     } catch (error) {
-      console.error("API Error:", error);
+      console.log("API Error:", error);
       if (error.response?.status !== 404) {
         Alert.alert("API Error", error.message || "An error occurred");
       }
@@ -214,7 +214,7 @@ const Portfolio = ({ navigation }) => {
         ]);
       }
     } catch (error) {
-      console.error("API Error:", error.response?.data || error);
+      console.log("API Error:", error.response?.data || error);
       Alert.alert("API Error", error.response?.data?.message || "An error occurred");
     }
   };
@@ -263,7 +263,7 @@ const Portfolio = ({ navigation }) => {
       setCurrentPage(response.data.current_page);
       setLastPage(response.data.last_page);
     } catch (error) {
-      console.error("Error fetching cities:", error.response || error);
+      console.log("Error fetching cities:", error.response || error);
       Alert.alert("Error", "Failed to fetch cities.");
     }
   };
@@ -289,13 +289,14 @@ const Portfolio = ({ navigation }) => {
         style={{ height: screenHeight * 0.4 }}
       >
         <View className="mt-8 px-4">
+    
           <Text className="text-2xl font-semibold text-white ml-5">My Portfolio</Text>
         </View>
         <View className="ml-5 mt-5 items-end">
           <View className="bg-gray-100 h-12 mr-5 rounded-full px-3 flex-row items-center justify-between">
             <Ionicons name="search" size={18} color="black" />
             <TextInput
-              placeholder="Search (e.g., New project ATLANTA)"
+              placeholder="Search (e.g., New project atlanta)"
               placeholderTextColor={"gray"}
               style={{ fontSize: 14 }}
               className="flex-1 ml-5 text-lg"

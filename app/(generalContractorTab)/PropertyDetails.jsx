@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity, Linking, Alert } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity, Linking, Alert,SafeAreaView } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSelector } from "react-redux";
@@ -104,7 +104,8 @@ export default function PropertyDetails() {
   };
 
   return (
-    <ScrollView className="bg-white flex-1 mt-8 p-4">
+    <SafeAreaView className="bg-white flex-1">
+    <ScrollView className="p-4">
       <View className="w-full h-20 bg-sky-950 mb-2 flex justify-center flex-row items-center rounded-lg">
         <TouchableOpacity onPress={() => router.back()} className="absolute left-2 p-2 rounded-full shadow-md">
           <FontAwesome name="arrow-left" size={20} color="white" />
@@ -183,5 +184,6 @@ export default function PropertyDetails() {
         </TouchableOpacity>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
