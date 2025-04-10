@@ -27,7 +27,7 @@ const CardSlider = () => {
       const response = await API.get("contractors/listing", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("general contrator data", response.data?.data?.data)
+      // console.log("general contrator data", response.data?.data?.data)
       // Filtering first for better performance
       const filteredData =
         response.data?.data?.data?.filter((item) => item.role === 3) || [];
@@ -164,7 +164,7 @@ const CardSlider = () => {
       )}
 
       {/* View All Button */}
-      {!loading && contractors.length > 0 && (
+      {/* {!loading && contractors.length > 0 && (
         <View className="flex-row justify-center mt-6">
           <TouchableOpacity
             onPress={() => router.push("ContractorLists")}
@@ -173,7 +173,7 @@ const CardSlider = () => {
             <Text className="text-white font-bold">View All Contractors</Text>
           </TouchableOpacity>
         </View>
-      )}
+      )} */}
     </View>
   );
 };

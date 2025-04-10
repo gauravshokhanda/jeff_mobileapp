@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Alert, TextInput, ActivityIndicator, Platform } from 'react-native';
-import MapView, { Marker, Polygon, Circle } from 'react-native-maps';
+import MapView, { Marker, Polygon, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,6 +16,7 @@ export default function MapScreen() {
   const [polygonPoints, setPolygonPoints] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const [mapType, setMapType] = useState('satellite');
   const dispatch = useDispatch();
 
   const fetchLocation = async () => {
@@ -47,7 +48,7 @@ export default function MapScreen() {
 
   const handleZoomIn = () => {
     if (location) {
-      setLocation((prevLocation) => ({ 
+      setLocation((prevLocation) => ({
         ...prevLocation,
         latitudeDelta: prevLocation.latitudeDelta / 2,
         longitudeDelta: prevLocation.longitudeDelta / 2,
@@ -66,38 +67,31 @@ export default function MapScreen() {
   };
 
   const searchLocation = async (input) => {
-    console.log('Input:', input);
-
     if (!input.trim()) {
       Alert.alert('Error', 'Please enter a valid location name or coordinates.');
       return;
     }
 
-
     const coordinatePattern = /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/;
     if (coordinatePattern.test(input)) {
-
       const [latitude, longitude] = input.split(',').map(Number);
       try {
         const results = await Location.reverseGeocodeAsync({ latitude, longitude });
         if (results.length > 0) {
-          const location = results[0];
           setLocation({
             latitude,
             longitude,
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
           });
-          setSearchText("");
-          // Alert.alert('Location Found', `Location Name: ${location.city || location.region || 'Unknown'}`);
+          setSearchText('');
         } else {
           Alert.alert('Not Found', 'No matching location found.');
         }
       } catch (error) {
-        console.log('Error', `Unable to fetch location: ${error.message}`);
+        Alert.alert('Error', `Unable to fetch location: ${error.message}`);
       }
     } else {
-      // Handle location name input
       try {
         const results = await Location.geocodeAsync(input);
         if (results.length > 0) {
@@ -108,18 +102,15 @@ export default function MapScreen() {
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
           });
-          // console.log(latitude, longitude);
-          // Alert.alert('Location Found', `Moved to: ${input}`);
-          setSearchText("");
+          setSearchText('');
         } else {
           Alert.alert('Not Found', 'No matching location found.');
         }
       } catch (error) {
-        console.log('Error', `Unable to fetch location: ${error.message}`);
+        Alert.alert('Error', `Unable to fetch location: ${error.message}`);
       }
     }
   };
-
 
   const handleMapPress = (event) => {
     if (isDrawing) {
@@ -137,7 +128,6 @@ export default function MapScreen() {
       try {
         const area = getAreaOfPolygon(polygonPoints);
         const areaInSquareFeet = (area * 10.7639).toFixed(2);
-        console.log("Area in square feet:", areaInSquareFeet);
 
         const centroid = polygonPoints.reduce(
           (acc, point) => {
@@ -150,54 +140,46 @@ export default function MapScreen() {
         centroid.latitude /= polygonPoints.length;
         centroid.longitude /= polygonPoints.length;
 
-        // console.log("Polygon Centroid:", centroid);
-
         const [locationDetails] = await Location.reverseGeocodeAsync({
           latitude: centroid.latitude,
           longitude: centroid.longitude,
         });
-
-        if (locationDetails) {
-          // console.log("full location detail", locationDetails)
-          const { city, region, country, postalCode } = locationDetails;
-          // console.log("City:", city);
-          // console.log("Region:", region);
-          // console.log("Country:", country);
-          // console.log("postalCode:", postalCode);
-
-          // Alert.alert(
-          //   "Area Details",
-          //   `Area: ${areaInSquareFeet} sq. ft.\nCity: ${city}\nRegion: ${region}\nCountry: ${country}\npostalCode: ${postalCode}`
-          // );
-        } else {
-          console.log("Reverse geocoding returned no results.");
-        }
 
         dispatch(
           setPolygonData({
             coordinates: polygonPoints,
             area: areaInSquareFeet,
             city: locationDetails?.city,
-            postalCode: locationDetails.postalCode
+            postalCode: locationDetails?.postalCode,
           })
         );
 
-
         router.push('/AreaDetailsScreen');
-
         setPolygonPoints([]);
       } catch (error) {
-        console.error("Error calculating area or fetching location details:", error);
-        Alert.alert("Error", `Unable to fetch details: ${error.message}`);
+        Alert.alert('Error', `Unable to fetch details: ${error.message}`);
       }
     } else {
-      Alert.alert("Error", "A polygon requires at least 3 points.");
+      Alert.alert('Error', 'A polygon requires at least 3 points.');
     }
   };
 
   const handleStartDrawing = () => {
     setIsDrawing(true);
     setPolygonPoints([]);
+  };
+
+  const handleMyLocation = () => {
+    fetchLocation();
+  };
+
+  const toggleMapType = () => {
+    // Cycle through map types: satellite -> standard -> hybrid
+    setMapType((prevType) => {
+      if (prevType === 'satellite') return 'standard';
+      if (prevType === 'standard') return 'hybrid';
+      return 'satellite';
+    });
   };
 
   useEffect(() => {
@@ -217,9 +199,7 @@ export default function MapScreen() {
             className={`absolute z-10 left-2 ${Platform.OS === 'ios' ? 'top-7' : 'top-7'}`}
             onPress={() => router.back()}
           >
-            <Ionicons
-              className="bg-white p-2 rounded-full"
-              name="arrow-back" size={24} color="black" />
+            <Ionicons className="bg-white p-2 rounded-full" name="arrow-back" size={24} color="black" />
           </TouchableOpacity>
 
           <View className="bg-white w-[80%] h-12 absolute top-6 z-10 flex-row-reverse left-14 items-center justify-around rounded-2xl">
@@ -234,14 +214,14 @@ export default function MapScreen() {
               placeholderTextColor="gray"
               onSubmitEditing={() => searchLocation(searchText)}
             />
-
           </View>
 
           <MapView
             style={{ flex: 1 }}
             region={location}
             onPress={handleMapPress}
-            mapType="satellite"
+            mapType={mapType} // Dynamic map type
+            provider={PROVIDER_GOOGLE}
           >
             {polygonPoints.length > 0 && (
               <Polygon
@@ -261,7 +241,9 @@ export default function MapScreen() {
           </MapView>
 
           <View className="absolute bottom-80 right-4 z-10 flex">
-
+            <TouchableOpacity onPress={toggleMapType} className="p-3 bg-white mb-2 rounded-full">
+              <Ionicons name="layers-outline" size={30} color="#172554" />
+            </TouchableOpacity>
             <TouchableOpacity onPress={handleZoomIn} className="p-3 bg-white mb-2 rounded-full">
               <Ionicons name="add-outline" size={30} color="#172554" />
             </TouchableOpacity>
@@ -269,28 +251,21 @@ export default function MapScreen() {
               <Ionicons name="remove-outline" size={30} color="#172554" />
             </TouchableOpacity>
           </View>
+
           <View className="absolute right-4 z-10 flex bottom-5">
-            <TouchableOpacity
-              onPress={handleStartDrawing}
-              className="p-3 bg-white rounded-full my-2"
-            >
+            <TouchableOpacity onPress={handleMyLocation} className="p-3 bg-white rounded-full my-2">
+              <Ionicons name="location-outline" size={28} color="#0EA5E9" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleStartDrawing} className="p-3 bg-white rounded-full my-2">
               <Ionicons name="create-outline" size={28} color="#0EA5E9" />
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleClearPolygon}
-              className="p-3 bg-white rounded-full"
-            >
+            <TouchableOpacity onPress={handleClearPolygon} className="p-3 bg-white rounded-full my-2">
               <Ionicons name="trash-outline" size={28} color="#0EA5E9" />
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleCalculateArea}
-              className="p-3 bg-white rounded-full my-2"
-            >
+            <TouchableOpacity onPress={handleCalculateArea} className="p-3 bg-white rounded-full my-2">
               <Ionicons name="arrow-forward" size={28} color="#0EA5E9" />
             </TouchableOpacity>
           </View>
-
-
         </View>
       ) : (
         <Text className="text-center text-lg mt-20">Click below to fetch your location</Text>

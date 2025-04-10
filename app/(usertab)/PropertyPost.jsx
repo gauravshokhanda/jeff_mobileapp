@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert, BackHandler, Dimensions, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector } from "react-redux";
-import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from "expo-image-picker";
 import axios from 'axios';
 import { router, useFocusEffect } from 'expo-router';
 import { API } from '../../config/apiConfig';
@@ -54,17 +54,13 @@ const PropertyPost = () => {
         }
     }, [costData]);
 
-
-
-
-
     const handleImagePick = async (field) => {
-        let result = await DocumentPicker.getDocumentAsync({
-            type: ["image/*"],
-            multiple: true,
-            copyToCacheDirectory: true,
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images, // Restrict to images only
+            allowsMultipleSelection: true, // Enable multiple image selection
+            quality: 1, // Full quality
         });
-
+    
         if (!result.canceled && result.assets?.length > 0) {
             setForm((prevForm) => ({
                 ...prevForm,

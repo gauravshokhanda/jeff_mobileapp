@@ -26,6 +26,7 @@ import { FlashList } from '@shopify/flash-list';
 import { useDispatch } from 'react-redux';
 import { setBreakdownCost } from '../../redux/slice/breakdownCostSlice';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as ImagePicker from "expo-image-picker";
 
 
 export default function FloorMapScreen() {
@@ -138,12 +139,12 @@ export default function FloorMapScreen() {
     };
 
     const handleFileUpload = async () => {
-        let result = await DocumentPicker.getDocumentAsync({
-            type: ["image/*", "application/pdf"],
-            copyToCacheDirectory: true,
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All, // Allows all gallery media (images and videos)
+            quality: 1, // Full quality
         });
-
-        setFileName(result.assets[0]?.name || "Uploaded File");
+    
+        setFileName(result.assets[0]?.fileName || "Uploaded File");
         setImageUri(result.assets[0]?.uri);
     };
 
