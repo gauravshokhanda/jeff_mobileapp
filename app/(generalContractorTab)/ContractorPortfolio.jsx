@@ -193,7 +193,7 @@ const ProfileCard = () => {
           resizeMode="cover"
         />
         <TouchableOpacity
-          className="absolute top-12 left-4 bg-white p-2 rounded-full shadow-md"
+          className="absolute top-10 left-4 p-2 rounded-full "
           onPress={() => router.back()}
         >
           <Ionicons name="arrow-back" size={24} color="#0369a1" />

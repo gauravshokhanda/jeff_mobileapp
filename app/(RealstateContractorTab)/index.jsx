@@ -45,9 +45,7 @@ export default function Index() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      // console.log("response", response.data.properties.data)
-      // console.log("response", response.data.properties.last_page)
-      // console.log("response", response.data.properties)
+
       setProperties(
         page === 1
           ? [response.data.properties.data[0]]

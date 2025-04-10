@@ -58,7 +58,7 @@ export default function PropertyList() {
         console.log("Unexpected API response:", response.data);
       }
     } catch (error) {
-      console.error(
+      console.log(
         "Error fetching properties:",
         error.response?.data || error.message
       );
@@ -98,7 +98,7 @@ export default function PropertyList() {
         colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-        <View className={`flex-row items-center  px-4 `}>
+        <View className={`flex-row items-center mt-8 mb-2 px-4 `}>
           <TouchableOpacity className="mr-4">
             <Ionicons name="notifications" size={25} color="white" />
           </TouchableOpacity>

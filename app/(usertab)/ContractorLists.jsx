@@ -354,7 +354,7 @@ export default function Index() {
         colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-        <View className="mt-8 px-4">
+        <View className="mt-10 px-4">
           <Text className="text-2xl font-semibold text-white">
             Properties & Contractors
           </Text>

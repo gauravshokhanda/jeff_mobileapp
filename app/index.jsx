@@ -70,7 +70,7 @@ export default function Index() {
         console.log("📌 Sending FCM Token Before Login:", { token: fcmToken });
         try {
           const response = await API.post(
-            "https://g32.iamdeveloper.in/api/save-fcm-token",
+            "save-fcm-token",
             { token: fcmToken },
             {
               headers: {
@@ -101,7 +101,7 @@ export default function Index() {
         });
         try {
           const response = await API.post(
-            "https://g32.iamdeveloper.in/api/save-fcm-token",
+            "save-fcm-token",
             { token: fcmToken, user_id: user.id },
             {
               headers: {
