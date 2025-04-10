@@ -20,7 +20,7 @@ const ProfileCard = () => {
   const token = useSelector((state) => state.auth.token);
   const navigation = useNavigation();
   const router = useRouter();
-  
+
   const [userData, setUserData] = useState(null);
   const [portfolios, setPortfolios] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -30,7 +30,7 @@ const ProfileCard = () => {
     lastPage: null,
     fetching: false,
   });
-  
+
   const defaultHomeImage = require("../../assets/images/AC5D_Logo.jpg");
 
   // Fetch user data
@@ -51,10 +51,10 @@ const ProfileCard = () => {
         const data = response.data;
         setUserData({
           ...data,
-          upload_organisation: data.upload_organisation 
-            ? `${baseUrl}${data.upload_organisation}` 
+          upload_organisation: data.upload_organisation
+            ? `${baseUrl}${data.upload_organisation}`
             : null,
-          image: data.image ? `${baseUrl}${data.image}` : null
+          image: data.image ? `${baseUrl}${data.image}` : null,
         });
       } catch (error) {
         console.error("Failed to load user data:", error);
@@ -73,7 +73,11 @@ const ProfileCard = () => {
   }, [userData]);
 
   const fetchPortfolios = async (page, reset = false) => {
-    if (pagination.fetching || (pagination.lastPage && page > pagination.lastPage)) return;
+    if (
+      pagination.fetching ||
+      (pagination.lastPage && page > pagination.lastPage)
+    )
+      return;
 
     try {
       setPagination((prev) => ({ ...prev, fetching: true }));
@@ -81,17 +85,17 @@ const ProfileCard = () => {
         `portfolios/contractor/${userData.id}?page=${page}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      
+
       const { portfolios } = response.data;
-      setPortfolios((prev) => reset ? portfolios.data : [...prev, ...portfolios.data]);
+      setPortfolios((prev) =>
+        reset ? portfolios.data : [...prev, ...portfolios.data]
+      );
       setPagination({
         currentPage: portfolios.current_page,
         lastPage: portfolios.last_page,
         fetching: false,
       });
     } catch (error) {
-      console.error("Error fetching portfolios:", error);
-      Alert.alert("Error", "Failed to load portfolios");
       setPagination((prev) => ({ ...prev, fetching: false }));
     }
   };
@@ -145,14 +149,20 @@ const ProfileCard = () => {
     >
       <Image
         source={{
-          uri: `https://g32.iamdeveloper.in/public/${JSON.parse(item.portfolio_images)[0]}`,
+          uri: `https://g32.iamdeveloper.in/public/${
+            JSON.parse(item.portfolio_images)[0]
+          }`,
         }}
         className="w-24 h-24 rounded-lg mr-4"
         resizeMode="cover"
       />
       <View className="flex-1">
-        <Text className="text-lg font-semibold text-gray-800">{item.project_name}</Text>
-        <Text className="text-gray-600 text-sm">{item.city}, {item.address}</Text>
+        <Text className="text-lg font-semibold text-gray-800">
+          {item.project_name}
+        </Text>
+        <Text className="text-gray-600 text-sm">
+          {item.city}, {item.address}
+        </Text>
         <Text className="text-gray-500 text-sm mt-1" numberOfLines={2}>
           {item.description}
         </Text>
@@ -174,19 +184,25 @@ const ProfileCard = () => {
       {/* Header with Organization Image */}
       <View className="relative">
         <Image
-          source={userData.upload_organisation ? { uri: userData.upload_organisation } : defaultHomeImage}
+          source={
+            userData.upload_organisation
+              ? { uri: userData.upload_organisation }
+              : defaultHomeImage
+          }
           className="w-full h-56"
           resizeMode="cover"
         />
         <TouchableOpacity
-          className="absolute top-12 left-4 bg-white p-2 rounded-full shadow-md"
+          className="absolute top-10 left-4 p-2 rounded-full "
           onPress={() => router.back()}
         >
           <Ionicons name="arrow-back" size={24} color="#0369a1" />
         </TouchableOpacity>
         <View className="absolute bottom-[-40] left-6">
           <Image
-            source={{ uri: userData.image || "https://via.placeholder.com/150" }}
+            source={{
+              uri: userData.image || "https://via.placeholder.com/150",
+            }}
             className="w-24 h-24 rounded-full border-4 border-white shadow-md"
           />
         </View>
@@ -194,29 +210,44 @@ const ProfileCard = () => {
 
       {/* User Details Card */}
       <View className="bg-white mx-4 mt-12 p-6 rounded-xl shadow-sm">
-        <Text className="text-xl font-bold text-gray-800 mb-3">Personal Information</Text>
+        <Text className="text-xl font-bold text-gray-800 mb-3">
+          Personal Information
+        </Text>
         <View className="space-y-2">
           <Text className="text-gray-700 text-base">{userData.name}</Text>
-          {userData.email && <Text className="text-gray-600 text-base">{userData.email}</Text>}
-          {userData.number && <Text className="text-gray-600 text-base">{userData.number}</Text>}
+          {userData.email && (
+            <Text className="text-gray-600 text-base">{userData.email}</Text>
+          )}
+          {userData.number && (
+            <Text className="text-gray-600 text-base">{userData.number}</Text>
+          )}
           {(userData.address || userData.city) && (
             <Text className="text-gray-600 text-base">
-              {userData.address ? `${userData.address}, ` : ""}{userData.city || ""}
+              {userData.address ? `${userData.address}, ` : ""}
+              {userData.city || ""}
             </Text>
           )}
           {userData.company_name && (
-            <Text className="text-gray-700 font-semibold text-base mt-2">{userData.company_name}</Text>
+            <Text className="text-gray-700 font-semibold text-base mt-2">
+              {userData.company_name
+                ? `${userData.company_name}`
+                : "Company Name not defined !"}
+            </Text>
           )}
-          {userData.company_address && (
-            <Text className="text-gray-600 text-base">{userData.company_address}</Text>
-          )}
+          {/* {userData.company_address && (
+            <Text className="text-gray-600 text-base">
+              {userData.company_address}
+            </Text>
+          )} */}
         </View>
       </View>
 
       {/* Portfolio Section */}
-      <View className="mx-4 mt-6">
+      <View className="flex-1 mx-4 mt-6">
         <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-xl font-semibold text-gray-800">Portfolios</Text>
+          <Text className="text-xl font-semibold text-gray-800">
+            Portfolios
+          </Text>
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Ionicons name="add-circle" size={28} color="#0369a1" />
           </TouchableOpacity>
@@ -229,7 +260,9 @@ const ProfileCard = () => {
           onEndReached={() => fetchPortfolios(pagination.currentPage + 1)}
           onEndReachedThreshold={0.1}
           ListEmptyComponent={
-            <Text className="text-gray-500 text-center py-4">No portfolios yet</Text>
+            <Text className="text-gray-500 text-center py-4">
+              No portfolios yet
+            </Text>
           }
           showsVerticalScrollIndicator={false}
         />

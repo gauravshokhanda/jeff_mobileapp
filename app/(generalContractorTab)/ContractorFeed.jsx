@@ -8,30 +8,29 @@ import {
   ActivityIndicator,
   Platform,
   SafeAreaView,
-  Dimensions
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useRouter } from "expo-router";
-import { API } from "../../config/apiConfig"
-import { LinearGradient } from 'expo-linear-gradient';
-
+import { API } from "../../config/apiConfig";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function PropertyList() {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
-  const postContentWidth = screenWidth * 0.92
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+  const postContentWidth = screenWidth * 0.92;
   const router = useRouter();
   const token = useSelector((state) => state.auth.token);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [scrollY, setScrollY] = useState(0)
-  const [refreshing, setRefreshing] = useState(false)
-  const [page, setPage] = useState(1)
+  const [scrollY, setScrollY] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [isFetching, setIsFetching] = useState(false)
+  const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
     fetchProperties(1, true);
@@ -42,23 +41,27 @@ export default function PropertyList() {
     setIsFetching(true);
 
     try {
-      const response = await API.get(
-        `job-post/listing?page=${pageNumber}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await API.get(`job-post/listing?page=${pageNumber}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.data?.data?.data && Array.isArray(response.data.data.data)) {
         // console.log("new data recieved");
-        setProperties((prev) => (isRefresh ? response.data.data.data : [...prev, ...response.data.data.data]));
+        setProperties((prev) =>
+          isRefresh
+            ? response.data.data.data
+            : [...prev, ...response.data.data.data]
+        );
         setHasMore(!!response.data.data.next_page_url);
         if (!isRefresh) setPage(pageNumber);
       } else {
         console.log("Unexpected API response:", response.data);
       }
     } catch (error) {
-      console.error("Error fetching properties:", error.response?.data || error.message);
+      console.log(
+        "Error fetching properties:",
+        error.response?.data || error.message
+      );
     } finally {
       setIsFetching(false);
       setRefreshing(false);
@@ -66,17 +69,17 @@ export default function PropertyList() {
     }
   };
 
-  // page refresh on scroll from the top 
-  const handleScroll = (event) => { 
-    const offsetY = event.nativeEvent.contentOffset.y; 
-    setScrollY(offsetY); 
- 
-    if (offsetY <= -160 && !refreshing) { 
-      setRefreshing(true); 
-      fetchProperties(1, true); 
-      setPage(1); 
-    } 
-  }; 
+  // page refresh on scroll from the top
+  const handleScroll = (event) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setScrollY(offsetY);
+
+    if (offsetY <= -160 && !refreshing) {
+      setRefreshing(true);
+      fetchProperties(1, true);
+      setPage(1);
+    }
+  };
 
   const handleLoadMore = ({ nativeEvent }) => {
     if (
@@ -91,12 +94,11 @@ export default function PropertyList() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
-
       <LinearGradient
-        colors={['#082f49', 'transparent']}
+        colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-        <View className={`flex-row items-center  px-4 `}>
+        <View className={`flex-row items-center mt-8 mb-2 px-4 `}>
           <TouchableOpacity className="mr-4">
             <Ionicons name="notifications" size={25} color="white" />
           </TouchableOpacity>
@@ -124,7 +126,7 @@ export default function PropertyList() {
           marginTop: -screenHeight * 0.27,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
-          overflow: 'hidden',
+          overflow: "hidden",
         }}
       >
         {loading || refreshing ? (
@@ -160,15 +162,21 @@ export default function PropertyList() {
                       : null;
 
                   return (
-                    <View key={property.id} className="bg-white mt-5 shadow-lg rounded-2xl mb-4">
+                    <View
+                      key={property.id}
+                      className="bg-white mt-5 shadow-lg rounded-2xl mb-4"
+                    >
                       {imageUrl ? (
-                        <Image source={{ uri: imageUrl }} className="w-full h-52 rounded-t-2xl" />
+                        <Image
+                          source={{ uri: imageUrl }}
+                          className="w-full h-52 rounded-t-2xl"
+                        />
                       ) : (
-                        <Text className="text-center py-4 text-gray-500">No image available</Text>
+                        <Text className="text-center py-4 text-gray-500">
+                          No image available
+                        </Text>
                       )}
-                      <TouchableOpacity className="absolute top-4 right-4 bg-white p-2 rounded-full shadow-md">
-                        <Ionicons name="heart-outline" size={22} color="gray" />
-                      </TouchableOpacity>
+
                       <View className="p-4 flex flex-row justify-between">
                         <View className="flex flex-col gap-2">
                           <Text className="text-sky-950 text-3xl font-bold">
@@ -177,7 +185,9 @@ export default function PropertyList() {
                           <Text className="text-gray-600 text-xl">
                             #{property.zipcode}, {property.city}
                           </Text>
-                          <Text className="text-gray-400 text-base">📅 {new Date(property.created_at).toLocaleString()}</Text>
+                          <Text className="text-gray-400 text-base">
+                            📅 {new Date(property.created_at).toLocaleString()}
+                          </Text>
                         </View>
                         <View className="flex-col justify-between items-end gap-2 ">
                           <Text className="text-gray-900 font-semibold text-xl">
@@ -185,9 +195,13 @@ export default function PropertyList() {
                           </Text>
                           <TouchableOpacity
                             className="bg-sky-950 px-5 py-2 rounded-lg"
-                            onPress={() => router.push(`/PropertyDetails?id=${property.id}`)}
+                            onPress={() =>
+                              router.push(`/PropertyDetails?id=${property.id}`)
+                            }
                           >
-                            <Text className="text-white font-semibold text-lg">View</Text>
+                            <Text className="text-white font-semibold text-lg">
+                              View
+                            </Text>
                           </TouchableOpacity>
                         </View>
                       </View>
@@ -195,12 +209,13 @@ export default function PropertyList() {
                   );
                 })
             ) : (
-              <Text className="text-gray-500 text-center mt-4">No properties found</Text>
+              <Text className="text-gray-500 text-center mt-4">
+                No properties found
+              </Text>
             )}
           </ScrollView>
         )}
       </View>
-
     </SafeAreaView>
   );
 }

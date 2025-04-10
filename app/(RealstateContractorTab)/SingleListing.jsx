@@ -115,12 +115,16 @@ export default function PropertyDetails() {
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       {/* backbutton and chatbutton */}
-      <View className="w-[100%] flex-row mt-12 items-center justify-between p-3 absolute z-10 bg-black/40">
-        <TouchableOpacity onPress={() => router.back()} className="mr-4">
+      <View className="w-[100%] flex-row mt-5 items-center justify-between p-3 absolute z-10 ">
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="mr-4 bg-gray-700 rounded-full p-2"
+        >
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
+          className="bg-gray-700 rounded-full p-2"
           onPress={() => {
             if (property) {
               console.log(
@@ -143,7 +147,7 @@ export default function PropertyDetails() {
             size={24}
             color="white"
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <View className="flex-1">
@@ -208,8 +212,8 @@ export default function PropertyDetails() {
               <TouchableOpacity className="bg-sky-950 px-2 py-1 rounded-md flex-row items-center">
                 <Text className="text-white text-lg font-semibold">
                   {property?.furnish_type
-                    ? `⏳ ${property.furnish_type} Furnished`
-                    : "⏳ Fully Furnished"}
+                    ? ` ${property.furnish_type} Furnished`
+                    : " Fully Furnished"}
                 </Text>
               </TouchableOpacity>
             </View>
