@@ -15,10 +15,10 @@ import { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "expo-router";
 import { API } from "../../config/apiConfig";
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function PropertyList() {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const router = useRouter();
   const token = useSelector((state) => state.auth.token);
@@ -61,7 +61,11 @@ export default function PropertyList() {
     }
   }, [searchQuery]);
 
-  const fetchProperties = async (pageNumber, isRefresh = false, query = searchQuery) => {
+  const fetchProperties = async (
+    pageNumber,
+    isRefresh = false,
+    query = searchQuery
+  ) => {
     if (!isRefresh && (!hasMore || isFetching)) return;
     setIsFetching(true);
 
@@ -75,7 +79,11 @@ export default function PropertyList() {
       );
 
       if (response.data?.data?.data && Array.isArray(response.data.data.data)) {
-        setProperties((prev) => (isRefresh ? response.data.data.data : [...prev, ...response.data.data.data]));
+        setProperties((prev) =>
+          isRefresh
+            ? response.data.data.data
+            : [...prev, ...response.data.data.data]
+        );
         setHasMore(!!response.data.data.next_page_url);
         if (!isRefresh) setPage(pageNumber);
       } else {
@@ -83,7 +91,10 @@ export default function PropertyList() {
         setProperties([]); // Reset properties if response is invalid
       }
     } catch (error) {
-      console.log("Error fetching properties:", error.response?.data || error.message);
+      console.log(
+        "Error fetching properties:",
+        error.response?.data || error.message
+      );
       setProperties([]); // Reset properties on error
     } finally {
       setIsFetching(false);
@@ -93,16 +104,16 @@ export default function PropertyList() {
     }
   };
 
-  const handleScroll = (event) => { 
-    const offsetY = event.nativeEvent.contentOffset.y; 
-    setScrollY(offsetY); 
- 
-    if (offsetY <= -160 && !refreshing) { 
-      setRefreshing(true); 
-      fetchProperties(1, true); 
-      setPage(1); 
-    } 
-  }; 
+  const handleScroll = (event) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setScrollY(offsetY);
+
+    if (offsetY <= -160 && !refreshing) {
+      setRefreshing(true);
+      fetchProperties(1, true);
+      setPage(1);
+    }
+  };
 
   const handleLoadMore = ({ nativeEvent }) => {
     if (
@@ -157,7 +168,11 @@ export default function PropertyList() {
         ) : (
           <>
             {searchLoading && (
-              <ActivityIndicator size="small" color="#082f49" className="mt-4" />
+              <ActivityIndicator
+                size="small"
+                color="#082f49"
+                className="mt-4"
+              />
             )}
             <ScrollView
               showsVerticalScrollIndicator={false}
@@ -169,7 +184,11 @@ export default function PropertyList() {
               scrollEventThrottle={16}
             >
               {refreshing ? (
-                <ActivityIndicator size="large" color="#082f49" className="mt-10" />
+                <ActivityIndicator
+                  size="large"
+                  color="#082f49"
+                  className="mt-10"
+                />
               ) : properties.length > 0 ? (
                 properties.map((property) => {
                   let designImages = [];
@@ -233,7 +252,7 @@ export default function PropertyList() {
                 })
               ) : (
                 <Text className="text-gray-500 text-center mt-4">
-                  {searchQuery 
+                  {searchQuery
                     ? `No properties found for "${searchQuery}"`
                     : "No properties available"}
                 </Text>

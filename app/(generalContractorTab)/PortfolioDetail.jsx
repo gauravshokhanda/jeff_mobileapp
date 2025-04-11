@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSelector } from "react-redux";
@@ -169,10 +169,7 @@ const PortfolioDetail = () => {
       {/* HEADER */}
       <View className="bg-sky-950 py-4 px-4 flex-row items-center justify-between">
         {/* Back Button */}
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="p-2"
-        >
+        <TouchableOpacity onPress={() => router.back()} className="p-2">
           <Feather name="arrow-left" size={24} color="white" />
         </TouchableOpacity>
 
@@ -245,8 +242,6 @@ const PortfolioDetail = () => {
         handleUpdate={handleUpdate}
         pickImage={pickImage}
       />
-
-
     </SafeAreaView>
   );
 };
