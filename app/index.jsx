@@ -13,13 +13,25 @@ import { API } from "../config/apiConfig";
 import { useSelector, useDispatch } from "react-redux";
 import Constants from "expo-constants";
 const { width, height } = Dimensions.get("window");
-import { setFcmToken, markFcmSentAfterLogin, markFcmSentBeforeLogin, setOnboardingCompleted } from "../redux/slice/authSlice";
+import {
+  setFcmToken,
+  markFcmSentAfterLogin,
+  markFcmSentBeforeLogin,
+  setOnboardingCompleted,
+} from "../redux/slice/authSlice";
 
 export default function Index() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  
-  const { token: Authtoken, user, fcmToken, fcmSentBeforeLogin, fcmSentAfterLogin, onboardingCompleted } = useSelector((state) => state.auth);
+
+  const {
+    token: Authtoken,
+    user,
+    fcmToken,
+    fcmSentBeforeLogin,
+    fcmSentAfterLogin,
+    onboardingCompleted,
+  } = useSelector((state) => state.auth);
 
   const [beforeLoginResponse, setBeforeLoginResponse] = useState(null);
   const [afterLoginResponse, setAfterLoginResponse] = useState(null);
@@ -135,17 +147,20 @@ export default function Index() {
       1: {
         image: require("../assets/images/onboarding_01.png"),
         title: "Lorem Ipsum is simply dummy text",
-        description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+        description:
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
       },
       2: {
         image: require("../assets/images/onboarding_02.png"),
         title: "Lorem Ipsum is simply dummy text",
-        description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+        description:
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
       },
       3: {
         image: require("../assets/images/onboarding_03.png"),
         title: "Lorem Ipsum is simply dummy text",
-        description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+        description:
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
       },
     };
 
@@ -153,11 +168,7 @@ export default function Index() {
 
     return (
       <View className="flex-1 bg-white justify-center items-center">
-        <Image
-          source={image}
-          className="w-3/4 h-1/2"
-          resizeMode="contain"
-        />
+        <Image source={image} className="w-3/4 h-1/2" resizeMode="contain" />
 
         <View className="mt-8 px-4">
           <Text className="text-center text-2xl font-bold text-gray-800">
@@ -169,9 +180,21 @@ export default function Index() {
         </View>
 
         <View className="flex-row mt-8">
-          <View className={`w-3 h-3 rounded-full mx-1 ${screenNumber === 1 ? 'bg-blue-500' : 'bg-gray-300'}`} />
-          <View className={`w-3 h-3 rounded-full mx-1 ${screenNumber === 2 ? 'bg-blue-500' : 'bg-gray-300'}`} />
-          <View className={`w-3 h-3 rounded-full mx-1 ${screenNumber === 3 ? 'bg-blue-500' : 'bg-gray-300'}`} />
+          <View
+            className={`w-3 h-3 rounded-full mx-1 ${
+              screenNumber === 1 ? "bg-blue-500" : "bg-gray-300"
+            }`}
+          />
+          <View
+            className={`w-3 h-3 rounded-full mx-1 ${
+              screenNumber === 2 ? "bg-blue-500" : "bg-gray-300"
+            }`}
+          />
+          <View
+            className={`w-3 h-3 rounded-full mx-1 ${
+              screenNumber === 3 ? "bg-blue-500" : "bg-gray-300"
+            }`}
+          />
         </View>
 
         <View className="flex-row justify-between w-full px-8 mt-12">
@@ -189,7 +212,7 @@ export default function Index() {
             className="px-4 py-2"
           >
             <Text className="text-white bg-blue-500 rounded-full px-6 py-2">
-              {screenNumber === 3 ? 'Get Started' : 'Next'}
+              {screenNumber === 3 ? "Get Started" : "Next"}
             </Text>
           </TouchableOpacity>
         </View>
