@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -10,27 +10,27 @@ import {
   Alert,
   ActivityIndicator,
   SafeAreaView,
-  Dimensions
-} from 'react-native';
-import ModalSelector from 'react-native-modal-selector';
-import { useSelector } from 'react-redux';
-import { API } from '../../config/apiConfig';
-
-import debounce from 'lodash.debounce';
-import { FlashList } from '@shopify/flash-list';
-import { LinearGradient } from 'expo-linear-gradient';
-
+  Dimensions,
+} from "react-native";
+import ModalSelector from "react-native-modal-selector";
+import { useSelector } from "react-redux";
+import { API } from "../../config/apiConfig";
+import { Ionicons } from "@expo/vector-icons";
+import debounce from "lodash.debounce";
+import { FlashList } from "@shopify/flash-list";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 
 export default function PropertyCalculator() {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
-  const [city, setCity] = useState('');
-  const [zipCode, setZipCode] = useState('');
-  const [area, setArea] = useState('');
-  const [projectType, setProjectType] = useState('');
+  const [city, setCity] = useState("");
+  const [zipCode, setZipCode] = useState("");
+  const [area, setArea] = useState("");
+  const [projectType, setProjectType] = useState("");
   const [loading, setLoading] = useState(false);
   const [totalCost, setTotalCost] = useState(null);
-
+  const router = useRouter();
   const [cities, setCities] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -43,7 +43,7 @@ export default function PropertyCalculator() {
     debounce(async (query, currentPage = 1) => {
       if (!query) return;
       setSearchLoading(true);
-      console.log("current page", currentPage)
+      console.log("current page", currentPage);
       try {
         const response = await API.post(
           `/citie-search?page=${currentPage}`,
@@ -64,15 +64,18 @@ export default function PropertyCalculator() {
         } else {
           setCities((prevCities) => [...prevCities, ...cityData]);
         }
-        console.log("next data", response.data.pagination.total)
+        console.log("next data", response.data.pagination.total);
         setHasMoreCities(currentPage < response.data.pagination.last_page);
       } catch (error) {
-        console.log('City search error:', error);
+        console.log("City search error:", error);
 
         if (error.response?.data?.message) {
-          Alert.alert('Error', error.response.data.message);
+          Alert.alert("Error", error.response.data.message);
         } else {
-          Alert.alert('Error', 'An unknown error occurred while searching for cities.');
+          Alert.alert(
+            "Error",
+            "An unknown error occurred while searching for cities."
+          );
         }
       } finally {
         setSearchLoading(false);
@@ -82,12 +85,11 @@ export default function PropertyCalculator() {
     [token]
   );
 
-
   const loadMoreCities = () => {
-    console.log("load more")
+    console.log("load more");
     if (hasMoreCities && !searchLoading && !loadingMore) {
       setLoadingMore(true); // Mark loading as true
-      setPage(prevPage => {
+      setPage((prevPage) => {
         const nextPage = prevPage + 1;
         handleCitySearch(city, nextPage);
         return nextPage;
@@ -112,15 +114,17 @@ export default function PropertyCalculator() {
       setCity(cityName);
     } catch (error) {
       console.error("Error fetching city name:", error);
-      Alert.alert("Error", "Unable to fetch city name. Please check the zip code.");
+      Alert.alert(
+        "Error",
+        "Unable to fetch city name. Please check the zip code."
+      );
     }
   };
 
-
   const handleSubmit = async () => {
-    console.log("handle function")
+    console.log("handle function");
     if (!city || !zipCode || !area || !projectType) {
-      Alert.alert('Error', 'All fields are required');
+      Alert.alert("Error", "All fields are required");
       return;
     }
 
@@ -134,7 +138,6 @@ export default function PropertyCalculator() {
     };
 
     try {
-
       const response = await API.post("regional_multipliers/details", data, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -142,40 +145,48 @@ export default function PropertyCalculator() {
         },
       });
 
-
       const { total_cost } = response.data.data;
       setTotalCost(total_cost);
-
     } catch (error) {
       console.log("Error occurred:", error.message);
-      Alert.alert('Error', error.response?.data?.message || 'An unknown error occurred');
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "An unknown error occurred"
+      );
     }
   };
 
   const projectTypeOptions = [
-    { key: '1', label: 'Basic' },
-    { key: '2', label: 'Mid-range' },
-    { key: '3', label: 'Luxury' },
+    { key: "1", label: "Basic" },
+    { key: "2", label: "Mid-range" },
+    { key: "3", label: "Luxury" },
   ];
 
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
-
       <LinearGradient
-        colors={['#082f49', 'transparent']}
+        colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-        <View className={`py-6`}>
-          <Text className="text-3xl font-extrabold text-center mt-5 text-white tracking-wide">Cost Calculator</Text>
+        <View className="pt-10 px-4 flex-row items-center justify-between">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="p-2 rounded-full bg-white/10"
+          >
+            <Ionicons name="arrow-back" size={28} color="white" />
+          </TouchableOpacity>
+          <Text className="text-2xl font-bold text-white flex-1 text-center mr-10">
+            Cost Calculator
+          </Text>
         </View>
       </LinearGradient>
       <View
         className="h-full bg-white"
         style={{
-          position: 'absolute',
+          position: "absolute",
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
-          marginTop: screenHeight * 0.17, 
+          marginTop: screenHeight * 0.17,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
         }}
@@ -189,10 +200,11 @@ export default function PropertyCalculator() {
             contentContainerStyle={{ paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
           >
-
             <View className="p-6 bg-white m-4 ">
               <View className="mb-2">
-                <Text className="text-gray-800 font-semibold mb-1 text-base">City</Text>
+                <Text className="text-gray-800 font-semibold mb-1 text-base">
+                  City
+                </Text>
                 <TextInput
                   className="border border-gray-300 bg-white rounded-lg p-3 text-gray-900 shadow-sm"
                   placeholder="Search city"
@@ -225,11 +237,10 @@ export default function PropertyCalculator() {
                         style={{
                           padding: 10,
                           borderBottomWidth: 1,
-                          borderBottomColor: '#ccc',
-                          backgroundColor: '#f9f9f9',
-
+                          borderBottomColor: "#ccc",
+                          backgroundColor: "#f9f9f9",
                         }}
-                      // className="p-4 border-b border-b-gray-400 bg-gray-100"
+                        // className="p-4 border-b border-b-gray-400 bg-gray-100"
                       >
                         <Text>{item.label}</Text>
                       </TouchableOpacity>
@@ -237,26 +248,33 @@ export default function PropertyCalculator() {
                     estimatedItemSize={50}
                     style={{
                       maxHeight: 150,
-                      backgroundColor: 'white',
+                      backgroundColor: "white",
                       borderWidth: 1,
-                      borderColor: '#ccc',
+                      borderColor: "#ccc",
                       borderRadius: 5,
                       marginTop: 5,
                     }}
-
                     ListFooterComponent={
                       hasMoreCities && (
-                        <View style={{ alignItems: 'center', marginVertical: 10 }}>
+                        <View
+                          style={{ alignItems: "center", marginVertical: 10 }}
+                        >
                           <TouchableOpacity
                             onPress={loadMoreCities}
                             style={{
-                              backgroundColor: '#0284C7',
+                              backgroundColor: "#0284C7",
                               paddingVertical: 10,
                               paddingHorizontal: 20,
                               borderRadius: 5,
                             }}
                           >
-                            <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
+                            <Text
+                              style={{
+                                color: "white",
+                                fontSize: 16,
+                                fontWeight: "bold",
+                              }}
+                            >
                               Load More
                             </Text>
                           </TouchableOpacity>
@@ -267,7 +285,9 @@ export default function PropertyCalculator() {
                 )}
               </View>
 
-              <Text className="text-gray-700 mb-1 text-lg font-bold">Zip Code:</Text>
+              <Text className="text-gray-700 mb-1 text-lg font-bold">
+                Zip Code:
+              </Text>
               <TextInput
                 placeholderTextColor="gray"
                 placeholder="Enter Zip Code"
@@ -285,8 +305,9 @@ export default function PropertyCalculator() {
                 className="border border-gray-300 rounded-md p-3 mb-4"
               />
 
-
-              <Text className="text-gray-700 mb-1 text-lg font-bold">Area in Square Feet:</Text>
+              <Text className="text-gray-700 mb-1 text-lg font-bold">
+                Area in Square Feet:
+              </Text>
               <TextInput
                 placeholderTextColor="gray"
                 placeholder="Enter Area"
@@ -295,13 +316,20 @@ export default function PropertyCalculator() {
                 className="border border-gray-300 rounded-md p-3 mb-4"
               />
 
-              <Text className="text-gray-700 mb-2 text-lg font-bold">Construction Type:</Text>
+              <Text className="text-gray-700 mb-2 text-lg font-bold">
+                Construction Type:
+              </Text>
               <ModalSelector
                 data={projectTypeOptions}
                 initValue={projectType || "Select Project Type"}
                 onChange={(option) => setProjectType(option.label)}
-                style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 5, marginBottom: 16 }}
-                initValueTextStyle={{ padding: 10, color: '#555' }}
+                style={{
+                  borderWidth: 1,
+                  borderColor: "#ccc",
+                  borderRadius: 5,
+                  marginBottom: 16,
+                }}
+                initValueTextStyle={{ padding: 10, color: "#555" }}
               />
 
               <TouchableOpacity
@@ -309,12 +337,16 @@ export default function PropertyCalculator() {
                 className="bg-sky-900 mt-8 py-3 rounded-md shadow-md"
                 disabled={loading}
               >
-                <Text className="text-white text-center text-lg font-bold">CALCULATE</Text>
+                <Text className="text-white text-center text-lg font-bold">
+                  CALCULATE
+                </Text>
               </TouchableOpacity>
 
               {totalCost && (
                 <View className="mt-4">
-                  <Text className="text-gray-800 text-lg font-semibold">Result:</Text>
+                  <Text className="text-gray-800 text-lg font-semibold">
+                    Result:
+                  </Text>
                   <Text className="mt-2 p-3 bg-gray-100 border border-gray-300 rounded-md">
                     ${totalCost}
                   </Text>

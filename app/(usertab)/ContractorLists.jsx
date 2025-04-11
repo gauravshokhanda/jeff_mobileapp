@@ -43,15 +43,6 @@ export default function Index() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const flatListRef = useRef(null);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-
-  {
-    isLoadingMore && (
-      <View className="py-4 items-center">
-        <ActivityIndicator size="small" color="#888" />
-      </View>
-    );
-  }
 
   const openModal = () => {
     iconRef.current?.measure((_fx, _fy, _width, _height, px, py) => {
@@ -84,8 +75,9 @@ export default function Index() {
     try {
       const url = `contractors/listing?${
         query ? `city=${encodeURIComponent(query)}&` : ""
-      }page=${page}&sort_order=${order}&role=3`;
+      }page=${page}&sort_order=${order}&role=3
 
+`;
       const response = await API.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -107,7 +99,7 @@ export default function Index() {
       setCurrentPage(response.data.data.current_page);
       setTotalPages(response.data.data.last_page);
     } catch (error) {
-      console.log("Error fetching contractors:", error);
+      console.error("Error fetching contractors:", error);
     } finally {
       setLoading(false);
     }
@@ -158,23 +150,27 @@ export default function Index() {
   const loadMore = () => {
     if (loading || currentPage >= totalPages) return;
 
-    setIsLoadingMore(true); // Start loading indicator
+    console.log("Loading more data...");
     const nextPage = currentPage + 1;
 
-    const handleScroll = () => {
-      if (flatListRef.current) {
-        flatListRef.current.scrollToOffset({
-          offset: scrollOffset,
-          animated: false,
-        });
-      }
-      setIsLoadingMore(false); // Stop loading indicator
-    };
-
     if (selectedTab === "realEstate") {
-      fetchRealEstateProperties(nextPage).then(handleScroll);
+      fetchRealEstateProperties(nextPage).then(() => {
+        if (flatListRef.current) {
+          flatListRef.current.scrollToOffset({
+            offset: scrollOffset,
+            animated: false,
+          });
+        }
+      });
     } else {
-      fetchContractors(searchTerm, nextPage).then(handleScroll);
+      fetchContractors(searchTerm, nextPage).then(() => {
+        if (flatListRef.current) {
+          flatListRef.current.scrollToOffset({
+            offset: scrollOffset,
+            animated: false,
+          });
+        }
+      });
     }
   };
 
@@ -245,7 +241,7 @@ export default function Index() {
       <View className="rounded-xl bg-white shadow-md overflow-hidden mb-4">
         <TouchableOpacity
           className="bg-sky-950 p-4 flex-row items-start"
-          onPress={() => router.push(`SingleListing?id=${item.id}`)}
+          onPress={() => router.push(`RealEstateDetails?id=${item.id}`)}
         >
           <View className="flex-1">
             <View className="flex-row justify-between items-center">
@@ -317,7 +313,8 @@ export default function Index() {
                 <View className="flex-row items-center">
                   <Ionicons name="calendar-outline" size={16} color="white" />
                   <Text className="text-gray-300 ml-2">
-                    Available from {item.available_from}
+                    Available from{" "}
+                    {new Date(item.available_from).toISOString().split("T")[0]}
                   </Text>
                 </View>
                 <View className="flex-row items-center">
@@ -354,7 +351,7 @@ export default function Index() {
         colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-        <View className="mt-8 px-4">
+        <View className="mt-10 px-4">
           <Text className="text-2xl font-semibold text-white">
             Properties & Contractors
           </Text>
@@ -448,7 +445,7 @@ export default function Index() {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() =>
-                    router.push(`/RealContractorListing?id=${item.id}`)
+                    router.push(`/RealEstateDetails?id=${item.id}`)
                   }
                 >
                   <View className="bg-sky-950 p-3 rounded-lg mb-4">

@@ -183,7 +183,7 @@ export default function PropertyDetails() {
           }
           className="bg-sky-950 p-3 w-48 rounded-lg justify-center items-center flex-row gap-2 shadow-md active:bg-sky-800"
         >
-           <Ionicons name={"chatbubble"} size={25} color="white" />
+          <Ionicons name={"chatbubble"} size={25} color="white" />
           <Text className="text-center text-white text-lg font-semibold">
             Chat
           </Text>

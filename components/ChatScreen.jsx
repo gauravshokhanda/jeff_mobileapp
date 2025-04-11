@@ -29,13 +29,12 @@ const ChatScreen = () => {
   const [inputText, setInputText] = useState("");
   const [statusMessage, setStatusMessage] = useState({ type: "", message: "" });
   const [isLoading, setIsLoading] = useState(true);
+
   const token = useSelector((state) => state.auth.token);
   const currentUserId = useSelector((state) => state.auth.user.id);
   const router = useRouter();
 
-  const chatRoomId = [currentUserId, user_id].sort().join("_");
-
-  // ✅ Fetch user details (using centralized API)
+  // Fetch recipient user info
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -56,7 +55,7 @@ const ChatScreen = () => {
     if (user_id) fetchUser();
   }, [user_id, token]);
 
-  // ✅ Mark messages as read on screen open
+  // Mark messages as read
   useEffect(() => {
     const markMessagesAsRead = async () => {
       try {
@@ -75,9 +74,12 @@ const ChatScreen = () => {
     }
   }, [user_id, token]);
 
-  // Real-time Firebase listener
+  // Real-time messages from Firebase
   useEffect(() => {
+    if (!user_id || !currentUserId) return;
+
     setIsLoading(true);
+    const chatRoomId = [currentUserId, user_id].sort().join("_");
     const messagesRef = ref(database, `chats/${chatRoomId}`);
 
     const unsubscribe = onValue(
@@ -96,6 +98,8 @@ const ChatScreen = () => {
           setMessages(
             messagesArray.sort((a, b) => a.timestamp - b.timestamp).reverse()
           );
+        } else {
+          setMessages([]);
         }
       },
       (error) => {
@@ -108,9 +112,9 @@ const ChatScreen = () => {
     );
 
     return () => unsubscribe();
-  }, [chatRoomId, currentUserId]);
+  }, [user_id, currentUserId]);
 
-  // ✅ Send message to Firebase + API
+  // Send message
   const sendMessage = async () => {
     if (!inputText.trim()) return;
 
@@ -122,6 +126,7 @@ const ChatScreen = () => {
     };
 
     try {
+      const chatRoomId = [currentUserId, user_id].sort().join("_");
       const messagesRef = ref(database, `chats/${chatRoomId}`);
       const newMessageRef = push(messagesRef);
       await set(newMessageRef, newMessage);
@@ -149,46 +154,35 @@ const ChatScreen = () => {
     }
   };
 
+  // Render message bubble (no images)
   const renderMessage = ({ item }) => (
     <View
-      className={`flex-row items-end mx-3 my-2 ${
-        item.sender === "me" ? "self-end flex-row-reverse" : "self-start"
+      className={`mx-3 my-2 max-w-[80%] ${
+        item.sender === "me" ? "self-end items-end" : "self-start items-start"
       }`}
     >
-      <Image
-        source={{
-          uri:
-            item.sender === "me"
-              ? "https://randomuser.me/api/portraits/men/2.jpg"
-              : user?.image
-              ? `${baseUrl}${user.image}`
-              : "https://via.placeholder.com/50",
-        }}
-        className="w-8 h-8 rounded-full mx-2"
-      />
       <View
-        className={`p-3 max-w-[75%] rounded-lg flex-row items-end ${
-          item.sender === "me"
-            ? "bg-sky-950"
-            : "bg-white border border-gray-300"
+        className={`p-3 rounded-xl ${
+          item.sender === "me" ? "bg-sky-950" : "bg-gray-100"
         }`}
       >
         <Text
-          className={`${
+          className={`text-base ${
             item.sender === "me" ? "text-white" : "text-gray-900"
-          } text-lg`}
+          }`}
+          style={{ flexWrap: "wrap" }}
         >
           {item.text}
         </Text>
-        {item.sender === "me" && (
-          <Ionicons
-            name="checkmark-done"
-            size={16}
-            color={item.seen ? "white" : "gray"}
-            style={{ marginLeft: 5 }}
-          />
-        )}
       </View>
+      {item.sender === "me" && (
+        <Ionicons
+          name="checkmark-done"
+          size={14}
+          color={item.seen ? "gray" : "lightgray"}
+          style={{ marginTop: 2 }}
+        />
+      )}
     </View>
   );
 
@@ -218,7 +212,7 @@ const ChatScreen = () => {
         colors={["#082f49", "transparent"]}
         style={{ height: SCREEN_HEIGHT * 0.4 }}
       >
-        <View className="flex-row items-center p-4">
+        <View className="flex-row mt-5 items-center p-4">
           <TouchableOpacity onPress={() => router.back()} className="mr-3">
             <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
@@ -270,23 +264,39 @@ const ChatScreen = () => {
                 keyExtractor={(item) => item.id}
                 inverted
                 renderItem={renderMessage}
-                contentContainerStyle={{ paddingVertical: 10 }}
+                contentContainerStyle={{
+                  paddingVertical: 10,
+                  flexGrow: 1,
+                  justifyContent:
+                    messages.length === 0 ? "center" : "flex-start",
+                  alignItems: messages.length === 0 ? "center" : "stretch",
+                }}
+                ListEmptyComponent={
+                  <Text className="text-gray-400 text-base">
+                    No messages yet
+                  </Text>
+                }
               />
             </>
           )}
 
-          <View className="flex-row items-center p-4 bg-white border-t border-gray-300">
+          {/* Input bar */}
+          <View className="flex-row items-end p-4 bg-white border-t border-gray-300">
             <TouchableOpacity className="mr-2">
               <Entypo name="emoji-happy" size={28} color="gray" />
             </TouchableOpacity>
-            <TextInput
-              value={inputText}
-              onChangeText={setInputText}
-              placeholder="Type a message..."
-              className="flex-1 p-3 bg-gray-200 rounded-full text-gray-900"
-              returnKeyType="send"
-              onSubmitEditing={sendMessage}
-            />
+
+            <View className="flex-1 bg-gray-200 rounded-2xl px-3 py-2 max-h-32">
+              <TextInput
+                value={inputText}
+                onChangeText={setInputText}
+                placeholder="Type a message..."
+                multiline
+                className="text-gray-900 text-base"
+                style={{ maxHeight: 100 }}
+              />
+            </View>
+
             <TouchableOpacity
               onPress={sendMessage}
               className="ml-3 bg-sky-950 p-3 rounded-full"

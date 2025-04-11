@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import CompleteProfileModal from "../../components/CompleteProfileModal";
+import { API, baseUrl } from "../../config/apiConfig";
 
 const { width } = Dimensions.get("window");
 
@@ -21,12 +22,13 @@ export default function EstateContractorProfile() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+  const userName = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.post(
-          "https://g32.iamdeveloper.in/api/user-detail",
+        const response = await API.post(
+          "user-detail",
           {},
           {
             headers: {
@@ -46,10 +48,36 @@ export default function EstateContractorProfile() {
     fetchUserData();
   }, [token]);
 
-  const handleProfileSubmit = (data) => {
-    console.log("Submitted data:", data);
-    setModalVisible(false);
-    // Optionally send data to API
+  const handleProfileSubmit = async (data) => {
+    console.log(token);
+    try {
+      const response = await API.post("user/profile_update", data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("Profile updated:", response.data);
+
+      const updatedUser = await API.post(
+        "user-detail",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setUserData(updatedUser.data);
+
+      setModalVisible(false);
+    } catch (error) {
+      console.error(
+        "Error updating profile:",
+        error.response?.data || error.message
+      );
+    }
   };
 
   if (loading) {
@@ -68,8 +96,7 @@ export default function EstateContractorProfile() {
           <Ionicons name="arrow-back-outline" size={30} color="#0369A1" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
-          {/* <Ionicons name="create-outline" size={26} color="#0369A1" /> */}
-          <Text className="text-xl">Complete Profile</Text>
+          <Ionicons name="create-outline" size={26} color="#0369A1" />
         </TouchableOpacity>
       </View>
 

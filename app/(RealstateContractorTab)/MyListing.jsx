@@ -132,17 +132,6 @@ export default function Listing() {
                     {item.house_type}
                   </Text>
                 </View>
-                {/* <View className="bg-white rounded-full p-1 justify-center items-center">
-                  <Text
-                    className="text-slate-700"
-                    style={{ fontSize: screenWidth * 0.03 }}
-                  >
-                    {(
-                      item.locale.split(" ").slice(0, 2).join(" ") +
-                      (item.locale.split(" ").length > 2 ? "..." : "")
-                    ).trim()}
-                  </Text>
-                </View> */}
               </View>
             </View>
 
@@ -241,7 +230,7 @@ export default function Listing() {
         style={{ height: screenHeight * 0.4 }}
       >
         {/* Header */}
-        <View className="mt-2">
+        <View className="mt-5">
           <TouchableOpacity
             className="absolute top-6 z-10 left-5"
             onPress={() => router.back()}
@@ -254,7 +243,7 @@ export default function Listing() {
         </View>
 
         {/* Search Bar */}
-        <View className="mx-5" style={{ marginTop: screenHeight * 0.02 }}>
+        <View className="mx-5 mb-2" style={{ marginTop: screenHeight * 0.02 }}>
           <View
             className="bg-gray-100 rounded-full flex-row items-center justify-between"
             style={{

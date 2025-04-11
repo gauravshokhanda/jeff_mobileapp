@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity, Linking, Alert,SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Linking,
+  Alert,
+} from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { API,baseUrl } from "../../config/apiConfig";
 
 export default function PropertyDetails() {
   const { id } = useLocalSearchParams();
@@ -16,14 +23,15 @@ export default function PropertyDetails() {
   );
   const [designImages, setDesignImages] = useState([]);
   const token = useSelector((state) => state.auth.token);
+  const baseUrl = "https://g32.iamdeveloper.in/public/";
 
   useEffect(() => {
     if (!id) return;
 
     const fetchProperty = async () => {
       try {
-        const response = await API.get(
-          `job-post/listing/${id}`,
+        const response = await axios.get(
+          `https://g32.iamdeveloper.in/api/job-post/listing/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -102,8 +110,8 @@ export default function PropertyDetails() {
     }
 
     try {
-      const response = await API.get(
-        `users/listing/${user_id}`,
+      const response = await axios.get(
+        `https://g32.iamdeveloper.in/api/users/listing/${user_id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -129,16 +137,17 @@ export default function PropertyDetails() {
   };
 
   return (
-    <SafeAreaView className="bg-white flex-1">
-    <ScrollView className="p-4">
-      <View className="w-full h-20 bg-sky-950 mb-2 flex justify-center flex-row items-center rounded-lg">
+    <ScrollView className="bg-white flex-1 mt-8 p-4">
+      <View className="w-full h-20  mb-2 flex justify-center flex-row items-center rounded-lg">
         <TouchableOpacity
           onPress={() => router.back()}
           className="absolute left-2 p-2 rounded-full shadow-md"
         >
-          <FontAwesome name="arrow-left" size={20} color="white" />
+          <FontAwesome name="arrow-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text className="text-white text-2xl font-bold">Property Details</Text>
+        <Text className="text-sky-950 text-2xl font-bold">
+          Property Details
+        </Text>
       </View>
 
       <View className="relative">
@@ -209,7 +218,7 @@ export default function PropertyDetails() {
         >
           <FontAwesome name="phone" size={20} color="white" />
           <Text className="text-center text-white text-lg font-semibold">
-            Contact
+            Call to Number
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -223,6 +232,5 @@ export default function PropertyDetails() {
         </TouchableOpacity>
       </View>
     </ScrollView>
-    </SafeAreaView>
   );
 }

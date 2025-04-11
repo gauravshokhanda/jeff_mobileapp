@@ -225,6 +225,16 @@ export default function Listing() {
 
         {/* Bottom Section with Button */}
         <View className="bg-gray-200 rounded-b-2xl p-4 flex-row justify-between items-center">
+          {/* <TouchableOpacity
+            className="border p-2 rounded-lg"
+            onPress={() =>
+              router.push(`contractorProfile?user_id=${item.user_id}`)
+            }
+          >
+            <Text className="text-lg font-semibold text-gray-600">
+              View Contractor
+            </Text>
+          </TouchableOpacity> */}
           <View className="flex-row gap-4">
             <TouchableOpacity>
               <Ionicons name="call" size={30} color="gray" />
@@ -247,7 +257,7 @@ export default function Listing() {
         style={{ height: screenHeight * 0.4 }}
       >
         {/* Header */}
-        <View className="mt-8 px-4">
+        <View className="mt-10 px-4">
           <Text className="text-2xl font-semibold text-white">
             Property Listing
           </Text>
