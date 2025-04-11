@@ -57,8 +57,8 @@ const ProfileCard = () => {
           image: data.image ? `${baseUrl}${data.image}` : null,
         });
       } catch (error) {
-        console.log("Failed to load user data:", error);
-        // Alert.alert("Error", "Failed to load profile data");
+        console.error("Failed to load user data:", error);
+        Alert.alert("Error", "Failed to load profile data");
       } finally {
         setLoading(false);
       }
@@ -136,8 +136,8 @@ const ProfileCard = () => {
         ]);
       }
     } catch (error) {
-      console.log("Error adding portfolio:", error.response?.data || error);
-      // Alert.alert("Error", "Failed to add portfolio");
+      console.error("Error adding portfolio:", error.response?.data || error);
+      Alert.alert("Error", "Failed to add portfolio");
     }
   };
 

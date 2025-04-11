@@ -132,17 +132,6 @@ export default function Listing() {
                     {item.house_type}
                   </Text>
                 </View>
-                {/* <View className="bg-white rounded-full p-1 justify-center items-center">
-                  <Text
-                    className="text-slate-700"
-                    style={{ fontSize: screenWidth * 0.03 }}
-                  >
-                    {(
-                      item.locale.split(" ").slice(0, 2).join(" ") +
-                      (item.locale.split(" ").length > 2 ? "..." : "")
-                    ).trim()}
-                  </Text>
-                </View> */}
               </View>
             </View>
 

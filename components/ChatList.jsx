@@ -144,15 +144,15 @@ const ChatListScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <LinearGradient
-        colors={["#082f49", "#0c4a6e"]}
-        style={styles.headerGradient}
+        colors={["#082f49", "transparent"]}
+        style={{ paddingBottom: 24 }}
       >
-        <View className="px-4 flex-row items-center justify-between">
+        <View className="px-4 mt-10 flex-row items-center justify-between">
           <TouchableOpacity
             onPress={() => router.back()}
-            className="p-2 bg-white rounded-full"
+            className="p-2 rounded-full bg-white/10"
           >
-            <Ionicons name="arrow-back" size={24} color="#0369a1" />
+            <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
           <Text className="text-white text-2xl font-bold flex-1 text-center">
             Messages
@@ -160,7 +160,7 @@ const ChatListScreen = () => {
           <View className="w-10" />
         </View>
 
-        <View className="px-4 mt-4">
+        <View className="px-4 mt-4 mb-4">
           <View className="bg-white px-3 py-2 rounded-xl flex-row items-center">
             <Ionicons name="search" size={20} color="#0369a1" />
             <TextInput
@@ -173,8 +173,9 @@ const ChatListScreen = () => {
         </View>
       </LinearGradient>
 
+      {/* Scrollable List */}
       <View
-        className="flex-1 pt-4"
+        className="flex-1 rounded-t-3xl bg-white px-4 pt-4"
         style={{
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
@@ -185,7 +186,7 @@ const ChatListScreen = () => {
           renderItem={renderChatItem}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingBottom: 100 }}
         />
       </View>
     </SafeAreaView>

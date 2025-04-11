@@ -80,15 +80,35 @@ const ContractorProfile = () => {
   return (
     <ScrollView className="bg-white p-4 shadow-lg rounded-lg flex-1">
       {/* Header with Company Image */}
-      <View className="mt-5 relative w-full h-52">
-        <TouchableOpacity onPress={() => router.back()} className="ml-2">
-          <Ionicons name="arrow-back" size={28} color="black" />
-        </TouchableOpacity>
+      <View className="relative w-full h-52">
+        {/* Header with back and chat buttons */}
+        <View className="absolute top-10 left-4 right-4 z-10 flex-row items-center justify-between">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="p-2 rounded-full bg-black/10"
+          >
+            <Ionicons name="arrow-back" size={28} color="white" />
+          </TouchableOpacity>
+
+          {/* <TouchableOpacity
+            onPress={() => router.push(`/ChatScreen?user_id=${user_id}`)}
+            className="p-2 rounded-full bg-black/10"
+          >
+            <Ionicons
+              name="chatbubble-ellipses-outline"
+              size={26}
+              color="white"
+            />
+          </TouchableOpacity> */}
+        </View>
+
+        {/* Background Image */}
         <Image
           source={{ uri: contractor.upload_organisation }}
           className="w-full h-full rounded-lg"
         />
 
+        {/* Profile Picture */}
         <Image
           source={{ uri: contractor.image }}
           className="absolute -bottom-9 left-4 w-28 h-28 rounded-full border-2 border-white"

@@ -156,9 +156,29 @@ const RealContractorProfile = () => {
     <SafeAreaView className="flex-1 bg-white">
       <View className="p-4">
         {/* Header */}
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back-outline" size={30} color="#0369A1" />
-        </TouchableOpacity>
+        <View className="pt-10 px-4 flex-row items-center justify-between">
+          {/* Back Button */}
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="p-2 rounded-full bg-sky-900/10"
+          >
+            <Ionicons name="arrow-back" size={28} color="#0369A1" />
+          </TouchableOpacity>
+
+          {/* Chat Icon */}
+          <TouchableOpacity
+            onPress={() => {
+              router.push(`/ChatScreen?user_id=${user_id}`);
+            }}
+            className="p-2 rounded-full bg-sky-900/10"
+          >
+            <Ionicons
+              name="chatbubble-ellipses-outline"
+              size={26}
+              color="#0369A1"
+            />
+          </TouchableOpacity>
+        </View>
 
         {/* Profile */}
         <View className="items-center mt-6">
