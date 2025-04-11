@@ -12,6 +12,7 @@ import messaging from "@react-native-firebase/messaging";
 import { API } from "../config/apiConfig";
 import { useSelector, useDispatch } from "react-redux";
 import Constants from "expo-constants";
+const { width, height } = Dimensions.get("window");
 import { setFcmToken, markFcmSentAfterLogin, markFcmSentBeforeLogin, setOnboardingCompleted } from "../redux/slice/authSlice";
 
 export default function Index() {
@@ -22,7 +23,7 @@ export default function Index() {
 
   const [beforeLoginResponse, setBeforeLoginResponse] = useState(null);
   const [afterLoginResponse, setAfterLoginResponse] = useState(null);
-  const [screenNumber, setScreenNumber] = useState(onboardingCompleted ? 0 : 1); // Start with screen 1 if not completed
+  const [screenNumber, setScreenNumber] = useState(0); // Always start with 0 (Get Started screen)
 
   useEffect(() => {
     const initializeFCM = async () => {
@@ -120,21 +121,29 @@ export default function Index() {
     }
   };
 
-  // Render based on screenNumber
-  if (!onboardingCompleted && screenNumber > 0) {
+  const handleGetStarted = () => {
+    if (!onboardingCompleted) {
+      setScreenNumber(1); // Move to onboarding screen 1
+    } else {
+      navigation.navigate("SignIn"); // If onboarding is completed, go to SignIn
+    }
+  };
+
+  // Onboarding screens
+  if (screenNumber > 0) {
     const screenData = {
       1: {
-        image: require("../assets/images/onboarding_01.png"), // Adjust path
+        image: require("../assets/images/onboarding_01.png"),
         title: "Lorem Ipsum is simply dummy text",
         description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
       },
       2: {
-        image: require("../assets/images/onboarding_02.png"), // Adjust path
+        image: require("../assets/images/onboarding_02.png"),
         title: "Lorem Ipsum is simply dummy text",
         description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
       },
       3: {
-        image: require("../assets/images/onboarding_03.png"), // Adjust path
+        image: require("../assets/images/onboarding_03.png"),
         title: "Lorem Ipsum is simply dummy text",
         description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
       },
@@ -160,11 +169,9 @@ export default function Index() {
         </View>
 
         <View className="flex-row mt-8">
-          <View className="w-3 h-3 bg-gray-300 rounded-full mx-1" />
-          <View className="w-3 h-3 bg-gray-300 rounded-full mx-1" />
-          <View
-            className={`w-3 h-3 bg-blue-500 rounded-full mx-1 ${screenNumber === 3 ? 'bg-blue-500' : 'bg-gray-300'}`}
-          />
+          <View className={`w-3 h-3 rounded-full mx-1 ${screenNumber === 1 ? 'bg-blue-500' : 'bg-gray-300'}`} />
+          <View className={`w-3 h-3 rounded-full mx-1 ${screenNumber === 2 ? 'bg-blue-500' : 'bg-gray-300'}`} />
+          <View className={`w-3 h-3 rounded-full mx-1 ${screenNumber === 3 ? 'bg-blue-500' : 'bg-gray-300'}`} />
         </View>
 
         <View className="flex-row justify-between w-full px-8 mt-12">
@@ -176,12 +183,7 @@ export default function Index() {
               <Text className="text-blue-500 text-base">Back</Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity
-            onPress={handleNextOrComplete}
-            className="px-4 py-2"
-          >
-            <Text className="text-blue-500 text-base">Skip</Text>
-          </TouchableOpacity>
+          {/* Removed the Skip button */}
           <TouchableOpacity
             onPress={handleNextOrComplete}
             className="px-4 py-2"
@@ -195,7 +197,7 @@ export default function Index() {
     );
   }
 
-  // Default "Get Started" screen when onboarding is completed or skipped
+  // Default "Get Started" screen
   return (
     <View className="flex-1 items-center justify-between bg-white pt-5 pb-1">
       <Image
@@ -211,7 +213,7 @@ export default function Index() {
       />
 
       <TouchableOpacity
-        onPress={() => navigation.navigate("SignIn")}
+        onPress={handleGetStarted}
         className="bg-sky-950 px-10 mt-5 py-3 rounded-3xl mb-4"
         style={{ marginBottom: height * 0.04 }}
       >

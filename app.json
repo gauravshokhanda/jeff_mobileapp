@@ -12,7 +12,7 @@
       "supportsTablet": true,
       "buldleIdentifier": "dev.expo.jeffContructionApp",
       "config": {
-        "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+        "googleMapsApiKey": "AIzaSyDC1rdf12jCvTnZg1IeHBHWD1DRJhAhk8w"
       },
       "bundleIdentifier": "dev.expo.jeffContructionApp"
     },
@@ -25,7 +25,7 @@
       "package": "dev.expo.jeffContructionApp",
       "config": {
         "googleMaps": {
-          "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+          "apiKey": "AIzaSyDC1rdf12jCvTnZg1IeHBHWD1DRJhAhk8w"
         }
       }
     },
