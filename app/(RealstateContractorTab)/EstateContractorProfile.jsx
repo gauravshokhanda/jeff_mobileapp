@@ -25,8 +25,8 @@ export default function EstateContractorProfile() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.post(
-          "https://g32.iamdeveloper.in/api/user-detail",
+        const response = await API.post(
+          "user-detail",
           {},
           {
             headers: {

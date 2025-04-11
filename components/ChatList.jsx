@@ -16,9 +16,9 @@ import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../config/apiConfig";
-import { useFocusEffect } from "@react-navigation/native"; // ✅ NEW IMPORT
+import { useFocusEffect } from "@react-navigation/native";
 
-const { width: screenWidth } = Dimensions.get("window");
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const postContentWidth = screenWidth * 0.92;
 
 const ChatListScreen = () => {

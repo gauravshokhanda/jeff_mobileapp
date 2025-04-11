@@ -123,7 +123,7 @@ export default function PropertyDetails() {
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           className="bg-gray-700 rounded-full p-2"
           onPress={() => {
             if (property) {
@@ -147,7 +147,7 @@ export default function PropertyDetails() {
             size={24}
             color="white"
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <View className="flex-1">
