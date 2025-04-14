@@ -22,7 +22,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { debounce } from "lodash";
 import CitySearch from "../../components/CitySearch";
 import { API } from "../../config/apiConfig";
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from "expo-linear-gradient";
 import ContractorPortfolioModal from "../../components/ContractorPortfolioModal";
 
 const Portfolio = ({ navigation }) => {
@@ -93,7 +93,8 @@ const Portfolio = ({ navigation }) => {
 
       // Build the API URL with query parameters
       let apiUrl = `portfolios/contractor/${contractorId}?page=${page}`;
-      if (projectName) apiUrl += `&project_name=${encodeURIComponent(projectName)}`;
+      if (projectName)
+        apiUrl += `&project_name=${encodeURIComponent(projectName)}`;
       if (city) apiUrl += `&city=${encodeURIComponent(city)}`;
 
       const portfolioResponse = await API.get(apiUrl, {
@@ -194,16 +195,12 @@ const Portfolio = ({ navigation }) => {
         });
       });
 
-      const response = await API.post(
-        "portfolio/store",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await API.post("portfolio/store", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (response.data) {
         Alert.alert("Success", "Portfolio added successfully!", [
@@ -218,7 +215,10 @@ const Portfolio = ({ navigation }) => {
       }
     } catch (error) {
       console.log("API Error:", error.response?.data || error);
-      Alert.alert("API Error", error.response?.data?.message || "An error occurred");
+      Alert.alert(
+        "API Error",
+        error.response?.data?.message || "An error occurred"
+      );
     }
   };
 
@@ -235,7 +235,10 @@ const Portfolio = ({ navigation }) => {
     if (!result.canceled && result.assets) {
       setNewPortfolio((prev) => ({
         ...prev,
-        selectedImages: [...prev.selectedImages, ...result.assets.map((asset) => asset.uri)],
+        selectedImages: [
+          ...prev.selectedImages,
+          ...result.assets.map((asset) => asset.uri),
+        ],
         imageNames: [
           ...prev.imageNames,
           ...result.assets.map(
@@ -288,13 +291,21 @@ const Portfolio = ({ navigation }) => {
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
       <LinearGradient
-        colors={['#082f49', 'transparent']}
+        colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-        <View className="mt-8 px-4">
-    
-          <Text className="text-2xl font-semibold text-white ml-5">My Portfolio</Text>
+        <View className="mt-8 px-4 flex-row items-center gap-2 space-x-4">
+          <TouchableOpacity
+            className="bg-white/10 rounded-full p-2"
+            onPress={() => router.back()}
+          >
+            <Ionicons name="arrow-back" size={28} color="white" />
+          </TouchableOpacity>
+          <Text className="text-2xl font-semibold text-white">
+            My Portfolio
+          </Text>
         </View>
+
         <View className="ml-5 mt-5 items-end">
           <View className="bg-gray-100 h-12 mr-5 rounded-full px-3 flex-row items-center justify-between">
             <Ionicons name="search" size={18} color="black" />
@@ -319,7 +330,7 @@ const Portfolio = ({ navigation }) => {
           width: postContentWidth,
           height: screenHeight * 0.8,
           left: (screenWidth - postContentWidth) / 2,
-          backgroundColor: 'white',
+          backgroundColor: "white",
         }}
       >
         <View className="mt-6 px-4 w-full">

@@ -233,33 +233,13 @@ export default function Index() {
             {/* <Text className="text-gray-400">📍 Florida, USA</Text> */}
           </View>
         </View>
-
-        <View className="mx-5" style={{ marginTop: screenHeight * 0.02 }}>
-          <View
-            className="bg-gray-100 rounded-full flex-row items-center justify-between"
-            style={{
-              height: screenHeight * 0.06,
-              paddingHorizontal: screenWidth * 0.04,
-            }}
-          >
-            <Ionicons name="search" size={18} color="black" />
-            <TextInput
-              placeholder="Search"
-              placeholderTextColor={"gray"}
-              className="flex-1 text-lg"
-              style={{ fontSize: 18, marginLeft: screenWidth * 0.03 }}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-          </View>
-        </View>
       </LinearGradient>
 
       <View
         className="rounded-3xl "
         style={{
           position: "absolute",
-          top: screenHeight * 0.25,
+          top: screenHeight * 0.17,
           width: postContentWidth,
           height: screenHeight * 0.8,
           left: (screenWidth - postContentWidth) / 2,

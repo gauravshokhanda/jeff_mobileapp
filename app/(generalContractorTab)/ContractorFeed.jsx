@@ -98,9 +98,9 @@ export default function PropertyList() {
         colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-        <View className={`flex-row items-center mt-8 mb-2 px-4 `}>
-          <TouchableOpacity className="mr-4">
-            <Ionicons name="notifications" size={25} color="white" />
+        <View className={`flex-row items-center gap-1 mt-8 mb-2 px-4 `}>
+          <TouchableOpacity className="" onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
           <View className="flex-row flex-1 items-center bg-white rounded-xl px-3 my-3">
             <Ionicons name="search" size={20} color="gray" className="mr-2" />

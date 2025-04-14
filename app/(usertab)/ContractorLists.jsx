@@ -445,7 +445,7 @@ export default function Index() {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() =>
-                    router.push(`/RealEstateDetails?id=${item.id}`)
+                    router.push(`/RealContractorListing?id=${item.id}`)
                   }
                 >
                   <View className="bg-sky-950 p-3 rounded-lg mb-4">
@@ -461,23 +461,29 @@ export default function Index() {
                           {item.city}
                         </Text>
                       </View>
-                      {/* <View className="flex-row gap-2">
-                        <View className="bg-white px-3 py-1 rounded-full">
-                          <Text className="text-sky-950 text-xs font-semibold">
-                            {item.property_type}
-                          </Text>
-                        </View>
-                        <View className="bg-white px-3 py-1 rounded-full">
-                          <Text className="text-sky-950 text-xs font-semibold">
-                            {item.house_type}
-                          </Text>
-                        </View>
-                      </View> */}
                     </View>
 
                     {/* Property Icon & Details */}
                     <View className="flex-row items-center mt-2">
-                      <Ionicons name="home-outline" size={60} color="white" />
+                      <Image
+                        source={{
+                          uri: (() => {
+                            try {
+                              const images = JSON.parse(
+                                item.property_images || "[]"
+                              );
+                              return images.length
+                                ? `${baseUrl}${images[0].replace(/^\/+/, "")}`
+                                : "https://static.vecteezy.com/system/resources/previews/016/017/055/original/home-transparent-background-free-png.png";
+                            } catch (e) {
+                              return "https://static.vecteezy.com/system/resources/previews/016/017/055/original/home-transparent-background-free-png.png";
+                            }
+                          })(),
+                        }}
+                        className="w-16 h-16 rounded-full"
+                        resizeMode="cover"
+                      />
+
                       <View className="ml-4">
                         <Text className="text-white text-2xl font-bold">
                           ${item.price} USD
@@ -509,7 +515,7 @@ export default function Index() {
                             color="white"
                           />
                           <Text className="text-white ml-2 text-sm">
-                            {item.furnish_type}
+                            Furnish type: {item.furnish_type}
                           </Text>
                         </View>
                       </View>
