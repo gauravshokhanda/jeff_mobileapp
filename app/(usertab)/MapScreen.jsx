@@ -190,7 +190,7 @@ export default function MapScreen() {
     <View className={`flex-1 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
       {isLoading ? (
         <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color="#0E1A2E" />
           <Text>Fetching location...</Text>
         </View>
       ) : location ? (

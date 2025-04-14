@@ -74,14 +74,3 @@ const OnboardingScreen = ({ screenNumber, imageSource, title, description, nextS
   );
 };
 
-export default function Screen2() {
-  return (
-    <OnboardingScreen
-      screenNumber={2}
-      imageSource={require('../assets/images/onboarding_02.png')} // Adjust path
-      title="Lorem Ipsum is simply dummy text"
-      description="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      nextScreen="/onboardingScreen-3"
-    />
-  );
-}

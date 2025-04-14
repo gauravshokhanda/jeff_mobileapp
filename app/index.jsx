@@ -146,21 +146,30 @@ export default function Index() {
     const screenData = {
       1: {
         image: require("../assets/images/onboarding_01.png"),
-        title: "Lorem Ipsum is simply dummy text",
+        title: "Build Your Dream Property with the Right Experts",
         description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+          `Post your construction needs easily using map or photo uploads.
+        Get contacted by trusted General Contractors.
+        Explore verified contractor profiles and portfolios.
+        Chat and hire directly through the app.`,
       },
       2: {
         image: require("../assets/images/onboarding_02.png"),
-        title: "Lorem Ipsum is simply dummy text",
+        title: "Find Projects and Grow Your Construction Business",
         description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+          `Create your profile and showcase your past work as a portfolio.
+           Browse nearby property posts from customers.
+          Contact customers directly to offer your services.
+          Build your reputation and grow your client base.`,
       },
       3: {
         image: require("../assets/images/onboarding_03.png"),
-        title: "Lorem Ipsum is simply dummy text",
+        title: "List & Sell Properties with Smart Tools",
         description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+          `Add listings for residential and commercial properties.
+        Include location, pricing, and complete details.
+        Connect with interested buyers instantly via chat.
+        Boost your visibility and close more deals.`,
       },
     };
 
@@ -181,19 +190,16 @@ export default function Index() {
 
         <View className="flex-row mt-8">
           <View
-            className={`w-3 h-3 rounded-full mx-1 ${
-              screenNumber === 1 ? "bg-blue-500" : "bg-gray-300"
-            }`}
+            className={`w-3 h-3 rounded-full mx-1 ${screenNumber === 1 ? "bg-blue-500" : "bg-gray-300"
+              }`}
           />
           <View
-            className={`w-3 h-3 rounded-full mx-1 ${
-              screenNumber === 2 ? "bg-blue-500" : "bg-gray-300"
-            }`}
+            className={`w-3 h-3 rounded-full mx-1 ${screenNumber === 2 ? "bg-blue-500" : "bg-gray-300"
+              }`}
           />
           <View
-            className={`w-3 h-3 rounded-full mx-1 ${
-              screenNumber === 3 ? "bg-blue-500" : "bg-gray-300"
-            }`}
+            className={`w-3 h-3 rounded-full mx-1 ${screenNumber === 3 ? "bg-blue-500" : "bg-gray-300"
+              }`}
           />
         </View>
 

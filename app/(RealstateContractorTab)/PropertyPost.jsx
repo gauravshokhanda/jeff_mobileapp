@@ -12,7 +12,7 @@ import CitySearch from '../../components/CitySearch';
 import axios from 'axios';
 import { router } from 'expo-router';
 import { setRealStateProperty } from "../../redux/slice/realStatePropertySlice"
-import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
 
 
 
@@ -38,14 +38,43 @@ export default function Index() {
   const [availableFrom, setAvailableFrom] = useState(null);
 
   const handleImagePick = async () => {
-    let result = await DocumentPicker.getDocumentAsync({
-      type: ["image/*"],
-      multiple: true,
-      copyToCacheDirectory: true,
-    });
-
-    if (!result.canceled && result.assets?.length > 0) {
-      setImages((prevImages) => [...prevImages, ...result.assets.map(asset => asset.uri)]);
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  
+    if (!permissionResult.granted) {
+      Alert.alert(
+        'Permission Required',
+        'Please allow access to your gallery to select images.',
+        [
+          { text: 'OK', onPress: () => console.log('Permission denied') },
+          {
+            text: 'Open Settings',
+            onPress: () => ImagePicker.openAppSettings(), 
+          },
+        ]
+      );
+      return;
+    }
+  
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images, // Restrict to images
+        allowsMultipleSelection: true, // Enable multiple selection
+        selectionLimit: 10, // Optional: Limit number of images (0 = no limit)
+        quality: 1, // Max quality
+        allowsEditing: false, // Disable editing (optional)
+      });
+  
+      if (!result.canceled && result.assets?.length > 0) {
+        // Map selected assets to URIs and update state
+        const newImages = result.assets.map((asset) => asset.uri);
+        setImages((prevImages) => [...prevImages, ...newImages]);
+        console.log('Selected images:', newImages);
+      } else {
+        console.log('Image selection canceled or no images selected');
+      }
+    } catch (error) {
+      console.error('Error picking images:', error);
+      Alert.alert('Error', 'Failed to pick images. Please try again.');
     }
   };
 
@@ -348,20 +377,26 @@ export default function Index() {
                     placeholder="Building/Project/Society(Optional)"
                     value={address}
                     onChangeText={setAddress}
+                    
                   />
                   <CustomTextInput
                     placeholder="Enter Locality"
                     value={locality}
                     onChangeText={setLocality}
+
                   />
                   <CustomTextInput
                     value={price}
                     onChangeText={setPrice}
-                    placeholder="Price" />
+                    placeholder="Price" 
+                    textLabel={"$"}
+                    />
                   <CustomTextInput
                     placeholder="Built Up Area"
                     value={area}
                     onChangeText={setArea}
+                    textLabel={"ft²"}
+
                   />
 
                 </View>

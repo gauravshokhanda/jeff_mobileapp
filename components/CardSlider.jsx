@@ -7,6 +7,7 @@ import {
   FlatList,
   Alert,
   ActivityIndicator,
+  Linking
 } from "react-native";
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../config/apiConfig";
@@ -60,11 +61,30 @@ const CardSlider = () => {
     router.push(`/ContractorProfile?user_id=${id}`);
   };
 
-  const handleCall = (phone) => {
-    if (phone === "Not Available") {
+  const handleCall = async (phone) => {
+    console.log("calling to",phone)
+    if (phone === "Not Available" || !phone) {
       Alert.alert("Info", "Contact number not available.");
-    } else {
-      Alert.alert("Calling", `Dialing: ${phone}`);
+      return;
+    }
+  
+    // Clean the phone number (remove spaces, dashes, etc.)
+    const cleanedPhone = phone.replace(/[\s-()]/g, '');
+    
+    // Construct the phone URL
+    const phoneUrl = Platform.OS === 'ios' ? `telprompt:${cleanedPhone}` : `tel:${cleanedPhone}`;
+  
+    try {
+      // Check if the device can open the phone URL
+      const supported = await Linking.canOpenURL(phoneUrl);
+      if (supported) {
+        await Linking.openURL(phoneUrl);
+      } else {
+        Alert.alert("Error", "Unable to make a call on this device.");
+      }
+    } catch (error) {
+      console.error("Failed to initiate call:", error);
+      Alert.alert("Error", "Failed to make the call.");
     }
   };
 

@@ -12,6 +12,7 @@ import {
   Alert,
   SafeAreaView,
   ActivityIndicator,
+  Linking
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -46,7 +47,7 @@ export default function Listing() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      // console.log("response", response.data.properties.data)
+      console.log("response", response.data.properties.data)
       // console.log("response", response.data.properties.last_page)
       // console.log("response", response.data.properties)
       setProperties((prev) =>
@@ -236,7 +237,15 @@ export default function Listing() {
             </Text>
           </TouchableOpacity> */}
           <View className="flex-row gap-4">
-            <TouchableOpacity>
+          <TouchableOpacity
+              onPress={() => {
+                // Assume item.phone contains the contractor's phone number
+                const phoneNumber = item.phone || "180013156677"; // Fallback number if item.phone is unavailable
+                Linking.openURL(`tel:${phoneNumber}`).catch((err) =>
+                  console.error("Error opening phone dialer:", err)
+                );
+              }}
+            >
               <Ionicons name="call" size={30} color="gray" />
             </TouchableOpacity>
             <TouchableOpacity

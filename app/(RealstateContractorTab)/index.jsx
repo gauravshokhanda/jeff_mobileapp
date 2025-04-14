@@ -12,6 +12,7 @@ import {
   Alert,
   SafeAreaView,
   ActivityIndicator,
+  Linking
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -234,7 +235,7 @@ export default function Index() {
           </View>
         </View>
 
-        <View className="mx-5" style={{ marginTop: screenHeight * 0.02 }}>
+        {/* <View className="mx-5" style={{ marginTop: screenHeight * 0.02 }}>
           <View
             className="bg-gray-100 rounded-full flex-row items-center justify-between"
             style={{
@@ -252,14 +253,14 @@ export default function Index() {
               onChangeText={setSearchQuery}
             />
           </View>
-        </View>
+        </View> */}
       </LinearGradient>
 
       <View
         className="rounded-3xl "
         style={{
           position: "absolute",
-          top: screenHeight * 0.25,
+          top: screenHeight * 0.20,
           width: postContentWidth,
           height: screenHeight * 0.8,
           left: (screenWidth - postContentWidth) / 2,
@@ -357,7 +358,15 @@ export default function Index() {
 
                     <View className="p-8 bg-gray-100 rounded-xl mb-24">
                       {/* Call Us Card */}
-                      <TouchableOpacity className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center mb-3">
+                      <TouchableOpacity
+                        className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center mb-3"
+                        onPress={() => {
+                          const phoneNumber = "180013156677"; // Use the number without hyphens
+                          Linking.openURL(`tel:${phoneNumber}`).catch((err) =>
+                            console.error("Error opening phone dialer:", err)
+                          );
+                        }}
+                      >
                         <View className="bg-gray-200 p-2 rounded-full mr-5">
                           <Ionicons name="call" size={20} color="black" />
                         </View>
@@ -370,7 +379,15 @@ export default function Index() {
                       </TouchableOpacity>
 
                       {/* Email Us Card */}
-                      <TouchableOpacity className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center">
+                      <TouchableOpacity
+                        className="bg-white border border-gray-300 rounded-xl p-4 flex-row items-center"
+                        onPress={() => {
+                          const email = "Supportjeff@gmail.com";
+                          Linking.openURL(`mailto:${email}`).catch((err) =>
+                            console.error("Error opening email client:", err)
+                          );
+                        }}
+                      >
                         <View className="bg-gray-200 p-2 rounded-full mr-3">
                           <Ionicons
                             name="chatbubble-ellipses"

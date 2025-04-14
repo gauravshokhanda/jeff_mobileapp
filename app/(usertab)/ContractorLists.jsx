@@ -11,6 +11,7 @@ import {
   Image,
   ActivityIndicator,
   Modal,
+  Linking
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -99,7 +100,7 @@ export default function Index() {
       setCurrentPage(response.data.data.current_page);
       setTotalPages(response.data.data.last_page);
     } catch (error) {
-      console.error("Error fetching contractors:", error);
+      console.log("Error fetching contractors:", error);
     } finally {
       setLoading(false);
     }
@@ -122,11 +123,38 @@ export default function Index() {
       setCurrentPage(response.data.properties.current_page);
       setTotalPages(response.data.properties.last_page);
     } catch (error) {
-      console.error("Error fetching properties:", error);
+      console.log("Error fetching properties:", error);
     } finally {
       setLoading(false);
     }
   };
+
+    const handleCall = async (phone) => {
+      console.log("calling to",phone)
+      if (phone === "Not Available" || !phone) {
+        Alert.alert("Info", "Contact number not available.");
+        return;
+      }
+    
+      // Clean the phone number (remove spaces, dashes, etc.)
+      const cleanedPhone = phone.replace(/[\s-()]/g, '');
+      
+      // Construct the phone URL
+      const phoneUrl = Platform.OS === 'ios' ? `telprompt:${cleanedPhone}` : `tel:${cleanedPhone}`;
+    
+      try {
+        // Check if the device can open the phone URL
+        const supported = await Linking.canOpenURL(phoneUrl);
+        if (supported) {
+          await Linking.openURL(phoneUrl);
+        } else {
+          Alert.alert("Error", "Unable to make a call on this device.");
+        }
+      } catch (error) {
+        console.error("Failed to initiate call:", error);
+        Alert.alert("Error", "Failed to make the call.");
+      }
+    };
 
   useEffect(() => {
     const debounceSearch = setTimeout(() => {
@@ -227,7 +255,9 @@ export default function Index() {
           >
             <Ionicons name="mail-outline" size={30} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity
+          onPress={() => handleCall(item.contactNumber)}
+          >
             <Ionicons name="call-outline" size={30} color="black" />
           </TouchableOpacity>
         </View>

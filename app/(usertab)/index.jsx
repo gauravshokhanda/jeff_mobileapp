@@ -129,7 +129,6 @@ export default function Dashboard() {
           renderItem={() =>
             selectedCategory === "general" ? <CardSlider /> : <EstateSlider />
           }
-          // contentContainerStyle={{ paddingBottom: 2 }}
           style={{  height: screenHeight * 0.6 }}
         />
       </View>

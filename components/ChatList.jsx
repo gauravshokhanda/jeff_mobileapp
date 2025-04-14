@@ -21,6 +21,15 @@ import { useFocusEffect } from "@react-navigation/native";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const postContentWidth = screenWidth * 0.92;
 
+// Simple debounce function
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+};
+
 const ChatListScreen = () => {
   const router = useRouter();
   const token = useSelector((state) => state.auth.token);
@@ -28,11 +37,13 @@ const ChatListScreen = () => {
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const fetchChats = async () => {
+  const fetchChats = async (query = "") => {
     try {
       setLoading(true);
-      const response = await API.get("recent-chats", {
+      const url = query ? `recent-chats?search=${encodeURIComponent(query)}` : "recent-chats";
+      const response = await API.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -60,7 +71,12 @@ const ChatListScreen = () => {
     }
   };
 
-  // ✅ Fetch chats every time screen is focused
+  // Debounced fetchChats to avoid rapid API calls
+  const debouncedFetchChats = useCallback(debounce((query) => {
+    fetchChats(query);
+  }, 500), [token]);
+
+  // Fetch chats when screen is focused or token changes
   useFocusEffect(
     useCallback(() => {
       if (token) {
@@ -71,6 +87,14 @@ const ChatListScreen = () => {
       }
     }, [token])
   );
+
+  // Handle search input change
+  const handleSearch = (text) => {
+    setSearchQuery(text);
+    if (token) {
+      debouncedFetchChats(text);
+    }
+  };
 
   const renderChatItem = ({ item }) => {
     const firstLetter = item.name?.charAt(0)?.toUpperCase() || "?";
@@ -132,7 +156,7 @@ const ChatListScreen = () => {
           {error}
         </Text>
         <TouchableOpacity
-          onPress={fetchChats}
+          onPress={() => fetchChats()}
           className="mt-6 bg-sky-900 px-6 py-3 rounded-full"
         >
           <Text className="text-white font-semibold">Retry</Text>
@@ -167,13 +191,15 @@ const ChatListScreen = () => {
               placeholder="Search"
               placeholderTextColor="#64748b"
               className="flex-1 ml-3 text-base text-gray-800"
+              value={searchQuery}
+              onChangeText={handleSearch}
+              autoCapitalize="none"
             />
             <Ionicons name="filter-sharp" size={20} color="#0369a1" />
           </View>
         </View>
       </LinearGradient>
 
-      {/* Scrollable List */}
       <View
         className="flex-1 rounded-t-3xl bg-white px-4 pt-4"
         style={{
