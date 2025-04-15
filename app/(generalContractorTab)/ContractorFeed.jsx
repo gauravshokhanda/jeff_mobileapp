@@ -98,9 +98,9 @@ export default function PropertyList() {
         colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-        <View className={`flex-row items-center mt-8 mb-2 px-4 `}>
-          <TouchableOpacity className="mr-4">
-            <Ionicons name="notifications" size={25} color="white" />
+        <View className={`flex-row items-center gap-1 mt-8 mb-2 px-4 `}>
+          <TouchableOpacity className="" onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
           <View className="flex-row flex-1 items-center bg-white rounded-xl px-3 my-3">
             <Ionicons name="search" size={20} color="gray" className="mr-2" />
@@ -186,12 +186,20 @@ export default function PropertyList() {
                             #{property.zipcode}, {property.city}
                           </Text>
                           <Text className="text-gray-400 text-base">
-                            📅 {new Date(property.created_at).toLocaleString()}
+                            📅{" "}
+                            {new Date(property.created_at).toLocaleDateString(
+                              "en-US",
+                              {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}
                           </Text>
                         </View>
                         <View className="flex-col justify-between items-end gap-2 ">
                           <Text className="text-gray-900 font-semibold text-xl">
-                            {property.project_type} Apartment
+                            {property.project_type}
                           </Text>
                           <TouchableOpacity
                             className="bg-sky-950 px-5 py-2 rounded-lg"

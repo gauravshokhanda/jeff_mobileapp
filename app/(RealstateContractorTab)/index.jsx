@@ -234,6 +234,7 @@ export default function Index() {
             {/* <Text className="text-gray-400">📍 Florida, USA</Text> */}
           </View>
         </View>
+<<<<<<< HEAD
 
         {/* <View className="mx-5" style={{ marginTop: screenHeight * 0.02 }}>
           <View
@@ -254,13 +255,19 @@ export default function Index() {
             />
           </View>
         </View> */}
+=======
+>>>>>>> abhifix
       </LinearGradient>
 
       <View
         className="rounded-3xl "
         style={{
           position: "absolute",
+<<<<<<< HEAD
           top: screenHeight * 0.20,
+=======
+          top: screenHeight * 0.17,
+>>>>>>> abhifix
           width: postContentWidth,
           height: screenHeight * 0.8,
           left: (screenWidth - postContentWidth) / 2,
