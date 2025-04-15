@@ -186,12 +186,20 @@ export default function PropertyList() {
                             #{property.zipcode}, {property.city}
                           </Text>
                           <Text className="text-gray-400 text-base">
-                            📅 {new Date(property.created_at).toLocaleString()}
+                            📅{" "}
+                            {new Date(property.created_at).toLocaleDateString(
+                              "en-US",
+                              {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}
                           </Text>
                         </View>
                         <View className="flex-col justify-between items-end gap-2 ">
                           <Text className="text-gray-900 font-semibold text-xl">
-                            {property.project_type} Apartment
+                            {property.project_type}
                           </Text>
                           <TouchableOpacity
                             className="bg-sky-950 px-5 py-2 rounded-lg"
