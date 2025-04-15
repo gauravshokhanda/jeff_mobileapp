@@ -42,7 +42,9 @@ const ChatListScreen = () => {
   const fetchChats = async (query = "") => {
     try {
       setLoading(true);
-      const url = query ? `recent-chats?search=${encodeURIComponent(query)}` : "recent-chats";
+      const url = query
+        ? `recent-chats?search=${encodeURIComponent(query)}`
+        : "recent-chats";
       const response = await API.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -72,9 +74,12 @@ const ChatListScreen = () => {
   };
 
   // Debounced fetchChats to avoid rapid API calls
-  const debouncedFetchChats = useCallback(debounce((query) => {
-    fetchChats(query);
-  }, 500), [token]);
+  const debouncedFetchChats = useCallback(
+    debounce((query) => {
+      fetchChats(query);
+    }, 500),
+    [token]
+  );
 
   // Fetch chats when screen is focused or token changes
   useFocusEffect(
@@ -195,7 +200,6 @@ const ChatListScreen = () => {
               onChangeText={handleSearch}
               autoCapitalize="none"
             />
-            <Ionicons name="filter-sharp" size={20} color="#0369a1" />
           </View>
         </View>
       </LinearGradient>

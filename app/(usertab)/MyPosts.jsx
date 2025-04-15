@@ -222,9 +222,7 @@ export default function MyPosts() {
               onChangeText={handleSearch}
               style={Platform.OS === "ios" ? { paddingVertical: 12 } : {}}
             />
-            <TouchableOpacity ref={iconRef} onPress={openModal}>
-              <Ionicons name="filter-sharp" size={26} color="black" />
-            </TouchableOpacity>
+
             <SortingModal
               visible={modalVisible}
               onClose={() => setModalVisible(false)}

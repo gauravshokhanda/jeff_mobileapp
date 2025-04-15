@@ -11,7 +11,7 @@ import {
   Image,
   ActivityIndicator,
   Modal,
-  Linking
+  Linking,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -129,32 +129,35 @@ export default function Index() {
     }
   };
 
-    const handleCall = async (phone) => {
-      console.log("calling to",phone)
-      if (phone === "Not Available" || !phone) {
-        Alert.alert("Info", "Contact number not available.");
-        return;
+  const handleCall = async (phone) => {
+    console.log("calling to", phone);
+    if (phone === "Not Available" || !phone) {
+      Alert.alert("Info", "Contact number not available.");
+      return;
+    }
+
+    // Clean the phone number (remove spaces, dashes, etc.)
+    const cleanedPhone = phone.replace(/[\s-()]/g, "");
+
+    // Construct the phone URL
+    const phoneUrl =
+      Platform.OS === "ios"
+        ? `telprompt:${cleanedPhone}`
+        : `tel:${cleanedPhone}`;
+
+    try {
+      // Check if the device can open the phone URL
+      const supported = await Linking.canOpenURL(phoneUrl);
+      if (supported) {
+        await Linking.openURL(phoneUrl);
+      } else {
+        Alert.alert("Error", "Unable to make a call on this device.");
       }
-    
-      // Clean the phone number (remove spaces, dashes, etc.)
-      const cleanedPhone = phone.replace(/[\s-()]/g, '');
-      
-      // Construct the phone URL
-      const phoneUrl = Platform.OS === 'ios' ? `telprompt:${cleanedPhone}` : `tel:${cleanedPhone}`;
-    
-      try {
-        // Check if the device can open the phone URL
-        const supported = await Linking.canOpenURL(phoneUrl);
-        if (supported) {
-          await Linking.openURL(phoneUrl);
-        } else {
-          Alert.alert("Error", "Unable to make a call on this device.");
-        }
-      } catch (error) {
-        console.error("Failed to initiate call:", error);
-        Alert.alert("Error", "Failed to make the call.");
-      }
-    };
+    } catch (error) {
+      console.error("Failed to initiate call:", error);
+      Alert.alert("Error", "Failed to make the call.");
+    }
+  };
 
   useEffect(() => {
     const debounceSearch = setTimeout(() => {
@@ -255,9 +258,7 @@ export default function Index() {
           >
             <Ionicons name="mail-outline" size={30} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity
-          onPress={() => handleCall(item.contactNumber)}
-          >
+          <TouchableOpacity onPress={() => handleCall(item.contactNumber)}>
             <Ionicons name="call-outline" size={30} color="black" />
           </TouchableOpacity>
         </View>
@@ -405,9 +406,7 @@ export default function Index() {
               value={searchTerm}
               onChangeText={setSearchTerm}
             />
-            <TouchableOpacity ref={iconRef} onPress={openModal}>
-              <Ionicons name="filter-sharp" size={26} color="black" />
-            </TouchableOpacity>
+
             <SortingModal
               visible={modalVisible}
               onClose={() => setModalVisible(false)}

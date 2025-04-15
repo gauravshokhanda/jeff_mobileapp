@@ -29,12 +29,12 @@ export default function Dashboard() {
         colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.4 }}
       >
-       <View className="mt-6 mx-5 flex-row justify-center items-center">
-            <Text className="text-3xl text-white">Welcome, </Text>
-            <Text className="text-3xl font-semibold text-white">
-              {userName?.name || "User"}
-            </Text>
-          </View>
+        <View className="mt-6 mx-5 flex-row justify-center items-center">
+          <Text className="text-3xl text-white">Welcome, </Text>
+          <Text className="text-3xl font-semibold text-white">
+            {userName?.name || "User"}
+          </Text>
+        </View>
       </LinearGradient>
 
       <View
@@ -44,15 +44,13 @@ export default function Dashboard() {
           width: postContentWidth,
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
-         
+
           top: screenHeight * 0.17,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
           overflow: "hidden",
         }}
       >
         <View className="px-4 pb-4">
-         
-
           {/* Action Buttons */}
           <View className="flex-row justify-between mt-5">
             <TouchableOpacity
@@ -116,7 +114,7 @@ export default function Dashboard() {
                     : "text-black"
                 }`}
               >
-                Real Estate 
+                Real Estate
               </Text>
             </TouchableOpacity>
           </View>
@@ -124,12 +122,12 @@ export default function Dashboard() {
 
         {/* FlatList for Contractors */}
         <FlatList
-          data={[{ key: "contractors" }]} 
+          data={[{ key: "contractors" }]}
           keyExtractor={(item) => item.key}
           renderItem={() =>
             selectedCategory === "general" ? <CardSlider /> : <EstateSlider />
           }
-          style={{  height: screenHeight * 0.6 }}
+          style={{ height: screenHeight * 0.6 }}
         />
       </View>
     </SafeAreaView>

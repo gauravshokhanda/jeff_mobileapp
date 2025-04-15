@@ -317,7 +317,6 @@ const Portfolio = ({ navigation }) => {
               value={searchText}
               onChangeText={handleSearch}
             />
-            <Ionicons name="filter-sharp" size={26} color="black" />
           </View>
         </View>
       </LinearGradient>

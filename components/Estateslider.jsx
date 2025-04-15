@@ -110,7 +110,7 @@ const EstateSlider = () => {
   };
 
   return (
-    <View className="pt-4">
+    <View className="pt-4 mb-5">
       {loading ? (
         <ActivityIndicator size="large" color="#0c4a6e" className="mt-10" />
       ) : contractors.length > 0 ? (

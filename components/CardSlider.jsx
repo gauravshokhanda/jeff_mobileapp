@@ -7,7 +7,7 @@ import {
   FlatList,
   Alert,
   ActivityIndicator,
-  Linking
+  Linking,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../config/apiConfig";
@@ -62,18 +62,21 @@ const CardSlider = () => {
   };
 
   const handleCall = async (phone) => {
-    console.log("calling to",phone)
+    console.log("calling to", phone);
     if (phone === "Not Available" || !phone) {
       Alert.alert("Info", "Contact number not available.");
       return;
     }
-  
+
     // Clean the phone number (remove spaces, dashes, etc.)
-    const cleanedPhone = phone.replace(/[\s-()]/g, '');
-    
+    const cleanedPhone = phone.replace(/[\s-()]/g, "");
+
     // Construct the phone URL
-    const phoneUrl = Platform.OS === 'ios' ? `telprompt:${cleanedPhone}` : `tel:${cleanedPhone}`;
-  
+    const phoneUrl =
+      Platform.OS === "ios"
+        ? `telprompt:${cleanedPhone}`
+        : `tel:${cleanedPhone}`;
+
     try {
       // Check if the device can open the phone URL
       const supported = await Linking.canOpenURL(phoneUrl);
@@ -166,7 +169,7 @@ const CardSlider = () => {
   };
 
   return (
-    <View className="flex-1 py-3 px-4">
+    <View className="flex-1 py-3 px-4 mb-2">
       {loading ? (
         <View className="flex-1 justify-center items-center mt-5">
           <ActivityIndicator size="large" color="#000" />

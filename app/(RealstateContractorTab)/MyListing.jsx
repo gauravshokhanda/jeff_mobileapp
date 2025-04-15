@@ -260,7 +260,6 @@ export default function Listing() {
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
-            <Ionicons name="filter-sharp" size={26} color="black" />
           </View>
         </View>
       </LinearGradient>

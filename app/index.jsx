@@ -12,6 +12,7 @@ import messaging from "@react-native-firebase/messaging";
 import { API } from "../config/apiConfig";
 import { useSelector, useDispatch } from "react-redux";
 import Constants from "expo-constants";
+import { useNotification } from "@/context/NotificationContext";
 const { width, height } = Dimensions.get("window");
 import {
   setFcmToken,
@@ -23,6 +24,7 @@ import {
 export default function Index() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const { notification, expoPushToken, error } = useNotification();
 
   const {
     token: Authtoken,
@@ -55,6 +57,7 @@ export default function Index() {
         const token = await messaging().getToken();
         if (token) {
           console.log("🔥 FCM Token:", token);
+          console.log("🔥 expo Token:", expoPushToken);
           dispatch(setFcmToken(token));
         }
       } catch (error) {
@@ -147,8 +150,7 @@ export default function Index() {
       1: {
         image: require("../assets/images/onboarding_01.png"),
         title: "Build Your Dream Property with the Right Experts",
-        description:
-          `Post your construction needs easily using map or photo uploads.
+        description: `Post your construction needs easily using map or photo uploads.
         Get contacted by trusted General Contractors.
         Explore verified contractor profiles and portfolios.
         Chat and hire directly through the app.`,
@@ -156,8 +158,7 @@ export default function Index() {
       2: {
         image: require("../assets/images/onboarding_02.png"),
         title: "Find Projects and Grow Your Construction Business",
-        description:
-          `Create your profile and showcase your past work as a portfolio.
+        description: `Create your profile and showcase your past work as a portfolio.
            Browse nearby property posts from customers.
           Contact customers directly to offer your services.
           Build your reputation and grow your client base.`,
@@ -165,8 +166,7 @@ export default function Index() {
       3: {
         image: require("../assets/images/onboarding_03.png"),
         title: "List & Sell Properties with Smart Tools",
-        description:
-          `Add listings for residential and commercial properties.
+        description: `Add listings for residential and commercial properties.
         Include location, pricing, and complete details.
         Connect with interested buyers instantly via chat.
         Boost your visibility and close more deals.`,
@@ -190,16 +190,19 @@ export default function Index() {
 
         <View className="flex-row mt-8">
           <View
-            className={`w-3 h-3 rounded-full mx-1 ${screenNumber === 1 ? "bg-blue-500" : "bg-gray-300"
-              }`}
+            className={`w-3 h-3 rounded-full mx-1 ${
+              screenNumber === 1 ? "bg-blue-500" : "bg-gray-300"
+            }`}
           />
           <View
-            className={`w-3 h-3 rounded-full mx-1 ${screenNumber === 2 ? "bg-blue-500" : "bg-gray-300"
-              }`}
+            className={`w-3 h-3 rounded-full mx-1 ${
+              screenNumber === 2 ? "bg-blue-500" : "bg-gray-300"
+            }`}
           />
           <View
-            className={`w-3 h-3 rounded-full mx-1 ${screenNumber === 3 ? "bg-blue-500" : "bg-gray-300"
-              }`}
+            className={`w-3 h-3 rounded-full mx-1 ${
+              screenNumber === 3 ? "bg-blue-500" : "bg-gray-300"
+            }`}
           />
         </View>
 
