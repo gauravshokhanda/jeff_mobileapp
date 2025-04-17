@@ -118,6 +118,10 @@ const ChatScreen = () => {
   const sendMessage = async () => {
     if (!inputText.trim()) return;
 
+    const messageToSend = inputText; // preserve current input
+  setInputText(""); // clear input immediately
+
+
     const newMessage = {
       text: inputText,
       senderId: currentUserId,
@@ -142,7 +146,7 @@ const ChatScreen = () => {
         }
       );
 
-      setInputText("");
+      // setInputText("");
     } catch (error) {
       console.error("Error sending message:", error);
       setStatusMessage({
