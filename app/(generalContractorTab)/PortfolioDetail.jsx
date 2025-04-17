@@ -37,6 +37,7 @@ const PortfolioDetail = () => {
 
   useEffect(() => {
     const fetchPortfolioDetails = async () => {
+      console.log("portfolio details",id)
       if (!id || !token) return;
       try {
         const response = await API.get(`portfolios/${id}`, {
@@ -90,55 +91,61 @@ const PortfolioDetail = () => {
   const handleUpdate = async () => {
     try {
       const formDataToSend = new FormData();
-
-      // Append other form data fields
+  
+      // Append all form fields
       Object.keys(formData).forEach((key) => {
         formDataToSend.append(key, formData[key]);
       });
-
-      // Append image if selected
+  
+      // Append selected image
       if (selectedImage) {
         const fileName = selectedImage.split("/").pop();
         const fileType = fileName.split(".").pop();
         const mimeType =
-          fileType === "jpg" ? "image/jpeg" : `image/${fileType}`;
-
-        formDataToSend.append("image", {
+          fileType === "jpg" || fileType === "jpeg" ? "image/jpeg" : `image/${fileType}`;
+  
+        const imageData = {
           uri: selectedImage,
           name: fileName,
           type: mimeType,
-        });
-
-        console.log("Uploading image:", {
-          uri: selectedImage,
-          name: fileName,
-          type: mimeType,
-        });
+        };
+  
+        formDataToSend.append("image", imageData);
       } else {
         console.log("No new image selected");
       }
-
-      const response = await API.post(
-        `portfolio/update/${id}`,
-        formDataToSend,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
+  
+      // Debug: Log form data
+      console.log("🚀 FormData being sent to API:");
+      for (let pair of formDataToSend.entries()) {
+        if (pair[0] === "image" && typeof pair[1] === "object") {
+          console.log(`${pair[0]} ->`);
+          console.log("  URI:", pair[1].uri);
+          console.log("  Name:", pair[1].name);
+          console.log("  Type:", pair[1].type);
+        } else {
+          console.log(`${pair[0]}: ${pair[1]}`);
         }
-      );
-
-      console.log("Server response:", response.data);
-
+      }
+  
+      // 🚫 DO NOT manually set 'Content-Type' – let Axios handle it
+      const response = await API.post(`portfolio/update/${id}`, formDataToSend, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      console.log("✅ Server response:", response.data);
+  
       Alert.alert("Success", "Portfolio updated successfully!", [
         { text: "OK", onPress: () => setModalVisible(false) },
       ]);
     } catch (error) {
-      console.error("Update failed:", error.response?.data || error.message);
+      console.error("❌ Update failed:", error.response?.data || error.message);
       Alert.alert("Error", "Failed to update portfolio. Try again.");
     }
   };
+  
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" className="mt-10" />;
@@ -242,6 +249,7 @@ const PortfolioDetail = () => {
         setFormData={setFormData}
         handleUpdate={handleUpdate}
         pickImage={pickImage}
+        selectedImage={selectedImage}
       />
     </View>
   );
