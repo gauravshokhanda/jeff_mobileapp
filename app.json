@@ -10,7 +10,6 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "buldleIdentifier": "dev.expo.jeffContructionApp",
       "config": {
         "googleMapsApiKey": "AIzaSyDC1rdf12jCvTnZg1IeHBHWD1DRJhAhk8w"
       },

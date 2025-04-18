@@ -122,8 +122,8 @@ export default function PropertyList() {
         style={{ height: screenHeight * 0.4 }}
       >
         <View className={`flex-row items-center px-4`}>
-          <TouchableOpacity className="mr-4">
-            <Ionicons name="notifications" size={25} color="white" />
+        <TouchableOpacity onPress={() => router.back()} className="mr-3">
+            <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
           <View className="flex-row flex-1 items-center bg-white rounded-xl px-3 my-3">
             <Ionicons name="search" size={20} color="gray" className="mr-2" />

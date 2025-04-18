@@ -14,6 +14,7 @@ import { useSelector, useDispatch } from "react-redux";
 import Constants from "expo-constants";
 import { useNotification } from "@/context/NotificationContext";
 const { width, height } = Dimensions.get("window");
+
 import {
   setFcmToken,
   markFcmSentAfterLogin,
@@ -57,7 +58,7 @@ export default function Index() {
         const token = await messaging().getToken();
         if (token) {
           console.log("🔥 FCM Token:", token);
-          console.log("🔥 expo Token:", expoPushToken);
+          console.log("🔥 Expo Token:", expoPushToken);
           dispatch(setFcmToken(token));
         }
       } catch (error) {
@@ -66,16 +67,22 @@ export default function Index() {
     };
 
     initializeFCM();
-  }, [dispatch]);
+  }, [dispatch, expoPushToken]);
 
   useEffect(() => {
     const sendFcmTokenBeforeLogin = async () => {
-      if (fcmToken && !fcmSentBeforeLogin) {
-        console.log("📌 Sending FCM Token Before Login:", { token: fcmToken });
+      if (fcmToken && expoPushToken && !fcmSentBeforeLogin) {
+        console.log("📌 Sending Tokens Before Login:", {
+          token: fcmToken,
+          expo_token: expoPushToken,
+        });
         try {
           const response = await API.post(
-            "https://g32.iamdeveloper.in/api/save-fcm-token",
-            { token: fcmToken },
+            "save-fcm-token",
+            {
+              token: fcmToken,
+              expo_token: expoPushToken,
+            },
             {
               headers: {
                 Authorization: Authtoken ? `Bearer ${Authtoken}` : undefined,
@@ -83,30 +90,35 @@ export default function Index() {
               },
             }
           );
-          console.log("✅ FCM Token sent before login:", response.data);
+          console.log("✅ Tokens sent before login:", response.data);
           setBeforeLoginResponse(response.data);
           dispatch(markFcmSentBeforeLogin());
         } catch (error) {
-          console.error("❌ Error sending FCM token before login:", error);
+          console.error("❌ Error sending tokens before login:", error);
           setBeforeLoginResponse({ error: error.message });
         }
       }
     };
 
     sendFcmTokenBeforeLogin();
-  }, [fcmToken, fcmSentBeforeLogin, dispatch, Authtoken]);
+  }, [fcmToken, expoPushToken, fcmSentBeforeLogin, dispatch, Authtoken]);
 
   useEffect(() => {
     const sendFcmTokenAfterLogin = async () => {
-      if (user?.id && fcmToken && !fcmSentAfterLogin) {
-        console.log("📌 Sending FCM Token After Login:", {
+      if (user?.id && fcmToken && expoPushToken && !fcmSentAfterLogin) {
+        console.log("📌 Sending Tokens After Login:", {
           token: fcmToken,
+          expo_token: expoPushToken,
           user_id: user.id,
         });
         try {
           const response = await API.post(
-            "https://g32.iamdeveloper.in/api/save-fcm-token",
-            { token: fcmToken, user_id: user.id },
+            "save-fcm-token",
+            {
+              token: fcmToken,
+              expo_token: expoPushToken,
+              user_id: user.id,
+            },
             {
               headers: {
                 Authorization: `Bearer ${Authtoken}`,
@@ -114,18 +126,25 @@ export default function Index() {
               },
             }
           );
-          console.log("✅ FCM Token sent after login:", response.data);
+          console.log("✅ Tokens sent after login:", response.data);
           setAfterLoginResponse(response.data);
           dispatch(markFcmSentAfterLogin());
         } catch (error) {
-          console.error("❌ Error sending FCM token after login:", error);
+          console.error("❌ Error sending tokens after login:", error);
           setAfterLoginResponse({ error: error.message });
         }
       }
     };
 
     sendFcmTokenAfterLogin();
-  }, [user?.id, fcmToken, fcmSentAfterLogin, dispatch, Authtoken]);
+  }, [
+    user?.id,
+    fcmToken,
+    expoPushToken,
+    fcmSentAfterLogin,
+    dispatch,
+    Authtoken,
+  ]);
 
   const handleNextOrComplete = () => {
     if (screenNumber === 3) {
@@ -138,13 +157,13 @@ export default function Index() {
 
   const handleGetStarted = () => {
     if (!onboardingCompleted) {
-      setScreenNumber(1); // Move to onboarding screen 1
+      setScreenNumber(1);
     } else {
-      navigation.navigate("SignIn"); // If onboarding is completed, go to SignIn
+      navigation.navigate("SignIn");
     }
   };
 
-  // Onboarding screens
+  // Onboarding Screens
   if (screenNumber > 0) {
     const screenData = {
       1: {
@@ -189,21 +208,14 @@ export default function Index() {
         </View>
 
         <View className="flex-row mt-8">
-          <View
-            className={`w-3 h-3 rounded-full mx-1 ${
-              screenNumber === 1 ? "bg-blue-500" : "bg-gray-300"
-            }`}
-          />
-          <View
-            className={`w-3 h-3 rounded-full mx-1 ${
-              screenNumber === 2 ? "bg-blue-500" : "bg-gray-300"
-            }`}
-          />
-          <View
-            className={`w-3 h-3 rounded-full mx-1 ${
-              screenNumber === 3 ? "bg-blue-500" : "bg-gray-300"
-            }`}
-          />
+          {[1, 2, 3].map((i) => (
+            <View
+              key={i}
+              className={`w-3 h-3 rounded-full mx-1 ${
+                screenNumber === i ? "bg-blue-950" : "bg-gray-300"
+              }`}
+            />
+          ))}
         </View>
 
         <View className="flex-row justify-between w-full px-8 mt-12">
@@ -212,15 +224,14 @@ export default function Index() {
               onPress={() => setScreenNumber(screenNumber - 1)}
               className="px-4 py-2"
             >
-              <Text className="text-blue-500 text-base">Back</Text>
+              <Text className="text-blue-950 text-base">Back</Text>
             </TouchableOpacity>
           )}
-          {/* Removed the Skip button */}
           <TouchableOpacity
             onPress={handleNextOrComplete}
             className="px-4 py-2"
           >
-            <Text className="text-white bg-blue-500 rounded-full px-6 py-2">
+            <Text className="text-white bg-blue-950 rounded-full px-6 py-2">
               {screenNumber === 3 ? "Get Started" : "Next"}
             </Text>
           </TouchableOpacity>
@@ -229,7 +240,7 @@ export default function Index() {
     );
   }
 
-  // Default "Get Started" screen
+  // Get Started Screen
   return (
     <View className="flex-1 items-center justify-between bg-white pt-5 pb-1">
       <Image
@@ -249,6 +260,21 @@ export default function Index() {
         className="bg-sky-950 px-10 mt-5 py-3 rounded-3xl mb-4"
         style={{ marginBottom: height * 0.04 }}
       >
+        <Text className="text-white text-xs mb-2 text-center">
+          Expo Token: {expoPushToken}
+        </Text>
+
+        {beforeLoginResponse && (
+          <Text className="text-green-500 text-xs text-center">
+            ✅ Before Login Response: {JSON.stringify(beforeLoginResponse)}
+          </Text>
+        )}
+        {afterLoginResponse && (
+          <Text className="text-blue-500 text-xs text-center">
+            ✅ After Login Response: {JSON.stringify(afterLoginResponse)}
+          </Text>
+        )}
+
         <Text className="text-white text-lg font-semibold text-center">
           Get Started
         </Text>
