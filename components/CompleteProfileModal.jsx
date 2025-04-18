@@ -79,6 +79,7 @@ export default function CompleteProfileModal({
   );
 
   const handleCityChange = (text) => {
+    
     setCity(text);
     setPage(1);
     handleCitySearch(text, 1);
