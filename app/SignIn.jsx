@@ -233,6 +233,18 @@ export default function SignIn() {
                     Sign up
                   </Link>
                 </View>
+
+                <TouchableOpacity
+                  onPress={() => router.replace("/(usertab)")}
+                  className="mt-4 bg-gray-300 px-6 py-3 rounded-xl"
+                >
+                  <Text
+                    className="text-gray-700 font-semibold"
+                    style={{ fontSize: screenHeight * 0.018 }}
+                  >
+                    Login as Guest
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </ScrollView>

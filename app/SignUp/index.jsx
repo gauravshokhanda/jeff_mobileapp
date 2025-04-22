@@ -34,7 +34,6 @@ export default function SignUp() {
   const router = useRouter();
   const isToken = useSelector((state) => state.auth.token);
 
-
   const { width, height } = Dimensions.get("window");
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const token = useSelector((state) => state.auth.token);
@@ -97,7 +96,10 @@ export default function SignUp() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
           <LinearGradient
             colors={["#082f49", "transparent"]}
             style={{ height: height * 0.4 }}
@@ -120,37 +122,78 @@ export default function SignUp() {
                   overflow: "hidden",
                 }}
               >
-                <Image source={Logo} style={{ width: "100%", height: "100%", resizeMode: "cover" }} />
+                <Image
+                  source={Logo}
+                  style={{ width: "100%", height: "100%", resizeMode: "cover" }}
+                />
               </View>
             </View>
 
             <View className="space-y-4">
-              <AuthInput placeholder="Name" value={name} onChangeText={setName} />
-              <AuthInput placeholder="Email Address" value={email} onChangeText={setEmail} />
-              <AuthInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
-              <AuthInput placeholder="Confirm Password" value={passwordConfirmation} onChangeText={setPasswordConfirmation} secureTextEntry />
+              <AuthInput
+                placeholder="Name"
+                value={name}
+                onChangeText={setName}
+              />
+              <AuthInput
+                placeholder="Email Address"
+                value={email}
+                onChangeText={setEmail}
+              />
+              <AuthInput
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+              <AuthInput
+                placeholder="Confirm Password"
+                value={passwordConfirmation}
+                onChangeText={setPasswordConfirmation}
+                secureTextEntry
+              />
               <View className="mb-4">
                 <ModalSelector
                   key={role.key}
-                  data={[{ key: 2, label: "Customer" }, { key: 3, label: "General Contractor" }, { key: 4, label: "Real Estate Contractor" }]}
+                  data={[
+                    { key: 2, label: "Customer" },
+                    { key: 3, label: "General Contractor" },
+                    { key: 4, label: "Real Estate Contractor" },
+                  ]}
                   initValue="Select Role"
                   onChange={(option) => setRole(option)}
                 >
                   <TouchableOpacity className="bg-gray-300 p-3 rounded-lg items-center">
-                    <Text className={role?.label ? "text-gray-700" : "text-gray-500"}>{role?.label || "Select Role"}</Text>
+                    <Text
+                      className={
+                        role?.label ? "text-gray-700" : "text-gray-500"
+                      }
+                    >
+                      {role?.label || "Select Role"}
+                    </Text>
                   </TouchableOpacity>
                 </ModalSelector>
               </View>
             </View>
 
-            <TouchableOpacity onPress={handleSignUp} className="bg-sky-950 rounded-xl items-center py-3 mt-5">
+            <TouchableOpacity
+              onPress={handleSignUp}
+              className="bg-sky-950 rounded-xl items-center py-3 mt-5"
+            >
               <Text className="text-white font-bold text-lg">SIGN UP</Text>
             </TouchableOpacity>
 
             <View className="items-center mt-4">
-              <Text className="text-gray-700">Already have an account?
-                <Link href="/SignIn" className="text-blue-600"> Sign In</Link>
+              <Text className="text-gray-700">
+                Already have an account?
+                <Link href="/SignIn" className="text-blue-600">
+                  {" "}
+                  Sign In
+                </Link>
               </Text>
+            </View>
+            <View>
+              <Text className="text-white">Login as Guest</Text>
             </View>
           </View>
         </ScrollView>

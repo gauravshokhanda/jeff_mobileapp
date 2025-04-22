@@ -11,22 +11,21 @@ import {
   ScrollView,
   Alert,
   SafeAreaView,
+  Modal,
+  StyleSheet,
 } from "react-native";
 import React, { useState } from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { router } from "expo-router";
-
-import Svg, { Path } from "react-native-svg";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import Box from "../../assets/images/MD.png";
-import { useDispatch } from "react-redux";
 import { setLogout } from "../../redux/slice/authSlice";
+import { API, baseUrl } from "../../config/apiConfig";
+import DeleteAccountModal from "../../components/DeleteAccountModal";
 
-// Object Array for menu items
 const imageData = [
-  // { id: 1, label: "Portfolio", icon: "arrow-up", screen: "", source: Box },
   { id: 2, label: "My Listing", icon: "rss", screen: "MyListing", source: Box },
   {
     id: 4,
@@ -43,6 +42,13 @@ const imageData = [
     source: Box,
   },
   {
+    id: 9,
+    label: "Delete Account",
+    icon: "trash-alt",
+    screen: "deleteAccount",
+    source: Box,
+  },
+  {
     id: 8,
     label: "Log Out",
     icon: "sign-out-alt",
@@ -55,7 +61,12 @@ export default function Index() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const userName = useSelector((state) => state.auth.user);
+  const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handlePress = (screen) => {
     if (screen === "logout") {
@@ -69,10 +80,48 @@ export default function Index() {
           },
         },
       ]);
-    } else if (screen === "ContractorPortfolio") {
-      router.push({ pathname: screen, params: { edit: "true" } });
-    } else if (screen) {
+    } else if (screen === "deleteAccount") {
+      setShowDeleteModal(true);
+    } else {
       router.push(screen);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!password || !confirmPassword) {
+      Alert.alert("Error", "Please fill in both password fields.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match.");
+      return;
+    }
+
+    try {
+      const response = await API.delete(
+        `delete-account?password=${password}&confirm_password=${confirmPassword}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        Alert.alert("Success", "Account deleted successfully.");
+        dispatch(setLogout());
+        router.replace("SignIn");
+      } else {
+        Alert.alert("Error", "Failed to delete account.");
+      }
+    } catch (error) {
+      Alert.alert("Error", "An error occurred while deleting the account.");
+    } finally {
+      setShowDeleteModal(false);
+      setPassword("");
+      setConfirmPassword("");
     }
   };
 
@@ -152,6 +201,10 @@ export default function Index() {
           </ScrollView>
         </KeyboardAvoidingView>
       </View>
+      <DeleteAccountModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+      />
     </SafeAreaView>
   );
 }
