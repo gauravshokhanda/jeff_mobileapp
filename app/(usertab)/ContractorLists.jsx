@@ -59,7 +59,6 @@ export default function Index() {
   const handleSort = (order) => {
     setSortOrder(order);
     setModalVisible(false);
-    setCurrentPage(1);
     if (selectedTab === "realEstate") {
       setProperties([]);
       fetchRealEstateProperties(1, order);
@@ -69,12 +68,20 @@ export default function Index() {
     }
   };
 
+  const requireLogin = (callback) => {
+    if (!token) {
+      alert("Please login to continue.");
+      return;
+    }
+    callback(); // Only proceed if logged in
+  };
+
   const fetchContractors = async (query = "", page = 1, order = sortOrder) => {
     if (loading || page > totalPages) return;
 
     setLoading(true);
     try {
-      const url = `contractors/listing?${
+      const url = `all/contractors?${
         query ? `city=${encodeURIComponent(query)}&` : ""
       }page=${page}&sort_order=${order}&role=3
 
@@ -248,17 +255,25 @@ export default function Index() {
       <View className="flex-row justify-between items-center px-4 pb-4 gap-2">
         <TouchableOpacity
           className="bg-sky-950 p-2 rounded-lg"
-          onPress={() => router.push(`ContractorProfile/?user_id=${item.id}`)}
+          onPress={() =>
+            requireLogin(() =>
+              router.push(`ContractorProfile/?user_id=${item.id}`)
+            )
+          }
         >
           <Text className="text-white">Visit Profile</Text>
         </TouchableOpacity>
         <View className="flex-row gap-5">
           <TouchableOpacity
-            onPress={() => router.push(`/ChatScreen?user_id=${item.id}`)}
+            onPress={() =>
+              requireLogin(() => router.push(`/ChatScreen?user_id=${item.id}`))
+            }
           >
             <Ionicons name="mail-outline" size={30} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleCall(item.contactNumber)}>
+          <TouchableOpacity
+            onPress={() => requireLogin(() => handleCall(item.contactNumber))}
+          >
             <Ionicons name="call-outline" size={30} color="black" />
           </TouchableOpacity>
         </View>
@@ -474,7 +489,9 @@ export default function Index() {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() =>
-                    router.push(`/RealContractorListing?id=${item.id}`)
+                    requireLogin(() =>
+                      router.push(`/RealContractorListing?id=${item.id}`)
+                    )
                   }
                 >
                   <View className="bg-sky-950 p-3 rounded-lg mb-4">
@@ -555,8 +572,10 @@ export default function Index() {
                       <TouchableOpacity
                         className="bg-white px-4 py-2 rounded-lg"
                         onPress={() =>
-                          router.push(
-                            `/RealContractorProfile?user_id=${item.user_id}`
+                          requireLogin(() =>
+                            router.push(
+                              `/RealContractorProfile?user_id=${item.user_id}`
+                            )
                           )
                         }
                       >
@@ -567,7 +586,9 @@ export default function Index() {
                       <TouchableOpacity
                         className=" bg-white py-2 px-4 rounded-lg"
                         onPress={() =>
-                          router.push(`/ChatScreen?user_id=${item.user_id}`)
+                          requireLogin(() =>
+                            router.push(`/ChatScreen?user_id=${item.user_id}`)
+                          )
                         }
                       >
                         <Text className="text-sky-950 font-semibold">Chat</Text>

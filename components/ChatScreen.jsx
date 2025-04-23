@@ -119,8 +119,7 @@ const ChatScreen = () => {
     if (!inputText.trim()) return;
 
     const messageToSend = inputText; // preserve current input
-  setInputText(""); // clear input immediately
-
+    setInputText(""); // clear input immediately
 
     const newMessage = {
       text: inputText,
