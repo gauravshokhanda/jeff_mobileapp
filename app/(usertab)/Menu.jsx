@@ -173,7 +173,7 @@ const MenuHeader = () => {
           You must be logged in to access this page.
         </Text>
         <TouchableOpacity
-          className="mt-6 bg-blue-800 px-6 py-3 rounded-xl"
+          className="mt-6 bg-sky-950 px-6 py-3 rounded-xl"
           onPress={() => router.replace("/SignIn")}
         >
           <Text className="text-white font-semibold">Go to Login</Text>

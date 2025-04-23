@@ -25,7 +25,7 @@ const CardSlider = () => {
   const getContractors = async () => {
     setLoading(true);
     try {
-      const response = await API.get("contractors/listing", {
+      const response = await API.get("all/contractors", {
         headers: { Authorization: `Bearer ${token}` },
       });
       // console.log("general contrator data", response.data?.data?.data)
@@ -59,6 +59,14 @@ const CardSlider = () => {
 
   const handleVisitProfile = (id) => {
     router.push(`/ContractorProfile?user_id=${id}`);
+  };
+
+  const requireLogin = (callback) => {
+    if (!token) {
+      alert("Please login to continue.");
+      return;
+    }
+    callback();
   };
 
   const handleCall = async (phone) => {
@@ -144,12 +152,9 @@ const CardSlider = () => {
 
         {/* Bottom CTA Section */}
         <View className="bg-gray-200 rounded-b-2xl p-4 flex-row justify-between items-center">
-          {/* <Text className="text-gray-600 text-base font-semibold">
-            Contact: {item.contact}
-          </Text> */}
           <View className="flex-row gap-2">
             <TouchableOpacity
-              onPress={() => handleVisitProfile(item.id)}
+              onPress={() => requireLogin(() => handleVisitProfile(item.id))}
               className="bg-white px-4 py-2 rounded-lg shadow-sm"
             >
               <Text className="text-sky-900 font-semibold text-sm">
@@ -157,7 +162,7 @@ const CardSlider = () => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => handleCall(item.contact)}
+              onPress={() => requireLogin(() => handleCall(item.contact))}
               className="bg-white px-4 py-2 rounded-lg shadow-sm"
             >
               <Text className="text-sky-900 font-semibold text-sm">Call</Text>
@@ -185,18 +190,6 @@ const CardSlider = () => {
           onRefresh={getContractors}
         />
       )}
-
-      {/* View All Button */}
-      {/* {!loading && contractors.length > 0 && (
-        <View className="flex-row justify-center mt-6">
-          <TouchableOpacity
-            onPress={() => router.push("ContractorLists")}
-            className="bg-blue-600 rounded-full py-3 px-8 items-center"
-          >
-            <Text className="text-white font-bold">View All Contractors</Text>
-          </TouchableOpacity>
-        </View>
-      )} */}
     </View>
   );
 };

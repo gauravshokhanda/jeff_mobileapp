@@ -1,28 +1,32 @@
-import { Tabs } from "expo-router";
+import { Tabs, usePathname } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useFocusEffect } from "@react-navigation/native";
-import { BackHandler, Keyboard } from "react-native";
+import { BackHandler, Keyboard, View } from "react-native";
 import { useState, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
+import { API } from "../../config/apiConfig";
 
 export default function TabRoot() {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+  const pathname = usePathname();
+  const token = useSelector((state) => state.auth.token);
 
-  // Detect keyboard visibility
+  const isOnChatTab = pathname?.toLowerCase() === "/chatlist";
+
   useEffect(() => {
-    const showSubscription = Keyboard.addListener("keyboardDidShow", () =>
+    const showSub = Keyboard.addListener("keyboardDidShow", () =>
       setKeyboardVisible(true)
     );
-    const hideSubscription = Keyboard.addListener("keyboardDidHide", () =>
+    const hideSub = Keyboard.addListener("keyboardDidHide", () =>
       setKeyboardVisible(false)
     );
-
     return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
+      showSub.remove();
+      hideSub.remove();
     };
   }, []);
 
-  // Handle back button behavior (prevent exiting the app)
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => true;
@@ -31,6 +35,30 @@ export default function TabRoot() {
         BackHandler.removeEventListener("hardwareBackPress", onBackPress);
     }, [])
   );
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      if (!token) return;
+      if (isOnChatTab) {
+        setHasUnreadMessages(false);
+        return;
+      }
+      try {
+        const res = await API.get("recent-chats", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const count =
+          res.data.users?.reduce((sum, u) => sum + u.message_unread_count, 0) ||
+          0;
+        setHasUnreadMessages(count > 0);
+      } catch (e) {
+        console.warn("Unread fetch error", e);
+      }
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 20000);
+    return () => clearInterval(interval);
+  }, [token, isOnChatTab]);
 
   return (
     <Tabs
@@ -44,7 +72,6 @@ export default function TabRoot() {
         },
       }}
     >
-      {/* ✅ Publicly accessible tab */}
       <Tabs.Screen
         name="index"
         options={{
@@ -59,8 +86,6 @@ export default function TabRoot() {
           tabBarLabelStyle: { display: "none" },
         }}
       />
-
-      {/* 🔐 Other tabs (these require ProtectedRoute inside their own files) */}
       <Tabs.Screen
         name="PropertyCalculator"
         options={{
@@ -94,11 +119,26 @@ export default function TabRoot() {
         options={{
           title: "ChatList",
           tabBarIcon: ({ focused }) => (
-            <Ionicons
-              name={focused ? "chatbubble" : "chatbubble-outline"}
-              size={25}
-              color="white"
-            />
+            <View>
+              <Ionicons
+                name={focused ? "chatbubble" : "chatbubble-outline"}
+                size={25}
+                color="white"
+              />
+              {hasUnreadMessages && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: -2,
+                    right: -4,
+                    backgroundColor: "red",
+                    width: 10,
+                    height: 10,
+                    borderRadius: 5,
+                  }}
+                />
+              )}
+            </View>
           ),
           tabBarLabelStyle: { display: "none" },
         }}
@@ -117,8 +157,6 @@ export default function TabRoot() {
           tabBarLabelStyle: { display: "none" },
         }}
       />
-
-      {/* Hidden Screens */}
       {[
         "MapScreen",
         "FloorMapScreen",

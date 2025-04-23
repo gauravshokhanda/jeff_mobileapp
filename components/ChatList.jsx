@@ -18,10 +18,9 @@ import { useSelector } from "react-redux";
 import { API, baseUrl } from "../config/apiConfig";
 import { useFocusEffect } from "@react-navigation/native";
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+const { width: screenWidth } = Dimensions.get("window");
 const postContentWidth = screenWidth * 0.92;
 
-// Simple debounce function
 const debounce = (func, delay) => {
   let timeoutId;
   return (...args) => {
@@ -33,22 +32,20 @@ const debounce = (func, delay) => {
 const ChatListScreen = () => {
   const router = useRouter();
   const token = useSelector((state) => state.auth.token);
-
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   const fetchChats = async (query = "") => {
+    setLoading(true);
     try {
-      setLoading(true);
       const url = query
         ? `recent-chats?search=${encodeURIComponent(query)}`
         : "recent-chats";
+
       const response = await API.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = response.data;
@@ -62,18 +59,14 @@ const ChatListScreen = () => {
           unreadCount: user.message_unread_count,
         }));
         setChats(formattedChats);
-      } else {
-        throw new Error("Failed to load chats");
       }
     } catch (error) {
-      console.error("Error fetching chats:", error.message);
-      setError("Error fetching chats");
+      console.log("Error fetching chats:", error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Debounced fetchChats to avoid rapid API calls
   const debouncedFetchChats = useCallback(
     debounce((query) => {
       fetchChats(query);
@@ -81,19 +74,19 @@ const ChatListScreen = () => {
     [token]
   );
 
-  // Fetch chats when screen is focused or token changes
   useFocusEffect(
     useCallback(() => {
-      if (token) {
-        fetchChats();
-      } else {
-        setError("Please log in to view chats");
+      if (!token) {
+        setIsLoggedIn(false);
         setLoading(false);
+        return;
       }
+
+      setIsLoggedIn(true);
+      fetchChats();
     }, [token])
   );
 
-  // Handle search input change
   const handleSearch = (text) => {
     setSearchQuery(text);
     if (token) {
@@ -146,26 +139,28 @@ const ChatListScreen = () => {
     );
   };
 
+  if (!isLoggedIn) {
+    return (
+      <SafeAreaView className="flex-1 justify-center items-center bg-gray-100 px-4">
+        <Text className="text-xl text-gray-700 mb-4 text-center">
+          Please login to view your messages.
+        </Text>
+        <TouchableOpacity
+          onPress={() => router.replace("/SignIn")}
+          className="bg-sky-950 px-6 py-3 rounded-full"
+        >
+          <Text className="text-white font-semibold text-base">
+            Go to Login
+          </Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    );
+  }
+
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
         <Text className="text-sky-950 text-lg font-medium">Loading...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View className="flex-1 justify-center items-center p-4 bg-gray-50">
-        <Text className="text-red-500 text-lg font-medium text-center">
-          {error}
-        </Text>
-        <TouchableOpacity
-          onPress={() => fetchChats()}
-          className="mt-6 bg-sky-900 px-6 py-3 rounded-full"
-        >
-          <Text className="text-white font-semibold">Retry</Text>
-        </TouchableOpacity>
       </View>
     );
   }
@@ -224,10 +219,6 @@ const ChatListScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  headerGradient: {
-    paddingTop: Platform.OS === "android" ? 40 : 60,
-    paddingBottom: 24,
-  },
   shadow: {
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },

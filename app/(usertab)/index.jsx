@@ -21,6 +21,15 @@ export default function Dashboard() {
   const postContentWidth = screenWidth * 0.92;
   const userName = useSelector((state) => state.auth.user);
   const [selectedCategory, setSelectedCategory] = useState("general");
+  const token = useSelector((state) => state.auth.token);
+
+  const requireLogin = (callback) => {
+    if (!token) {
+      alert("Please login to continue.");
+      return;
+    }
+    callback();
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
@@ -55,7 +64,7 @@ export default function Dashboard() {
           <View className="flex-row justify-between mt-5">
             <TouchableOpacity
               className="flex-1 bg-gray-200 rounded-xl p-4 items-center mx-2"
-              onPress={() => router.push("MapScreen")}
+              onPress={() => requireLogin(() => router.push("MapScreen"))}
             >
               <Ionicons name="map-outline" size={28} color="#111827" />
               <Text className="text-gray-700 mt-2 text-sm">
@@ -65,7 +74,7 @@ export default function Dashboard() {
 
             <TouchableOpacity
               className="flex-1 bg-gray-200 rounded-xl p-4 items-center mx-2"
-              onPress={() => router.push("FloorMapScreen")}
+              onPress={() => requireLogin(() => router.push("FloorMapScreen"))}
             >
               <Ionicons name="image-outline" size={28} color="#111827" />
               <Text className="text-gray-700 mt-2 text-sm">

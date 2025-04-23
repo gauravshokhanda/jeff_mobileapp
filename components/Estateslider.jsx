@@ -22,6 +22,14 @@ const EstateSlider = () => {
   const navigation = useNavigation();
   const token = useSelector((state) => state.auth.token);
 
+  const requireLogin = (callback) => {
+    if (!token) {
+      alert("Please login to continue.");
+      return;
+    }
+    callback();
+  };
+
   const fetchContractors = async () => {
     setLoading(true);
     try {
@@ -69,7 +77,9 @@ const EstateSlider = () => {
         <TouchableOpacity
           className="bg-sky-950 p-4 flex-row items-start"
           onPress={() =>
-            navigation.navigate("RealContractorProfile", { user_id: item.id })
+            requireLogin(() =>
+              navigation.navigate("RealContractorProfile", { user_id: item.id })
+            )
           }
         >
           {/* Left Side Avatar */}
@@ -97,7 +107,11 @@ const EstateSlider = () => {
         <View className="bg-gray-200 rounded-b-2xl px-4 py-3 flex-row justify-between items-center">
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate("RealContractorProfile", { user_id: item.id })
+              requireLogin(() =>
+                navigation.navigate("RealContractorProfile", {
+                  user_id: item.id,
+                })
+              )
             }
           >
             <Text className="text-gray-700 text-l font-semibold">
