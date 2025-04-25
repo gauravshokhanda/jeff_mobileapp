@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   Modal,
   Linking,
+  Alert
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -70,10 +71,25 @@ export default function Index() {
 
   const requireLogin = (callback) => {
     if (!token) {
-      alert("Please login to continue.");
+      Alert.alert(
+        "Sign in Required",
+        "Please Sign in to continue.",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Sign in",
+            onPress: () => router.push("/SignIn"), 
+          },
+        ],
+        { cancelable: true }
+      );
       return;
     }
-    callback(); // Only proceed if logged in
+  
+    callback();
   };
 
   const fetchContractors = async (query = "", page = 1, order = sortOrder) => {

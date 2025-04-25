@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Dimensions,
   TouchableOpacity,
+
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -24,9 +25,24 @@ const EstateSlider = () => {
 
   const requireLogin = (callback) => {
     if (!token) {
-      alert("Please login to continue.");
+      Alert.alert(
+        "Sign in Required",
+        "Please Sign in to continue.",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Sign in",
+            onPress: () => router.push("/SignIn"),
+          },
+        ],
+        { cancelable: true }
+      );
       return;
     }
+
     callback();
   };
 
@@ -124,7 +140,7 @@ const EstateSlider = () => {
   };
 
   return (
-    <View className="pt-4 mb-5">
+    <View className="pt-4 ">
       {loading ? (
         <ActivityIndicator size="large" color="#0c4a6e" className="mt-10" />
       ) : contractors.length > 0 ? (
@@ -135,7 +151,7 @@ const EstateSlider = () => {
           showsVerticalScrollIndicator={false}
           refreshing={loading}
           onRefresh={fetchContractors}
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingBottom: 60, }}
         />
       ) : (
         <Text className="text-center text-gray-400 mt-10">
