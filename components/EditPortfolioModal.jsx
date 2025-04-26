@@ -26,7 +26,7 @@ export default function EditPortfolioModal({
   setFormData,
   handleUpdate,
   pickImage,
-  selectedImage, // ✅ Accept selectedImage as prop
+  selectedImage, 
 }) {
   const token = useSelector((state) => state.auth.token);
   const [searchLoading, setSearchLoading] = useState(false);

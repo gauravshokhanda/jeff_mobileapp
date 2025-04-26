@@ -9,7 +9,6 @@ import {
   Platform,
   TextInput,
   SafeAreaView,
-  Modal,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
@@ -36,7 +35,6 @@ export default function MyPosts() {
   const flatListRef = useRef(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [sortOrder, setSortOrder] = useState("");
-
   const [scrollOffset, setScrollOffset] = useState(0);
 
   const iconRef = useRef(null);
@@ -81,7 +79,6 @@ export default function MyPosts() {
       setResults(append ? [...results, ...newPosts] : newPosts);
       setLastPage(response.data.data.last_page || 1);
     } catch (error) {
-      console.log("Error fetching posts:", error);
       if (!append) setResults([]);
     } finally {
       setLoading(false);
@@ -93,7 +90,6 @@ export default function MyPosts() {
       const prevScrollOffset = scrollOffset;
       setCurrentPage((prev) => prev + 1);
       fetchPosts(currentPage + 1, true);
-
       setTimeout(() => {
         flatListRef.current?.scrollToOffset({
           offset: prevScrollOffset,
@@ -114,12 +110,10 @@ export default function MyPosts() {
 
   const handleSearch = async (query) => {
     setSearchQuery(query);
-
     if (query.length < 3) {
       fetchPosts();
       return;
     }
-
     try {
       const response = await axios.post(
         `https://g32.iamdeveloper.in/api/citie-search`,
@@ -131,11 +125,9 @@ export default function MyPosts() {
           },
         }
       );
-
       const filteredResults = response.data.data || [];
       setResults(filteredResults);
     } catch (error) {
-      console.error("Error searching cities:", error);
       setResults([]);
     }
   };
@@ -147,9 +139,7 @@ export default function MyPosts() {
         ? JSON.parse(item.design_image)
         : [];
       imageUrls = parsedImages.map((imagePath) => `${baseUrl}${imagePath}`);
-    } catch (error) {
-      console.error("Error processing images:", error);
-    }
+    } catch {}
 
     return (
       <View
@@ -206,23 +196,41 @@ export default function MyPosts() {
     <SafeAreaView className="flex-1">
       <LinearGradient
         colors={["#082f49", "transparent"]}
-        style={{ height: screenHeight * 0.4 }}
+        style={{ height: screenHeight * 0.45 }}
       >
-        <View className="flex-row justify-center items-center py-3 px-10 pb-4">
-          <TouchableOpacity onPress={() => router.back()} className="mr-3">
-            <Ionicons name="arrow-back" size={28} color="white" />
+        <View className="mt-5">
+          <TouchableOpacity
+            className="absolute top-6 z-10 left-5"
+            onPress={() => router.back()}
+          >
+            <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
-          <View className="flex-row items-center border border-white rounded-full px-4 mt-2 bg-white">
-            <Ionicons name="search" size={24} color="#000000" />
+          <Text className="text-2xl font-semibold text-white py-4 text-center">
+            My Post
+          </Text>
+        </View>
+
+        <View className="mx-5">
+          <View
+            className="bg-white rounded-full flex-row items-center"
+            style={{
+              height: screenHeight * 0.06,
+              paddingHorizontal: screenWidth * 0.04,
+            }}
+          >
+            <Ionicons name="search" size={18} color="black" />
             <TextInput
-              className="flex-1 ml-2 text-black"
-              placeholder="Start Search"
-              placeholderTextColor="#000000"
+              placeholder="Search by City"
+              placeholderTextColor="gray"
+              className="flex-1 text-lg text-black"
+              style={{
+                fontSize: 14,
+                marginLeft: screenWidth * 0.03,
+                paddingVertical: Platform.OS === "android" ? 6 : 12,
+              }}
               value={searchQuery}
               onChangeText={handleSearch}
-              style={Platform.OS === "ios" ? { paddingVertical: 12 } : {}}
             />
-
             <SortingModal
               visible={modalVisible}
               onClose={() => setModalVisible(false)}
@@ -236,7 +244,7 @@ export default function MyPosts() {
       <View
         className="flex-1 rounded-3xl bg-white"
         style={{
-          marginTop: -screenHeight * 0.3,
+          marginTop: -screenHeight * 0.28,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
           overflow: "hidden",
@@ -275,7 +283,7 @@ export default function MyPosts() {
               {!searchQuery && (
                 <TouchableOpacity
                   className="bg-sky-950 px-6 py-3 rounded-lg"
-                  onPress={() => router.push("/CreatePost")} // Adjust route as needed
+                  onPress={() => router.push("/")}
                 >
                   <Text className="text-white font-semibold text-lg">
                     Create a Post
