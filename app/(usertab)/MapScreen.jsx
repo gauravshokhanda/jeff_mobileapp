@@ -5,7 +5,7 @@ import * as Location from 'expo-location';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { getAreaOfPolygon } from 'geolib';
+import { getAreaOfPolygon, getDistance } from 'geolib';
 import { useDispatch } from 'react-redux';
 import { setPolygonData } from '../../redux/slice/polygonSlice';
 
@@ -44,6 +44,15 @@ export default function MapScreen() {
   const handleMapPress = (event) => {
     if (!isDrawing) return;
     const newPoint = event.nativeEvent.coordinate;
+
+    if (polygonPoints.length >= 3) {
+      const distance = getDistance(newPoint, polygonPoints[0]); // Check distance from first point
+      if (distance <= 30) { // within 30 meters?
+        handleClosePolygon();
+        return;
+      }
+    }
+
     setPolygonPoints([...polygonPoints, newPoint]);
   };
 
@@ -60,6 +69,7 @@ export default function MapScreen() {
     try {
       const area = getAreaOfPolygon(polygonPoints);
       const areaInSquareFeet = (area * 10.7639).toFixed(2);
+
       const centroid = polygonPoints.reduce((acc, p) => {
         acc.latitude += p.latitude;
         acc.longitude += p.longitude;
@@ -69,16 +79,14 @@ export default function MapScreen() {
       centroid.latitude /= polygonPoints.length;
       centroid.longitude /= polygonPoints.length;
 
-      const [details] = await Location.reverseGeocodeAsync({
-        latitude: centroid.latitude,
-        longitude: centroid.longitude,
-      });
-      // console.log(`mapdata polygonPoints, areaInSquareFeet, details?.city, details?.postalCode`)
+      const [details] = await Location.reverseGeocodeAsync(centroid);
+
       dispatch(setPolygonData({
         coordinates: polygonPoints,
         area: areaInSquareFeet,
-        city: details?.city,
-        postalCode: details?.postalCode?.toString().padStart(5, '0')
+        city: details?.city || '',
+        state: details?.region || '',
+        postalCode: details?.postalCode?.toString().padStart(5, '0') || ''
       }));
 
       router.push('/AreaDetailsScreen');
@@ -190,7 +198,7 @@ export default function MapScreen() {
       {isDrawing && (
         <View className="absolute top-0 w-full bg-yellow-100 py-2 z-10 flex-row justify-center">
           <Text className="text-yellow-900 text-base font-medium">
-            Drawing mode: Tap to add points. Tap first point again to close.
+            Drawing Mode: Tap points on map. Tap first point to close.
           </Text>
         </View>
       )}
@@ -203,23 +211,24 @@ export default function MapScreen() {
       ) : location ? (
         <View className="flex-1 relative">
           <TouchableOpacity
-            className={`absolute z-10 left-2 ${Platform.OS === 'ios' ? 'top-7' : 'top-7'}`}
+            className="absolute top-7 left-2 z-10"
             onPress={() => router.back()}
           >
-            <Ionicons className="bg-white p-2 rounded-full" name="arrow-back" size={24} color="black" />
+            <Ionicons name="arrow-back" size={24} color="black" className="bg-white p-2 rounded-full" />
           </TouchableOpacity>
 
-          <View className="bg-white w-[80%] h-12 absolute top-6 z-10 flex-row-reverse left-14 rounded-2xl items-center px-3">
-            <TextInput
-              className="flex-1 text-slate-600 text-base px-2"
-              value={searchText}
-              onChangeText={setSearchText}
-              placeholder="Search by location name or co."
-              placeholderTextColor="gray"
-              onSubmitEditing={() => searchLocation(searchText)}
-            />
-          </View>
-
+          {!isDrawing && (
+            <View className="bg-white w-[80%] h-12 absolute top-6 z-10 flex-row-reverse left-14 rounded-2xl items-center px-3">
+              <TextInput
+                className="flex-1 text-slate-600 text-base px-2"
+                value={searchText}
+                onChangeText={setSearchText}
+                placeholder="Search location name or coordinates"
+                placeholderTextColor="gray"
+                onSubmitEditing={() => searchLocation(searchText)}
+              />
+            </View>
+          )}
 
           <MapView
             style={{ flex: 1 }}
@@ -242,14 +251,6 @@ export default function MapScreen() {
                     strokeColor="#000"
                     fillColor="rgba(0, 200, 0, 0.5)"
                     strokeWidth={2}
-                  />
-                )}
-                {isDrawing && polygonPoints.length > 0 && (
-                  <Marker
-                    coordinate={polygonPoints[0]}
-                    pinColor="green"
-                    title="Tap here to close"
-                    onPress={handleClosePolygon}
                   />
                 )}
               </>
@@ -275,7 +276,7 @@ export default function MapScreen() {
             </TouchableOpacity>
           </View>
 
-          <View className="absolute right-4 z-10 flex bottom-5">
+          <View className="absolute right-4 bottom-5 z-10 flex">
             <TouchableOpacity onPress={handleMyLocation} className="p-3 bg-white rounded-full my-2">
               <Ionicons name="location-outline" size={28} color="#0EA5E9" />
             </TouchableOpacity>
