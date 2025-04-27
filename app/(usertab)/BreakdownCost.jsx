@@ -76,8 +76,7 @@ export default function BreakdownCost() {
     return null;
   }
 
-  const { estimated_time, project_type, square_fit } = parsedData;
-  // console.log("new datas", parsedData.days.data);
+  const { estimated_time, project_type, square_fit,total_cost } = parsedData;
   const data = parsedData.days.data;
   if (!data) {
     console.log("Data is missing or undefined");
@@ -105,7 +104,7 @@ export default function BreakdownCost() {
         style={{ height: screenHeight * 0.4 }}
       >
         <View className="flex-row justify-between items-center p-5">
-          <TouchableOpacity onPress={() => router.push(screenName)}>
+          <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
           <Text className="text-2xl font-extrabold text-white">
@@ -135,9 +134,7 @@ export default function BreakdownCost() {
               </Text>
               <Text className="text-2xl font-extrabold text-gray-800">
                 $
-                {new Intl.NumberFormat("en-US", { style: "decimal" }).format(
-                  parsedData.total_cost
-                )}
+                {new Intl.NumberFormat("en-US", { style: "decimal" }).format(Number(total_cost.toString().replace(/,/g, "")))}
               </Text>
             </View>
 
