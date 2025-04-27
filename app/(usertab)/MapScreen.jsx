@@ -46,8 +46,8 @@ export default function MapScreen() {
     const newPoint = event.nativeEvent.coordinate;
 
     if (polygonPoints.length >= 3) {
-      const distance = getDistance(newPoint, polygonPoints[0]); // Check distance from first point
-      if (distance <= 30) { // within 30 meters?
+      const distance = getDistance(newPoint, polygonPoints[0]);
+      if (distance <= 30) {
         handleClosePolygon();
         return;
       }
@@ -98,6 +98,12 @@ export default function MapScreen() {
 
   const handleStartDrawing = () => {
     setIsDrawing(true);
+    setPolygonPoints([]);
+    setPreviewPoint(null);
+  };
+
+  const handleStopDrawing = () => {
+    setIsDrawing(false);
     setPolygonPoints([]);
     setPreviewPoint(null);
   };
@@ -197,8 +203,8 @@ export default function MapScreen() {
     <View className={`flex-1 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
       {isDrawing && (
         <View className="absolute top-0 w-full bg-yellow-100 py-2 z-10 flex-row justify-center">
-          <Text className="text-yellow-900 text-base font-medium">
-            Drawing Mode: Tap points on map. Tap first point to close.
+          <Text className="text-yellow-900 text-base font-semibold">
+            Drawing Mode: Tap points ➔ Tap first point to close
           </Text>
         </View>
       )}
@@ -210,6 +216,7 @@ export default function MapScreen() {
         </View>
       ) : location ? (
         <View className="flex-1 relative">
+          {/* back button */}
           <TouchableOpacity
             className="absolute top-7 left-2 z-10"
             onPress={() => router.back()}
@@ -217,6 +224,7 @@ export default function MapScreen() {
             <Ionicons name="arrow-back" size={24} color="black" className="bg-white p-2 rounded-full" />
           </TouchableOpacity>
 
+          {/* search bar when not drawing */}
           {!isDrawing && (
             <View className="bg-white w-[80%] h-12 absolute top-6 z-10 flex-row-reverse left-14 rounded-2xl items-center px-3">
               <TextInput
@@ -230,6 +238,17 @@ export default function MapScreen() {
             </View>
           )}
 
+          {/* Stop Drawing Button */}
+          {isDrawing && (
+            <TouchableOpacity
+              className="absolute right-4 top-6 z-20 bg-red-600 py-2 px-4 rounded-full"
+              onPress={handleStopDrawing}
+            >
+              <Text className="text-white font-bold text-sm">Stop Drawing</Text>
+            </TouchableOpacity>
+          )}
+
+          {/* map */}
           <MapView
             style={{ flex: 1 }}
             region={location}
@@ -264,6 +283,7 @@ export default function MapScreen() {
             <Marker coordinate={location} title="You are here" />
           </MapView>
 
+          {/* controls right side */}
           <View className="absolute bottom-80 right-4 z-10 flex">
             <TouchableOpacity onPress={toggleMapType} className="p-3 bg-white mb-2 rounded-full">
               <Ionicons name="layers-outline" size={30} color="#172554" />

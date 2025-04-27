@@ -159,11 +159,21 @@ const PropertyPost = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
-      <LinearGradient colors={["#082f49", "transparent"]} style={{ height: "40%" }}>
-        <TouchableOpacity className="absolute top-6 left-5" onPress={handleBack}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <Text className="text-2xl font-bold text-white py-5 text-center">Property Post</Text>
+     <LinearGradient
+        colors={["#082f49", "transparent"]}
+        style={{ height: "40%" }}
+      >
+        <View className="mt-2">
+          <TouchableOpacity
+            className="absolute top-6 z-10 left-5"
+            onPress={handleBack}
+          >
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text className="text-2xl font-semibold text-white mb-4 py-4 text-center">
+            Property Post
+          </Text>
+        </View>
       </LinearGradient>
 
       <View className="flex-1 bg-white rounded-t-3xl shadow-lg p-4" style={{
@@ -177,13 +187,12 @@ const PropertyPost = () => {
           keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
         >
           <ScrollView showsVerticalScrollIndicator={false}>
-            {[
-              { label: "Number of Days", field: "numberOfDays" },
+            {[{ label: "Number of Days", field: "numberOfDays" },
               { label: "Total Cost", field: "totalCost" },
               { label: "Zip Code", field: "zipCode" },
               { label: "Area", field: "area" },
               { label: "City", field: "city" },
-              { label: "Project Type", field: "projectType" },
+              { label: "Project Type", field: "projectType" }
             ].map(({ label, field }) => (
               <InputField key={field} label={label} value={form[field]} editable={false} />
             ))}
@@ -214,7 +223,9 @@ const PropertyPost = () => {
               className="bg-sky-950 rounded-xl py-4 mt-8"
               onPress={handleSubmit}
             >
-              <Text className="text-white font-bold text-lg text-center">Submit Application</Text>
+              <Text className="text-white font-bold text-lg text-center">
+                Submit Application
+              </Text>
             </TouchableOpacity>
           </ScrollView>
         </KeyboardAvoidingView>

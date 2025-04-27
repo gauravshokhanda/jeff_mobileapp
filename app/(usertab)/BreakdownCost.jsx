@@ -77,7 +77,6 @@ export default function BreakdownCost() {
   }
 
   const { estimated_time, project_type, square_fit,total_cost } = parsedData;
-  console.log("new datas", total_cost);
   const data = parsedData.days.data;
   if (!data) {
     console.log("Data is missing or undefined");
