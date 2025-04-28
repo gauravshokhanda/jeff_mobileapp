@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
-  Platform
+  Platform,
+  Dimensions
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSelector } from "react-redux";
@@ -18,9 +19,11 @@ import Swiper from "react-native-swiper";
 import * as ImagePicker from "expo-image-picker";
 import EditPortfolioModal from "../../components/EditPortfolioModal";
 import { API } from "../../config/apiConfig";
+import { LinearGradient } from 'expo-linear-gradient';
 
 const PortfolioDetail = () => {
   const { id } = useLocalSearchParams();
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const router = useRouter();
   const token = useSelector((state) => state.auth.token);
   const [portfolio, setPortfolio] = useState(null);
@@ -38,7 +41,7 @@ const PortfolioDetail = () => {
   useEffect(() => {
     const fetchPortfolioDetails = async () => {
       console.log("fetchportfolio function")
-      console.log("portfolio details",id)
+      console.log("portfolio details", id)
       if (!id || !token) return;
       try {
         const response = await API.get(`portfolios/${id}`, {
@@ -62,7 +65,7 @@ const PortfolioDetail = () => {
     };
 
     fetchPortfolioDetails();
-  }, [id, token, modalVisible]); // 🔹 Added modalVisible as dependency
+  }, [id, token, modalVisible]);
 
   const handleDelete = () => {
     Alert.alert(
@@ -92,61 +95,60 @@ const PortfolioDetail = () => {
   const handleUpdate = async () => {
     try {
       const formDataToSend = new FormData();
-  
+
       // Append all form fields
       Object.keys(formData).forEach((key) => {
         formDataToSend.append(key, formData[key]);
       });
-  
+
       // Append selected image
       if (selectedImage) {
-        const fileName = selectedImage.split("/").pop();
-        const fileType = fileName.split(".").pop();
-        const mimeType =
-          fileType === "jpg" || fileType === "jpeg" ? "image/jpeg" : `image/${fileType}`;
-  
-        const imageData = {
-          uri: selectedImage,
-          name: fileName,
-          type: mimeType,
-        };
-  
-        formDataToSend.append("portfolio_images", imageData);
+        const localUri = selectedImage;
+        const filename = localUri.split('/').pop();
+        const match = /\.(\w+)$/.exec(filename ?? '');
+        const ext = match ? match[1].toLowerCase() : '';
+        const type = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : `image/${ext}`;
+
+        formDataToSend.append('portfolio_images[]', {
+          uri: Platform.OS === 'ios' ? localUri.replace('file://', '') : localUri,
+          name: filename,
+          type: type,
+        });
       } else {
-        console.log("No new image selected");
+        console.log('No new image selected');
       }
-  
-      // Debug: Log form data
-      console.log("FormData being sent to API:",formDataToSend);
-      for (let pair of formDataToSend.entries()) {
-        if (pair[0] === "image" && typeof pair[1] === "object") {
-          console.log(`${pair[0]} ->`);
-          console.log("  URI:", pair[1].uri);
-          console.log("  Name:", pair[1].name);
-          console.log("  Type:", pair[1].type);
-        } else {
-          console.log(`${pair[0]}: ${pair[1]}`);
-        }
-      }
-  
-      // 🚫 DO NOT manually set 'Content-Type' – let Axios handle it
+
       const response = await API.post(`portfolio/update/${id}`, formDataToSend, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
         },
       });
-  
-      console.log("✅ Server response:", response.data);
-  
-      Alert.alert("Success", "Portfolio updated successfully!", [
-        { text: "OK", onPress: () => setModalVisible(false) },
+
+      console.log('✅ Server response:', response.data);
+
+      Alert.alert('Success', 'Portfolio updated successfully!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            setModalVisible(false);
+            setSelectedImage(null);
+            setLoading(true);
+            setPortfolio(null);
+            setTimeout(() => {
+              router.replace(`/PortfolioDetail?id=${id}`);
+            }, 100);
+          },
+        },
       ]);
     } catch (error) {
-      console.error("❌ Update failed:", error.response?.data || error.message);
-      Alert.alert("Error", "Failed to update portfolio. Try again.");
+      console.error('❌ Update failed:', error.response?.data || error.message);
+      Alert.alert('Error', 'Failed to update portfolio. Try again.');
     }
   };
-  
+
+
+
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" className="mt-10" />;
@@ -173,37 +175,54 @@ const PortfolioDetail = () => {
   };
 
   return (
-    <View className="flex-1 bg-white">
-      <View className={`bg-sky-950 py-4 px-4 flex-row items-center justify-between 
-      ${Platform.OS === "ios" ? "mt-10" : ""}`}>
-        <TouchableOpacity onPress={() => router.back()} className="p-2">
-          <Feather name="arrow-left" size={24} color="white" />
-        </TouchableOpacity>
+    <View className="flex-1 bg-gray-100">
+      <LinearGradient
+        colors={["#082f49", "transparent"]}
+        style={{ height: screenHeight * 0.14, paddingTop: Platform.OS === "ios" ? 50 : 20 }}
+      >
+        <View className="px-4 flex-row items-center justify-between">
 
+          {/* Left: Back Button */}
+          <View className="flex-row items-center gap-2">
+            <TouchableOpacity
+              onPress={() => router.back()}
+              className="bg-white p-2 rounded-full shadow"
+            >
+              <Feather name="arrow-left" size={22} color="#082f49" />
+            </TouchableOpacity>
 
-        <Text className="text-lg font-semibold text-white">
-          Portfolio Details
-        </Text>
+            <Text className="text-xl font-bold text-white ml-2">
+              Portfolio Details
+            </Text>
+          </View>
 
+          {/* Right: Edit and Delete buttons */}
+          <View className="flex-row gap-3">
+            <TouchableOpacity
+              onPress={() => setModalVisible(true)}
+              className="bg-white p-2 rounded-full shadow"
+            >
+              <Feather name="edit-2" size={20} color="#082f49" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleDelete}
+              className="bg-white p-2 rounded-full shadow"
+            >
+              <Feather name="trash-2" size={20} color="#B91C1C" />
+            </TouchableOpacity>
+          </View>
 
-        <View className="flex-row gap-4">
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
-            <Feather name="edit" size={24} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleDelete}>
-            <Feather name="trash-2" size={24} color="white" />
-          </TouchableOpacity>
         </View>
-      </View>
-
-      <ScrollView className="p-4">
+        
+      </LinearGradient>
+      <ScrollView className="4">
         {portfolio.portfolio_images && (
           <View className="h-72 w-full rounded-lg overflow-hidden">
             <Swiper
-              showsPagination={true} 
-              autoplay={true} 
-              autoplayTimeout={2} 
-              loop={true} 
+              showsPagination={true}
+              autoplay={true}
+              autoplayTimeout={2}
+              loop={true}
               dot={<View className="w-2 h-2 bg-gray-400 mx-1 rounded-full" />}
               activeDot={
                 <View className="w-2 h-2 bg-blue-950 mx-1 rounded-full" />
@@ -222,7 +241,7 @@ const PortfolioDetail = () => {
             </Swiper>
           </View>
         )}
-        <View className="bg-gray-100 p-5 rounded-lg shadow-md mt-8">
+        <View className="bg-gray-100 p-5 rounded-lg mt-8">
           <DetailRow label="Project Name" value={portfolio.project_name} />
           <DetailRow label="Description" value={portfolio.description} />
 
