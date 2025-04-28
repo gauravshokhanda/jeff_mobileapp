@@ -44,17 +44,24 @@ export default function MapScreen() {
   const handleMapPress = (event) => {
     if (!isDrawing) return;
     const newPoint = event.nativeEvent.coordinate;
-
+  
     if (polygonPoints.length >= 3) {
-      const distance = getDistance(newPoint, polygonPoints[0]);
-      if (distance <= 30) {
+      const firstPoint = polygonPoints[0];
+      const epsilon = 0.000007; // small tolerance for human tap error
+  
+      const isSamePoint =
+        Math.abs(newPoint.latitude - firstPoint.latitude) < epsilon &&
+        Math.abs(newPoint.longitude - firstPoint.longitude) < epsilon;
+  
+      if (isSamePoint) {
         handleClosePolygon();
         return;
       }
     }
-
+  
     setPolygonPoints([...polygonPoints, newPoint]);
   };
+  
 
   const handleClosePolygon = async () => {
     if (polygonPoints.length >= 3) {
