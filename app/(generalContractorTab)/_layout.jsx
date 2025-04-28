@@ -182,6 +182,7 @@ export default function TabRoot() {
         <Tabs.Screen name="ChatScreen" options={{ href: null }} />
         <Tabs.Screen name="Portfolio" options={{ href: null }} />
         <Tabs.Screen name="PortfolioDetail" options={{ href: null }} />
+        <Tabs.Screen name="premium" options={{ href: null }} />
       </Tabs>
     </ProtectedRoute>
   );

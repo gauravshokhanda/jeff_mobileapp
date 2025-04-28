@@ -45,6 +45,13 @@ const imageData = [
     source: Box,
   },
   {
+    id: 10,
+    label: "Explore Premium",
+    icon: "crown",
+    screen: "premium",
+    source: Box,
+  },
+  {
     id: 8,
     label: "Log Out",
     icon: "sign-out-alt",

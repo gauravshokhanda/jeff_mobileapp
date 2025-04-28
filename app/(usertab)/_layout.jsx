@@ -170,6 +170,7 @@ export default function TabRoot() {
         "MyPosts",
         "UserProfile",
         "EditPost",
+        "premium",
         "AllPropertyPost",
         "ChatScreen",
         "ContractorProfile",
