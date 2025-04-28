@@ -37,6 +37,7 @@ const PortfolioDetail = () => {
 
   useEffect(() => {
     const fetchPortfolioDetails = async () => {
+      console.log("fetchportfolio function")
       console.log("portfolio details",id)
       if (!id || !token) return;
       try {
@@ -110,13 +111,13 @@ const PortfolioDetail = () => {
           type: mimeType,
         };
   
-        formDataToSend.append("image", imageData);
+        formDataToSend.append("portfolio_images", imageData);
       } else {
         console.log("No new image selected");
       }
   
       // Debug: Log form data
-      console.log("🚀 FormData being sent to API:");
+      console.log("FormData being sent to API:",formDataToSend);
       for (let pair of formDataToSend.entries()) {
         if (pair[0] === "image" && typeof pair[1] === "object") {
           console.log(`${pair[0]} ->`);
@@ -173,20 +174,18 @@ const PortfolioDetail = () => {
 
   return (
     <View className="flex-1 bg-white">
-      {/* HEADER */}
       <View className={`bg-sky-950 py-4 px-4 flex-row items-center justify-between 
       ${Platform.OS === "ios" ? "mt-10" : ""}`}>
-        {/* Back Button */}
         <TouchableOpacity onPress={() => router.back()} className="p-2">
           <Feather name="arrow-left" size={24} color="white" />
         </TouchableOpacity>
 
-        {/* Title */}
+
         <Text className="text-lg font-semibold text-white">
           Portfolio Details
         </Text>
 
-        {/* Edit & Delete Buttons */}
+
         <View className="flex-row gap-4">
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Feather name="edit" size={24} color="white" />
@@ -197,15 +196,14 @@ const PortfolioDetail = () => {
         </View>
       </View>
 
-      {/* CONTENT */}
       <ScrollView className="p-4">
         {portfolio.portfolio_images && (
           <View className="h-72 w-full rounded-lg overflow-hidden">
             <Swiper
-              showsPagination={true} // Dots indicator
-              autoplay={true} // Auto-slide
-              autoplayTimeout={2} // Slide every 3 seconds
-              loop={true} // Infinite loop
+              showsPagination={true} 
+              autoplay={true} 
+              autoplayTimeout={2} 
+              loop={true} 
               dot={<View className="w-2 h-2 bg-gray-400 mx-1 rounded-full" />}
               activeDot={
                 <View className="w-2 h-2 bg-blue-950 mx-1 rounded-full" />
@@ -224,7 +222,6 @@ const PortfolioDetail = () => {
             </Swiper>
           </View>
         )}
-        {/* Portfolio Details */}
         <View className="bg-gray-100 p-5 rounded-lg shadow-md mt-8">
           <DetailRow label="Project Name" value={portfolio.project_name} />
           <DetailRow label="Description" value={portfolio.description} />

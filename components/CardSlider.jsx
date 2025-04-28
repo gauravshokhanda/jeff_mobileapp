@@ -28,8 +28,6 @@ const CardSlider = () => {
       const response = await API.get("all/contractors", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      // console.log("general contrator data", response.data?.data?.data)
-      // Filtering first for better performance
       const filteredData =
         response.data?.data?.data?.filter((item) => item.role === 3) || [];
 
@@ -61,13 +59,32 @@ const CardSlider = () => {
     router.push(`/ContractorProfile?user_id=${id}`);
   };
 
+
+
+
   const requireLogin = (callback) => {
     if (!token) {
-      alert("Please login to continue.");
+      Alert.alert(
+        "Sign in Required",
+        "Please Sign in to continue.",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Sign in",
+            onPress: () => router.push("/SignIn"), 
+          },
+        ],
+        { cancelable: true }
+      );
       return;
     }
+  
     callback();
   };
+  
 
   const handleCall = async (phone) => {
     console.log("calling to", phone);

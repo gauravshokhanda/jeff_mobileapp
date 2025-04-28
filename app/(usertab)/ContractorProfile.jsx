@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  Platform
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -82,7 +83,8 @@ const ContractorProfile = () => {
       {/* Header with Company Image */}
       <View className="relative w-full h-52">
         {/* Header with back and chat buttons */}
-        <View className="absolute top-10 left-4 right-4 z-10 flex-row items-center justify-between">
+        <View className={`absolute ${Platform.OS === "ios" ? "top-10" : "top-4"
+          } left-4 right-4 z-10 flex-row items-center justify-between`}>
           <TouchableOpacity
             onPress={() => router.back()}
             className="p-2 rounded-full bg-black/10"

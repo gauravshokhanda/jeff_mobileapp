@@ -5,10 +5,8 @@ import {
   TouchableOpacity,
   Animated,
   Image,
-  Alert,
   ActivityIndicator,
   StyleSheet,
-  Platform,
   SafeAreaView,
   Dimensions
 } from "react-native";
@@ -21,15 +19,11 @@ import { LinearGradient } from "expo-linear-gradient";
 export default function AreaDetailsScreen() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const postContentWidth = screenWidth * 0.92;
-
-  const placeHolderImage = require("../../assets/images/userImages/propertyArea.jpg");
-  const { area } = useSelector((state) => state.polygon);
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const token = useSelector((state) => state.auth.token);
-  const areaDeatils = useSelector((state) => state.polygon);
 
+  const { area, city, state, zipCode } = useSelector((state) => state.polygon); // ✅ Use directly from redux
+  const token = useSelector((state) => state.auth.token);
   const [loading, setLoading] = useState(false);
-  const [cityName, setCityName] = useState("");
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -39,38 +33,15 @@ export default function AreaDetailsScreen() {
     }).start();
   }, []);
 
-  const fetchCityName = async () => {
-    try {
-      const response = await API.post(`get-cityname`, {
-        zipcode: areaDeatils.zipCode,
-      });
-
-      if (response.data && response.data.data.city) {
-        console.log("City name:", response.data.data.city);
-        setCityName(response.data.data.city);
-      } else {
-        // If no city is found, set the city to "Florida"
-        console.log("City not found, setting to Florida.");
-        setCityName("Florida");
-      }
-    } catch (error) {
-      // console.log("Error fetching city name:", error.message);
-      // Alert.alert("Error", "An error occurred while fetching city name.");
-      // Set city to "Florida" in case of an error
-      setCityName("Florida");
-    }
-  };
-
   const scheduleCost = async () => {
     const data = {
-      city: cityName,
-      zip_code: areaDeatils.zipCode,
-      area: areaDeatils.area,
+      city: city,
+      state: state,
+      zip_code: zipCode,
+      area: area,
       project_type: "Basic",
       square_fit: "1000",
     };
-
-    // console.log("data",data)
 
     setLoading(true);
     try {
@@ -85,13 +56,11 @@ export default function AreaDetailsScreen() {
         }
       );
 
-      // console.log("response:", response.data);
-
       if (response.data && response.data.data) {
         const scheduleCost = encodeURIComponent(
           JSON.stringify(response.data.data)
         );
-        router.push(`/CostDetail?CostDetails=${scheduleCost}`);
+        router.replace(`/CostDetail?CostDetails=${scheduleCost}`);
       } else {
         Alert.alert("Error", "No response data available");
       }
@@ -99,13 +68,9 @@ export default function AreaDetailsScreen() {
       console.error("error:", error.message);
       Alert.alert("Error", "An error occurred while fetching schedule cost");
     } finally {
-      setLoading(false); // Stop the loader
+      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchCityName();
-  }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
@@ -124,19 +89,17 @@ export default function AreaDetailsScreen() {
             Your Area Details
           </Text>
         </View>
-
       </LinearGradient>
 
       <View 
-         className="flex-1 rounded-3xl bg-white"
-         style={{
-           marginTop: -screenHeight * 0.25, 
-           width: postContentWidth,
-           marginHorizontal: (screenWidth - postContentWidth) / 2,
-           overflow:"hidden"
-         }}
+        className="flex-1 rounded-3xl bg-white"
+        style={{
+          marginTop: -screenHeight * 0.25, 
+          width: postContentWidth,
+          marginHorizontal: (screenWidth - postContentWidth) / 2,
+          overflow: "hidden"
+        }}
       >
-
         {loading && (
           <View style={styles.loaderContainer}>
             <ActivityIndicator size="large" color="#00ADEF" />
@@ -144,10 +107,10 @@ export default function AreaDetailsScreen() {
         )}
 
         <View className="flex-1">
-          <View className="items-center ">
+          <View className="items-center">
             <Image
+              source={require("../../assets/images/userImages/propertyArea.jpg")}
               className="rounded-t-3xl"
-              source={placeHolderImage}
               style={{ width: "100%", height: screenHeight * 0.52 }}
             />
           </View>
@@ -165,28 +128,30 @@ export default function AreaDetailsScreen() {
               shadowOpacity: 0.3,
               shadowRadius: 4,
               elevation: 5,
-            }}>
+            }}
+          >
             <Text className="text-lg text-sky-950 text-center font-medium">
               Your area is
             </Text>
           </View>
-          {/* Area details */}
+
           <View
             className="justify-center items-center"
-            style={{ marginVertical: screenHeight * 0.04 }}>
+            style={{ marginVertical: screenHeight * 0.04 }}
+          >
             <Text
-            className="tracking-widest font-bold"
-            style={{ fontSize: screenHeight * 0.055 }}>{area} sq ft.</Text>
+              className="tracking-widest font-bold"
+              style={{ fontSize: screenHeight * 0.055 }}
+            >
+              {area} sq ft.
+            </Text>
           </View>
-
-
-
 
           <View className="flex-1 items-center">
             <TouchableOpacity
               onPress={scheduleCost}
               className="bg-sky-950 px-10 py-3 rounded-full"
-              disabled={loading} 
+              disabled={loading}
             >
               <Text className="text-white text-lg font-semibold tracking-widest">
                 Calculate Cost
@@ -196,7 +161,6 @@ export default function AreaDetailsScreen() {
         </View>
       </View>
     </SafeAreaView>
-
   );
 }
 

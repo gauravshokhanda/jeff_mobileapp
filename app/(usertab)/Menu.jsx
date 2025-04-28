@@ -175,16 +175,16 @@ const MenuHeader = () => {
     return (
       <SafeAreaView className="flex-1 bg-gray-200 justify-center items-center">
         <Text className="text-xl font-semibold text-gray-700 mb-2">
-          Please log in
+          Please Sign in
         </Text>
         <Text className="text-gray-500 text-center w-4/5">
-          You must be logged in to access this page.
+          You must be Sign in in to access this page.
         </Text>
         <TouchableOpacity
           className="mt-6 bg-sky-950 px-6 py-3 rounded-xl"
           onPress={() => router.replace("/SignIn")}
         >
-          <Text className="text-white font-semibold">Go to Login</Text>
+          <Text className="text-white font-semibold">Go to Sign in</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );

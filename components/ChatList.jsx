@@ -143,14 +143,14 @@ const ChatListScreen = () => {
     return (
       <SafeAreaView className="flex-1 justify-center items-center bg-gray-100 px-4">
         <Text className="text-xl text-gray-700 mb-4 text-center">
-          Please login to view your messages.
+          Please Sign in to view your messages.
         </Text>
         <TouchableOpacity
           onPress={() => router.replace("/SignIn")}
           className="bg-sky-950 px-6 py-3 rounded-full"
         >
           <Text className="text-white font-semibold text-base">
-            Go to Login
+            Go to Sign in
           </Text>
         </TouchableOpacity>
       </SafeAreaView>

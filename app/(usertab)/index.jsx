@@ -6,6 +6,7 @@ import {
   Dimensions,
   SafeAreaView,
   FlatList,
+  Alert
 } from "react-native";
 import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -25,9 +26,24 @@ export default function Dashboard() {
 
   const requireLogin = (callback) => {
     if (!token) {
-      alert("Please login to continue.");
+      Alert.alert(
+        "Sign in Required",
+        "Please Sign in to continue.",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Sign in",
+            onPress: () => router.push("/SignIn"), 
+          },
+        ],
+        { cancelable: true }
+      );
       return;
     }
+  
     callback();
   };
 
@@ -129,14 +145,14 @@ export default function Dashboard() {
           </View>
         </View>
 
-        {/* FlatList for Contractors */}
+       
         <FlatList
           data={[{ key: "contractors" }]}
           keyExtractor={(item) => item.key}
           renderItem={() =>
             selectedCategory === "general" ? <CardSlider /> : <EstateSlider />
           }
-          style={{ height: screenHeight * 0.6 }}
+          style={{ height: screenHeight * 0.56 }}
         />
       </View>
     </SafeAreaView>
