@@ -222,7 +222,7 @@ export default function EditPortfolioModal({
                   onPress={handleUpdate}
                   className="px-4 py-2 bg-sky-950 rounded-lg"
                 >
-                  <Text className="text-white">Save</Text>
+                  <Text className="text-white">update</Text>
                 </TouchableOpacity>
               </View>
             </View>
