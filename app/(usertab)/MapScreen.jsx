@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Alert, TextInput, ActivityIndicator, Platform } from 'react-native';
-import MapView, { Marker, Polygon, Polyline, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
+import { View, Text, Alert, TextInput, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
+import MapView, { Marker, Polygon, Polyline, PROVIDER_GOOGLE, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { getAreaOfPolygon, getDistance } from 'geolib';
+import { getAreaOfPolygon } from 'geolib';
 import { useDispatch } from 'react-redux';
 import { setPolygonData } from '../../redux/slice/polygonSlice';
 
@@ -15,6 +14,8 @@ export default function MapScreen() {
   const [polygonPoints, setPolygonPoints] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [previewPoint, setPreviewPoint] = useState(null);
+  const [polygonClosed, setPolygonClosed] = useState(false);
+  const [confirmButtonVisible, setConfirmButtonVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [mapType, setMapType] = useState('satellite');
   const dispatch = useDispatch();
@@ -43,36 +44,22 @@ export default function MapScreen() {
 
   const handleMapPress = (event) => {
     if (!isDrawing) return;
+
     const newPoint = event.nativeEvent.coordinate;
-  
-    if (polygonPoints.length >= 3) {
-      const firstPoint = polygonPoints[0];
-      const epsilon = 0.000007; // small tolerance for human tap error
-  
-      const isSamePoint =
-        Math.abs(newPoint.latitude - firstPoint.latitude) < epsilon &&
-        Math.abs(newPoint.longitude - firstPoint.longitude) < epsilon;
-  
-      if (isSamePoint) {
-        handleClosePolygon();
-        return;
-      }
-    }
-  
     setPolygonPoints([...polygonPoints, newPoint]);
   };
-  
 
-  const handleClosePolygon = async () => {
+  const handleFirstMarkerPress = () => {
     if (polygonPoints.length >= 3) {
+      setPolygonClosed(true);
       setIsDrawing(false);
-      await handleCalculateArea();
+      setConfirmButtonVisible(true);
     } else {
       Alert.alert('Error', 'A polygon requires at least 3 points.');
     }
   };
 
-  const handleCalculateArea = async () => {
+  const handleConfirmArea = async () => {
     try {
       const area = getAreaOfPolygon(polygonPoints);
       const areaInSquareFeet = (area * 10.7639).toFixed(2);
@@ -97,7 +84,10 @@ export default function MapScreen() {
       }));
 
       router.push('/AreaDetailsScreen');
+
       setPolygonPoints([]);
+      setPolygonClosed(false);
+      setConfirmButtonVisible(false);
     } catch (error) {
       Alert.alert('Error', `Unable to fetch details: ${error.message}`);
     }
@@ -107,17 +97,23 @@ export default function MapScreen() {
     setIsDrawing(true);
     setPolygonPoints([]);
     setPreviewPoint(null);
+    setPolygonClosed(false);
+    setConfirmButtonVisible(false);
   };
 
   const handleStopDrawing = () => {
     setIsDrawing(false);
     setPolygonPoints([]);
     setPreviewPoint(null);
+    setPolygonClosed(false);
+    setConfirmButtonVisible(false);
   };
 
   const handleClearPolygon = () => {
     setPolygonPoints([]);
     setPreviewPoint(null);
+    setPolygonClosed(false);
+    setConfirmButtonVisible(false);
   };
 
   const handleMyLocation = () => {
@@ -142,12 +138,6 @@ export default function MapScreen() {
         longitudeDelta: prev.longitudeDelta * 2,
       }));
     }
-  };
-
-  const toggleMapType = () => {
-    setMapType((prev) =>
-      prev === 'satellite' ? 'standard' : prev === 'standard' ? 'hybrid' : 'satellite'
-    );
   };
 
   const onPanDrag = (e) => {
@@ -207,55 +197,15 @@ export default function MapScreen() {
   }, []);
 
   return (
-    <View className={`flex-1 ${Platform.OS === 'ios' ? 'mt-16' : ''}`}>
-      {isDrawing && (
-        <View className="absolute top-0 w-full bg-yellow-100 py-2 z-10 flex-row justify-center">
-          <Text className="text-yellow-900 text-base font-semibold">
-            Drawing Mode: Tap points ➔ Tap first point to close
-          </Text>
-        </View>
-      )}
-
+    <View style={{ flex: 1, marginTop: Platform.OS === 'ios' ? 50 : 0 }}>
       {isLoading ? (
-        <View className="flex-1 justify-center items-center">
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color="#0E1A2E" />
           <Text>Fetching location...</Text>
         </View>
       ) : location ? (
-        <View className="flex-1 relative">
-          {/* back button */}
-          <TouchableOpacity
-            className="absolute top-7 left-2 z-10"
-            onPress={() => router.back()}
-          >
-            <Ionicons name="arrow-back" size={24} color="black" className="bg-white p-2 rounded-full" />
-          </TouchableOpacity>
-
-          {/* search bar when not drawing */}
-          {!isDrawing && (
-            <View className="bg-white w-[80%] h-12 absolute top-6 z-10 flex-row-reverse left-14 rounded-2xl items-center px-3">
-              <TextInput
-                className="flex-1 text-slate-600 text-base px-2"
-                value={searchText}
-                onChangeText={setSearchText}
-                placeholder="Search location name or coordinates"
-                placeholderTextColor="gray"
-                onSubmitEditing={() => searchLocation(searchText)}
-              />
-            </View>
-          )}
-
-          {/* Stop Drawing Button */}
-          {isDrawing && (
-            <TouchableOpacity
-              className="absolute right-4 top-6 z-20 bg-red-600 py-2 px-4 rounded-full"
-              onPress={handleStopDrawing}
-            >
-              <Text className="text-white font-bold text-sm">Stop Drawing</Text>
-            </TouchableOpacity>
-          )}
-
-          {/* map */}
+        <View style={{ flex: 1 }}>
+          {/* Map */}
           <MapView
             style={{ flex: 1 }}
             region={location}
@@ -271,16 +221,33 @@ export default function MapScreen() {
                   strokeColor="blue"
                   strokeWidth={2}
                 />
-                {polygonPoints.length >= 3 && (
+                {polygonClosed && (
                   <Polygon
                     coordinates={polygonPoints}
                     strokeColor="#000"
                     fillColor="rgba(0, 200, 0, 0.5)"
-                    strokeWidth={2}
+                    strokeWidth={1}
                   />
+                )}
+                {isDrawing && polygonPoints.length >= 1 && (
+                  <Marker
+                    coordinate={polygonPoints[0]}
+                    anchor={{ x: 0.5, y: 0.5 }}
+                    onPress={handleFirstMarkerPress} // 🛠 Close only when first marker tapped
+                  >
+                    <View style={{
+                      height: 14,
+                      width: 14,
+                      borderRadius: 7,
+                      backgroundColor: 'blue',
+                      borderWidth: 2,
+                      borderColor: 'white',
+                    }} />
+                  </Marker>
                 )}
               </>
             )}
+
             <Circle
               center={location}
               radius={50}
@@ -290,34 +257,52 @@ export default function MapScreen() {
             <Marker coordinate={location} title="You are here" />
           </MapView>
 
-          {/* controls right side */}
-          <View className="absolute bottom-80 right-4 z-10 flex">
-            <TouchableOpacity onPress={toggleMapType} className="p-3 bg-white mb-2 rounded-full">
-              <Ionicons name="layers-outline" size={30} color="#172554" />
+          {/* Floating Confirm Button */}
+          {confirmButtonVisible && (
+            <TouchableOpacity
+              onPress={handleConfirmArea}
+              style={{ position: 'absolute', bottom: 80, alignSelf: 'center', backgroundColor: 'green', padding: 14, borderRadius: 100 }}
+            >
+              <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>✅ Confirm</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleZoomIn} className="p-3 bg-white mb-2 rounded-full">
-              <Ionicons name="add-outline" size={30} color="#172554" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleZoomOut} className="p-3 bg-white rounded-full">
-              <Ionicons name="remove-outline" size={30} color="#172554" />
-            </TouchableOpacity>
-          </View>
+          )}
 
-          <View className="absolute right-4 bottom-5 z-10 flex">
-            <TouchableOpacity onPress={handleMyLocation} className="p-3 bg-white rounded-full my-2">
+          {/* Controls */}
+          <View style={{ position: 'absolute', bottom: 20, right: 20 }}>
+            <TouchableOpacity onPress={handleMyLocation} style={buttonStyle}>
               <Ionicons name="location-outline" size={28} color="#0EA5E9" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleStartDrawing} className="p-3 bg-white rounded-full my-2">
+            <TouchableOpacity onPress={handleZoomIn} style={buttonStyle}>
+              <Ionicons name="add-outline" size={28} color="#0EA5E9" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleZoomOut} style={buttonStyle}>
+              <Ionicons name="remove-outline" size={28} color="#0EA5E9" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleStartDrawing} style={buttonStyle}>
               <Ionicons name="create-outline" size={28} color="#0EA5E9" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleClearPolygon} className="p-3 bg-white rounded-full my-2">
+            <TouchableOpacity onPress={handleClearPolygon} style={buttonStyle}>
               <Ionicons name="trash-outline" size={28} color="#0EA5E9" />
             </TouchableOpacity>
+            {isDrawing && (
+              <TouchableOpacity onPress={handleStopDrawing} style={buttonStyle}>
+                <Ionicons name="close-outline" size={28} color="#EF4444" />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       ) : (
-        <Text className="text-center text-lg mt-20">Click below to fetch your location</Text>
+        <Text style={{ textAlign: 'center', marginTop: 20 }}>Click below to fetch your location</Text>
       )}
     </View>
   );
 }
+
+const buttonStyle = {
+  backgroundColor: 'white',
+  padding: 10,
+  marginVertical: 5,
+  borderRadius: 50,
+  alignItems: 'center',
+};
+
