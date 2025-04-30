@@ -260,7 +260,7 @@ export default function Index() {
         className="bg-sky-950 px-10 mt-5 py-3 rounded-3xl mb-4"
         style={{ marginBottom: height * 0.04 }}
       >
-        <Text className="text-white text-xs mb-2 text-center">
+        {/* <Text className="text-white text-xs mb-2 text-center">
           Expo Token: {expoPushToken}
         </Text>
 
@@ -273,7 +273,7 @@ export default function Index() {
           <Text className="text-blue-500 text-xs text-center">
             ✅ After Login Response: {JSON.stringify(afterLoginResponse)}
           </Text>
-        )}
+        )} */}
 
         <Text className="text-white text-lg font-semibold text-center">
           Get Started
