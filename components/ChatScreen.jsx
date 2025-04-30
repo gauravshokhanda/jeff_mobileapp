@@ -10,14 +10,17 @@ import {
   Image,
   SafeAreaView,
   Dimensions,
+  Modal,
 } from "react-native";
-import { Ionicons, Entypo } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
 import { API, baseUrl } from "../config/apiConfig";
 import { ref, onValue, push, set, serverTimestamp } from "firebase/database";
 import { database } from "../app/lib/firebaseConfig";
+import * as ImagePicker from "expo-image-picker";
+import ImageViewing from "react-native-image-viewing";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const POST_CONTENT_WIDTH = SCREEN_WIDTH * 0.92;
@@ -29,12 +32,14 @@ const ChatScreen = () => {
   const [inputText, setInputText] = useState("");
   const [statusMessage, setStatusMessage] = useState({ type: "", message: "" });
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(null); // For preview
+  const [fullScreenImage, setFullScreenImage] = useState(null); // For full screen view
+  const [isImageViewVisible, setImageViewVisible] = useState(false); // Toggle modal
 
   const token = useSelector((state) => state.auth.token);
   const currentUserId = useSelector((state) => state.auth.user.id);
   const router = useRouter();
 
-  // Fetch recipient user info
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -55,7 +60,6 @@ const ChatScreen = () => {
     if (user_id) fetchUser();
   }, [user_id, token]);
 
-  // Mark messages as read
   useEffect(() => {
     const markMessagesAsRead = async () => {
       try {
@@ -74,7 +78,6 @@ const ChatScreen = () => {
     }
   }, [user_id, token]);
 
-  // Real-time messages from Firebase
   useEffect(() => {
     if (!user_id || !currentUserId) return;
 
@@ -94,6 +97,7 @@ const ChatScreen = () => {
             sender: msg.senderId === currentUserId ? "me" : "other",
             seen: msg.seen || false,
             timestamp: msg.timestamp,
+            image: msg.image || null,
           }));
           setMessages(
             messagesArray.sort((a, b) => a.timestamp - b.timestamp).reverse()
@@ -114,50 +118,85 @@ const ChatScreen = () => {
     return () => unsubscribe();
   }, [user_id, currentUserId]);
 
-  // Send message
   const sendMessage = async () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim() && !selectedImage) return;
 
-    const messageToSend = inputText; // preserve current input
-    setInputText(""); // clear input immediately
+    const imageUri = selectedImage;
+    setInputText("");
+    setSelectedImage(null);
 
-    const newMessage = {
-      text: inputText,
-      senderId: currentUserId,
-      timestamp: serverTimestamp(),
-      seen: false,
-    };
+    const chatRoomId = [currentUserId, user_id].sort().join("_");
+
+    const formData = new FormData();
+    formData.append("message", inputText);
+    formData.append("receiver_id", user_id);
+
+    if (imageUri) {
+      const filename = imageUri.split("/").pop();
+      const fileType = filename.split(".").pop();
+
+      formData.append("file", {
+        uri: imageUri,
+        name: filename,
+        type: `image/${fileType}`,
+      });
+    }
 
     try {
-      const chatRoomId = [currentUserId, user_id].sort().join("_");
+      const response = await API.post("/send-message", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Send message failed");
+      }
+
+      const imageUrl = response.data.data?.file_path || null;
+
+      const newMessage = {
+        text: inputText,
+        senderId: currentUserId,
+        timestamp: serverTimestamp(),
+        seen: false,
+        image: imageUrl,
+      };
+
       const messagesRef = ref(database, `chats/${chatRoomId}`);
       const newMessageRef = push(messagesRef);
       await set(newMessageRef, newMessage);
-
-      await API.post(
-        "send-message",
-        { message: inputText, receiver_id: user_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      // setInputText("");
     } catch (error) {
       console.error("Error sending message:", error);
       setStatusMessage({
         type: "error",
-        message: `Failed to send message: ${
-          error.response?.data?.message || error.message
-        }`,
+        message: "Failed to send message: " + error.message,
       });
     }
   };
 
-  // Render message bubble (no images)
+  const pickImageAndSend = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.7,
+      });
+
+      if (!result.canceled) {
+        const uri = result.assets[0].uri;
+        setSelectedImage(uri); // Preview only
+      }
+    } catch (err) {
+      console.error("Image selection failed:", err);
+      setStatusMessage({
+        type: "error",
+        message: "Image selection failed: " + err.message,
+      });
+    }
+  };
+
   const renderMessage = ({ item }) => (
     <View
       className={`mx-3 my-2 max-w-[80%] ${
@@ -169,14 +208,37 @@ const ChatScreen = () => {
           item.sender === "me" ? "bg-sky-950" : "bg-gray-100"
         }`}
       >
-        <Text
-          className={`text-base ${
-            item.sender === "me" ? "text-white" : "text-gray-900"
-          }`}
-          style={{ flexWrap: "wrap" }}
-        >
-          {item.text}
-        </Text>
+        {item.image && (
+          <TouchableOpacity
+            onPress={() => {
+              setFullScreenImage([{ uri: item.image }]);
+              setImageViewVisible(true);
+            }}
+          >
+            <Image
+              source={{ uri: item.image }}
+              style={{
+                width: 200,
+                height: 200,
+                borderRadius: 10,
+                marginBottom: 5,
+                backgroundColor: "#f3f4f6",
+              }}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
+        )}
+
+        {!!item.text && (
+          <Text
+            className={`text-base ${
+              item.sender === "me" ? "text-white" : "text-gray-900"
+            }`}
+            style={{ flexWrap: "wrap" }}
+          >
+            {item.text}
+          </Text>
+        )}
       </View>
       {item.sender === "me" && (
         <Ionicons
@@ -283,10 +345,33 @@ const ChatScreen = () => {
             </>
           )}
 
-          {/* Input bar */}
+          {selectedImage && (
+            <View className="px-4">
+              <View className="relative w-24 h-24 mb-2">
+                <Image
+                  source={{ uri: selectedImage }}
+                  style={{ width: 96, height: 96, borderRadius: 8 }}
+                />
+                <TouchableOpacity
+                  onPress={() => setSelectedImage(null)}
+                  style={{
+                    position: "absolute",
+                    top: -8,
+                    right: -8,
+                    backgroundColor: "white",
+                    borderRadius: 12,
+                    padding: 2,
+                  }}
+                >
+                  <Ionicons name="close" size={16} color="black" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+
           <View className="flex-row items-end p-4 bg-white border-t border-gray-300">
-            <TouchableOpacity className="mr-2">
-              <Entypo name="emoji-happy" size={28} color="gray" />
+            <TouchableOpacity className="mr-2" onPress={pickImageAndSend}>
+              <Ionicons name="image-outline" size={28} color="gray" />
             </TouchableOpacity>
 
             <View className="flex-1 bg-gray-200 rounded-2xl px-3 py-2 max-h-32">
@@ -309,6 +394,14 @@ const ChatScreen = () => {
           </View>
         </View>
       </KeyboardAvoidingView>
+
+      {/* Fullscreen Image Viewer */}
+      <ImageViewing
+        images={fullScreenImage || []}
+        imageIndex={0}
+        visible={isImageViewVisible}
+        onRequestClose={() => setImageViewVisible(false)}
+      />
     </SafeAreaView>
   );
 };
