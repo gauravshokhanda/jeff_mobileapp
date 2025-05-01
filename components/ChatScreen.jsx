@@ -32,9 +32,9 @@ const ChatScreen = () => {
   const [inputText, setInputText] = useState("");
   const [statusMessage, setStatusMessage] = useState({ type: "", message: "" });
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState(null); // For preview
-  const [fullScreenImage, setFullScreenImage] = useState(null); // For full screen view
-  const [isImageViewVisible, setImageViewVisible] = useState(false); // Toggle modal
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [fullScreenImage, setFullScreenImage] = useState(null);
+  const [isImageViewVisible, setImageViewVisible] = useState(false);
 
   const token = useSelector((state) => state.auth.token);
   const currentUserId = useSelector((state) => state.auth.user.id);
