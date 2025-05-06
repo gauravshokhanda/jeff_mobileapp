@@ -15,10 +15,10 @@ import { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "expo-router";
 import { API } from "../../config/apiConfig";
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function PropertyList() {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const postContentWidth = screenWidth * 0.92;
   const router = useRouter();
   const token = useSelector((state) => state.auth.token);
@@ -61,7 +61,11 @@ export default function PropertyList() {
     }
   }, [searchQuery]);
 
-  const fetchProperties = async (pageNumber, isRefresh = false, query = searchQuery) => {
+  const fetchProperties = async (
+    pageNumber,
+    isRefresh = false,
+    query = searchQuery
+  ) => {
     if (!isRefresh && (!hasMore || isFetching)) return;
     setIsFetching(true);
 
@@ -75,7 +79,11 @@ export default function PropertyList() {
       );
 
       if (response.data?.data?.data && Array.isArray(response.data.data.data)) {
-        setProperties((prev) => (isRefresh ? response.data.data.data : [...prev, ...response.data.data.data]));
+        setProperties((prev) =>
+          isRefresh
+            ? response.data.data.data
+            : [...prev, ...response.data.data.data]
+        );
         setHasMore(!!response.data.data.next_page_url);
         if (!isRefresh) setPage(pageNumber);
       } else {
@@ -83,7 +91,10 @@ export default function PropertyList() {
         setProperties([]); // Reset properties if response is invalid
       }
     } catch (error) {
-      console.log("Error fetching properties:", error.response?.data || error.message);
+      console.log(
+        "Error fetching properties:",
+        error.response?.data || error.message
+      );
       setProperties([]); // Reset properties on error
     } finally {
       setIsFetching(false);
@@ -93,16 +104,16 @@ export default function PropertyList() {
     }
   };
 
-  const handleScroll = (event) => { 
-    const offsetY = event.nativeEvent.contentOffset.y; 
-    setScrollY(offsetY); 
- 
-    if (offsetY <= -160 && !refreshing) { 
-      setRefreshing(true); 
-      fetchProperties(1, true); 
-      setPage(1); 
-    } 
-  }; 
+  const handleScroll = (event) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setScrollY(offsetY);
+
+    if (offsetY <= -160 && !refreshing) {
+      setRefreshing(true);
+      fetchProperties(1, true);
+      setPage(1);
+    }
+  };
 
   const handleLoadMore = ({ nativeEvent }) => {
     if (
@@ -122,7 +133,7 @@ export default function PropertyList() {
         style={{ height: screenHeight * 0.4 }}
       >
         <View className={`flex-row items-center px-4`}>
-        <TouchableOpacity onPress={() => router.back()} className="mr-3">
+          <TouchableOpacity onPress={() => router.back()} className="mr-3">
             <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
           <View className="flex-row flex-1 items-center bg-white rounded-xl px-3 my-3">
@@ -136,7 +147,6 @@ export default function PropertyList() {
                 Platform.OS === "ios" ? "py-3" : "py-3"
               }`}
             />
-        
           </View>
         </View>
       </LinearGradient>
@@ -155,7 +165,11 @@ export default function PropertyList() {
         ) : (
           <>
             {searchLoading && (
-              <ActivityIndicator size="small" color="#082f49" className="mt-4" />
+              <ActivityIndicator
+                size="small"
+                color="#082f49"
+                className="mt-4"
+              />
             )}
             <ScrollView
               showsVerticalScrollIndicator={false}
@@ -167,7 +181,11 @@ export default function PropertyList() {
               scrollEventThrottle={16}
             >
               {refreshing ? (
-                <ActivityIndicator size="large" color="#082f49" className="mt-10" />
+                <ActivityIndicator
+                  size="large"
+                  color="#082f49"
+                  className="mt-10"
+                />
               ) : properties.length > 0 ? (
                 properties.map((property) => {
                   let designImages = [];
@@ -198,29 +216,30 @@ export default function PropertyList() {
                         </Text>
                       )}
 
-                      <View className="p-4 flex flex-row justify-between">
-                        <View className="flex flex-col gap-2">
-                          <Text className="text-sky-950 text-3xl font-bold">
+                      <View className="p-4 flex-row justify-between items-start space-x-4">
+                        <View className="flex-1 flex-col gap-2">
+                          <Text className="text-sky-950 text-2xl font-bold break-words">
                             ${property.total_cost.toLocaleString()}
                           </Text>
-                          <Text className="text-gray-600 text-xl">
+                          <Text className="text-gray-600 text-base">
                             #{property.zipcode}, {property.city}
                           </Text>
-                          <Text className="text-gray-400 text-base">
+                          <Text className="text-gray-400 text-sm">
                             📅 {new Date(property.created_at).toLocaleString()}
                           </Text>
                         </View>
-                        <View className="flex-col justify-between items-end gap-2 ">
-                          <Text className="text-gray-900 font-semibold text-xl">
+
+                        <View className="flex items-end justify-between min-w-[110px]">
+                          <Text className="text-gray-900 font-semibold text-sm text-right">
                             {property.project_type} Apartment
                           </Text>
                           <TouchableOpacity
-                            className="bg-sky-950 px-5 py-2 rounded-lg"
+                            className="bg-sky-950 px-4 py-2 rounded-md mt-2"
                             onPress={() =>
                               router.push(`/PropertyDetails?id=${property.id}`)
                             }
                           >
-                            <Text className="text-white font-semibold text-lg">
+                            <Text className="text-white text-sm font-semibold">
                               View
                             </Text>
                           </TouchableOpacity>
@@ -231,7 +250,7 @@ export default function PropertyList() {
                 })
               ) : (
                 <Text className="text-gray-500 text-center mt-4">
-                  {searchQuery 
+                  {searchQuery
                     ? `No properties found for "${searchQuery}"`
                     : "No properties available"}
                 </Text>

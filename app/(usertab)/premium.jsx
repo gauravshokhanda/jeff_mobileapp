@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  SafeAreaView,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Feather, Ionicons } from "@expo/vector-icons";
 
@@ -14,12 +20,10 @@ const PlanCard = ({
     <Text className="text-center text-lg font-semibold text-gray-800 mb-2">
       {title}
     </Text>
-
     <Text className="text-center text-3xl font-bold text-black">
       ${price}
       <Text className="text-base font-medium text-gray-500"> /month</Text>
     </Text>
-
     <TouchableOpacity
       activeOpacity={0.85}
       className={`mt-6 mb-6 px-4 py-3 rounded-md ${
@@ -34,7 +38,6 @@ const PlanCard = ({
         {buttonText}
       </Text>
     </TouchableOpacity>
-
     <View className="space-y-4">
       {features.map((feature, index) => (
         <View key={index} className="flex-row items-start space-x-3">
@@ -49,10 +52,40 @@ const PlanCard = ({
 const GeneralContractorPlans = () => {
   const navigation = useNavigation();
 
+  const plans = [
+    {
+      id: "1",
+      title: "Free Plan",
+      price: "0",
+      features: [
+        "  Create profile",
+        "  Mark property on map",
+        "  Upload 1 post only",
+        "  Receive limited proposals",
+        "  Basic support",
+      ],
+      buttonText: "Current Plan",
+      isCurrent: true,
+    },
+    {
+      id: "2",
+      title: "Premium Plan",
+      price: "19.99",
+      features: [
+        "  Unlimited posts",
+        "  Unlimited contractor proposals",
+        "  Boosted visibility",
+        "  Direct messaging & calls",
+        "  Priority support",
+      ],
+      buttonText: "Get started",
+    },
+  ];
+
   return (
-    <ScrollView className="flex-1 bg-sky-950 px-6 pt-14 pb-20">
+    <SafeAreaView className="flex-1 bg-sky-950 px-6 pt-14 pb-4">
       {/* Header */}
-      <View className="flex-row items-center space-x-4 mb-10">
+      <View className="flex-row items-center space-x-4 mb-6">
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={28} color="#ffffff" />
         </TouchableOpacity>
@@ -61,34 +94,23 @@ const GeneralContractorPlans = () => {
         </Text>
       </View>
 
-      {/* Plan Cards */}
-      <PlanCard
-        title="Free Plan"
-        price="0"
-        features={[
-          "  Create profile",
-          "  Mark property on map",
-          "  Upload 1 post only",
-          "  Receive limited proposals",
-          "  Basic support",
-        ]}
-        buttonText="Current Plan"
-        isCurrent
-      />
+      {/* Notice */}
+      <View className="bg-yellow-100 border-l-4 border-yellow-400 p-4 rounded-lg mb-6">
+        <Text className="text-yellow-800 font-semibold">
+          ⚠️ These plans are not currently active. We’ll notify you once they
+          become available.
+        </Text>
+      </View>
 
-      <PlanCard
-        title="Premium Plan"
-        price="19.99"
-        features={[
-          "  Unlimited posts",
-          "  Unlimited contractor proposals",
-          "  Boosted visibility",
-          "  Direct messaging & calls",
-          "  Priority support",
-        ]}
-        buttonText="Get started"
+      {/* Plan List */}
+      <FlatList
+        data={plans}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <PlanCard {...item} />}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
       />
-    </ScrollView>
+    </SafeAreaView>
   );
 };
 

@@ -26,7 +26,10 @@ const postContentWidth = screenWidth * 0.92;
 const PropertyPost = () => {
   const { breakdownCost } = useSelector((state) => state.breakdownCost);
   const token = useSelector((state) => state.auth.token);
-  const parsedCost = useMemo(() => breakdownCost ? JSON.parse(breakdownCost) : {}, [breakdownCost]);
+  const parsedCost = useMemo(
+    () => (breakdownCost ? JSON.parse(breakdownCost) : {}),
+    [breakdownCost]
+  );
 
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -72,19 +75,36 @@ const PropertyPost = () => {
   };
 
   const removeImage = (field, index) => {
-    updateForm(field, form[field].filter((_, i) => i !== index));
+    updateForm(
+      field,
+      form[field].filter((_, i) => i !== index)
+    );
   };
 
   const validateForm = () => {
-    const required = ["numberOfDays", "totalCost", "zipCode", "area", "city", "projectType", "description"];
+    const required = [
+      "numberOfDays",
+      "totalCost",
+      "zipCode",
+      "area",
+      "city",
+      "projectType",
+      "description",
+    ];
     for (const field of required) {
       if (!form[field]?.trim()) {
-        Alert.alert("Missing Field", `Please fill ${field.replace(/([A-Z])/g, ' $1')}`);
+        Alert.alert(
+          "Missing Field",
+          `Please fill ${field.replace(/([A-Z])/g, " $1")}`
+        );
         return false;
       }
     }
     if (!form.floorMapImages.length || !form.designImages.length) {
-      Alert.alert("Missing Images", "Please upload floor map and design images.");
+      Alert.alert(
+        "Missing Images",
+        "Please upload floor map and design images."
+      );
       return false;
     }
     return true;
@@ -104,25 +124,43 @@ const PropertyPost = () => {
       description: form.description,
     };
 
-    Object.entries(basicFields).forEach(([key, value]) => formData.append(key, value));
+    Object.entries(basicFields).forEach(([key, value]) =>
+      formData.append(key, value)
+    );
 
     form.floorMapImages.forEach((uri, idx) => {
-      formData.append("floor_maps_image[]", { uri, type: "image/jpeg", name: `floor_map_${idx}.jpg` });
+      formData.append("floor_maps_image[]", {
+        uri,
+        type: "image/jpeg",
+        name: `floor_map_${idx}.jpg`,
+      });
     });
 
     form.designImages.forEach((uri, idx) => {
-      formData.append("design_image[]", { uri, type: "image/jpeg", name: `design_image_${idx}.jpg` });
+      formData.append("design_image[]", {
+        uri,
+        type: "image/jpeg",
+        name: `design_image_${idx}.jpg`,
+      });
     });
 
     try {
       setLoading(true);
       await axios.post("https://g32.iamdeveloper.in/api/job-post", formData, {
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
       });
-      Alert.alert("Success", "Job posted successfully!", [{ text: "OK", onPress: () => router.replace("/") }]);
+      Alert.alert("Success", "Job posted successfully!", [
+        { text: "OK", onPress: () => router.replace("/") },
+      ]);
       resetForm();
     } catch (error) {
-      Alert.alert("Error", error?.response?.data?.message || "Something went wrong!");
+      Alert.alert(
+        "Error",
+        error?.response?.data?.message || "Something went wrong!"
+      );
     } finally {
       setLoading(false);
     }
@@ -159,7 +197,7 @@ const PropertyPost = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
-     <LinearGradient
+      <LinearGradient
         colors={["#082f49", "transparent"]}
         style={{ height: "40%" }}
       >
@@ -176,25 +214,34 @@ const PropertyPost = () => {
         </View>
       </LinearGradient>
 
-      <View className="flex-1 bg-white rounded-t-3xl shadow-lg p-4" style={{
-        marginTop: -screenHeight * 0.25,
-        width: postContentWidth,
-        marginHorizontal: (screenWidth - postContentWidth) / 2,
-      }}>
+      <View
+        className="flex-1 bg-white rounded-t-3xl shadow-lg p-4"
+        style={{
+          marginTop: -screenHeight * 0.25,
+          width: postContentWidth,
+          marginHorizontal: (screenWidth - postContentWidth) / 2,
+        }}
+      >
         <KeyboardAvoidingView
           className="flex-1"
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
         >
           <ScrollView showsVerticalScrollIndicator={false}>
-            {[{ label: "Number of Days", field: "numberOfDays" },
+            {[
+              { label: "Number of Days", field: "numberOfDays" },
               { label: "Total Cost", field: "totalCost" },
               { label: "Zip Code", field: "zipCode" },
               { label: "Area", field: "area" },
               { label: "City", field: "city" },
-              { label: "Project Type", field: "projectType" }
+              { label: "Project Type", field: "projectType" },
             ].map(({ label, field }) => (
-              <InputField key={field} label={label} value={form[field]} editable={false} />
+              <InputField
+                key={field}
+                label={label}
+                value={form[field]}
+                editable={false}
+              />
             ))}
 
             <InputField
