@@ -9,16 +9,36 @@ import {
   Platform,
   TextInput,
   SafeAreaView,
+  Modal,
+  ScrollView,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../../config/apiConfig";
 import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
 import SortingModal from "../../components/SortingModal";
 import { useWindowDimensions } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+
+const getMimeType = (uri) => {
+  const extension = uri.split(".").pop().toLowerCase();
+  switch (extension) {
+    case "jpg":
+    case "jpeg":
+      return "image/jpeg";
+    case "png":
+      return "image/png";
+    case "gif":
+      return "image/gif";
+    case "svg":
+      return "image/svg+xml";
+    default:
+      return "application/octet-stream";
+  }
+};
 
 export default function MyPosts() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -36,6 +56,8 @@ export default function MyPosts() {
   const [modalVisible, setModalVisible] = useState(false);
   const [sortOrder, setSortOrder] = useState("");
   const [scrollOffset, setScrollOffset] = useState(0);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
 
   const iconRef = useRef(null);
   const { width, height } = useWindowDimensions();
@@ -67,18 +89,14 @@ export default function MyPosts() {
       const response = await API.get(
         `job-posts/${userId}&sort_order=${order}`,
         {
-          params: {
-            page,
-            city: searchQuery,
-            sort_order: order,
-          },
+          params: { page, city: searchQuery, sort_order: order },
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       const newPosts = response.data.data.data || [];
       setResults(append ? [...results, ...newPosts] : newPosts);
       setLastPage(response.data.data.last_page || 1);
-    } catch (error) {
+    } catch {
       if (!append) setResults([]);
     } finally {
       setLoading(false);
@@ -115,8 +133,8 @@ export default function MyPosts() {
       return;
     }
     try {
-      const response = await axios.post(
-        `https://g32.iamdeveloper.in/api/citie-search`,
+      const response = await API.post(
+        `citie-search`,
         { city: query },
         {
           headers: {
@@ -127,7 +145,7 @@ export default function MyPosts() {
       );
       const filteredResults = response.data.data || [];
       setResults(filteredResults);
-    } catch (error) {
+    } catch {
       setResults([]);
     }
   };
@@ -182,13 +200,147 @@ export default function MyPosts() {
             </Text>
             <Text>{item.area} sqft</Text>
           </View>
-          <View>
+          <View className="items-end">
             <Text className="text-lg font-bold">
               {item.project_type} Apartment
             </Text>
+            <TouchableOpacity
+              className="bg-sky-950 px-4 py-2 rounded-full mt-3"
+              onPress={() => {
+                setEditingPost(item);
+                setEditModalVisible(true);
+              }}
+            >
+              <Text className="text-white font-semibold text-sm">Edit</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
+    );
+  };
+
+  const EditPostModal = () => {
+    const [area, setArea] = useState(editingPost.area);
+    const [cost, setCost] = useState(editingPost.total_cost);
+    const [zipcode, setZipcode] = useState(editingPost.zipcode);
+    const [projectType, setProjectType] = useState(editingPost.project_type);
+    const [description, setDescription] = useState(editingPost.description);
+    const [images, setImages] = useState(
+      editingPost.design_image ? JSON.parse(editingPost.design_image) : []
+    );
+
+    const handleImagePick = async (index) => {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.7,
+      });
+
+      if (!result.canceled && result.assets?.[0]?.uri) {
+        const updatedImages = [...images];
+        updatedImages[index] = result.assets[0].uri;
+        setImages(updatedImages);
+      }
+    };
+
+    const handleUpdate = async () => {
+      const formData = new FormData();
+      formData.append("area", area);
+      formData.append("total_cost", cost);
+      formData.append("zipcode", zipcode);
+      formData.append("project_type", projectType);
+      formData.append("description", description);
+
+      images.forEach((img, index) => {
+        if (img.startsWith("file://")) {
+          const type = getMimeType(img);
+          const name = img.split("/").pop() || `design_${index}.jpg`;
+          formData.append("design_image[]", { uri: img, name, type });
+        }
+      });
+
+      try {
+        await API.post(`job-post/update/${editingPost.id}`, formData, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        Alert.alert("Success", "Post updated successfully");
+        setEditModalVisible(false);
+        handleRefresh();
+      } catch (err) {
+        console.log("Update error:", err.response?.data || err.message);
+        Alert.alert("Error", "Failed to update post");
+      }
+    };
+
+    return (
+      <Modal visible={editModalVisible} animationType="slide" transparent>
+        <View className="flex-1 justify-center items-center bg-black/40 px-4">
+          <View className="bg-white w-full max-w-md rounded-2xl p-6">
+            <View className="flex-row justify-between items-center mb-6">
+              <Text className="text-xl font-semibold text-black">
+                Edit Portfolio
+              </Text>
+              <TouchableOpacity onPress={() => setEditModalVisible(false)}>
+                <Ionicons name="close" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+
+            <View className="items-center mb-6 relative">
+              <TouchableOpacity onPress={() => handleImagePick(0)}>
+                <Image
+                  source={{
+                    uri:
+                      images[0]?.startsWith("http") ||
+                      images[0]?.startsWith("file:")
+                        ? images[0]
+                        : `${baseUrl}${images[0]}`,
+                  }}
+                  className="w-24 h-24 rounded-full bg-gray-200"
+                  resizeMode="cover"
+                />
+                <View className="absolute bottom-0 right-0 bg-sky-900 p-2 rounded-full border border-white">
+                  <Ionicons name="pencil" size={16} color="white" />
+                </View>
+              </TouchableOpacity>
+              {!images[0] && (
+                <Text className="text-sm text-gray-500 mt-2">No photo yet</Text>
+              )}
+            </View>
+
+            {[
+              ["Project Name", projectType, setProjectType],
+              ["Description", description, setDescription],
+              ["Address", area, setArea],
+              ["Zipcode", zipcode, setZipcode],
+            ].map(([label, val, setter], idx) => (
+              <View key={idx} className="mb-4">
+                <Text className="text-sm text-gray-600 mb-1">{label}</Text>
+                <TextInput
+                  value={val}
+                  onChangeText={setter}
+                  className="border border-gray-300 rounded-lg px-4 py-2 bg-white"
+                  placeholder={`Enter ${label}`}
+                />
+              </View>
+            ))}
+
+            <View className="flex-row justify-between mt-4">
+              <TouchableOpacity
+                onPress={() => setEditModalVisible(false)}
+                className="bg-gray-200 px-6 py-3 rounded-lg"
+              >
+                <Text className="text-gray-700 font-medium">Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleUpdate}
+                className="bg-sky-900 px-6 py-3 rounded-lg"
+              >
+                <Text className="text-white font-medium">Update</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     );
   };
 
@@ -294,6 +446,8 @@ export default function MyPosts() {
           )}
         </View>
       </View>
+
+      {editModalVisible && <EditPostModal />}
     </SafeAreaView>
   );
 }

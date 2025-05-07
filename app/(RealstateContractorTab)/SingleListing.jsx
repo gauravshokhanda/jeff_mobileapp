@@ -118,7 +118,7 @@ export default function PropertyDetails() {
       <View className="w-[100%] flex-row mt-5 items-center justify-between p-3 absolute z-10 ">
         <TouchableOpacity
           onPress={() => router.back()}
-          className="mr-4 bg-gray-700 rounded-full p-2"
+          className="mr-4 mt-5 bg-gray-700 rounded-full p-2"
         >
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>

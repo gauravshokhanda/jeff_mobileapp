@@ -36,7 +36,7 @@ const CardSlider = () => {
         image: item.image ? { uri: `${baseUrl}${item.image}` } : null,
         name: item.name,
         email: item.email,
-        address: item.address,
+        address: item.company_address,
         title: item.company_name,
         description: item.description,
         profileLink: `${baseUrl}${item.upload_organisation}`,
@@ -59,9 +59,6 @@ const CardSlider = () => {
     router.push(`/ContractorProfile?user_id=${id}`);
   };
 
-
-
-
   const requireLogin = (callback) => {
     if (!token) {
       Alert.alert(
@@ -74,17 +71,16 @@ const CardSlider = () => {
           },
           {
             text: "Sign in",
-            onPress: () => router.push("/SignIn"), 
+            onPress: () => router.push("/SignIn"),
           },
         ],
         { cancelable: true }
       );
       return;
     }
-  
+
     callback();
   };
-  
 
   const handleCall = async (phone) => {
     console.log("calling to", phone);

@@ -12,7 +12,7 @@ import {
   Alert,
   SafeAreaView,
   ActivityIndicator,
-  Linking
+  Linking,
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -314,7 +314,7 @@ export default function Index() {
                       </View>
 
                       {/* User Post */}
-                      <View className="mt-8 flex-row items-start">
+                      {/* <View className="mt-8 flex-row items-start">
                         <Image
                           source={require("../../assets/images/realState/user-profile.png")} // Replace with the user image
                           className="w-10 h-10 rounded-full mr-3"
@@ -324,7 +324,7 @@ export default function Index() {
                             Jimmy Brooke
                           </Text>
                           <Text className="text-gray-600 mt-1 tracking-wider text-lg w-[90%]">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
+                            Lorem ipsum dolor sit amet, consectetur adipiscing  
                             elit, sed do eiusmod tempor incididunt ut labore et
                             dolore magna aliqua.
                             <Text className="font-bold text-black">
@@ -333,7 +333,7 @@ export default function Index() {
                             </Text>
                           </Text>
                         </View>
-                      </View>
+                      </View> */}
                     </View>
 
                     <View className="p-8 bg-gray-100 rounded-xl mb-24">
