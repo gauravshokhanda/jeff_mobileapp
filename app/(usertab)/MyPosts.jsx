@@ -245,6 +245,7 @@ export default function MyPosts() {
 
     const handleUpdate = async () => {
       const formData = new FormData();
+
       formData.append("area", area);
       formData.append("total_cost", cost);
       formData.append("zipcode", zipcode);
@@ -252,17 +253,25 @@ export default function MyPosts() {
       formData.append("description", description);
 
       images.forEach((img, index) => {
+        // Only append new/updated local files
         if (img.startsWith("file://")) {
           const type = getMimeType(img);
           const name = img.split("/").pop() || `design_${index}.jpg`;
-          formData.append("design_image[]", { uri: img, name, type });
+          formData.append(`design_image[${index}]`, { uri: img, name, type });
         }
       });
 
       try {
-        await API.post(`job-post/update/${editingPost.id}`, formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await API.post(
+          `job-post/update/${editingPost.id}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
         Alert.alert("Success", "Post updated successfully");
         setEditModalVisible(false);
         handleRefresh();
@@ -278,7 +287,7 @@ export default function MyPosts() {
           <View className="bg-white w-full max-w-md rounded-2xl p-6">
             <View className="flex-row justify-between items-center mb-6">
               <Text className="text-xl font-semibold text-black">
-                Edit Portfolio
+                Edit Post
               </Text>
               <TouchableOpacity onPress={() => setEditModalVisible(false)}>
                 <Ionicons name="close" size={24} color="black" />
