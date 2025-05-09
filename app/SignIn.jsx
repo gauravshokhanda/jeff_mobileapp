@@ -24,87 +24,106 @@ import fetchUserData from "./utils/fetchUserData";
 
 export default function SignIn() {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
-
   const postContentWidth = screenWidth * 0.92;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userProfileComplete, setUserProfileComplete] = useState(null); // Initialize as null for clarity
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true); // Unified loading state
+  const [userProfileComplete, setUserProfileComplete] = useState(null);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(false);
 
   const router = useRouter();
   const dispatch = useDispatch();
+  const Authtoken = useSelector((state) => state.auth.token);
   const { isAuthenticated, token, user } = useSelector((state) => state.auth);
 
   // Centralized auth and profile check
-  useEffect(() => {
-    const initializeAuth = async () => {
-      setIsCheckingAuth(true);
-      try {
-        // Check for persisted token
-        const storedData = await AsyncStorage.getItem("persist:root");
-        if (!storedData || !token || !user?.id) {
-          setIsCheckingAuth(false);
-          return;
-        }
+  // useEffect(() => {
+  //   const initializeAuth = async () => {
+  //     setIsCheckingAuth(true);
+  //     try {
+  //       // Check for persisted token
+  //       const storedData = await AsyncStorage.getItem("persist:root");
+  //       if (!storedData || !token || !user?.id) {
+  //         setIsCheckingAuth(false);
+  //         return;
+  //       }
 
-        // Fetch user profile data if token and user ID exist
-        const userData = await fetchUserData(token, user.id, setIsCheckingAuth);
-        if (userData?.data?.is_profile_complete !== undefined) {
-          setUserProfileComplete(userData.data);
-        }
+  //       // Fetch user profile data if token and user ID exist
+  //       const userData = await fetchUserData(token, user.id, setIsCheckingAuth);
+  //       if (userData?.data?.is_profile_complete !== undefined) {
+  //         setUserProfileComplete(userData.data);
+  //       }
 
-        // Navigate based on role and profile completion
-        if (isAuthenticated && token && userData?.data) {
-          const { role, id } = user;
-          if (role === 3) {
-            router.replace(
-              userData.data.is_profile_complete
-                ? "/(generalContractorTab)"
-                : "/ContractorProfileComplete"
-            );
-          } else if (role === 4) {
-            router.replace(
-              userData.data.is_profile_complete
-                ? "/(RealstateContractorTab)"
-                : "/(RealstateContractorTab)/PropertyPost"
-            );
-          } else {
-            router.replace("/(usertab)");
-          }
-        }
-      } catch (error) {
-        console.error("Auth initialization error:", error);
-      } finally {
-        setIsCheckingAuth(false);
-      }
-    };
+  //       // Navigate based on role and profile completion
+  //       if (isAuthenticated && token && userData?.data) {
+  //         const { role, id } = user;
+  //         if (role === 3) {
+  //           router.replace(
+  //             userData.data.is_profile_complete
+  //               ? "/(generalContractorTab)"
+  //               : "/ContractorProfileComplete"
+  //           );
+  //         } else if (role === 4) {
+  //           router.replace(
+  //             userData.data.is_profile_complete
+  //               ? "/(RealstateContractorTab)"
+  //               : "/(RealstateContractorTab)/PropertyPost"
+  //           );
+  //         } else {
+  //           router.replace("/(usertab)");
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Auth initialization error:", error);
+  //     } finally {
+  //       setIsCheckingAuth(false);
+  //     }
+  //   };
 
-    initializeAuth();
-  }, [isAuthenticated, token, user, router, dispatch]);
+  //   initializeAuth();
+  // }, [isAuthenticated, token, user, router, dispatch]);
+
+  const handleSendVerification = async () => {
+    try {
+      const res = await API.post(
+        "email/verification-notification",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${Authtoken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      Alert.alert(
+        "Verification",
+        res.data.message || "Verification link sent."
+      );
+    } catch (err) {
+      Alert.alert(
+        "Error",
+        err.response?.data?.message || "Failed to send verification link."
+      );
+    }
+  };
 
   const handleSignIn = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Email and Password are required.");
       return;
     }
-  
+
     setIsCheckingAuth(true);
     try {
       const response = await API.post("auth/login", { email, password });
-  
-      // ✅ Log full API response
-      console.log("LOGIN API RESPONSE:", response.data.error);
-  
+
       const { token, user } = response.data;
-  
-      // Save token and user in Redux
+
       dispatch(setLogin({ token, user }));
-  
-      // Fetch profile data after login
+
       const userData = await fetchUserData(token, user.id, setIsCheckingAuth);
       const profileComplete = userData?.data?.is_profile_complete;
-  
-      // Navigate based on role and profile completion
+
       if (user.role === 3) {
         router.replace(
           profileComplete
@@ -119,23 +138,30 @@ export default function SignIn() {
         router.replace("/(usertab)");
       }
     } catch (err) {
-      console.log("LOGIN ERROR RESPONSE:", err.response?.data || err); // ✅ Log error
-      let errorMessage = "An unexpected error occurred. Please try again.";
-      if (!err.response) {
-        errorMessage = "Network error. Please check your internet connection.";
-      } else if (err.response.status === 401) {
-        errorMessage = "Invalid email or password. Please try again.";
-      } else if (err.response.data?.error) {
-        errorMessage = err.response.data.error; // <== show this in alert
+      console.log("LOGIN ERROR RESPONSE:", err.response?.data || err);
+      const errorMessage = err.response?.data?.error || "Unexpected error";
+
+      if (errorMessage.toLowerCase().includes("email not verified")) {
+        Alert.alert(
+          "Email Not Verified",
+          errorMessage,
+          [
+            {
+              text: "Send Verification Link",
+              onPress: handleSendVerification,
+            },
+            { text: "Cancel", style: "cancel" },
+          ],
+          { cancelable: true }
+        );
+      } else {
+        Alert.alert("Error", errorMessage);
       }
-      Alert.alert("Error", errorMessage);
     } finally {
       setIsCheckingAuth(false);
     }
   };
-  
 
-  // Show loading spinner while checking auth or signing in
   if (isCheckingAuth) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
@@ -144,7 +170,6 @@ export default function SignIn() {
     );
   }
 
-  // Render sign-in form only if auth check is complete and user is not authenticated
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
       <LinearGradient
@@ -169,7 +194,7 @@ export default function SignIn() {
                 style={{
                   width: screenWidth * 0.38,
                   height: screenWidth * 0.38,
-                  borderRadius: screenWidth * 0.19, // Ensures always a perfect circle
+                  borderRadius: screenWidth * 0.19,
                   borderWidth: 4,
                   borderColor: "#082f49",
                   overflow: "hidden",
@@ -239,7 +264,6 @@ export default function SignIn() {
                     Sign up
                   </Link>
                 </View>
-
                 <TouchableOpacity
                   onPress={() => router.replace("/(usertab)")}
                   className="mt-4 bg-gray-300 px-6 py-3 rounded-xl"

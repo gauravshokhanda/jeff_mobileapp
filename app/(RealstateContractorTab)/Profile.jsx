@@ -2,8 +2,6 @@ import {
   View,
   Dimensions,
   Text,
-  TextInput,
-  FlatList,
   TouchableOpacity,
   Image,
   KeyboardAvoidingView,
@@ -11,11 +9,8 @@ import {
   ScrollView,
   Alert,
   SafeAreaView,
-  Modal,
-  StyleSheet,
 } from "react-native";
 import React, { useState } from "react";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector, useDispatch } from "react-redux";
 import { router } from "expo-router";
@@ -24,6 +19,7 @@ import Box from "../../assets/images/MD.png";
 import { setLogout } from "../../redux/slice/authSlice";
 import { API, baseUrl } from "../../config/apiConfig";
 import DeleteAccountModal from "../../components/DeleteAccountModal";
+import ResetPasswordModal from "../../components/ResetPasswordModal";
 
 const imageData = [
   { id: 2, label: "My Listing", icon: "rss", screen: "MyListing", source: Box },
@@ -39,6 +35,13 @@ const imageData = [
     label: "Chat",
     icon: "comments",
     screen: "RealStateChatList",
+    source: Box,
+  },
+  {
+    id: 3,
+    label: "Reset Password",
+    icon: "key",
+    screen: "resetPassword",
     source: Box,
   },
   {
@@ -72,6 +75,7 @@ export default function Index() {
   const dispatch = useDispatch();
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [resetModalVisible, setResetModalVisible] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -89,7 +93,9 @@ export default function Index() {
       ]);
     } else if (screen === "deleteAccount") {
       setShowDeleteModal(true);
-    } else {
+    } else if (screen === "resetPassword") {
+      setResetModalVisible(true);
+    } else if (screen) {
       router.push(screen);
     }
   };
@@ -164,7 +170,7 @@ export default function Index() {
       </LinearGradient>
 
       <View
-        className="rounded-3xl "
+        className="rounded-3xl"
         style={{
           position: "absolute",
           top: screenHeight * 0.2,
@@ -188,7 +194,7 @@ export default function Index() {
                 <TouchableOpacity
                   key={item.id}
                   activeOpacity={0.7}
-                  className="relative  h-28 flex items-center justify-center"
+                  className="relative h-28 flex items-center justify-center"
                   onPress={() => handlePress(item.screen)}
                   style={{ width: screenWidth * 0.4 }}
                 >
@@ -208,9 +214,20 @@ export default function Index() {
           </ScrollView>
         </KeyboardAvoidingView>
       </View>
+
+      {/* Modals */}
       <DeleteAccountModal
         visible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
+      />
+
+      <ResetPasswordModal
+        visible={resetModalVisible}
+        onClose={() => setResetModalVisible(false)}
+        onSubmit={({ currentPassword, newPassword }) => {
+          console.log("Resetting password", currentPassword, newPassword);
+          setResetModalVisible(false);
+        }}
       />
     </SafeAreaView>
   );

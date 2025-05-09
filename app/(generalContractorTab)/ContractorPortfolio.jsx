@@ -17,6 +17,8 @@ import { API, baseUrl } from "../../config/apiConfig";
 import { Alert } from "react-native";
 
 const ProfileCard = () => {
+  console.log("ResetPasswordModal Loaded!");
+  console.log("ResetPasswordModal typeof:", typeof ResetPasswordModal);
   const token = useSelector((state) => state.auth.token);
   const navigation = useNavigation();
   const router = useRouter();
@@ -243,6 +245,7 @@ const ProfileCard = () => {
       </View>
 
       {/* Portfolio Section */}
+
       <View className="flex-1 mx-4 mt-6">
         <View className="flex-row justify-between items-center mb-4">
           <Text className="text-xl font-semibold text-gray-800">

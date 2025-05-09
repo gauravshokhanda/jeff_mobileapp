@@ -75,15 +75,19 @@ export default function SignUp() {
       const user = response.data.data.user;
       dispatch(setSignUp({ access_token, user }));
 
-      Alert.alert("Success", "Account created successfully! Please check your email for verification.");
+      Alert.alert(
+        "Success",
+        "Account created successfully! Please check your email for verification."
+      );
       console.log("User Role After API Call:", role.key);
+      router.replace("/SignIn");
       // if (role.key == 3) {
       //   router.replace("/SignIn");
       // } else if (role.key == 4) {
       //   router.replace("/SignIn");
       // } else {
       //   router.replace("/SignIn");
-      // } 
+      // }
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "An error occurred. Please try again.";
