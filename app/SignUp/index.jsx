@@ -21,6 +21,7 @@ import ModalSelector from "react-native-modal-selector";
 import { useDispatch, useSelector } from "react-redux";
 import { setSignUp } from "../../redux/slice/authSlice";
 import { LinearGradient } from "expo-linear-gradient";
+import SignInPage from "../SignIn";
 
 export default function SignUp() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -74,15 +75,15 @@ export default function SignUp() {
       const user = response.data.data.user;
       dispatch(setSignUp({ access_token, user }));
 
-      Alert.alert("Success", "Account created successfully!");
+      Alert.alert("Success", "Account created successfully! Please check your email for verification.");
       console.log("User Role After API Call:", role.key);
-      if (role.key == 3) {
-        router.replace("/ContractorProfileComplete");
-      } else if (role.key == 4) {
-        router.replace("/(RealstateContractorTab)");
-      } else {
-        router.replace("/(usertab)");
-      }
+      // if (role.key == 3) {
+      //   router.replace("/SignIn");
+      // } else if (role.key == 4) {
+      //   router.replace("/SignIn");
+      // } else {
+      //   router.replace("/SignIn");
+      // } 
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "An error occurred. Please try again.";

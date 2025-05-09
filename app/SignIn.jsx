@@ -87,19 +87,23 @@ export default function SignIn() {
       Alert.alert("Error", "Email and Password are required.");
       return;
     }
-
+  
     setIsCheckingAuth(true);
     try {
       const response = await API.post("auth/login", { email, password });
+  
+      // ✅ Log full API response
+      console.log("LOGIN API RESPONSE:", response.data.error);
+  
       const { token, user } = response.data;
-
+  
       // Save token and user in Redux
       dispatch(setLogin({ token, user }));
-
+  
       // Fetch profile data after login
       const userData = await fetchUserData(token, user.id, setIsCheckingAuth);
       const profileComplete = userData?.data?.is_profile_complete;
-
+  
       // Navigate based on role and profile completion
       if (user.role === 3) {
         router.replace(
@@ -115,19 +119,21 @@ export default function SignIn() {
         router.replace("/(usertab)");
       }
     } catch (err) {
+      console.log("LOGIN ERROR RESPONSE:", err.response?.data || err); // ✅ Log error
       let errorMessage = "An unexpected error occurred. Please try again.";
       if (!err.response) {
         errorMessage = "Network error. Please check your internet connection.";
       } else if (err.response.status === 401) {
         errorMessage = "Invalid email or password. Please try again.";
-      } else if (err.response.data?.message) {
-        errorMessage = err.response.data.message;
+      } else if (err.response.data?.error) {
+        errorMessage = err.response.data.error; // <== show this in alert
       }
       Alert.alert("Error", errorMessage);
     } finally {
       setIsCheckingAuth(false);
     }
   };
+  
 
   // Show loading spinner while checking auth or signing in
   if (isCheckingAuth) {
