@@ -21,6 +21,7 @@ import ModalSelector from "react-native-modal-selector";
 import { useDispatch, useSelector } from "react-redux";
 import { setSignUp } from "../../redux/slice/authSlice";
 import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation } from "@react-navigation/native";
 import SignInPage from "../SignIn";
 
 export default function SignUp() {
@@ -34,6 +35,7 @@ export default function SignUp() {
   const dispatch = useDispatch();
   const router = useRouter();
   const isToken = useSelector((state) => state.auth.token);
+  const navigation = useNavigation();
 
   const { width, height } = Dimensions.get("window");
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -80,7 +82,7 @@ export default function SignUp() {
         "Account created successfully! Please check your email for verification."
       );
       console.log("User Role After API Call:", role.key);
-      router.replace("/SignIn");
+      router.replace("/otpScreen");
       // if (role.key == 3) {
       //   router.replace("/SignIn");
       // } else if (role.key == 4) {
@@ -198,7 +200,11 @@ export default function SignUp() {
               </Text>
             </View>
             <View>
-              <Text className="text-white">Login as Guest</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("otpScreen")}
+              >
+                <Text className="text-black">otp</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
