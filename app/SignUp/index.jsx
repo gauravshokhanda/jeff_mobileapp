@@ -8,9 +8,10 @@ import {
   ScrollView,
   Image,
   Alert,
-  TextInput,
   SafeAreaView,
   Dimensions,
+  ActivityIndicator,
+  Modal,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import AuthInput from "../../components/AuthInput";
@@ -36,7 +37,7 @@ export default function SignUp() {
   const router = useRouter();
   const isToken = useSelector((state) => state.auth.token);
   const navigation = useNavigation();
-
+  const [loading, setLoading] = useState(false);
   const { width, height } = Dimensions.get("window");
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const token = useSelector((state) => state.auth.token);
@@ -53,11 +54,11 @@ export default function SignUp() {
 
   const handleSignUp = async () => {
     if (!name || !email || !password || !passwordConfirmation || !role.key) {
-      Alert.alert("Error", "All fields are required.");
+      Alert.alert("Error", "All fields must be completed before proceeding.");
       return;
     }
     if (password !== passwordConfirmation) {
-      Alert.alert("Error", "Passwords do not match.");
+      Alert.alert("Error", "The password and confirmation password must be identical.");
       return;
     }
 
@@ -69,19 +70,13 @@ export default function SignUp() {
       role: role.key,
     };
 
+    setLoading(true);
     try {
       const response = await API.post("auth/register", data);
-      // console.log("username", response.data.data.user)
       const { access_token } = response.data;
-      console.log("access token", access_token);
       const user = response.data.data.user;
       dispatch(setSignUp({ access_token, user }));
 
-      Alert.alert(
-        "Success",
-        "Account created successfully! Please check your email for verification."
-      );
-      console.log("User Role After API Call:", role.key);
       router.replace("/otpScreen");
       // if (role.key == 3) {
       //   router.replace("/SignIn");
@@ -94,6 +89,8 @@ export default function SignUp() {
       const errorMessage =
         error.response?.data?.message || "An error occurred. Please try again.";
       Alert.alert("Error", errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -186,8 +183,13 @@ export default function SignUp() {
             <TouchableOpacity
               onPress={handleSignUp}
               className="bg-sky-950 rounded-xl items-center py-3 mt-5"
+              disabled={loading}
             >
-              <Text className="text-white font-bold text-lg">SIGN UP</Text>
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="text-white font-bold text-lg">SIGN UP</Text>
+              )}
             </TouchableOpacity>
 
             <View className="items-center mt-4">
@@ -209,6 +211,24 @@ export default function SignUp() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* FULL SCREEN LOADER OVERLAY */}
+      {loading && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.3)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <ActivityIndicator size="large" color="#ffffff" />
+        </View>
+      )}
     </SafeAreaView>
   );
 }

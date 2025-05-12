@@ -21,6 +21,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import AuthInput from "../components/AuthInput";
 import { LinearGradient } from "expo-linear-gradient";
 import fetchUserData from "./utils/fetchUserData";
+import ForgotPasswordModal from "../components/ForgotPasswordModal";
 
 export default function SignIn() {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -35,6 +36,7 @@ export default function SignIn() {
   const dispatch = useDispatch();
   const Authtoken = useSelector((state) => state.auth.token);
   const { isAuthenticated, token, user } = useSelector((state) => state.auth);
+  const [showResetModal, setShowResetModal] = useState(false);
 
   // Centralized auth and profile check
   // useEffect(() => {
@@ -83,29 +85,6 @@ export default function SignIn() {
   //   initializeAuth();
   // }, [isAuthenticated, token, user, router, dispatch]);
 
-  const handleSendVerification = async () => {
-    try {
-      const res = await API.post(
-        "email/verification-notification",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${Authtoken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      Alert.alert(
-        "Verification",
-        res.data.message || "Verification link sent."
-      );
-    } catch (err) {
-      Alert.alert(
-        "Error",
-        err.response?.data?.message || "Failed to send verification link."
-      );
-    }
-  };
 
   const handleSignIn = async () => {
     if (!email || !password) {
@@ -242,13 +221,14 @@ export default function SignIn() {
                 </Text>
               </TouchableOpacity>
               <View className="items-center mt-8">
-                <Link
-                  href={""}
-                  className="text-gray-500 font-medium"
-                  style={{ fontSize: screenHeight * 0.02 }}
-                >
-                  Forgot Your Password ?
-                </Link>
+                <TouchableOpacity onPress={() => setShowResetModal(true)}>
+                  <Text
+                    className="text-gray-500 font-medium"
+                    style={{ fontSize: screenHeight * 0.02 }}
+                  >
+                    Forgot Your Password ?
+                  </Text>
+                </TouchableOpacity>
                 <View className="flex-row mt-8">
                   <Text
                     style={{ fontSize: screenHeight * 0.018 }}
@@ -280,6 +260,11 @@ export default function SignIn() {
           </ScrollView>
         </KeyboardAvoidingView>
       </View>
+
+      <ForgotPasswordModal
+        visible={showResetModal}
+        onClose={() => setShowResetModal(false)}
+      />
     </SafeAreaView>
   );
 }

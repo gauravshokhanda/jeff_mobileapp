@@ -22,6 +22,7 @@ const OtpScreen = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
+  const [verified, setVerified] = useState(false);
   const inputs = useRef([]);
   const token = useSelector((state) => state.auth.token);
   const navigation = useNavigation();
@@ -40,8 +41,22 @@ const OtpScreen = () => {
   };
 
   const handleKeyPress = (e, index) => {
-    if (e.nativeEvent.key === "Backspace" && otp[index] === "" && index > 0) {
-      inputs.current[index - 1]?.focus();
+    if (e.nativeEvent.key === "Backspace") {
+      const newOtp = [...otp];
+
+      if (newOtp[index] === "" && index > 0) {
+        newOtp[index - 1] = "";
+        setOtp(newOtp);
+        inputs.current[index - 1]?.focus();
+      } else {
+        newOtp[index] = "";
+        setOtp(newOtp);
+      }
+
+      // If all fields are empty, blur all inputs
+      if (newOtp.every((val) => val === "")) {
+        inputs.current.forEach((input) => input?.blur());
+      }
     }
   };
 
@@ -64,7 +79,10 @@ const OtpScreen = () => {
           },
         }
       );
-      Alert.alert("Success", "OTP Verified Successfully");
+      setVerified(true); // Show success message
+      setTimeout(() => {
+        router.replace("/SignIn");
+      }, 1000);
     } catch (error) {
       console.error(error);
       Alert.alert("Verification Failed", "Invalid or expired OTP.");
@@ -77,7 +95,7 @@ const OtpScreen = () => {
     setResending(true);
     try {
       await API.post(
-        "email/verification-notification",
+        "email/send-otp",
         {},
         {
           headers: {
@@ -117,7 +135,7 @@ const OtpScreen = () => {
           Enter the 6-digit OTP sent to your email
         </Text>
 
-        <View className="flex-row justify-between w-full mb-6">
+        <View className="flex-row justify-between w-full mb-4">
           {otp.map((digit, index) => (
             <TextInput
               key={index}
@@ -134,6 +152,12 @@ const OtpScreen = () => {
             />
           ))}
         </View>
+
+        {verified && (
+          <Text className="text-green-600 text-center text-base mb-4 font-semibold">
+            Verified
+          </Text>
+        )}
 
         <TouchableOpacity
           onPress={handleVerify}
@@ -163,7 +187,7 @@ const OtpScreen = () => {
 
         <TouchableOpacity
           className="mt-4"
-          onPress={() => navigation.navigate("/SignIn")}
+          onPress={() => router.replace("/SignIn")}
         >
           <Text className={`text-center text-base`}>Back to Login</Text>
         </TouchableOpacity>
