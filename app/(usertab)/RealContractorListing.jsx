@@ -115,7 +115,7 @@ export default function PropertyDetails() {
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       {/* backbutton and chatbutton */}
-      <View className="w-[100%] flex-row mt-5 items-center justify-between p-3 absolute z-10 ">
+      <View className="w-[100%] flex-row mt-20 items-center justify-between p-3 absolute z-10 ">
         <TouchableOpacity
           onPress={() => router.back()}
           className="mr-4 bg-gray-700 rounded-full p-2"

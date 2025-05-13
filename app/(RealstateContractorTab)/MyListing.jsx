@@ -269,7 +269,7 @@ export default function Listing() {
         className="rounded-3xl"
         style={{
           position: "absolute",
-          top: screenHeight * 0.22, // Adjusted to prevent overlap
+          top: screenHeight * 0.28, // Adjusted to prevent overlap
           width: postContentWidth,
           height: screenHeight * 0.75,
           left: (screenWidth - postContentWidth) / 2,

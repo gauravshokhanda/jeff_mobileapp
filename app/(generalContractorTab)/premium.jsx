@@ -16,7 +16,7 @@ const PlanCard = ({
   buttonText,
   isCurrent = false,
 }) => (
-  <View className="bg-white rounded-2xl px-6 py-8 mb-8 shadow-md shadow-black/20">
+  <View className="bg-white rounded-2xl px-6 py-4 mb-8 shadow-md shadow-black/20 mx-6">
     <Text className="text-center text-lg font-semibold text-gray-800 mb-2">
       {title}
     </Text>
@@ -85,7 +85,7 @@ const GeneralContractorPlans = () => {
   return (
     <SafeAreaView className="flex-1 bg-sky-950 px-6 pt-14 pb-4">
       {/* Header */}
-      <View className="flex-row items-center space-x-4 mb-6">
+      <View className="flex-row items-center space-x-4 mb-6 justify-evenly">
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={28} color="#ffffff" />
         </TouchableOpacity>
@@ -95,7 +95,7 @@ const GeneralContractorPlans = () => {
       </View>
 
       {/* Notice */}
-      <View className="bg-yellow-100 border-l-4 border-yellow-400 p-4 rounded-lg mb-6">
+      <View className="bg-yellow-100 border-l-4 border-yellow-400 p-4 rounded-lg mb-6 mx-4">
         <Text className="text-yellow-800 font-semibold">
           ⚠️ These plans are not currently active. We’ll notify you once they
           become available.

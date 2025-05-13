@@ -309,7 +309,7 @@ export default function Index() {
       <View className="rounded-3xl border border-gray-400"
         style={{
           position: 'absolute',
-          top: screenHeight * 0.12,
+          top: screenHeight * 0.15,
           width: postContentWidth,
           height: screenHeight * 0.80,
           left: (screenWidth - postContentWidth) / 2,

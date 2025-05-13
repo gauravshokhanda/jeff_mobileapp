@@ -141,6 +141,7 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
             <>
               <TextInput
                 placeholder="Enter your email"
+                placeholderTextColor={"gray"}
                 style={styles.input}
                 value={email}
                 onChangeText={setEmail}
@@ -165,6 +166,7 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
             <>
               <TextInput
                 placeholder="Enter OTP"
+                placeholderTextColor={"gray"}
                 style={styles.input}
                 value={otp}
                 onChangeText={setOtp}
@@ -189,6 +191,7 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
             <>
               <TextInput
                 placeholder="New Password"
+                placeholderTextColor={"gray"}
                 secureTextEntry
                 style={styles.input}
                 value={password}
@@ -196,6 +199,7 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
               />
               <TextInput
                 placeholder="Confirm Password"
+                placeholderTextColor={"gray"}
                 secureTextEntry
                 style={styles.input}
                 value={confirmPassword}

@@ -149,7 +149,7 @@ export default function PropertyDetails() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
-      <View className="absolute z-10 w-full flex-row mt-5 justify-between p-3">
+      <View className="absolute z-10 w-full flex-row mt-20 justify-between p-3">
         <TouchableOpacity
           onPress={() => router.back()}
           className="bg-gray-700 rounded-full p-2"
@@ -192,19 +192,17 @@ export default function PropertyDetails() {
           {propertyTypes.map((item) => (
             <TouchableOpacity
               key={item.id}
-              className={`px-6 py-2 border-b-2 ${
-                selectedPropertyType === item.id
+              className={`px-6 py-2 border-b-2 ${selectedPropertyType === item.id
                   ? "border-sky-900"
                   : "border-gray-300"
-              }`}
+                }`}
               onPress={() => setSelectedPropertyType(item.id)}
             >
               <Text
-                className={`text-lg font-medium ${
-                  selectedPropertyType === item.id
+                className={`text-lg font-medium ${selectedPropertyType === item.id
                     ? "text-sky-900"
                     : "text-gray-400"
-                }`}
+                  }`}
               >
                 {item.label}
               </Text>
@@ -250,10 +248,10 @@ export default function PropertyDetails() {
             onPress={() => setEditModalVisible(false)}
             style={{ position: "absolute", top: 20, right: 20, zIndex: 10 }}
           >
-            <Ionicons name="close-circle" size={30} color="gray" />
+            <Ionicons name="close-circle" size={30} color="gray" className="mt-16" />
           </TouchableOpacity>
 
-          <ScrollView contentContainerStyle={{ paddingTop: 40 }}>
+          <ScrollView contentContainerStyle={{ paddingTop: 40, paddingHorizontal: screenWidth * 0.08 }}>
             <Text className="text-2xl font-bold mb-4">Edit Property</Text>
 
             {labeledFields.map((field) => (
@@ -356,7 +354,7 @@ export default function PropertyDetails() {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleUpdateProperty}
-                className="bg-green-600 w-[48%] p-3 rounded"
+                className="bg-sky-900 w-[48%] p-3 rounded"
               >
                 <Text className="text-white text-center font-semibold">
                   Save Changes

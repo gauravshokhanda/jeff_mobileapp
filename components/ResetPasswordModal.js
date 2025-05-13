@@ -29,6 +29,7 @@ const ResetPasswordModal = ({ visible, onClose, onSubmit }) => {
 
           <TextInput
             placeholder="Current Password"
+            placeholderTextColor={"gray"}
             secureTextEntry
             value={currentPassword}
             onChangeText={setCurrentPassword}
@@ -36,6 +37,7 @@ const ResetPasswordModal = ({ visible, onClose, onSubmit }) => {
           />
           <TextInput
             placeholder="New Password"
+            placeholderTextColor={"gray"}
             secureTextEntry
             value={newPassword}
             onChangeText={setNewPassword}

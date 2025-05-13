@@ -240,7 +240,7 @@ export default function Index() {
         className="rounded-3xl "
         style={{
           position: "absolute",
-          top: screenHeight * 0.17,
+          top: screenHeight * 0.19,
           width: postContentWidth,
           height: screenHeight * 0.8,
           left: (screenWidth - postContentWidth) / 2,
