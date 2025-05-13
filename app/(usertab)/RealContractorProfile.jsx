@@ -15,7 +15,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Swiper from "react-native-swiper";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const RealContractorProfile = () => {
   const { user_id } = useLocalSearchParams();
@@ -154,10 +154,9 @@ const RealContractorProfile = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="p-4">
+      <View className="flex-1">
         {/* Header */}
-        <View className="px-4 flex-row items-center justify-between">
-          {/* Back Button */}
+        <View className="px-4 flex-row items-center justify-between mt-4">
           <TouchableOpacity
             onPress={() => router.back()}
             className="p-2 rounded-full bg-sky-900/10"
@@ -165,7 +164,6 @@ const RealContractorProfile = () => {
             <Ionicons name="arrow-back" size={28} color="#0369A1" />
           </TouchableOpacity>
 
-          {/* Chat Icon */}
           <TouchableOpacity
             onPress={() => {
               router.push(`/ChatScreen?user_id=${user_id}`);
@@ -180,7 +178,7 @@ const RealContractorProfile = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Profile */}
+        {/* Profile Info */}
         <View className="items-center mt-6">
           <View
             style={{
@@ -212,12 +210,8 @@ const RealContractorProfile = () => {
             data={properties}
             keyExtractor={(item) => item.id.toString()}
             renderItem={renderProperty}
-            scrollEnabled={false}
-            ListEmptyComponent={
-              <Text className="text-gray-500 text-center mt-4">
-                No properties found.
-              </Text>
-            }
+            contentContainerStyle={{ paddingBottom: 20 }}
+            showsVerticalScrollIndicator={false}
           />
         )}
       </View>
