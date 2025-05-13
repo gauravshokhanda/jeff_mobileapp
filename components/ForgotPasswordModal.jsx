@@ -57,30 +57,30 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
   };
 
   const handleResetPassword = async () => {
-  setLoading(true);
-  try {
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
-    formData.append("password_confirmation", confirmPassword);
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("password_confirmation", confirmPassword);
 
-    const response = await API.post("forgot-password/reset", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+      const response = await API.post("forgot-password/reset", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-    showMessage("Password successfully reset.", "success");
-    setStep("done");
+      showMessage("Password successfully reset.", "success");
+      setStep("done");
 
-    // ✅ Close modal after 1 second
-    setTimeout(() => {
-      handleClose();
-    }, 1000);
-  } catch (err) {
-    showMessage(err.response?.data?.message || "Reset failed", "error");
-  } finally {
-    setLoading(false);
-  }
-};
+      // ✅ Close modal after 1 second
+      setTimeout(() => {
+        handleClose();
+      }, 1000);
+    } catch (err) {
+      showMessage(err.response?.data?.message || "Reset failed", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   const handleClose = () => {
