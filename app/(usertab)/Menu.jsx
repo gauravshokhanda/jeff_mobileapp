@@ -7,9 +7,6 @@ import {
   Dimensions,
   SafeAreaView,
   TouchableOpacity,
-  Modal,
-  TextInput,
-  StyleSheet,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "expo-router";
@@ -19,6 +16,7 @@ import { setLogout } from "../../redux/slice/authSlice";
 import { LinearGradient } from "expo-linear-gradient";
 import { API, baseUrl } from "../../config/apiConfig";
 import DeleteAccountModal from "../../components/DeleteAccountModal";
+import ResetPasswordModal from "../../components/ResetPasswordModal";
 
 const imageData = [
   {
@@ -63,7 +61,13 @@ const imageData = [
     screen: "premium",
     source: Box,
   },
-
+  {
+    id: 99,
+    label: "Reset Password",
+    icon: "key",
+    screen: "resetPassword",
+    source: Box,
+  },
   {
     id: 9,
     label: "Delete Account",
@@ -92,6 +96,7 @@ const MenuHeader = () => {
 
   const [userData, setUserData] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [resetModalVisible, setResetModalVisible] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -109,46 +114,30 @@ const MenuHeader = () => {
       ]);
     } else if (screen === "deleteAccount") {
       setShowDeleteModal(true);
+    } else if (screen === "resetPassword") {
+      setResetModalVisible(true);
     } else {
       router.push(screen);
     }
   };
 
-  const handleDeleteAccount = async () => {
-    if (!password || !confirmPassword) {
-      Alert.alert("Error", "Please fill in both password fields.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match.");
-      return;
-    }
-
+  const handleResetPassword = async ({ currentPassword, newPassword }) => {
     try {
-      const response = await API.delete(
-        `delete-account?password=${password}&confirm_password=${confirmPassword}`,
+      const response = await API.post(
+        "reset-password",
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          current_password: currentPassword,
+          new_password: newPassword,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      if (response.status === 200) {
-        Alert.alert("Success", "Account deleted successfully.");
-        dispatch(setLogout());
-        router.replace("SignIn");
-      } else {
-        Alert.alert("Error", "Failed to delete account.");
-      }
+      Alert.alert("Success", "Password reset successfully!");
     } catch (error) {
-      Alert.alert("Error", "An error occurred while deleting the account.");
+      Alert.alert("Error", error?.response?.data?.message || "Reset failed");
     } finally {
-      setShowDeleteModal(false);
-      setPassword("");
-      setConfirmPassword("");
+      setResetModalVisible(false);
     }
   };
 
@@ -178,7 +167,7 @@ const MenuHeader = () => {
           Please Sign in
         </Text>
         <Text className="text-gray-500 text-center w-4/5">
-          You must be Sign in in to access this page.
+          You must be signed in to access this page.
         </Text>
         <TouchableOpacity
           className="mt-6 bg-sky-950 px-6 py-3 rounded-xl"
@@ -225,7 +214,7 @@ const MenuHeader = () => {
           position: "absolute",
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
-          marginTop: screenHeight * 0.2,
+          marginTop: screenHeight * 0.19,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
           overflow: "hidden",
@@ -255,6 +244,12 @@ const MenuHeader = () => {
       <DeleteAccountModal
         visible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
+      />
+
+      <ResetPasswordModal
+        visible={resetModalVisible}
+        onClose={() => setResetModalVisible(false)}
+        onSubmit={handleResetPassword}
       />
     </SafeAreaView>
   );

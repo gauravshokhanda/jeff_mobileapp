@@ -6,9 +6,6 @@ import {
   Alert,
   SafeAreaView,
   Dimensions,
-  Modal,
-  TextInput,
-  StyleSheet,
   TouchableOpacity,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
@@ -19,6 +16,7 @@ import { setLogout } from "../../redux/slice/authSlice";
 import { LinearGradient } from "expo-linear-gradient";
 import { API } from "../../config/apiConfig";
 import DeleteAccountModal from "../../components/DeleteAccountModal";
+import ResetPasswordModal from "../../components/ResetPasswordModal";
 
 const imageData = [
   {
@@ -28,7 +26,13 @@ const imageData = [
     screen: "Portfolio",
     source: Box,
   },
-  { id: 2, label: "Feeds", icon: "rss", screen: "ContractorFeed", source: Box },
+  {
+    id: 2,
+    label: "Feeds",
+    icon: "rss",
+    screen: "ContractorFeed",
+    source: Box,
+  },
   {
     id: 4,
     label: "Profile",
@@ -36,12 +40,18 @@ const imageData = [
     screen: "ContractorPortfolio",
     source: Box,
   },
-  { id: 6, label: "Chat", icon: "comments", screen: "ChatList", source: Box },
   {
-    id: 9,
-    label: "Delete Account",
-    icon: "trash-alt",
-    screen: "deleteAccount",
+    id: 6,
+    label: "Chat",
+    icon: "comments",
+    screen: "ChatList",
+    source: Box,
+  },
+  {
+    id: 3,
+    label: "Reset Password",
+    icon: "key",
+    screen: "resetPassword", // Used to trigger modal
     source: Box,
   },
   {
@@ -51,6 +61,14 @@ const imageData = [
     screen: "premium",
     source: Box,
   },
+  {
+    id: 9,
+    label: "Delete Account",
+    icon: "trash-alt",
+    screen: "deleteAccount",
+    source: Box,
+  },
+
   {
     id: 8,
     label: "Log Out",
@@ -69,6 +87,7 @@ const MenuHeader = () => {
   const token = useSelector((state) => state.auth.token);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [resetModalVisible, setResetModalVisible] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -86,6 +105,8 @@ const MenuHeader = () => {
       ]);
     } else if (screen === "deleteAccount") {
       setShowDeleteModal(true);
+    } else if (screen === "resetPassword") {
+      setResetModalVisible(true);
     } else if (screen === "ContractorPortfolio") {
       router.push({ pathname: screen, params: { edit: "true" } });
     } else if (screen) {
@@ -181,6 +202,15 @@ const MenuHeader = () => {
       <DeleteAccountModal
         visible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
+      />
+
+      <ResetPasswordModal
+        visible={resetModalVisible}
+        onClose={() => setResetModalVisible(false)}
+        onSubmit={({ currentPassword, newPassword }) => {
+          console.log("Resetting password", currentPassword, newPassword);
+          setResetModalVisible(false);
+        }}
       />
     </SafeAreaView>
   );
