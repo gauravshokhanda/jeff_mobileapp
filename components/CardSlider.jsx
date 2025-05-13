@@ -25,11 +25,14 @@ const CardSlider = () => {
   const getContractors = async () => {
     setLoading(true);
     try {
-      const response = await API.get("all/contractors", {
+      const response = await API.get("general/contractors/latest", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log("contractor reponse",response.data.data)
       const filteredData =
-        response.data?.data?.data?.filter((item) => item.role === 3) || [];
+        response.data?.data?.filter((item) => item.role === 3) || [];
+        console.log("filteredData",filteredData)
+
 
       const formattedData = filteredData.map((item) => ({
         id: item.id.toString(),

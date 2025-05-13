@@ -13,7 +13,7 @@
       "config": {
         "googleMapsApiKey": "AIzaSyDC1rdf12jCvTnZg1IeHBHWD1DRJhAhk8w"
       },
-      "bundleIdentifier": "dev.expo.jeffContructionApp"
+      "bundleIdentifier": "com.g32.jeffConstructionApp"
     },
     "android": {
       "adaptiveIcon": {
