@@ -500,6 +500,7 @@ export default function Index() {
             </View>
           ) : selectedTab === "realEstate" ? (
             <FlatList
+            className="mb-10"
               data={properties}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
@@ -510,7 +511,7 @@ export default function Index() {
                     )
                   }
                 >
-                  <View className="bg-sky-950 p-3 rounded-lg mb-4">
+                  <View className="bg-sky-950 p-3 rounded-lg mb-8">
                     {/* Header: Location & Tags */}
                     <View className="flex-row items-center justify-between">
                       <View className="flex-row items-center">
@@ -618,6 +619,7 @@ export default function Index() {
             />
           ) : (
             <FlashList
+            className="mb-12"
               ref={flatListRef}
               data={selectedTab === "realEstate" ? properties : contractors}
               renderItem={

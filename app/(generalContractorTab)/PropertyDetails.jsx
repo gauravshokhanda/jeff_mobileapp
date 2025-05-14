@@ -171,7 +171,7 @@ export default function PropertyDetails() {
               For Sale
             </Text>
             <Text className="text-lg font-bold">${total_cost}</Text>
-            <Text className="text-gray-500">Days: {number_of_days}</Text>
+            <Text className="text-gray-500">Days: {parseInt(number_of_days)}</Text>
           </View>
           <Text className="text-gray-700 mt-2">Area: {area} sqft</Text>
         </View>

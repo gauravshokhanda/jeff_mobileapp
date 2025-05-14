@@ -322,7 +322,7 @@ const Portfolio = ({ navigation }) => {
       </LinearGradient>
 
       <View
-        className="rounded-3xl"
+        className="rounded-3xl mt-8"
         style={{
           position: "absolute",
           top: screenHeight * 0.2,
