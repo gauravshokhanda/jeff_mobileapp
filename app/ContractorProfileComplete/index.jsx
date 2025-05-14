@@ -36,6 +36,7 @@ export default function ContractorProfileComplete() {
   const [companyName, setCompanyName] = useState("");
   const [registrationNo, setRegistrationNo] = useState("");
   const [companyAddress, setCompanyAddress] = useState("");
+  const [description, setDescription] = useState("");
   const [profileImage, setProfileImage] = useState(null);
   const [organizationImage, setOrganizationImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -161,6 +162,10 @@ export default function ContractorProfileComplete() {
       console.log("Validation failed: Company address is required");
       return Alert.alert("Error", "Company address is required.");
     }
+    if (!description.trim()) {
+      console.log("Validation failed: Company address is required");
+      return Alert.alert("Error", "Company address is required.");
+    }
     if (!profileImage) {
       console.log("Validation failed: Profile image is required");
       return Alert.alert("Error", "Please upload a profile image.");
@@ -179,6 +184,7 @@ export default function ContractorProfileComplete() {
     formData.append("number", companyContactNumber);
     formData.append("company_registered_number", registrationNo);
     formData.append("company_address", companyAddress);
+    formData.append("description", description);
     formData.append("city", cityName);
 
     if (profileImage) {
@@ -380,6 +386,14 @@ export default function ContractorProfileComplete() {
                 />
               </View>
             )}
+               <View className="mt-10 border-b border-gray-400 flex-row justify-between items-center pb-1">
+              <Text className="text-gray-400 text-lg">Description :</Text>
+              <TextInput
+                className="flex-1 px-3 bg-white py-2 text-gray-700"
+                value={description}
+                onChangeText={setDescription}
+              />
+            </View>
 
             <View className="flex-row mt-10 justify-between items-center">
               {/* Organization Image Section */}

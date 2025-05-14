@@ -201,13 +201,7 @@ export default function SignUp() {
                 </Link>
               </Text>
             </View>
-            <View>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("otpScreen")}
-              >
-                <Text className="text-black">otp</Text>
-              </TouchableOpacity>
-            </View>
+      
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
