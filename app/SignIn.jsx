@@ -85,6 +85,41 @@ export default function SignIn() {
   //   initializeAuth();
   // }, [isAuthenticated, token, user, router, dispatch]);
 
+useEffect(() => {
+  const checkAndRedirect = async () => {
+    if (token && user?.id) {
+      try {
+        const userData = await fetchUserData(token, user.id, setIsCheckingAuth);
+        if (userData?.data?.is_profile_complete !== undefined) {
+          setUserProfileComplete(userData.data);
+        }
+
+        const { role } = user;
+        const isProfileComplete = userData.data.is_profile_complete;
+
+        if (role === 3) {
+          router.replace(
+            isProfileComplete
+              ? "/(generalContractorTab)"
+              : "/ContractorProfileComplete"
+          );
+        } else if (role === 4) {
+          router.replace(
+            isProfileComplete
+              ? "/(RealstateContractorTab)"
+              : "/(RealstateContractorTab)/PropertyPost"
+          );
+        } else {
+          router.replace("/(usertab)");
+        }
+      } catch (error) {
+        console.error("Auto-login failed:", error);
+      }
+    }
+  };
+
+  checkAndRedirect();
+}, []);
 
   const handleSignIn = async () => {
     if (!email || !password) {
