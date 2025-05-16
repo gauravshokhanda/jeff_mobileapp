@@ -38,99 +38,56 @@ export default function SignIn() {
   const { isAuthenticated, token, user } = useSelector((state) => state.auth);
   const [showResetModal, setShowResetModal] = useState(false);
 
-  // Centralized auth and profile check
-  // useEffect(() => {
-  //   const initializeAuth = async () => {
-  //     setIsCheckingAuth(true);
-  //     try {
-  //       // Check for persisted token
-  //       const storedData = await AsyncStorage.getItem("persist:root");
-  //       if (!storedData || !token || !user?.id) {
-  //         setIsCheckingAuth(false);
-  //         return;
-  //       }
-
-  //       // Fetch user profile data if token and user ID exist
-  //       const userData = await fetchUserData(token, user.id, setIsCheckingAuth);
-  //       if (userData?.data?.is_profile_complete !== undefined) {
-  //         setUserProfileComplete(userData.data);
-  //       }
-
-  //       // Navigate based on role and profile completion
-  //       if (isAuthenticated && token && userData?.data) {
-  //         const { role, id } = user;
-  //         if (role === 3) {
-  //           router.replace(
-  //             userData.data.is_profile_complete
-  //               ? "/(generalContractorTab)"
-  //               : "/ContractorProfileComplete"
-  //           );
-  //         } else if (role === 4) {
-  //           router.replace(
-  //             userData.data.is_profile_complete
-  //               ? "/(RealstateContractorTab)"
-  //               : "/(RealstateContractorTab)/PropertyPost"
-  //           );
-  //         } else {
-  //           router.replace("/(usertab)");
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error("Auth initialization error:", error);
-  //     } finally {
-  //       setIsCheckingAuth(false);
-  //     }
-  //   };
-
-  //   initializeAuth();
-  // }, [isAuthenticated, token, user, router, dispatch]);
-
-useEffect(() => {
-  const checkAndRedirect = async () => {
-    if (token && user?.id) {
-      try {
-        const userData = await fetchUserData(token, user.id, setIsCheckingAuth);
-        if (userData?.data?.is_profile_complete !== undefined) {
-          setUserProfileComplete(userData.data);
-        }
-
-        const { role } = user;
-        const isProfileComplete = userData.data.is_profile_complete;
-
-        if (role === 3) {
-          router.replace(
-            isProfileComplete
-              ? "/(generalContractorTab)"
-              : "/ContractorProfileComplete"
+  useEffect(() => {
+    const checkAndRedirect = async () => {
+      if (token && user?.id) {
+        try {
+          const userData = await fetchUserData(
+            token,
+            user.id,
+            setIsCheckingAuth
           );
-        } else if (role === 4) {
-          router.replace(
-            isProfileComplete
-              ? "/(RealstateContractorTab)"
-              : "/(RealstateContractorTab)/PropertyPost"
-          );
-        } else {
-          router.replace("/(usertab)");
+          if (userData?.data?.is_profile_complete !== undefined) {
+            setUserProfileComplete(userData.data);
+          }
+
+          const { role } = user;
+          const isProfileComplete = userData.data.is_profile_complete;
+
+          if (role === 3) {
+            router.replace(
+              isProfileComplete
+                ? "/(generalContractorTab)"
+                : "/ContractorProfileComplete"
+            );
+          } else if (role === 4) {
+            router.replace(
+              isProfileComplete
+                ? "/(RealstateContractorTab)"
+                : "/(RealstateContractorTab)/PropertyPost"
+            );
+          } else {
+            router.replace("/(usertab)");
+          }
+        } catch (error) {
+          console.error("Auto-login failed:", error);
         }
-      } catch (error) {
-        console.error("Auto-login failed:", error);
       }
-    }
-  };
+    };
 
-  checkAndRedirect();
-}, []);
+    checkAndRedirect();
+  }, []);
 
   const handleSignIn = async () => {
     if (!email || !password) {
-      Alert.alert("Error", "Email and Password are required.");
+      Alert.alert("Missing Fields", "Email and Password are required.");
       return;
     }
 
     setIsCheckingAuth(true);
+
     try {
       const response = await API.post("auth/login", { email, password });
-
       const { token, user } = response.data;
 
       dispatch(setLogin({ token, user }));
@@ -152,24 +109,47 @@ useEffect(() => {
         router.replace("/(usertab)");
       }
     } catch (err) {
-      console.log("LOGIN ERROR RESPONSE:", err.response?.data || err);
-      const errorMessage = err.response?.data?.error || "Unexpected error";
+      const errorMessage =
+        err.response?.data?.error || "Something went wrong. Please try again.";
 
-      if (errorMessage.toLowerCase().includes("email not verified")) {
+      if (errorMessage === "Email not verified. Please verify your email.") {
         Alert.alert(
           "Email Not Verified",
           errorMessage,
           [
             {
-              text: "Send Verification Link",
-              onPress: handleSendVerification,
+              text: "Verify Email",
+              onPress: async () => {
+                try {
+                  const resendResponse = await API.post("email/send-otp", {
+                    email,
+                  });
+                  if (resendResponse.status === 200) {
+                    router.replace(
+                      `/otpScreen?email=${encodeURIComponent(email)}`
+                    );
+                  } else {
+                    Alert.alert(
+                      "Failed",
+                      "Could not send verification email. Try again."
+                    );
+                  }
+                } catch (e) {
+                  console.log("Resend OTP error:", e.response?.data || e);
+                  Alert.alert(
+                    "Error",
+                    "Something went wrong while sending verification email."
+                  );
+                }
+              },
+              style: "default",
             },
             { text: "Cancel", style: "cancel" },
           ],
           { cancelable: true }
         );
       } else {
-        Alert.alert("Error", errorMessage);
+        Alert.alert("Login Failed", errorMessage);
       }
     } finally {
       setIsCheckingAuth(false);

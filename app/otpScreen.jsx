@@ -9,23 +9,25 @@ import {
   Pressable,
   Dimensions,
   Alert,
+  ActivityIndicator,
 } from "react-native";
-import { useSelector } from "react-redux";
-import { API } from "../config/apiConfig";
-import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { useLocalSearchParams, router } from "expo-router";
+import { API } from "../config/apiConfig";
 
 const { width } = Dimensions.get("window");
 
 const OtpScreen = () => {
+  const { email } = useLocalSearchParams();
+  console.log("Email from params:", email);
+
+  const token = useSelector((state) => state.auth.token);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [verified, setVerified] = useState(false);
   const inputs = useRef([]);
-  const token = useSelector((state) => state.auth.token);
-  const navigation = useNavigation();
 
   const handleChange = (text, index) => {
     if (/^\d$/.test(text)) {
@@ -43,7 +45,6 @@ const OtpScreen = () => {
   const handleKeyPress = (e, index) => {
     if (e.nativeEvent.key === "Backspace") {
       const newOtp = [...otp];
-
       if (newOtp[index] === "" && index > 0) {
         newOtp[index - 1] = "";
         setOtp(newOtp);
@@ -52,8 +53,6 @@ const OtpScreen = () => {
         newOtp[index] = "";
         setOtp(newOtp);
       }
-
-      // If all fields are empty, blur all inputs
       if (newOtp.every((val) => val === "")) {
         inputs.current.forEach((input) => input?.blur());
       }
@@ -71,7 +70,7 @@ const OtpScreen = () => {
     try {
       await API.post(
         "email/verify-otp",
-        { otp: finalOtp },
+        { otp: finalOtp, email },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -79,12 +78,12 @@ const OtpScreen = () => {
           },
         }
       );
-      setVerified(true); // Show success message
+      setVerified(true);
       setTimeout(() => {
         router.replace("/SignIn");
       }, 1000);
     } catch (error) {
-      console.error(error);
+      console.error("OTP verification failed:", error.response?.data || error);
       Alert.alert("Verification Failed", "Invalid or expired OTP.");
     } finally {
       setLoading(false);
@@ -96,7 +95,7 @@ const OtpScreen = () => {
     try {
       await API.post(
         "email/send-otp",
-        {},
+        { email },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -107,7 +106,7 @@ const OtpScreen = () => {
       Alert.alert("Success", "OTP resent to your email.");
       setOtp(["", "", "", "", "", ""]);
     } catch (error) {
-      console.error(error);
+      console.error("Resend OTP failed:", error.response?.data || error);
       Alert.alert("Error", "Failed to resend OTP.");
     } finally {
       setResending(false);
@@ -119,7 +118,6 @@ const OtpScreen = () => {
       className="flex-1 bg-white justify-center"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      {/* Back Button */}
       <Pressable
         onPress={() => router.back()}
         className="absolute top-12 left-4 z-10"
@@ -164,9 +162,10 @@ const OtpScreen = () => {
           disabled={loading}
           className={`w-full py-3 rounded-xl ${
             loading ? "bg-gray-300" : "bg-sky-950"
-          } shadow-md`}
+          } shadow-md flex-row justify-center items-center`}
         >
-          <Text className="text-white text-center text-lg font-semibold">
+          {loading && <ActivityIndicator color="#fff" className="mr-2" />}
+          <Text className="text-white text-lg font-semibold">
             {loading ? "Verifying..." : "Verify OTP"}
           </Text>
         </TouchableOpacity>
@@ -176,20 +175,20 @@ const OtpScreen = () => {
           disabled={resending}
           className="mt-4"
         >
-          <Text
-            className={`text-center text-base ${
-              resending ? "text-sky-950 opacity-50" : "text-sky-950 underline"
-            }`}
-          >
-            {resending ? "Resending..." : "Resend OTP"}
-          </Text>
+          {resending ? (
+            <ActivityIndicator color="#0c4a6e" />
+          ) : (
+            <Text className="text-center text-base text-sky-950 underline">
+              Resend OTP
+            </Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity
           className="mt-4"
           onPress={() => router.replace("/SignIn")}
         >
-          <Text className={`text-center text-base`}>Back to Login</Text>
+          <Text className="text-center text-base">Back to Login</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
