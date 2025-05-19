@@ -21,7 +21,7 @@ export default function AreaDetailsScreen() {
   const postContentWidth = screenWidth * 0.92;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const { area, city, state, zipCode } = useSelector((state) => state.polygon); // ✅ Use directly from redux
+  const { area, city, state, zipCode, floors, buildableArea } = useSelector((state) => state.polygon); // ✅ Use directly from redux
   const token = useSelector((state) => state.auth.token);
   const [loading, setLoading] = useState(false);
 
@@ -41,7 +41,11 @@ export default function AreaDetailsScreen() {
       area: area,
       project_type: "Basic",
       square_fit: "1000",
+      floors: floors,
+      buildable_area: buildableArea,
+
     };
+    console.log('schedule data', data)
 
     setLoading(true);
     try {
@@ -91,10 +95,10 @@ export default function AreaDetailsScreen() {
         </View>
       </LinearGradient>
 
-      <View 
+      <View
         className="flex-1 rounded-3xl bg-white"
         style={{
-          marginTop: -screenHeight * 0.25, 
+          marginTop: -screenHeight * 0.25,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
           overflow: "hidden"
