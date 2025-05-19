@@ -26,6 +26,7 @@ import ForgotPasswordModal from "../components/ForgotPasswordModal";
 export default function SignIn() {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const postContentWidth = screenWidth * 0.92;
+  const [resendingOtp, setResendingOtp] = useState(false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,10 +36,12 @@ export default function SignIn() {
   const router = useRouter();
   const dispatch = useDispatch();
   const Authtoken = useSelector((state) => state.auth.token);
-  const { isAuthenticated, token, user } = useSelector((state) => state.auth);
+  const { isAuthenticated, token, user,access_token } = useSelector((state) => state.auth);
   const [showResetModal, setShowResetModal] = useState(false);
 
   useEffect(() => {
+    console.log("User opened the SignIn screen");
+    console.log(access_token);
     const checkAndRedirect = async () => {
       if (token && user?.id) {
         try {
@@ -120,14 +123,13 @@ export default function SignIn() {
             {
               text: "Verify Email",
               onPress: async () => {
+                setResendingOtp(true);
                 try {
                   const resendResponse = await API.post("email/send-otp", {
                     email,
                   });
                   if (resendResponse.status === 200) {
-                    router.replace(
-                      `/otpScreen?email=${encodeURIComponent(email)}`
-                    );
+                    router.replace(`/otpScreen?email=${encodeURIComponent(email)}`);
                   } else {
                     Alert.alert(
                       "Failed",
@@ -140,8 +142,11 @@ export default function SignIn() {
                     "Error",
                     "Something went wrong while sending verification email."
                   );
+                } finally {
+                  setResendingOtp(false);
                 }
-              },
+              }
+              ,
               style: "default",
             },
             { text: "Cancel", style: "cancel" },
@@ -280,6 +285,26 @@ export default function SignIn() {
         visible={showResetModal}
         onClose={() => setShowResetModal(false)}
       />
+
+      {resendingOtp && (
+  <View
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0,0,0,0.3)",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 999,
+    }}
+  >
+    <ActivityIndicator size="large" color="#0c4a6e" />
+    <Text style={{ color: "white", marginTop: 10 }}>Sending OTP...</Text>
+  </View>
+)}
+
     </SafeAreaView>
   );
 }
