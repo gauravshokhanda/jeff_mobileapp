@@ -27,6 +27,8 @@ export default function PropertyCalculator() {
   const [city, setCity] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [area, setArea] = useState("");
+  const [buildableArea, setbuildableArea] = useState("");
+  const [floors, setFloors] = useState("");
   const [projectType, setProjectType] = useState("");
   const [loading, setLoading] = useState(false);
   const [totalCost, setTotalCost] = useState(null);
@@ -122,8 +124,8 @@ export default function PropertyCalculator() {
   };
 
   const handleSubmit = async () => {
-    console.log("handle function");
-    if (!city || !zipCode || !area || !projectType) {
+    // console.log("handle function");
+    if (!city || !zipCode || !area || !projectType || !buildableArea || !floors) {
       Alert.alert("Error", "All fields are required");
       return;
     }
@@ -135,6 +137,8 @@ export default function PropertyCalculator() {
       zip_code: zipCode,
       area,
       project_type: projectType,
+      buildable_area:buildableArea,
+      floors
     };
 
     try {
@@ -181,7 +185,7 @@ export default function PropertyCalculator() {
         </View>
       </LinearGradient>
       <View
-        className="h-full bg-white"
+        className="h-[90%] bg-white"
         style={{
           position: "absolute",
           borderTopLeftRadius: 20,
@@ -240,7 +244,7 @@ export default function PropertyCalculator() {
                           borderBottomColor: "#ccc",
                           backgroundColor: "#f9f9f9",
                         }}
-                        // className="p-4 border-b border-b-gray-400 bg-gray-100"
+                      // className="p-4 border-b border-b-gray-400 bg-gray-100"
                       >
                         <Text>{item.label}</Text>
                       </TouchableOpacity>
@@ -306,13 +310,35 @@ export default function PropertyCalculator() {
               />
 
               <Text className="text-gray-700 mb-1 text-lg font-bold">
-                Area in Square Feet:
+                Total Area in Square Feet:
               </Text>
               <TextInput
                 placeholderTextColor="gray"
-                placeholder="Enter Area"
+                placeholder="Enter Total Area"
                 value={area}
                 onChangeText={setArea}
+                className="border border-gray-300 rounded-md p-3 mb-4"
+              />
+
+              <Text className="text-gray-700 mb-1 text-lg font-bold">
+                Buildable Area in Square Feet:
+              </Text>
+              <TextInput
+                placeholderTextColor="gray"
+                placeholder="Enter Buildable Area"
+                value={buildableArea}
+                onChangeText={setbuildableArea}
+                className="border border-gray-300 rounded-md p-3 mb-4"
+              />
+
+              <Text className="text-gray-700 mb-1 text-lg font-bold">
+                Number of floors
+              </Text>
+              <TextInput
+                placeholderTextColor="gray"
+                placeholder="Enter number of floor"
+                value={floors}
+                onChangeText={setFloors}
                 className="border border-gray-300 rounded-md p-3 mb-4"
               />
 
