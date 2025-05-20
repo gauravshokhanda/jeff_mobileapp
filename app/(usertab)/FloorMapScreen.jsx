@@ -37,6 +37,8 @@ export default function FloorMapScreen() {
     const [city, setCity] = useState('');
     const [zipCode, setZipCode] = useState('');
     const [area, setArea] = useState('');
+    const [buildableArea, setBuildableArea] = useState('');
+    const [floors, setFloors] = useState('');
     const [projectType, setProjectType] = useState('');
     const [squareFit, setSquareFit] = useState('');
     const [loading, setLoading] = useState(false);
@@ -88,27 +90,27 @@ export default function FloorMapScreen() {
                         headers: { Authorization: `Bearer ${token}` },
                     }
                 );
-    
+
                 const cityData = response.data.data.map((city) => ({
                     key: city.id.toString(),
                     label: city.city,
                     zip: city.pincode,
                 }));
-    
+
                 setCities((prevCities) => {
-                    const combinedCities = currentPage === 1 
-                        ? cityData 
+                    const combinedCities = currentPage === 1
+                        ? cityData
                         : [...prevCities, ...cityData];
-    
+
                     // Filter out duplicate keys
                     const uniqueCities = combinedCities.filter(
                         (city, index, self) =>
                             index === self.findIndex((c) => c.key === city.key)
                     );
-    
+
                     return uniqueCities;
                 });
-    
+
                 setHasMoreCities(currentPage < response.data.pagination.last_page);
             } catch (error) {
                 if (error.response?.data?.message) {
@@ -123,7 +125,7 @@ export default function FloorMapScreen() {
         }, 500),
         [token]
     );
-    
+
 
 
     const loadMoreCities = () => {
@@ -143,7 +145,7 @@ export default function FloorMapScreen() {
             mediaTypes: ImagePicker.MediaTypeOptions.All, // Allows all gallery media (images and videos)
             quality: 1, // Full quality
         });
-    
+
         setFileName(result.assets[0]?.fileName || "Uploaded File");
         setImageUri(result.assets[0]?.uri);
     };
@@ -154,7 +156,7 @@ export default function FloorMapScreen() {
     };
 
     const handleSubmit = async () => {
-        if (!city || !zipCode || !area || !projectType || !imageUri) {
+        if (!city || !zipCode || !area || !projectType || !buildableArea || !floors || !imageUri) {
             Alert.alert('Error', 'All fields are required');
             return;
         }
@@ -166,13 +168,15 @@ export default function FloorMapScreen() {
         data.append("zip_code", zipCode);
         data.append("area", area);
         data.append("project_type", projectType);
+        data.append("floors", floors);
+        data.append("buildable_area", buildableArea);
         data.append("floor_maps", {
             uri: imageUri,
             name: fileName || "uploaded_file",
             type: "image/jpeg",
         });
 
-
+        console.log("form data : ",data)
 
         try {
             const response = await API.post("regional_multipliers/details", data, {
@@ -189,6 +193,8 @@ export default function FloorMapScreen() {
             setCity('');
             setZipCode('');
             setArea('');
+            setBuildableArea('');
+            setFloors('');
             setProjectType('');
             setImageUri('');
         } catch (error) {
@@ -419,13 +425,33 @@ export default function FloorMapScreen() {
 
                                 {/* Area */}
                                 <View className="mx-2">
-                                    <Text className="text-gray-800 font-semibold mb-1 text-base">Area in Square feet</Text>
+                                    <Text className="text-gray-800 font-semibold mb-1 text-base">Total Area</Text>
                                     <TextInput
                                         className="border border-gray-300 bg-white rounded-xl p-4 text-gray-900 shadow-sm"
                                         placeholder="Enter area"
                                         placeholderTextColor="#A0AEC0"
                                         onChangeText={setArea}
                                         value={area}
+                                    />
+                                </View>
+                                <View className="mx-2">
+                                    <Text className="text-gray-800 font-semibold mb-1 text-base">Buildable Area</Text>
+                                    <TextInput
+                                        className="border border-gray-300 bg-white rounded-xl p-4 text-gray-900 shadow-sm"
+                                        placeholder="Enter Buildable area"
+                                        placeholderTextColor="#A0AEC0"
+                                        onChangeText={setBuildableArea}
+                                        value={buildableArea}
+                                    />
+                                </View>
+                                <View className="mx-2">
+                                    <Text className="text-gray-800 font-semibold mb-1 text-base">Number of Floors</Text>
+                                    <TextInput
+                                        className="border border-gray-300 bg-white rounded-xl p-4 text-gray-900 shadow-sm"
+                                        placeholder="Enter number of floors"
+                                        placeholderTextColor="#A0AEC0"
+                                        onChangeText={setFloors}
+                                        value={floors}
                                     />
                                 </View>
 
