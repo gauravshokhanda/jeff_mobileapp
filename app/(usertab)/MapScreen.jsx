@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, Alert, TextInput, ActivityIndicator, Platform, TouchableOpacity
+  View, Text, Alert, TextInput, ActivityIndicator, Platform, TouchableOpacity, Modal
 } from 'react-native';
 import MapView, { Marker, Polyline, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -20,6 +20,11 @@ export default function MapScreen() {
   const [confirmButtonVisible, setConfirmButtonVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [mapType, setMapType] = useState('satellite');
+  const [showBuildingModal, setShowBuildingModal] = useState(false);
+  const [areaInSquareFeet, setAreaInSquareFeet] = useState(0);
+  const [selectedOption, setSelectedOption] = useState('');
+  const [customCoverage, setCustomCoverage] = useState('');
+  const [floorCount, setFloorCount] = useState('');
   const dispatch = useDispatch();
 
   const fetchLocation = async () => {
@@ -96,7 +101,6 @@ export default function MapScreen() {
 
       setPolygonPoints(newPoints);
 
-      // Show search bar if polygon is fully undone
       if (newPoints.length === 0) {
         setIsDrawing(false);
         setPreviewPoint(null);
@@ -108,25 +112,59 @@ export default function MapScreen() {
   const handleConfirmArea = async () => {
     try {
       const area = getAreaOfPolygon(polygonPoints);
-      const areaInSquareFeet = (area * 10.7639).toFixed(2);
+      const areaInSqFt = parseFloat((area * 10.7639).toFixed(2));
+      setAreaInSquareFeet(areaInSqFt);
+      setShowBuildingModal(true);
+    } catch (error) {
+      Alert.alert('Error', `Unable to calculate area: ${error.message}`);
+    }
+  };
+
+  const handleSubmitBuildingConfig = async () => {
+    const isCustom = selectedOption === 'custom';
+    const coverage = isCustom ? parseFloat(customCoverage) : parseFloat(selectedOption);
+    const floors = parseInt(floorCount);
+
+    if (isNaN(coverage) || coverage <= 0 || coverage > 95) {
+      Alert.alert('Invalid %', 'Please enter a valid percentage (up to 95%)');
+      return;
+    }
+
+    if (isNaN(floors) || floors < 1) {
+      Alert.alert('Invalid Floor Count', 'Please enter a valid number of floors');
+      return;
+    }
+
+    const buildableArea = parseFloat(((areaInSquareFeet * coverage) / 100).toFixed(2));
+    const totalBuiltUp = parseFloat((buildableArea * floors).toFixed(2));
+
+    try {
       const centroid = polygonPoints.reduce((acc, p) => {
         acc.latitude += p.latitude;
         acc.longitude += p.longitude;
         return acc;
       }, { latitude: 0, longitude: 0 });
+
       centroid.latitude /= polygonPoints.length;
       centroid.longitude /= polygonPoints.length;
+
       const [details] = await Location.reverseGeocodeAsync(centroid);
+
       dispatch(setPolygonData({
         coordinates: polygonPoints,
         area: areaInSquareFeet,
+        buildableArea,
+        floors,
+        totalBuiltUp,
         city: details?.city || '',
         state: details?.region || '',
         postalCode: details?.postalCode?.toString().padStart(5, '0') || ''
       }));
-      router.push('/AreaDetailsScreen');
+
+      setShowBuildingModal(false);
       setPolygonPoints([]);
       setConfirmButtonVisible(false);
+      router.push('/AreaDetailsScreen');
     } catch (error) {
       Alert.alert('Error', `Unable to fetch details: ${error.message}`);
     }
@@ -143,14 +181,14 @@ export default function MapScreen() {
     setPolygonPoints([]);
     setPreviewPoint(null);
     setConfirmButtonVisible(false);
-    setIsDrawing(false); // Show search bar again
+    setIsDrawing(false);
   };
 
   const handleCancelDrawing = () => {
     setPolygonPoints([]);
     setPreviewPoint(null);
     setConfirmButtonVisible(false);
-    setIsDrawing(false); // Exit drawing mode
+    setIsDrawing(false);
   };
 
   const handleZoomIn = () => {
@@ -180,7 +218,7 @@ export default function MapScreen() {
   const toggleMapType = () => {
     setMapType((prev) =>
       prev === 'satellite' ? 'standard' :
-      prev === 'standard' ? 'hybrid' : 'satellite'
+        prev === 'standard' ? 'hybrid' : 'satellite'
     );
   };
 
@@ -285,7 +323,7 @@ export default function MapScreen() {
                   fillColor="rgba(200, 0, 117, 0.5)"
                   strokeWidth={4}
                 />
-            )}
+              )}
 
             <Circle center={location} radius={50} fillColor="rgba(0, 100, 255, 0.2)" strokeColor="rgba(0, 100, 255, 0.8)" />
             <Marker coordinate={location} title="You are here" />
@@ -310,32 +348,99 @@ export default function MapScreen() {
           )}
 
           <View style={{ position: 'absolute', bottom: 20, right: 20 }}>
-            <TouchableOpacity onPress={handleZoomIn} style={buttonStyle}>
-              <Ionicons name="add-outline" size={28} color="#0EA5E9" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleZoomOut} style={buttonStyle}>
-              <Ionicons name="remove-outline" size={28} color="#0EA5E9" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={toggleMapType} style={buttonStyle}>
-              <Ionicons name="layers-outline" size={28} color="#0EA5E9" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleMyLocation} style={buttonStyle}>
-              <Ionicons name="location-outline" size={28} color="#0EA5E9" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleStartDrawing} style={buttonStyle}>
-              <Ionicons name="create-outline" size={28} color="#0EA5E9" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleUndo} style={buttonStyle}>
-              <Ionicons name="arrow-undo-outline" size={28} color="#f59e0b" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleClearPolygon} style={buttonStyle}>
-              <Ionicons name="trash-outline" size={28} color="#EF4444" />
-            </TouchableOpacity>
+            {['add-outline', 'remove-outline', 'layers-outline', 'location-outline', 'create-outline', 'arrow-undo-outline', 'trash-outline']
+              .map((icon, i) => (
+                <TouchableOpacity
+                  key={icon}
+                  onPress={[handleZoomIn, handleZoomOut, toggleMapType, handleMyLocation, handleStartDrawing, handleUndo, handleClearPolygon][i]}
+                  style={buttonStyle}
+                >
+                  <Ionicons name={icon} size={28} color={icon === 'trash-outline' ? '#EF4444' : icon === 'arrow-undo-outline' ? '#f59e0b' : '#0EA5E9'} />
+                </TouchableOpacity>
+              ))}
           </View>
         </View>
       ) : (
         <Text style={{ textAlign: 'center', marginTop: 20 }}>Click below to fetch your location</Text>
       )}
+
+      {/* Building Configuration Modal */}
+      <Modal
+        visible={showBuildingModal}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowBuildingModal(false)}
+      >
+        <View style={{
+          flex: 1, backgroundColor: 'rgba(0,0,0,0.6)',
+          justifyContent: 'center', alignItems: 'center'
+        }}>
+          <View style={{
+            width: '85%', backgroundColor: 'white',
+            borderRadius: 12, padding: 20
+          }}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 6 }}>Building Configuration</Text>
+            <Text style={{ fontSize: 14, color: '#4B5563', marginBottom: 12 }}>
+              Please select how much of the selected land area you want to use for construction, and enter how many floors you plan to build. This will help calculate the total buildable space.
+            </Text>
+            <Text>Total Area: {areaInSquareFeet} sq.ft</Text>
+
+            <Text style={{ marginTop: 15, fontWeight: '600' }}>Select Area Coverage (%)</Text>
+            {['30', '50', '75', '90', 'custom'].map(option => (
+              <TouchableOpacity
+                key={option}
+                onPress={() => {
+                  setSelectedOption(option);
+                  if (option !== 'custom') setCustomCoverage('');
+                }}
+                style={{
+                  marginTop: 8,
+                  backgroundColor: selectedOption === option ? '#0EA5E9' : '#F3F4F6',
+                  padding: 10,
+                  borderRadius: 8,
+                }}
+              >
+                <Text style={{ color: selectedOption === option ? 'white' : '#111827', textAlign: 'center' }}>
+                  {option === 'custom' ? 'Custom' : `${option}%`}
+                </Text>
+              </TouchableOpacity>
+            ))}
+
+            {selectedOption === 'custom' && (
+              <TextInput
+                placeholder="Enter custom % (max 95)"
+                keyboardType="numeric"
+                value={customCoverage}
+                onChangeText={setCustomCoverage}
+                style={{
+                  borderWidth: 1,
+                  borderColor: '#ccc',
+                  padding: 10,
+                  marginTop: 10,
+                  borderRadius: 8
+                }}
+              />
+            )}
+
+            <Text style={{ marginTop: 15, fontWeight: '600' }}>Number of Floors</Text>
+            <TextInput
+              placeholder="Enter number of floors"
+              keyboardType="numeric"
+              value={floorCount}
+              onChangeText={setFloorCount}
+              style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, marginTop: 8, borderRadius: 8 }}
+            />
+
+            <TouchableOpacity
+            className="bg-sky-950"
+              onPress={handleSubmitBuildingConfig}
+              style={{ padding: 12, borderRadius: 8, marginTop: 20 }}
+            >
+              <Text style={{ color: 'white', fontWeight: 'bold', textAlign: 'center' }}>Submit</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }

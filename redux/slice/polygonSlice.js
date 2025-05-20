@@ -8,14 +8,21 @@ const polygonSlice = createSlice({
     city: '',
     state: '',
     zipCode: '',
+    buildableArea:0,
+    floors:0
   },
   reducers: {
     setPolygonData: (state, action) => {
       state.coordinates = action.payload.coordinates;
       state.area = action.payload.area;
       state.city = action.payload.city;
-      state.state = action.payload.state; // ✅ Save state here
+      state.state = action.payload.state;
       state.zipCode = action.payload.postalCode;
+      state.buildableArea = action.payload.buildableArea;
+      state.floors = action.payload.floors;
+
+
+
     },
     clearPolygonData: (state) => {
       state.coordinates = [];
@@ -23,6 +30,9 @@ const polygonSlice = createSlice({
       state.city = '';
       state.state = '';
       state.zipCode = '';
+      state.buildableArea=0;
+      state.buildableArea=0;
+
     },
   },
 });
