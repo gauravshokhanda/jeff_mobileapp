@@ -36,6 +36,7 @@ export default function EmailVerify() {
       <Text className="text-xl font-bold text-center mb-6">Email Verification</Text>
       <Text className="text-gray-600 text-center mb-2">
         Enter the OTP sent to {email}
+        
       </Text>
       <TextInput
         className="border rounded p-3 mb-4"
