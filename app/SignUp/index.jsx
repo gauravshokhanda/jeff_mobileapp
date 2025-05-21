@@ -86,10 +86,21 @@ export default function SignUp() {
       //   router.replace("/SignIn");
       // }
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "An error occurred. Please try again.";
-      Alert.alert("Error", errorMessage);
-    } finally {
+  console.log(error);
+
+  let errorMessage = "An error occurred. Please try again.";
+
+  if (error.response?.data?.messages) {
+    const messages = error.response.data.messages;
+    const firstKey = Object.keys(messages)[0];
+    errorMessage = messages[firstKey][0];
+  } else if (error.response?.data?.message) {
+    errorMessage = error.response.data.message;
+  }
+
+  Alert.alert("Error", errorMessage);
+}
+ finally {
       setLoading(false);
     }
   };

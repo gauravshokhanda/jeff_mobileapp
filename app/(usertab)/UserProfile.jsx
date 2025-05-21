@@ -35,7 +35,7 @@ const MenuHeader = () => {
         });
         setPosts(response.data.data.data || []);
       } catch (error) {
-        console.error("Error fetching posts:", error);
+        // console.error("Error fetching posts:", error);
         setPosts([]);
       } finally {
         setLoading(false);
@@ -52,7 +52,7 @@ const MenuHeader = () => {
         });
         setUserData(response.data.data);
       } catch (error) {
-        Alert.alert("API Error", "Failed to fetch user data.");
+        // Alert.alert("API Error", "Failed to fetch user data.");
       } finally {
         setLoading(false);
       }
@@ -70,26 +70,32 @@ const MenuHeader = () => {
         colors={["#082f49", "transparent"]}
         style={{ height: screenHeight * 0.35 }}
       >
-        <View className="mt-12 px-3 flex-row items-center gap-4">
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={28} color="white" />
-          </TouchableOpacity>
-          <Image
-            source={{
-              uri: userData?.image
-                ? `${baseUrl}/${userData.image}`
-                : "https://xsgames.co/randomusers/assets/avatars/male/74.jpg",
-            }}
-            className="w-16 h-16 border-2 border-white rounded-full"
-          />
+       <View className="mt-12 px-3 flex-row items-center gap-4">
+  <TouchableOpacity onPress={() => router.back()}>
+    <Ionicons name="arrow-back" size={28} color="white" />
+  </TouchableOpacity>
 
-          <View>
-            <Text className="text-2xl font-semibold text-white">
-              Welcome, {userData?.name || "User"}!
-            </Text>
-            <Text className="text-gray-300">{userData?.email}</Text>
-          </View>
-        </View>
+  {userData?.image ? (
+    <Image
+      source={{ uri: `${baseUrl}/${userData.image}` }}
+      className="w-16 h-16 border-2 border-white rounded-full"
+    />
+  ) : (
+    <View className="w-16 h-16 bg-gray-600 border-2 border-white rounded-full justify-center items-center">
+      <Text className="text-white text-xl font-bold">
+        {userData?.name?.charAt(0).toUpperCase() || "U"}
+      </Text>
+    </View>
+  )}
+
+  <View>
+    <Text className="text-2xl font-semibold text-white">
+      Welcome, {userData?.name || "User"}!
+    </Text>
+    <Text className="text-gray-300">{userData?.email}</Text>
+  </View>
+</View>
+
       </LinearGradient>
 
       <View

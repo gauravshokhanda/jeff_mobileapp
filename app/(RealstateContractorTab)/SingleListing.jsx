@@ -42,7 +42,7 @@ export default function PropertyDetails() {
     { key: "house_type", label: "House Type" },
     { key: "area", label: "Area (sqft)" },
     { key: "locale", label: "Locality" },
-    { key: "price", label: "Price (₹)" },
+    { key: "price", label: "Price" },
     { key: "furnish_type", label: "Furnish Type" },
     { key: "bhk", label: "BHK" },
   ];
