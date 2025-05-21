@@ -61,7 +61,7 @@ export default function TabRoot() {
             (sum, user) => sum + user.message_unread_count,
             0
           );
-          console.log("📬 Unread messages count:", unreadCount);
+          // console.log("📬 Unread messages count:", unreadCount);
           setHasUnreadMessages(unreadCount > 0);
         }
       } catch (error) {

@@ -15,13 +15,14 @@ import AddPortfolioModal from "../../components/addPortfolioModal";
 import { useRouter } from "expo-router";
 import { API, baseUrl } from "../../config/apiConfig";
 import { Alert } from "react-native";
+import EditProfileModal from "../../components/EditProfileModal";
+
 
 const ProfileCard = () => {
-  console.log("ResetPasswordModal Loaded!");
-  console.log("ResetPasswordModal typeof:", typeof ResetPasswordModal);
   const token = useSelector((state) => state.auth.token);
   const navigation = useNavigation();
   const router = useRouter();
+  const [editModalVisible, setEditModalVisible] = useState(false);
 
   const [userData, setUserData] = useState(null);
   const [portfolios, setPortfolios] = useState([]);
@@ -211,38 +212,40 @@ const ProfileCard = () => {
       </View>
 
       {/* User Details Card */}
-      <View className="bg-white mx-4 mt-12 p-6 rounded-xl shadow-sm">
-        <Text className="text-xl font-bold text-gray-800 mb-3">
-          Personal Information
-        </Text>
-        <View className="space-y-2">
-          <Text className="text-gray-700 text-base">{userData.name}</Text>
-          {userData.email && (
-            <Text className="text-gray-600 text-base">{userData.email}</Text>
-          )}
-          {userData.number && (
-            <Text className="text-gray-600 text-base">{userData.number}</Text>
-          )}
-          {(userData.address || userData.city) && (
-            <Text className="text-gray-600 text-base">
-              {userData.address ? `${userData.address}, ` : ""}
-              {userData.city || ""}
-            </Text>
-          )}
-          {userData.company_name && (
-            <Text className="text-gray-700 font-semibold text-base mt-2">
-              {userData.company_name
-                ? `${userData.company_name}`
-                : "Company Name not defined !"}
-            </Text>
-          )}
-          {/* {userData.company_address && (
-            <Text className="text-gray-600 text-base">
-              {userData.company_address}
-            </Text>
-          )} */}
-        </View>
-      </View>
+      <View className="bg-white mx-4 mt-12 p-6 rounded-xl shadow-sm relative">
+        <View>
+  <TouchableOpacity
+    className="absolute top-4 right-4"
+    onPress={() => setEditModalVisible(true)}
+  >
+    <Ionicons name="create-outline" size={22} color="#0369a1" />
+  </TouchableOpacity>
+  </View>
+  <Text className="text-xl font-bold text-gray-800 mb-3">
+    Personal Information
+  </Text>
+  <View className="space-y-2">
+    <Text className="text-gray-700 text-base">{userData.name}</Text>
+    {userData.email && (
+      <Text className="text-gray-600 text-base">{userData.email}</Text>
+    )}
+    {userData.number && (
+      <Text className="text-gray-600 text-base">{userData.number}</Text>
+    )}
+    {(userData.address || userData.city) && (
+      <Text className="text-gray-600 text-base">
+        {userData.address ? `${userData.address}, ` : ""}
+        {userData.city || ""}
+      </Text>
+    )}
+    {userData.company_name && (
+      <Text className="text-gray-700 font-semibold text-base mt-2">
+        {userData.company_name}
+      </Text>
+    )}
+  </View>
+</View>
+
 
       {/* Portfolio Section */}
 
@@ -280,6 +283,16 @@ const ProfileCard = () => {
           addPortfolioItem={addPortfolioItem}
         />
       )}
+
+<EditProfileModal
+  visible={editModalVisible}
+  onClose={() => setEditModalVisible(false)}
+  userData={userData}
+  onUpdate={(updatedFields) => {
+    setUserData((prev) => ({ ...prev, ...updatedFields }));
+  }}
+/>
+
     </SafeAreaView>
   );
 };
