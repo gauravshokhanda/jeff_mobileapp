@@ -110,7 +110,7 @@ export default function Listing() {
     return (
       <View
         style={{}}
-        className="rounded-xl bg-white shadow-md overflow-hidden mb-4"
+        className="rounded-xl bg-white shadow-md overflow-hidden mb-12"
       >
         <TouchableOpacity
           className="bg-sky-950 p-4 flex-row items-start"

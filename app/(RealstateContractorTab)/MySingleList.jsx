@@ -18,6 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 
 export default function PropertyDetails() {
+    console.log("my listing page open");
   const { id } = useLocalSearchParams();
   const token = useSelector((state) => state.auth.token);
   const router = useRouter();
@@ -149,7 +150,7 @@ export default function PropertyDetails() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
-      <View className="absolute z-10 w-full flex-row mt-20 p-3">
+      <View className="absolute z-10 w-full flex-row mt-20 justify-between p-3">
         <TouchableOpacity
           onPress={() => router.back()}
           className="bg-gray-700 rounded-full p-2"
@@ -157,7 +158,12 @@ export default function PropertyDetails() {
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
 
-       
+        <TouchableOpacity
+          onPress={() => setEditModalVisible(true)}
+          className="bg-sky-900 rounded-full p-2"
+        >
+          <Ionicons name="create-outline" size={24} color="white" />
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>

@@ -53,15 +53,29 @@ export default function SignUp() {
   }, [role]);
 
   const handleSignUp = async () => {
+    // Basic validations
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
     if (!name || !email || !password || !passwordConfirmation || !role.key) {
       Alert.alert("Error", "All fields must be completed before proceeding.");
       return;
     }
+  
+    if (!emailRegex.test(email)) {
+      Alert.alert("Error", "Please enter a valid email address.");
+      return;
+    }
+  
+    if (password.length < 8) {
+      Alert.alert("Error", "Password must be at least 8 characters long.");
+      return;
+    }
+  
     if (password !== passwordConfirmation) {
       Alert.alert("Error", "The password and confirmation password must be identical.");
       return;
     }
-
+  
     const data = {
       name,
       email,
@@ -69,41 +83,33 @@ export default function SignUp() {
       password_confirmation: passwordConfirmation,
       role: role.key,
     };
-
+  
     setLoading(true);
     try {
       const response = await API.post("auth/register", data);
       const { access_token } = response.data;
       const user = response.data.data.user;
       dispatch(setSignUp({ access_token, user }));
-
+  
       router.replace("/otpScreen");
-      // if (role.key == 3) {
-      //   router.replace("/SignIn");
-      // } else if (role.key == 4) {
-      //   router.replace("/SignIn");
-      // } else {
-      //   router.replace("/SignIn");
-      // }
     } catch (error) {
-  console.log(error);
-
-  let errorMessage = "An error occurred. Please try again.";
-
-  if (error.response?.data?.messages) {
-    const messages = error.response.data.messages;
-    const firstKey = Object.keys(messages)[0];
-    errorMessage = messages[firstKey][0];
-  } else if (error.response?.data?.message) {
-    errorMessage = error.response.data.message;
-  }
-
-  Alert.alert("Error", errorMessage);
-}
- finally {
+      console.log(error);
+      let errorMessage = "An error occurred. Please try again.";
+  
+      if (error.response?.data?.messages) {
+        const messages = error.response.data.messages;
+        const firstKey = Object.keys(messages)[0];
+        errorMessage = messages[firstKey][0];
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+  
+      Alert.alert("Error", errorMessage);
+    } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
@@ -196,11 +202,9 @@ export default function SignUp() {
               className="bg-sky-950 rounded-xl items-center py-3 mt-5"
               disabled={loading}
             >
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
+            
                 <Text className="text-white font-bold text-lg">SIGN UP</Text>
-              )}
+              
             </TouchableOpacity>
 
             <View className="items-center mt-4">

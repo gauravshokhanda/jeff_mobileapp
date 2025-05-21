@@ -185,6 +185,7 @@ export default function TabRoot() {
         <Tabs.Screen name="EstateContractorProfile" options={{ href: null }} />
         <Tabs.Screen name="contractorProfile" options={{ href: null }} />
         <Tabs.Screen name="premium" options={{ href: null }} />
+        <Tabs.Screen name="MySingleList" options={{ href: null }} />
       </Tabs>
     </ProtectedRoute>
   );

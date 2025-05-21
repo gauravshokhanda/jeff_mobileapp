@@ -98,8 +98,8 @@ export default function PropertyDetails() {
           { label: "Building Type", value: property.house_type },
           { label: "Area", value: `${property.area} sqft` },
           { label: "Locality", value: property.locale },
-          { label: "Price", value: `₹${property.price}` },
-          { label: "Furnish Type", value: property.furnish_type },
+          { label: "Price", value: `$${property.price}` },
+          // { label: "Furnish Type", value: property.furnish_type },
           { label: "BHK", value: property.bhk },
         ]
       : [];

@@ -114,7 +114,7 @@ export default function Listing() {
       >
         <TouchableOpacity
           className="bg-sky-950 p-4 flex-row items-start"
-          onPress={() => router.push(`SingleListing?id=${item.id}`)}
+          onPress={() => router.push(`MySingleList?id=${item.id}`)}
         >
           <View className="flex-1">
             {/* Location and Tags */}
