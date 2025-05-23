@@ -176,6 +176,7 @@ export default function TabRoot() {
         "ContractorProfile",
         "RealEstateDetails",
         "RealContractorListing",
+        "Explanation"
       ].map((screen) => (
         <Tabs.Screen key={screen} name={screen} options={{ href: null }} />
       ))}
