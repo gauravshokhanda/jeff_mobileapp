@@ -25,6 +25,7 @@ const postContentWidth = screenWidth * 0.92;
 
 const PropertyPost = () => {
   const { breakdownCost } = useSelector((state) => state.breakdownCost);
+  console.log("breakdownCost", breakdownCost);
   const token = useSelector((state) => state.auth.token);
   const parsedCost = useMemo(
     () => (breakdownCost ? JSON.parse(breakdownCost) : {}),
@@ -51,7 +52,7 @@ const PropertyPost = () => {
         numberOfDays: parsedCost.days.estimated_time?.toString() || "",
         totalCost: parsedCost.total_cost?.toString() || "",
         zipCode: parsedCost.zip_code || "",
-        area: parsedCost.area || "",
+        area: parsedCost.buildable_area?.toString() || "",
         city: parsedCost.city || "",
         projectType: parsedCost.days.project_type || "",
       }));
@@ -111,6 +112,7 @@ const PropertyPost = () => {
   };
 
   const handleSubmit = async () => {
+    console.log("Form data:", form);
     if (!validateForm()) return;
 
     const formData = new FormData();

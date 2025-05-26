@@ -59,7 +59,7 @@ export default function AreaDetailsScreen() {
           },
         }
       );
-
+console.log("resional data response is", response.data);
       if (response.data && response.data.data) {
         const scheduleCost = encodeURIComponent(
           JSON.stringify(response.data.data)

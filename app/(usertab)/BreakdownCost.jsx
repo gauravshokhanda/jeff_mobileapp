@@ -27,10 +27,7 @@ export default function BreakdownCost() {
   const [parsedData, setParsedData] = useState(null);
   const [savedScreenName, setSavedScreenName] = useState(null);
 
-  // console.log("screen name", screenName)
-
   useEffect(() => {
-    // Load saved screenName from storage
     const loadScreenName = async () => {
       try {
         const storedName = await AsyncStorage.getItem("screenName");
@@ -45,7 +42,6 @@ export default function BreakdownCost() {
   }, []);
 
   useEffect(() => {
-    // Save new screenName if it's provided
     const saveScreenName = async () => {
       if (screenName && screenName !== savedScreenName) {
         try {
@@ -72,17 +68,16 @@ export default function BreakdownCost() {
     }
   }, [costData]);
 
-  if (!parsedData) {
+  if (!parsedData || !parsedData.days?.task_breakdown) {
     return null;
   }
 
-  const { estimated_time, project_type, square_fit,total_cost } = parsedData;
-  const data = parsedData.days.data;
-  if (!data) {
-    console.log("Data is missing or undefined");
-    return null;
-  }
+  const {
+    total_cost,
+    days: { estimated_time, project_type, task_breakdown },
+  } = parsedData;
 
+  const data = task_breakdown;
   const totalDays = Object.values(data).reduce((acc, day) => acc + day, 0);
   const categories = Object.entries(data);
 
@@ -113,6 +108,7 @@ export default function BreakdownCost() {
           <Text className="text-lg text-white opacity-75">{project_type}</Text>
         </View>
       </LinearGradient>
+
       <View
         className="flex-1 rounded-3xl bg-white"
         style={{
@@ -122,7 +118,7 @@ export default function BreakdownCost() {
           overflow: "hidden",
         }}
       >
-        <View className={`flex-1 bg-white rounded-3xl`}>
+        <View className="flex-1 bg-white rounded-3xl">
           <View className="flex flex-row justify-center gap-x-4 px-4">
             <View
               className={`flex-1 max-w-[45%] px-4 py-3 mt-4 bg-gray-50 rounded-lg shadow-md ${
@@ -134,7 +130,9 @@ export default function BreakdownCost() {
               </Text>
               <Text className="text-2xl font-extrabold text-gray-800">
                 $
-                {new Intl.NumberFormat("en-US", { style: "decimal" }).format(Number(total_cost.toString().replace(/,/g, "")))}
+                {new Intl.NumberFormat("en-US", { style: "decimal" }).format(
+                  Number(total_cost.toString().replace(/,/g, ""))
+                )}
               </Text>
             </View>
 
@@ -144,22 +142,21 @@ export default function BreakdownCost() {
               }`}
             >
               <Text className="text-sm text-gray-600 font-semibold">
-                Total Days
+                Estimated Time
               </Text>
               <Text className="text-2xl font-extrabold text-gray-800">
-                {totalDays}
+                {estimated_time} days
               </Text>
             </View>
           </View>
 
-          {/* Breakdown List Section */}
           <View className="flex-1 px-5 mt-5 rounded-2xl">
             <FlashList
               data={categories}
               renderItem={({ item, index }) => (
                 <View
                   key={item[0]}
-                  className="flex-row justify-between items-center bg-white h-28 mb-4 rounded-lg shadow-lg px-2 "
+                  className="flex-row justify-between items-center bg-white h-28 mb-4 rounded-lg shadow-lg px-2"
                   style={{
                     borderColor: categoryColors[index],
                     borderWidth: 1.5,
@@ -176,7 +173,6 @@ export default function BreakdownCost() {
                       `${Math.round((item[1] / totalDays) * 100)}%`
                     }
                   />
-                  {/* Category Details */}
                   <View className="flex-1 ml-4">
                     <Text className="text-xl font-semibold text-gray-700">
                       {item[0]
@@ -194,7 +190,6 @@ export default function BreakdownCost() {
             />
           </View>
 
-          {/* Post Button Section */}
           <View className="m-4">
             <TouchableOpacity
               onPress={handlePost}

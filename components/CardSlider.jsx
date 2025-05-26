@@ -28,10 +28,10 @@ const CardSlider = () => {
       const response = await API.get("general/contractors/latest", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("contractor reponse",response.data.data)
+      // console.log("contractor reponse",response.data.data)
       const filteredData =
         response.data?.data?.filter((item) => item.role === 3) || [];
-        console.log("filteredData",filteredData)
+        // console.log("filteredData",filteredData)
 
 
       const formattedData = filteredData.map((item) => ({
