@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from '../redux/store';
 import React from "react";
+import { withIAPContext } from "react-native-iap"; // ✅ Required wrapper
 import '../global.css';
 
 import { NotificationProvider } from "@/context/NotificationContext";
@@ -19,6 +20,7 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
   }),
 });
+
 const BACKGROUND_NOTIFICATION_TASK = "BACKGROUND-NOTIFICATION-TASK";
 TaskManager.defineTask(
   BACKGROUND_NOTIFICATION_TASK,
@@ -34,27 +36,25 @@ TaskManager.defineTask(
 
 Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 
-export default function RootLayout() {
-  return <>
-   <NotificationProvider>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <Stack screenOptions={{ headerShown: false,gestureEnabled:false }}>
-          <Stack.Screen name="index" options={{ title: 'Get Started', headerShown: false }} />
-          <Stack.Screen
-            name="SignIn"
-            options={{ headerShown: false }}
-            
-            />
-          <Stack.Screen name="SignUp/index" options={{ title: 'Sign up', headerShown: false }} />
-          <Stack.Screen name="ContractorProfileComplete/index" options={{ title: 'ContractorProfileComplete', headerShown: false }} />
-          <Stack.Screen name="RealstateSelector/index" options={{ title: 'RealstateSelector', headerShown: false }} />
-          <Stack.Screen name='(usertab)' options={{ headerShown: false }} />
-          <Stack.Screen name='(generalContractorTab)' options={{ headerShown: false }} />
-          <Stack.Screen name='(RealstateContractorTab)' options={{ headerShown: false }} />
-        </Stack>
-      </PersistGate>
-    </Provider>
+function RootLayout() {
+  return (
+    <NotificationProvider>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <Stack screenOptions={{ headerShown: false, gestureEnabled: false }}>
+            <Stack.Screen name="index" options={{ title: 'Get Started', headerShown: false }} />
+            <Stack.Screen name="SignIn" options={{ headerShown: false }} />
+            <Stack.Screen name="SignUp/index" options={{ title: 'Sign up', headerShown: false }} />
+            <Stack.Screen name="ContractorProfileComplete/index" options={{ title: 'ContractorProfileComplete', headerShown: false }} />
+            <Stack.Screen name="RealstateSelector/index" options={{ title: 'RealstateSelector', headerShown: false }} />
+            <Stack.Screen name="(usertab)" options={{ headerShown: false }} />
+            <Stack.Screen name="(generalContractorTab)" options={{ headerShown: false }} />
+            <Stack.Screen name="(RealstateContractorTab)" options={{ headerShown: false }} />
+          </Stack>
+        </PersistGate>
+      </Provider>
     </NotificationProvider>
-  </>;
+  );
 }
+
+export default withIAPContext(RootLayout); // ✅ Wrap here

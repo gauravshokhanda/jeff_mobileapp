@@ -20,7 +20,6 @@ import {
 import Constants from "expo-constants";
 
 const ITUNES_SHARED_SECRET = Constants.expoConfig?.extra?.itunesSharedSecret;
-
 const isIos = Platform.OS === "ios";
 const subscriptionSkus = isIos ? ["AC5Dsubscription"] : [];
 
@@ -82,7 +81,6 @@ const GeneralContractorPlans = () => {
 
   const {
     connected,
-    subscriptions,
     getSubscriptions,
     currentPurchase,
     finishTransaction,
@@ -110,22 +108,32 @@ const GeneralContractorPlans = () => {
       if (currentPurchase?.transactionReceipt) {
         try {
           const receipt = currentPurchase.transactionReceipt;
-          const response = await validateReceiptIos(
-            {
-              "receipt-data": receipt,
-              password: ITUNES_SHARED_SECRET,
-            },
-            __DEV__
-          );
-          if (response.status === 0) {
-            setOwned(true);
-            finishTransaction(currentPurchase);
-            Alert.alert("Subscription", "Purchase successful!");
-          } else {
-            Alert.alert("Subscription", "Receipt invalid.");
+
+          if (Platform.OS === "ios") {
+            const response = await validateReceiptIos(
+              {
+                "receipt-data": receipt,
+                password: ITUNES_SHARED_SECRET,
+              },
+              __DEV__
+            );
+
+            const isValid = response?.status === 0;
+
+            if (isValid) {
+              await finishTransaction(currentPurchase);
+              setOwned(true);
+              setLoading(false);
+              Alert.alert("Subscription", "Purchase successful!");
+            } else {
+              setLoading(false);
+              Alert.alert("Subscription", "Receipt validation failed.");
+            }
           }
         } catch (err) {
-          console.error("Validation error", err);
+          setLoading(false);
+          console.error("Receipt validation error", err);
+          Alert.alert("Error", "Something went wrong validating your purchase.");
         }
       }
     };
@@ -136,16 +144,56 @@ const GeneralContractorPlans = () => {
   const handleSubscribe = async () => {
     try {
       setLoading(true);
+      console.log("🛒 Trying to request subscription:", premiumSku);
+  
+      if (!connected) {
+        console.warn("❌ IAP not connected");
+        Alert.alert("Connection Error", "In-App Purchase system not connected.");
+        setLoading(false);
+        return;
+      }
+  
+      if (!premiumSku) {
+        console.warn("❌ SKU is missing or invalid");
+        Alert.alert("Configuration Error", "Subscription product ID is missing.");
+        setLoading(false);
+        return;
+      }
+  
+      if (!isIos) {
+        console.warn("❌ Cannot test on non-iOS platforms");
+        Alert.alert("Platform Error", "This subscription only works on iOS.");
+        setLoading(false);
+        return;
+      }
+  
+      // Main call: this triggers sandbox purchase sheet
       await requestSubscription({ sku: premiumSku });
+      console.log("✅ requestSubscription() called successfully");
+  
     } catch (error) {
+      console.error("❌ Subscription Error:", error);
+  
       setLoading(false);
+  
       if (error instanceof PurchaseError) {
-        Alert.alert("Purchase Error", error.message);
+        const msg = `[${error.code}] ${error.message}`;
+        Alert.alert("Purchase Error", msg);
       } else {
-        Alert.alert("Error", "Something went wrong. Try again.");
+        // Possible causes: sandbox not logged in, App Store connect issue, product not approved, etc.
+        if (error.message?.includes("E_IAP_NOT_AVAILABLE")) {
+          Alert.alert("IAP Not Available", "Make sure you're using a real device and IAP is enabled in Xcode.");
+        } else if (error.message?.includes("not found")) {
+          Alert.alert("Invalid Product", "Product ID not found in App Store. Check if it's approved and matches exactly.");
+        } else if (error.message?.includes("Could not find")) {
+          Alert.alert("Apple ID Issue", "You might not be signed in with a sandbox Apple ID.");
+        } else {
+          Alert.alert("Unknown Error", error.message || "Something went wrong. Try again.");
+        }
       }
     }
   };
+  
 
   const plans = [
     {
@@ -159,7 +207,7 @@ const GeneralContractorPlans = () => {
         "Basic visibility",
       ],
       buttonText: "Current Plan",
-      isCurrent: true,
+      isCurrent: !owned,
     },
     {
       id: "2",
@@ -173,7 +221,7 @@ const GeneralContractorPlans = () => {
         "Featured in top contractor list",
         "Priority support",
       ],
-      buttonText: "Subscribe Now",
+      buttonText: owned ? "Subscribed" : "Subscribe Now",
       onSubscribe: handleSubscribe,
       loading,
       owned,
