@@ -49,6 +49,7 @@
       "typedRoutes": true
     },
     "extra": {
+      "itunesSharedSecret": "d3eeaf222a364e328dc0dab79faf1412",
       "router": {
         "origin": false
       },

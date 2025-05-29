@@ -121,13 +121,14 @@ const MenuHeader = () => {
     }
   };
 
-  const handleResetPassword = async ({ currentPassword, newPassword }) => {
+  const handleResetPassword = async ({ currentPassword, newPassword, confirmPassword }) => {
     try {
       const response = await API.post(
-        "reset-password",
+        "change-password",
         {
-          current_password: currentPassword,
+          old_password: currentPassword,
           new_password: newPassword,
+          new_password_confirmation: confirmPassword
         },
         {
           headers: { Authorization: `Bearer ${token}` },

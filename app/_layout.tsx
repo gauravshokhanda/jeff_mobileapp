@@ -5,8 +5,9 @@ import '../global.css';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from '../redux/store';
-import React from "react";
-import '../global.css';
+import React, { useEffect } from "react";
+import { withIAPContext } from "react-native-iap";
+import { initConnection, endConnection } from "react-native-iap"; // ✅ IAP lifecycle
 
 import { NotificationProvider } from "@/context/NotificationContext";
 import * as Notifications from "expo-notifications";
@@ -19,6 +20,7 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
   }),
 });
+
 const BACKGROUND_NOTIFICATION_TASK = "BACKGROUND-NOTIFICATION-TASK";
 TaskManager.defineTask(
   BACKGROUND_NOTIFICATION_TASK,
@@ -34,27 +36,44 @@ TaskManager.defineTask(
 
 Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 
-export default function RootLayout() {
-  return <>
-   <NotificationProvider>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <Stack screenOptions={{ headerShown: false,gestureEnabled:false }}>
-          <Stack.Screen name="index" options={{ title: 'Get Started', headerShown: false }} />
-          <Stack.Screen
-            name="SignIn"
-            options={{ headerShown: false }}
-            
-            />
-          <Stack.Screen name="SignUp/index" options={{ title: 'Sign up', headerShown: false }} />
-          <Stack.Screen name="ContractorProfileComplete/index" options={{ title: 'ContractorProfileComplete', headerShown: false }} />
-          <Stack.Screen name="RealstateSelector/index" options={{ title: 'RealstateSelector', headerShown: false }} />
-          <Stack.Screen name='(usertab)' options={{ headerShown: false }} />
-          <Stack.Screen name='(generalContractorTab)' options={{ headerShown: false }} />
-          <Stack.Screen name='(RealstateContractorTab)' options={{ headerShown: false }} />
-        </Stack>
-      </PersistGate>
-    </Provider>
+function RootLayout() {
+  // ✅ Initialize In-App Purchase connection
+  useEffect(() => {
+    const initIAP = async () => {
+      try {
+        const result = await initConnection();
+        console.log("✅ IAP connection initialized:", result);
+      } catch (e) {
+        console.error("❌ Failed to initialize IAP:", e);
+      }
+    };
+
+    initIAP();
+
+    return () => {
+      endConnection();
+      console.log("🛑 IAP connection closed");
+    };
+  }, []);
+
+  return (
+    <NotificationProvider>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <Stack screenOptions={{ headerShown: false, gestureEnabled: false }}>
+            <Stack.Screen name="index" options={{ title: 'Get Started', headerShown: false }} />
+            <Stack.Screen name="SignIn" options={{ headerShown: false }} />
+            <Stack.Screen name="SignUp/index" options={{ title: 'Sign up', headerShown: false }} />
+            <Stack.Screen name="ContractorProfileComplete/index" options={{ title: 'ContractorProfileComplete', headerShown: false }} />
+            <Stack.Screen name="RealstateSelector/index" options={{ title: 'RealstateSelector', headerShown: false }} />
+            <Stack.Screen name="(usertab)" options={{ headerShown: false }} />
+            <Stack.Screen name="(generalContractorTab)" options={{ headerShown: false }} />
+            <Stack.Screen name="(RealstateContractorTab)" options={{ headerShown: false }} />
+          </Stack>
+        </PersistGate>
+      </Provider>
     </NotificationProvider>
-  </>;
+  );
 }
+
+export default withIAPContext(RootLayout);
