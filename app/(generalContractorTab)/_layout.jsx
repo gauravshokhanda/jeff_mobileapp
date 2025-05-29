@@ -65,7 +65,7 @@ export default function TabRoot() {
           setHasUnreadMessages(unreadCount > 0);
         }
       } catch (error) {
-        console.error("❌ Failed to fetch unread messages:", error.message);
+        console.log("❌ Failed to fetch unread messages:", error.message);
       }
     };
 

@@ -17,6 +17,7 @@ export default function CostDetail() {
 
   useEffect(() => {
     if (CostDetails) {
+      // console.log("CostDetails:", CostDetails);
       try {
         const parsed = JSON.parse(CostDetails);
         setCostDetails(parsed);
@@ -39,7 +40,8 @@ export default function CostDetail() {
   }
 
   const detailItems = [
-    { label: "Area", value: `${costDetails.area} sqft`, icon: "ruler-combined" },
+    { label: "Total Area", value: `${costDetails.area} sqft`, icon: "ruler-combined" },
+    { label: "Buildable Area", value: `${costDetails.buildable_area} sqft`, icon: "drafting-compass" },
     { label: "City", value: costDetails.city, icon: "city" },
     { label: "State", value: costDetails.state, icon: "map-marker-alt" },
     { label: "Zip Code", value: costDetails.zip_code, icon: "map-pin" },

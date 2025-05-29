@@ -72,9 +72,8 @@ const DashboardScreen = () => {
         {/* Property Image */}
         <Image
           source={{
-            uri: `https://g32.iamdeveloper.in/public/${
-              JSON.parse(item.floor_maps_image)[0]
-            }`,
+            uri: `https://g32.iamdeveloper.in/public/${JSON.parse(item.floor_maps_image)[0]
+              }`,
           }}
           className="w-full h-48 rounded-lg"
           resizeMode="cover"
@@ -152,15 +151,15 @@ const DashboardScreen = () => {
       >
         {/* Card Wrapper */}
         <View
-          className="shadow-lg pb-5 px-2 pt-4"
+          className="pb-5 px-2 pt-4"
           style={{
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 3 },
-            shadowOpacity: 0.2,
-            shadowRadius: 5,
-            elevation: 5,
+            // shadowColor: "#000",
+            // shadowOffset: { width: 0, height: 3 },
+            // shadowOpacity: 0.2,
+            // shadowRadius: 5,
+            // elevation: 5,
             overflow: "hidden",
           }}
         >
@@ -209,6 +208,7 @@ const DashboardScreen = () => {
               data={posts}
               keyExtractor={(item) => item.id.toString()}
               renderItem={renderItem}
+              
               showsVerticalScrollIndicator={false}
               ListFooterComponent={
                 <View className="flex-1">
@@ -218,7 +218,7 @@ const DashboardScreen = () => {
                       router.push("ContractorFeed");
                     }}
                   >
-                    <Text className="text-gray-500">See all</Text>
+                    <Text className="text-gray-800  text-lg">See all</Text>
                   </TouchableOpacity>
 
                   {/* Portfolio Button */}

@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   SafeAreaView,
   Dimensions,
+  RefreshControl
 } from "react-native";
 import ModalSelector from "react-native-modal-selector";
 import { useSelector } from "react-redux";
@@ -20,6 +21,7 @@ import debounce from "lodash.debounce";
 import { FlashList } from "@shopify/flash-list";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+
 
 export default function PropertyCalculator() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -38,8 +40,29 @@ export default function PropertyCalculator() {
   const [page, setPage] = useState(1);
   const [hasMoreCities, setHasMoreCities] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
 
   const token = useSelector((state) => state.auth.token);
+  const handleRefresh = async () => {
+    setRefreshing(true);
+
+    // Reset all fields or re-fetch any necessary data
+    setCity("");
+    setZipCode("");
+    setArea("");
+    setbuildableArea("");
+    setFloors("");
+    setProjectType("");
+    setTotalCost(null);
+    setCities([]);
+    setPage(1);
+    setHasMoreCities(true);
+
+    // Optionally refetch something here (like default multipliers)
+    setRefreshing(false);
+  };
+
 
   const handleCitySearch = useCallback(
     debounce(async (query, currentPage = 1) => {
@@ -137,7 +160,7 @@ export default function PropertyCalculator() {
       zip_code: zipCode,
       area,
       project_type: projectType,
-      buildable_area:buildableArea,
+      buildable_area: buildableArea,
       floors
     };
 
@@ -190,7 +213,7 @@ export default function PropertyCalculator() {
           position: "absolute",
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
-          marginTop: screenHeight * 0.17,
+          marginTop: screenHeight * 0.12,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
         }}
@@ -203,8 +226,15 @@ export default function PropertyCalculator() {
           <ScrollView
             contentContainerStyle={{ paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor="#0ea5e9"
+              />
+            }
           >
-            <View className="p-6 bg-white m-4 ">
+            <View className="p-6 bg-white rounded-3xl">
               <View className="mb-2">
                 <Text className="text-gray-800 font-semibold mb-1 text-base">
                   City
@@ -360,7 +390,7 @@ export default function PropertyCalculator() {
 
               <TouchableOpacity
                 onPress={handleSubmit}
-                className="bg-sky-900 mt-8 py-3 rounded-md shadow-md"
+                className="bg-sky-900 mt-2 py-3 rounded-md shadow-md"
                 disabled={loading}
               >
                 <Text className="text-white text-center text-lg font-bold">

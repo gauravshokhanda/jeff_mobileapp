@@ -6,7 +6,7 @@ export default function KnowMoreScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white">
         <View className=" absolute flex-row items-center justify-between z-10 ">
-        <TouchableOpacity onPress={() => router.back()} className="mx-3 mt-20">
+        <TouchableOpacity onPress={() => router.back()} className="mx-3 mt-5">
           <Ionicons name="arrow-back-circle" size={42} color="black" />
         </TouchableOpacity>
       </View>

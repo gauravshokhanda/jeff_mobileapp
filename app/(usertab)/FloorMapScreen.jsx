@@ -26,7 +26,9 @@ import { FlashList } from '@shopify/flash-list';
 import { useDispatch } from 'react-redux';
 import { setBreakdownCost } from '../../redux/slice/breakdownCostSlice';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as ImagePicker from "expo-image-picker";
+// import * as ImagePicker from "expo-image-picker";
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import ImagePickerModal from '../../components/ImagePickerModal';
 
 
 export default function FloorMapScreen() {
@@ -50,12 +52,28 @@ export default function FloorMapScreen() {
     const [page, setPage] = useState(1);
     const [hasMoreCities, setHasMoreCities] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
+    const [showImagePickerModal, setShowImagePickerModal] = useState(false);
+    const [imagePickerVisible, setImagePickerVisible] = useState(false);
+    const [profileUri, setProfileUri] = useState(null);
+
 
 
     const token = useSelector((state) => state.auth.token);
 
 
     const router = useRouter();
+
+    const handleImagePicked = (asset) => {
+        if (asset?.uri && asset.type?.startsWith("image/")) {
+            setImageUri(asset.uri);
+            setFileName(asset.fileName || "picked_image.jpg");
+            setProfileUri(asset.uri);
+        } else {
+            Alert.alert("Invalid file", "Only JPG or PNG images are allowed.");
+        }
+    };
+
+
 
     const getCity = async (zip) => {
         try {
@@ -72,7 +90,7 @@ export default function FloorMapScreen() {
             const cityName = response.data.data.city;
             setCity(cityName);
         } catch (error) {
-            console.error("Error fetching city name:", error);
+            // console.error("Error fetching city name:", error);
             Alert.alert("Error", "Unable to fetch city name. Please check the zip code.");
         }
     };
@@ -140,15 +158,68 @@ export default function FloorMapScreen() {
         }
     };
 
-    const handleFileUpload = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All, // Allows all gallery media (images and videos)
-            quality: 1, // Full quality
-        });
 
-        setFileName(result.assets[0]?.fileName || "Uploaded File");
-        setImageUri(result.assets[0]?.uri);
-    };
+
+
+
+    // const handleFileUpload = () => {
+    //     Alert.alert("Select Source", "Choose an option", [
+    //         {
+    //             text: "Take a Photo",
+    //             onPress: () => {
+    //                 launchCamera(
+    //                     {
+    //                         mediaType: 'photo',
+    //                         quality: 1,
+    //                         saveToPhotos: true,
+    //                     },
+    //                     (response) => {
+    //                         if (response.didCancel) return;
+    //                         if (response.errorCode) {
+    //                             Alert.alert("Error", response.errorMessage);
+    //                             return;
+    //                         }
+
+    //                         const asset = response.assets?.[0];
+    //                         if (asset) {
+    //                             setImageUri(asset.uri);
+    //                             setFileName(asset.fileName || "camera_photo.jpg");
+    //                         }
+    //                     }
+    //                 );
+    //             }
+    //         },
+    //         {
+    //             text: "Choose from Gallery",
+    //             onPress: () => {
+    //                 launchImageLibrary(
+    //                     {
+    //                         mediaType: 'photo',
+    //                         quality: 1,
+    //                         selectionLimit: 1,
+    //                     },
+    //                     (response) => {
+    //                         if (response.didCancel) return;
+    //                         if (response.errorCode) {
+    //                             Alert.alert("Error", response.errorMessage);
+    //                             return;
+    //                         }
+
+    //                         const asset = response.assets?.[0];
+    //                         if (asset) {
+    //                             setImageUri(asset.uri);
+    //                             setFileName(asset.fileName || "gallery_photo.jpg");
+    //                         }
+    //                     }
+    //                 );
+    //             }
+    //         },
+    //         { text: "Cancel", style: "cancel" }
+    //     ]);
+    // };
+
+
+
 
     const handleRemoveImage = () => {
         setImageUri(null);
@@ -176,7 +247,7 @@ export default function FloorMapScreen() {
             type: "image/jpeg",
         });
 
-        console.log("form data : ",data)
+        // console.log("form data : ", data)
 
         try {
             const response = await API.post("regional_multipliers/details", data, {
@@ -198,7 +269,7 @@ export default function FloorMapScreen() {
             setProjectType('');
             setImageUri('');
         } catch (error) {
-            console.error("Error occurred:", error.message);
+            console.log("Error occurred:", error.message);
             if (error.response?.data?.errors) {
                 Alert.alert('Validation Error', Object.values(error.response.data.errors).join('\n'));
             } else if (error.response?.data?.message) {
@@ -300,7 +371,8 @@ export default function FloorMapScreen() {
 
                                     {!imageUri && (
                                         <TouchableOpacity
-                                            onPress={handleFileUpload}
+                                            onPress={() => setImagePickerVisible(true)}
+
                                             className="bg-sky-900 py-3 my-5 px-8 rounded-lg shadow-md"
                                         >
                                             <Text className="text-white font-bold text-base">
@@ -494,6 +566,11 @@ export default function FloorMapScreen() {
                     }
                 </KeyboardAvoidingView >
             </View>
+            <ImagePickerModal
+                visible={imagePickerVisible}
+                onClose={() => setImagePickerVisible(false)}
+                onImagePicked={handleImagePicked}
+            />
         </SafeAreaView>
     );
 }
