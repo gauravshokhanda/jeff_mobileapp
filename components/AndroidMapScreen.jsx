@@ -236,29 +236,37 @@ export default function MapScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <TouchableOpacity
-        style={{ position: 'absolute', top: 30, left: 10, backgroundColor: 'white', padding: 8, borderRadius: 20, zIndex: 20 }}
-        onPress={() => router.back()}
-      >
-        <Ionicons name="arrow-back" size={24} color="black" />
-      </TouchableOpacity>
-
       {!isDrawing && (
-        <View style={{
-          position: 'absolute', top: Platform.OS === 'ios' ? 20 : 20, left: '15%', width: '80%',
-          backgroundColor: 'white', borderRadius: 8, paddingHorizontal: 10, height: 45,
-          justifyContent: 'center', zIndex: 15, elevation: 5
-        }}>
+        <View
+          style={{
+            position: 'absolute',
+            top: Platform.OS === 'ios' ? 20 : 20,
+            left: 10,
+            right: 10,
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: 'white',
+            borderRadius: 10,
+            paddingHorizontal: 10,
+            height: 45,
+            zIndex: 20,
+            elevation: 5,
+          }}
+        >
+          <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 10 }}>
+            <Ionicons name="arrow-back" size={24} color="black" />
+          </TouchableOpacity>
           <TextInput
             value={searchText}
             onChangeText={setSearchText}
             onSubmitEditing={() => searchLocation(searchText)}
             placeholder="Search location or coordinates"
             placeholderTextColor="gray"
-            style={{ fontSize: 16, color: 'black' }}
+            style={{ flex: 1, fontSize: 16, color: 'black' }}
           />
         </View>
       )}
+
 
       {isLoading ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -290,7 +298,7 @@ export default function MapScreen() {
             <Polyline
               coordinates={[...polygonPoints, previewPoint].filter(Boolean)}
               strokeColor="blue"
-              strokeWidth={2}
+              strokeWidth={4}
             />
           )}
 
@@ -300,7 +308,7 @@ export default function MapScreen() {
               coordinates={polygonPoints}
               strokeColor="#000"
               fillColor="rgba(0, 200, 0, 0.5)"
-              strokeWidth={2}
+              strokeWidth={4}
             />
           )}
 

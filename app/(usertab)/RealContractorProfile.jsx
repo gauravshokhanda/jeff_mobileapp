@@ -28,6 +28,11 @@ const RealContractorProfile = () => {
   const token = useSelector((state) => state.auth.token);
   const router = useRouter();
 
+  const capitalizeFirst = (str) => {
+    if (!str || typeof str !== 'string') return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   useEffect(() => {
     const fetchContractorDetails = async () => {
       setLoading(true);
@@ -140,10 +145,10 @@ const RealContractorProfile = () => {
               </Text>
               <Text className="text-gray-300">Area: {item.area} sq ft</Text>
               <Text className="text-gray-300">
-                Furnish: {item.furnish_type}
+                Furnish: {capitalizeFirst(item.furnish_type)}
               </Text>
               <Text className="text-gray-300">
-                City: {item.city} | {item.house_type}
+                City: {capitalizeFirst(item.city)} | {capitalizeFirst(item.house_type)}
               </Text>
             </View>
           </View>

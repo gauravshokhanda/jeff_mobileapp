@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Alert,
   Dimensions,
+  SafeAreaView
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -242,7 +243,7 @@ export default function Index() {
 
   // Get Started Screen
   return (
-    <View className="flex-1 items-center justify-between bg-white pt-5 pb-1">
+    <SafeAreaView className="flex-1 items-center justify-between bg-white ">
       <Image
         source={require("../assets/images/homescreen/homeImage.png")}
         style={{ width: "100%" }}
@@ -279,6 +280,6 @@ export default function Index() {
           Get Started
         </Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }

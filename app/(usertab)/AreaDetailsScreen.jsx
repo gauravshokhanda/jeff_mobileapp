@@ -21,7 +21,8 @@ export default function AreaDetailsScreen() {
   const postContentWidth = screenWidth * 0.92;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const { area, city, state, zipCode, floors, buildableArea } = useSelector((state) => state.polygon); // ✅ Use directly from redux
+  const { area, city, state, zipCode, floors, buildableArea } = useSelector((state) => state.polygon);
+  console.log("area details", area, city, state, zipCode, floors, buildableArea);
   const token = useSelector((state) => state.auth.token);
   const [loading, setLoading] = useState(false);
 
@@ -43,7 +44,6 @@ export default function AreaDetailsScreen() {
       square_fit: "1000",
       floors: floors,
       buildable_area: buildableArea,
-
     };
     console.log('schedule data', data)
 
@@ -59,7 +59,7 @@ export default function AreaDetailsScreen() {
           },
         }
       );
-console.log("resional data response is", response.data);
+      console.log("resional data response is", response.data);
       if (response.data && response.data.data) {
         const scheduleCost = encodeURIComponent(
           JSON.stringify(response.data.data)
@@ -135,9 +135,10 @@ console.log("resional data response is", response.data);
             }}
           >
             <Text className="text-lg text-sky-950 text-center font-medium">
-              Your area is
+              Total area is
             </Text>
           </View>
+
 
           <View
             className="justify-center items-center"
@@ -149,7 +150,22 @@ console.log("resional data response is", response.data);
             >
               {area} sq ft.
             </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                alignItems: 'center',
+                paddingHorizontal: 20,
+              }}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text className="text-base text-gray-700 mr-1">Buildable Area:</Text>
+                <Text className="text-lg font-bold text-sky-950">{buildableArea} sq ft.</Text>
+              </View>
+
+            </View>
           </View>
+
 
           <View className="flex-1 items-center">
             <TouchableOpacity

@@ -139,7 +139,7 @@ export default function PropertyList() {
           <View className="flex-row flex-1 items-center bg-white rounded-xl px-3 my-3">
             <Ionicons name="search" size={20} color="gray" className="mr-2" />
             <TextInput
-              placeholder="Search properties..."
+              placeholder="Search properties"
               placeholderTextColor="#999"
               value={searchQuery}
               onChangeText={(text) => setSearchQuery(text)}

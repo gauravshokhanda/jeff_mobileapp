@@ -227,6 +227,11 @@ export default function Index() {
       });
     }
   };
+  const capitalizeFirst = (str) => {
+  if (!str || typeof str !== "string") return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 
   // Reset scroll position when tab changes
   useEffect(() => {
@@ -285,7 +290,7 @@ export default function Index() {
               requireLogin(() => router.push(`/ChatScreen?user_id=${item.id}`))
             }
           >
-            <Ionicons name="mail-outline" size={30} color="black" />
+            <Ionicons name="chatbubble-ellipses-outline" size={30} color="black" />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => requireLogin(() => handleCall(item.contactNumber))}
@@ -558,7 +563,7 @@ export default function Index() {
                             color="white"
                           />
                           <Text className="text-white ml-2 text-sm">
-                            Available from {item.available_from}
+                            Available from {moment(item.available_from).format("DD-MM-YY")}
                           </Text>
                         </View>
                         <View className="flex-row items-center mt-1">
@@ -578,7 +583,7 @@ export default function Index() {
                             color="white"
                           />
                           <Text className="text-white ml-2 text-sm">
-                            Furnish type: {item.furnish_type}
+                             Furnish type: {capitalizeFirst(item.furnish_type)}
                           </Text>
                         </View>
                       </View>

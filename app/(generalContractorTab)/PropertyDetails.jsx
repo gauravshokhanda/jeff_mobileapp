@@ -10,7 +10,7 @@ import {
   Platform,
   SafeAreaView,
 } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import { API, baseUrl } from "../../config/apiConfig";
@@ -54,7 +54,7 @@ export default function PropertyDetails() {
             designImageArray = parsedDesignImages.map(
               (img) => `${baseUrl}${img}`
             );
-          } catch {}
+          } catch { }
 
           const allImageSet = [
             floorMapImage,
@@ -140,7 +140,7 @@ export default function PropertyDetails() {
             onPress={() => router.back()}
             className="absolute left-2 p-2 rounded-full shadow-md"
           >
-            <FontAwesome name="arrow-left" size={20} color="black" />
+            <Ionicons name="arrow-back" size={28} color="black" />
           </TouchableOpacity>
           <Text className="text-sky-950 text-2xl font-bold">
             Property Details
@@ -154,9 +154,8 @@ export default function PropertyDetails() {
             <TouchableOpacity key={index} onPress={() => setMainImage(img)}>
               <Image
                 source={{ uri: img }}
-                className={`w-40 h-32 mr-2 rounded-lg ${
-                  img === mainImage ? "border-4 border-sky-700" : ""
-                }`}
+                className={`w-40 h-32 mr-2 rounded-lg ${img === mainImage ? "border-4 border-sky-700" : ""
+                  }`}
               />
             </TouchableOpacity>
           ))}

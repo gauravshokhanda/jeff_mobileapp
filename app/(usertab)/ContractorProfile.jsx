@@ -7,13 +7,17 @@ import {
   ActivityIndicator,
   ScrollView,
   Platform,
-  SafeAreaView
+  SafeAreaView,
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { API, baseUrl } from "../../config/apiConfig";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { LinearGradient } from "expo-linear-gradient";
+
+const { width } = Dimensions.get("window");
 
 const ContractorProfile = () => {
   const { user_id } = useLocalSearchParams();
@@ -44,19 +48,17 @@ const ContractorProfile = () => {
     };
 
     const fetchPortfolios = async () => {
-      setPortfolios([]); // Reset portfolios when switching contractors
+      setPortfolios([]);
       try {
         const response = await API.get(`portfolios/contractor/${user_id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const portfolioData = response.data.portfolios.data.map(
-          (portfolio) => ({
-            ...portfolio,
-            portfolio_images: JSON.parse(portfolio.portfolio_images).map(
-              (img) => `${baseUrl}${img}`
-            ),
-          })
-        );
+        const portfolioData = response.data.portfolios.data.map((portfolio) => ({
+          ...portfolio,
+          portfolio_images: JSON.parse(portfolio.portfolio_images).map(
+            (img) => `${baseUrl}${img}`
+          ),
+        }));
         setPortfolios(portfolioData);
       } catch (error) {
         console.log("Error fetching portfolios:", error);
@@ -70,112 +72,116 @@ const ContractorProfile = () => {
   }, [user_id]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#000" />;
+    return (
+      <View className="flex-1 justify-center items-center bg-white">
+        <ActivityIndicator size="large" color="#0A6E6E" />
+      </View>
+    );
   }
 
   if (!contractor) {
     return (
-      <Text className="text-center text-red-500">Contractor not found</Text>
+      <View className="flex-1 justify-center items-center bg-white">
+        <Text className="text-red-500">Contractor not found</Text>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1">
-
-      <ScrollView className=" flex-1 bg-white p-2 shadow-lg rounded-lg flex-1">
-        {/* Header with Company Image */}
-        <View className="relative w-full h-52">
-          {/* Header with back and chat buttons */}
-          <View className={`absolute ${Platform.OS === "ios" ? "top-10" : "top-4"
-            } left-4 right-4 z-10 flex-row items-center justify-between`}>
-            <TouchableOpacity
-              onPress={() => router.back()}
-              className="p-2 rounded-full bg-black/10"
-            >
-              <Ionicons name="arrow-back" size={28} color="white" />
-            </TouchableOpacity>
-
-            {/* <TouchableOpacity
-            onPress={() => router.push(`/ChatScreen?user_id=${user_id}`)}
-            className="p-2 rounded-full bg-black/10"
-          >
-            <Ionicons
-              name="chatbubble-ellipses-outline"
-              size={26}
-              color="white"
-            />
-          </TouchableOpacity> */}
-          </View>
-
-          {/* Background Image */}
+    <SafeAreaView className="flex-1 bg-[#F6FAFD]">
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Banner */}
+        <View className="relative w-full h-60 bg-[#EAF3FA] rounded-b-3xl shadow-md">
           <Image
             source={{ uri: contractor.upload_organisation }}
-            className="w-full h-full rounded-lg"
+            className="w-full h-full absolute top-0 left-0 rounded-b-3xl opacity-90"
+            resizeMode="cover"
           />
+          <LinearGradient
+            colors={["transparent", "#00000060"]}
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 100,
+              borderBottomLeftRadius: 30,
+              borderBottomRightRadius: 30,
+            }}
+          />
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className={`absolute left-5 p-2 bg-black/40 rounded-full z-10 ${Platform.OS === "ios" ? "top-12" : "top-5"}`}
 
-          {/* Profile Picture */}
+          >
+            <Ionicons name="arrow-back" size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Profile Image */}
+        <View className="items-center -mt-14 z-10">
           <Image
             source={{ uri: contractor.image }}
-            className="absolute -bottom-9 left-4 w-28 h-28 rounded-full border-2 border-white"
+            className="w-28 h-28 rounded-full border-4 border-white shadow-xl"
           />
+          <Text className="text-xl font-bold text-gray-800 mt-2 tracking-wide">
+            {contractor.name}
+          </Text>
+          <Text className="text-gray-500 text-sm">{contractor.company_name}</Text>
         </View>
 
-        {/* Contractor Details */}
-        <View className="mt-16 p-4 w-full gap-3 bg-gray-100 rounded-lg">
-          <Text className="text-xl font-semibold tracking-widest">
-            Name - {contractor.name}
+        {/* Contractor Info */}
+        <View className=" mx-5 my-4 p-4">
+          <Text className="text-base text-gray-700">
+            📍 <Text className="font-semibold">City:</Text> {contractor.city}
           </Text>
-          <Text className="text-xl font-semibold mt-1 tracking-wider">
-            Company - {contractor.company_name}
+          <Text className="text-base text-gray-700 mt-3">
+            🏢 <Text className="font-semibold">Address:</Text> {contractor.company_address}
           </Text>
-          <Text className="text-xl font-semibold mt-1 tracking-wider">
-            City - {contractor.city}
+          <Text className="text-base text-gray-700 mt-3">
+            🔢 <Text className="font-semibold">Zip Code:</Text> {contractor.zip_code}
           </Text>
-          <Text className="text-xl font-semibold mt-1 tracking-wider">
-            Address - {contractor.company_address}
-          </Text>
-          <Text className="text-xl font-semibold mt-1 tracking-wider">
-            Zip Code - {contractor.zip_code}
-          </Text>
-          <Text className="text-xl font-semibold mt-1 tracking-wider">
-            Description - {contractor.description}
+          <Text className="text-base text-gray-700 mt-3">
+            📝 <Text className="font-semibold">About:</Text> {contractor.description}
           </Text>
         </View>
 
-        {/* Portfolio List */}
-        <Text className="text-xl font-bold mt-6 mb-2">Portfolios</Text>
-        {portfolios.length === 0 ? (
-          <Text className="text-center text-gray-500">
-            No portfolios available
-          </Text>
-        ) : (
-          <FlatList
-            data={portfolios}
-            keyExtractor={(item) => item.id.toString()}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <View className="bg-gray-200 rounded-lg p-4 m-2 w-80 shadow-lg">
-                <Image
-                  source={{ uri: item.portfolio_images[0] }}
-                  className="w-full h-40 rounded-lg mb-3"
-                />
-                <Text className="text-lg font-bold">{item.project_name}</Text>
-                <Text className="text-sm text-gray-700">City: {item.city}</Text>
-                <Text className="text-sm text-gray-700">
-                  Address: {item.address}
-                </Text>
-                <Text className="text-sm text-gray-700 mt-1 flex-wrap">
-                  {item.description}
-                </Text>
-              </View>
-            )}
-          />
-        )}
+        {/* Portfolio Section */}
+        <View className="mt-2 px-5 mb-12">
+          <Text className="text-xl font-bold text-gray-800 mb-3">✨ Portfolios</Text>
+          {portfolios.length === 0 ? (
+            <Text className="text-center text-gray-400">No portfolios available</Text>
+          ) : (
+            <FlatList
+              data={portfolios}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 20 }}
+              renderItem={({ item }) => (
+                <View
+                  className="bg-white rounded-2xl shadow-lg mr-4 p-3"
+                  style={{ width: width * 0.8 }}
+                >
+                  <Image
+                    source={{ uri: item.portfolio_images[0] }}
+                    className="w-full h-40 rounded-xl mb-3"
+                    resizeMode="cover"
+                  />
+                  <Text className="text-lg font-bold text-sky-800 mb-1">
+                    {item.project_name}
+                  </Text>
+                  <Text className="text-sm text-gray-700">
+                    📍 {item.city}, {item.address}
+                  </Text>
+                  <Text className="text-sm text-gray-600 mt-1">{item.description}</Text>
+                </View>
+              )}
+            />
+          )}
+        </View>
       </ScrollView>
-
     </SafeAreaView>
-
   );
 };
 

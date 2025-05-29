@@ -310,7 +310,7 @@ const Portfolio = ({ navigation }) => {
           <View className="bg-gray-100 h-12 mr-5 rounded-full px-3 flex-row items-center justify-between">
             <Ionicons name="search" size={18} color="black" />
             <TextInput
-              placeholder="Search (e.g., New project atlanta)"
+              placeholder="Search (e.g., New project Atlanta)"
               placeholderTextColor={"gray"}
               style={{ fontSize: 14 }}
               className="flex-1 ml-5 text-lg"
