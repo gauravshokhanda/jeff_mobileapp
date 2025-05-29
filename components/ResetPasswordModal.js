@@ -7,11 +7,13 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import ForgotPasswordModal from "./ForgotPasswordModal";
 
 const ResetPasswordModal = ({ visible, onClose, onSubmit }) => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [forgotModalVisible, setForgotModalVisible] = useState(false);
 
   const handleReset = () => {
     if (newPassword !== confirmPassword) {
@@ -46,15 +48,13 @@ const ResetPasswordModal = ({ visible, onClose, onSubmit }) => {
           <TextInput
             placeholder="Confirm Password"
             secureTextEntry
+            placeholderTextColor={"gray"}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             style={styles.input}
           />
 
-          <TouchableOpacity
-            onPress={() => alert("Redirect to Forgot Password")}
-            style={styles.forgot}
-          >
+          <TouchableOpacity onPress={() => setForgotModalVisible(true)}>
             <Text style={styles.forgotText}>Forgot Password?</Text>
           </TouchableOpacity>
 
@@ -67,6 +67,16 @@ const ResetPasswordModal = ({ visible, onClose, onSubmit }) => {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Forgot Password Modal */}
+        <ForgotPasswordModal
+          visible={forgotModalVisible}
+          onClose={() => setForgotModalVisible(false)}
+          onSubmit={(data) => {
+            console.log("Forgot Password form data:", data);
+            setForgotModalVisible(false);
+          }}
+        />
       </View>
     </Modal>
   );
@@ -93,8 +103,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
   },
-  forgot: { alignItems: "flex-end", marginBottom: 10 },
-  forgotText: { color: "#007bff" },
+  forgotText: { color: "#007bff", textAlign: "right", marginBottom: 10 },
   actions: { flexDirection: "row", justifyContent: "flex-end", gap: 10 },
   cancel: { padding: 10 },
   submit: { backgroundColor: "#0c4a6e", padding: 10, borderRadius: 6 },

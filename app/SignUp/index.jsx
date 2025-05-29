@@ -91,7 +91,7 @@ export default function SignUp() {
       const user = response.data.data.user;
       dispatch(setSignUp({ access_token, user }));
   
-      router.replace("/otpScreen");
+      router.replace({ pathname: "/otpScreen", params: { email } });
     } catch (error) {
       console.log(error);
       let errorMessage = "An error occurred. Please try again.";

@@ -1532,7 +1532,7 @@ PODS:
     - React-Core
   - react-native-progress-bar-android (1.0.5):
     - React
-  - react-native-safe-area-context (5.2.0):
+  - react-native-safe-area-context (5.4.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1545,8 +1545,8 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-safe-area-context/common (= 5.2.0)
-    - react-native-safe-area-context/fabric (= 5.2.0)
+    - react-native-safe-area-context/common (= 5.4.1)
+    - react-native-safe-area-context/fabric (= 5.4.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1555,7 +1555,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context/common (5.2.0):
+  - react-native-safe-area-context/common (5.4.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1576,7 +1576,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context/fabric (5.2.0):
+  - react-native-safe-area-context/fabric (5.4.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1984,6 +1984,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNIap (12.16.2):
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - ReactCommon/turbomodule/core
   - RNReanimated (3.16.7):
     - DoubleConversion
     - glog
@@ -2268,7 +2274,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
-  - react-native-google-maps (from `/Users/gauravshokhanda/Projects/jeff/jeff_mobileapp/node_modules/react-native-maps`)
+  - react-native-google-maps (from `/Users/gauravshokhanda/Desktop/jeff/jeff_mobileapp/node_modules/react-native-maps`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - "react-native-progress-bar-android (from `../node_modules/@react-native-community/progress-bar-android`)"
@@ -2309,6 +2315,7 @@ DEPENDENCIES:
   - "RNFlashList (from `../node_modules/@shopify/flash-list`)"
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNIap (from `../node_modules/react-native-iap`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
@@ -2477,7 +2484,7 @@ EXTERNAL SOURCES:
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-google-maps:
-    :path: "/Users/gauravshokhanda/Projects/jeff/jeff_mobileapp/node_modules/react-native-maps"
+    :path: "/Users/gauravshokhanda/Desktop/jeff/jeff_mobileapp/node_modules/react-native-maps"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
   react-native-maps:
@@ -2558,6 +2565,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fs"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNIap:
+    :path: "../node_modules/react-native-iap"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -2661,7 +2670,7 @@ SPEC CHECKSUMS:
   react-native-image-picker: 5b125001d2795ddc0f0845be8b66846a68496ca2
   react-native-maps: ee1e65647460c3d41e778071be5eda10e3da6225
   react-native-progress-bar-android: 092e6a794f158642692f25c8839d9aa8eb779afb
-  react-native-safe-area-context: a95e75ab816db4438a319aa4b43dfe6def22026f
+  react-native-safe-area-context: 1c226bb0230d9a33cc9d10bc5cf9fa6155455c23
   react-native-webview: 40b8823be3fac70f0404016e6aed754ef4307517
   React-nativeconfig: aeed6e2a8ac02b2df54476afcc7c663416c12bf7
   React-NativeModulesApple: c5b7813da94136f50ef084fa1ac077332dcfc658
@@ -2698,6 +2707,7 @@ SPEC CHECKSUMS:
   RNFlashList: 6f169ad83e52579b7754cbbcec1b004c27d82c93
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: fc5ce5bf284640d3af6431c3a5c3bc121e98d045
+  RNIap: daac81aa70fe3ac6d6967c1c8da3dc4b415b73d6
   RNReanimated: 9ee6347ca0aa3cf78cae715455e781728ae142e2
   RNScreens: e7fb913da559b9b2fe6c2f49828bedb061914abd
   RNSVG: ea3e35f0375ac20449384fa89ce056ee0e0690ee
