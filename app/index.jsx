@@ -63,7 +63,7 @@ export default function Index() {
           dispatch(setFcmToken(token));
         }
       } catch (error) {
-        console.error("Error fetching FCM Token:", error);
+        console.log("Error fetching FCM Token:", error);
       }
     };
 
@@ -95,7 +95,7 @@ export default function Index() {
           setBeforeLoginResponse(response.data);
           dispatch(markFcmSentBeforeLogin());
         } catch (error) {
-          console.error("❌ Error sending tokens before login:", error);
+          console.log("❌ Error sending tokens before login:", error);
           setBeforeLoginResponse({ error: error.message });
         }
       }
@@ -131,7 +131,7 @@ export default function Index() {
           setAfterLoginResponse(response.data);
           dispatch(markFcmSentAfterLogin());
         } catch (error) {
-          console.error("❌ Error sending tokens after login:", error);
+          console.log("❌ Error sending tokens after login:", error);
           setAfterLoginResponse({ error: error.message });
         }
       }

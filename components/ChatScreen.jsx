@@ -69,7 +69,7 @@ const ChatScreen = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } catch (error) {
-        console.error("Failed to mark messages as read:", error.message);
+        console.log("Failed to mark messages as read:", error.message);
       }
     };
 
@@ -168,7 +168,7 @@ const ChatScreen = () => {
       const newMessageRef = push(messagesRef);
       await set(newMessageRef, newMessage);
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.log("Error sending message:", error);
       setStatusMessage({
         type: "error",
         message: "Failed to send message: " + error.message,
@@ -189,7 +189,7 @@ const ChatScreen = () => {
         setSelectedImage(uri); // Preview only
       }
     } catch (err) {
-      console.error("Image selection failed:", err);
+      console.log("Image selection failed:", err);
       setStatusMessage({
         type: "error",
         message: "Image selection failed: " + err.message,

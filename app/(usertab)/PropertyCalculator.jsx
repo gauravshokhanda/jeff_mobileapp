@@ -213,7 +213,7 @@ export default function PropertyCalculator() {
           position: "absolute",
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
-          marginTop: screenHeight * 0.12,
+          marginTop: screenHeight * 0.15,
           width: postContentWidth,
           marginHorizontal: (screenWidth - postContentWidth) / 2,
         }}

@@ -73,6 +73,7 @@ const DeleteAccountModal = ({ visible, onClose }) => {
           <TextInput
             placeholder="Password"
             secureTextEntry
+            placeholderTextColor={"gray"}
             value={password}
             onChangeText={setPassword}
             style={styles.input}
@@ -80,6 +81,7 @@ const DeleteAccountModal = ({ visible, onClose }) => {
           <TextInput
             placeholder="Confirm Password"
             secureTextEntry
+            placeholderTextColor={"gray"}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             style={styles.input}

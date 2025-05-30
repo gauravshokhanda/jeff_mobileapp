@@ -211,7 +211,20 @@ const ChatListScreen = () => {
           renderItem={renderChatItem}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 100 }}
+          contentContainerStyle={{
+            paddingBottom: 100,
+            flexGrow: 1,
+            justifyContent: chats.length === 0 ? "center" : "flex-start",
+          }}
+          ListEmptyComponent={
+            !loading ? (
+              <View className="items-center justify-center px-4">
+                <Text className="text-gray-600 text-center text-base font-medium">
+                  No conversations yet. Start a chat to connect with someone.
+                </Text>
+              </View>
+            ) : null
+          }
         />
       </View>
     </SafeAreaView>

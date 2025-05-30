@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, Alert, TextInput, ActivityIndicator, Platform, TouchableOpacity, Modal
+  View, Text, Alert, TextInput, ActivityIndicator, Platform, TouchableOpacity, Modal,ScrollView
 } from 'react-native';
 import MapView, { Marker, Polyline, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -366,81 +366,110 @@ export default function MapScreen() {
 
       {/* Building Configuration Modal */}
       <Modal
-        visible={showBuildingModal}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setShowBuildingModal(false)}
-      >
-        <View style={{
-          flex: 1, backgroundColor: 'rgba(0,0,0,0.6)',
-          justifyContent: 'center', alignItems: 'center'
-        }}>
-          <View style={{
-            width: '85%', backgroundColor: 'white',
-            borderRadius: 12, padding: 20
-          }}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 6 }}>Building Configuration</Text>
-            <Text style={{ fontSize: 14, color: '#4B5563', marginBottom: 12 }}>
-              Please select how much of the selected land area you want to use for construction, and enter how many floors you plan to build. This will help calculate the total buildable space.
+  visible={showBuildingModal}
+  animationType="slide"
+  transparent
+  onRequestClose={() => setShowBuildingModal(false)}
+>
+  <View style={{
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }}>
+    <View style={{
+      width: '90%',
+      maxHeight: '90%',
+      backgroundColor: 'white',
+      borderRadius: 12,
+      overflow: 'hidden'
+    }}>
+      <View style={{ alignItems: 'flex-end', padding: 10 }}>
+        <TouchableOpacity onPress={() => setShowBuildingModal(false)}>
+          <Ionicons name="close" size={28} color="black" />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 30 }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 6 }}>Building Configuration</Text>
+        <Text style={{ fontSize: 14, color: '#4B5563', marginBottom: 12 }}>
+          Please select how much of the selected land area you want to use for construction, and enter how many floors you plan to build. This will help calculate the total buildable space.
+        </Text>
+
+        <Text>Total Area: {areaInSquareFeet} sq.ft</Text>
+
+        <Text style={{ marginTop: 15, fontWeight: '600' }}>Select Area Coverage (%)</Text>
+        {['30', '50', '75', '90', 'custom'].map(option => (
+          <TouchableOpacity
+            key={option}
+            onPress={() => {
+              setSelectedOption(option);
+              if (option !== 'custom') setCustomCoverage('');
+            }}
+            style={{
+              marginTop: 8,
+              backgroundColor: selectedOption === option ? '#0EA5E9' : '#F3F4F6',
+              padding: 10,
+              borderRadius: 8,
+            }}
+          >
+            <Text style={{
+              color: selectedOption === option ? 'white' : '#111827',
+              textAlign: 'center'
+            }}>
+              {option === 'custom' ? 'Custom' : `${option}%`}
             </Text>
-            <Text>Total Area: {areaInSquareFeet} sq.ft</Text>
+          </TouchableOpacity>
+        ))}
 
-            <Text style={{ marginTop: 15, fontWeight: '600' }}>Select Area Coverage (%)</Text>
-            {['30', '50', '75', '90', 'custom'].map(option => (
-              <TouchableOpacity
-                key={option}
-                onPress={() => {
-                  setSelectedOption(option);
-                  if (option !== 'custom') setCustomCoverage('');
-                }}
-                style={{
-                  marginTop: 8,
-                  backgroundColor: selectedOption === option ? '#0EA5E9' : '#F3F4F6',
-                  padding: 10,
-                  borderRadius: 8,
-                }}
-              >
-                <Text style={{ color: selectedOption === option ? 'white' : '#111827', textAlign: 'center' }}>
-                  {option === 'custom' ? 'Custom' : `${option}%`}
-                </Text>
-              </TouchableOpacity>
-            ))}
+        {selectedOption === 'custom' && (
+          <TextInput
+            placeholder="Enter custom % (max 95)"
+            keyboardType="numeric"
+            value={customCoverage}
+            onChangeText={setCustomCoverage}
+            style={{
+              borderWidth: 1,
+              borderColor: '#ccc',
+              padding: 10,
+              marginTop: 10,
+              borderRadius: 8
+            }}
+          />
+        )}
 
-            {selectedOption === 'custom' && (
-              <TextInput
-                placeholder="Enter custom % (max 95)"
-                keyboardType="numeric"
-                value={customCoverage}
-                onChangeText={setCustomCoverage}
-                style={{
-                  borderWidth: 1,
-                  borderColor: '#ccc',
-                  padding: 10,
-                  marginTop: 10,
-                  borderRadius: 8
-                }}
-              />
-            )}
+        <Text style={{ marginTop: 15, fontWeight: '600' }}>Number of Floors</Text>
+        <TextInput
+          placeholder="Enter number of floors"
+          keyboardType="numeric"
+          value={floorCount}
+          onChangeText={setFloorCount}
+          style={{
+            borderWidth: 1,
+            borderColor: '#ccc',
+            padding: 10,
+            marginTop: 8,
+            borderRadius: 8
+          }}
+        />
 
-            <Text style={{ marginTop: 15, fontWeight: '600' }}>Number of Floors</Text>
-            <TextInput
-              placeholder="Enter number of floors"
-              keyboardType="numeric"
-              value={floorCount}
-              onChangeText={setFloorCount}
-              style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, marginTop: 8, borderRadius: 8 }}
-            />
+        <TouchableOpacity
+          className="bg-sky-950"
+          onPress={handleSubmitBuildingConfig}
+          style={{
+            padding: 12,
+            borderRadius: 8,
+            marginTop: 20,
+            backgroundColor: '#0F172A'
+          }}
+        >
+          <Text style={{ color: 'white', fontWeight: 'bold', textAlign: 'center' }}>Submit</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
+  </View>
+</Modal>
 
-            <TouchableOpacity
-            className="bg-sky-950"
-              onPress={handleSubmitBuildingConfig}
-              style={{ padding: 12, borderRadius: 8, marginTop: 20 }}
-            >
-              <Text style={{ color: 'white', fontWeight: 'bold', textAlign: 'center' }}>Submit</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }
