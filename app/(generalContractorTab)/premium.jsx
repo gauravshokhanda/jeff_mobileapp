@@ -22,7 +22,7 @@ import { useSelector } from "react-redux";
 
 const ITUNES_SHARED_SECRET = Constants.expoConfig?.extra?.itunesSharedSecret;
 const isIos = Platform.OS === "ios";
-const subscriptionSkus = isIos ? ["generalcontractorplan1"] : [];
+const subscriptionSkus = isIos ? ["AC5DGeneralSubscriptionPlan"] : [];
 
 const PlanCard = ({
   title,

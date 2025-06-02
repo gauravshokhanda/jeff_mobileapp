@@ -243,43 +243,43 @@ export default function Index() {
 
   // Get Started Screen
   return (
-    <SafeAreaView className="flex-1 items-center justify-between bg-white ">
-      <Image
-        source={require("../assets/images/homescreen/homeImage.png")}
-        style={{ width: "100%" }}
-        resizeMode="cover"
-      />
-
-      <Image
-        className="h-40 w-[80%] rounded-lg"
-        source={require("../assets/images/homescreen/MainLogo.jpg")}
-        resizeMode="cover"
-      />
-
-      <TouchableOpacity
-        onPress={handleGetStarted}
-        className="bg-sky-950 px-10 mt-5 py-3 rounded-3xl mb-4"
-        style={{ marginBottom: height * 0.04 }}
-      >
-        {/* <Text className="text-white text-xs mb-2 text-center">
-          Expo Token: {expoPushToken}
-        </Text>
-
-        {beforeLoginResponse && (
-          <Text className="text-green-500 text-xs text-center">
-            ✅ Before Login Response: {JSON.stringify(beforeLoginResponse)}
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="flex-1 justify-center items-center">
+        <Image
+          source={require("../assets/images/homescreen/homeImage.png")}
+          style={{
+            width: width,
+            height: height * 0.5, // Only half the screen height
+            resizeMode: "cover",
+          }}
+        />
+  
+        <Image
+          className="rounded-xl mt-[-40]"
+          source={require("../assets/images/homescreen/MainLogo.jpg")}
+          style={{
+            width: width * 0.8,
+            height: height * 0.14,
+            resizeMode: "contain",
+            borderRadius: 12,
+            marginTop: -40, // Pull it up a bit over the bottom of the image
+          }}
+        />
+  
+        <TouchableOpacity
+          onPress={handleGetStarted}
+          className="bg-sky-950 rounded-3xl px-10 py-3 mt-6"
+          style={{
+            marginTop: 20,
+            marginBottom: height * 0.04,
+          }}
+        >
+          <Text className="text-white text-lg font-semibold text-center">
+            Get Started
           </Text>
-        )}
-        {afterLoginResponse && (
-          <Text className="text-blue-500 text-xs text-center">
-            ✅ After Login Response: {JSON.stringify(afterLoginResponse)}
-          </Text>
-        )} */}
-
-        <Text className="text-white text-lg font-semibold text-center">
-          Get Started
-        </Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
+  
 }

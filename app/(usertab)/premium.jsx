@@ -20,7 +20,7 @@ import {
 } from "react-native-iap";
 import Constants from "expo-constants";
 
-const subscriptionSkus = Platform.OS === "ios" ? ["userplan"] : [];
+const subscriptionSkus = Platform.OS === "ios" ? ["AC5DUserSubscriptionPlan"] : [];
 const ITUNES_SHARED_SECRET =
   Constants?.manifest2?.extra?.itunesSharedSecret ||
   Constants?.expoConfig?.extra?.itunesSharedSecret;
