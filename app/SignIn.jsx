@@ -264,6 +264,7 @@ export default function SignIn() {
                     Sign up
                   </Link>
                 </View>
+                <View className="flex justify-center flex-row gap-2">
                 <TouchableOpacity
                   onPress={() => router.replace("/(usertab)")}
                   className="mt-4 bg-gray-300 px-6 py-3 rounded-xl"
@@ -275,6 +276,18 @@ export default function SignIn() {
                     Login as Guest
                   </Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => router.replace("/premiumPlan")}
+                  className="mt-4 px-6 py-3 rounded-xl"
+                >
+                  <Text
+                    className="text-sky-800 underline font-semibold"
+                    style={{ fontSize: screenHeight * 0.018 }}
+                  >
+                    Premium Plans
+                  </Text>
+                </TouchableOpacity>
+                </View>
               </View>
             </View>
           </ScrollView>

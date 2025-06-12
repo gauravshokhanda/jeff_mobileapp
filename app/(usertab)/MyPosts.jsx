@@ -22,6 +22,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import SortingModal from "../../components/SortingModal";
 import { useWindowDimensions } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 const getMimeType = (uri) => {
   const extension = uri.split(".").pop().toLowerCase();
@@ -39,6 +41,7 @@ const getMimeType = (uri) => {
       return "application/octet-stream";
   }
 };
+
 
 export default function MyPosts() {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -62,6 +65,12 @@ export default function MyPosts() {
   const iconRef = useRef(null);
   const { width, height } = useWindowDimensions();
   const [position, setPosition] = useState({ top: 0, left: 0 });
+  
+  useFocusEffect(
+    useCallback(() => {
+      handleRefresh();
+    }, [])
+  );
 
   const openModal = () => {
     iconRef.current?.measure((_fx, _fy, _width, _height, px, py) => {
@@ -157,7 +166,7 @@ export default function MyPosts() {
         ? JSON.parse(item.design_image)
         : [];
       imageUrls = parsedImages.map((imagePath) => `${baseUrl}${imagePath}`);
-    } catch {}
+    } catch { }
 
     return (
       <View
@@ -200,20 +209,50 @@ export default function MyPosts() {
             </Text>
             <Text>{item.area} sqft</Text>
           </View>
-          <View className="items-end">
-            <Text className="text-lg font-bold">
-              {item.project_type} Apartment
-            </Text>
+          <View className="flex-row gap-3 mt-3">
             <TouchableOpacity
-              className="bg-sky-950 px-4 py-2 rounded-full mt-3"
               onPress={() => {
                 setEditingPost(item);
                 setEditModalVisible(true);
               }}
+              className="w-12 h-12 rounded-full bg-sky-950 justify-center items-center"
             >
-              <Text className="text-white font-semibold text-sm">Edit</Text>
+              <Ionicons name="pencil" size={20} color="white" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert(
+                  "Delete Post",
+                  "Are you sure you want to delete this post?",
+                  [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Delete",
+                      style: "destructive",
+                      onPress: async () => {
+                        try {
+                          const response = await API.delete(`job-post/delete/${item.id}`, {
+                            headers: { Authorization: `Bearer ${token}` },
+                          });
+                          Alert.alert("Deleted", response.data.message || "Post deleted");
+                          handleRefresh();
+                        } catch (err) {
+                          console.log("Delete error:", err.response?.data || err.message);
+                          Alert.alert("Error", "Failed to delete post");
+                        }
+                      }
+                    },
+                  ]
+                );
+              }}
+              className="w-12 h-12 rounded-full bg-red-600 justify-center items-center"
+            >
+              <Ionicons name="trash-outline" size={20} color="white" />
             </TouchableOpacity>
           </View>
+
+
         </View>
       </View>
     );
@@ -300,7 +339,7 @@ export default function MyPosts() {
                   source={{
                     uri:
                       images[0]?.startsWith("http") ||
-                      images[0]?.startsWith("file:")
+                        images[0]?.startsWith("file:")
                         ? images[0]
                         : `${baseUrl}${images[0]}`,
                   }}
@@ -367,7 +406,7 @@ export default function MyPosts() {
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
           <Text className="text-2xl font-semibold text-white py-4 text-center">
-            My Post
+            My Posts
           </Text>
         </View>
 

@@ -23,7 +23,7 @@ import { debounce } from "lodash";
 import CitySearch from "../../components/CitySearch";
 import { API } from "../../config/apiConfig";
 import { LinearGradient } from "expo-linear-gradient";
-import ContractorPortfolioModal from "../../components/ContractorPortfolioModal";
+import ContractorPortfolioModal from "../../components/addPortfolioModal";
 
 const Portfolio = ({ navigation }) => {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -302,7 +302,7 @@ const Portfolio = ({ navigation }) => {
             <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
           <Text className="text-2xl font-semibold text-white">
-            My Portfolio
+            My Portfolios
           </Text>
         </View>
 

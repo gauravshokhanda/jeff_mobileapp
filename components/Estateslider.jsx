@@ -7,11 +7,10 @@ import {
   ActivityIndicator,
   Dimensions,
   TouchableOpacity,
-
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { API, baseUrl } from "../config/apiConfig";
+import { API } from "../config/apiConfig";
 import { useSelector } from "react-redux";
 
 const { width: screenWidth } = Dimensions.get("window");
@@ -35,7 +34,7 @@ const EstateSlider = () => {
           },
           {
             text: "Sign in",
-            onPress: () => router.push("/SignIn"),
+            onPress: () => navigation.navigate("SignIn"),
           },
         ],
         { cancelable: true }
@@ -67,6 +66,7 @@ const EstateSlider = () => {
         email: item.email || "No Email",
         number: item.number || "Not Available",
         address: item.address || "No Address",
+        isPremium: item.premium === 1,
       }));
 
       setContractors(contractorsData);
@@ -110,12 +110,18 @@ const EstateSlider = () => {
 
           {/* Details */}
           <View className="flex-1">
-            <Text className="text-white font-bold text-lg mb-1">
-              {item.name}
-            </Text>
-            <View className="flex-row items-center mb-1">
-              <Text className="text-gray-300  text-sm">{item.email}</Text>
-            </View>
+          <View className="flex-row items-center mb-1">
+  <Text className="text-white font-bold text-lg">{item.name}</Text>
+  {item.isPremium && (
+    <Ionicons
+      name="checkmark-circle"
+      size={18}
+      color="#e0f2fe" // brighter verified color (optional)
+      style={{ marginLeft: 6 }}
+    />
+  )}
+</View>
+            <Text className="text-gray-300 text-sm">{item.email}</Text>
           </View>
         </TouchableOpacity>
 
@@ -151,7 +157,7 @@ const EstateSlider = () => {
           showsVerticalScrollIndicator={false}
           refreshing={loading}
           onRefresh={fetchContractors}
-          contentContainerStyle={{ paddingBottom: 60, }}
+          contentContainerStyle={{ paddingBottom: 60 }}
         />
       ) : (
         <Text className="text-center text-gray-400 mt-10">

@@ -1,36 +1,32 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
   SafeAreaView,
-  Alert,
   Platform,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import {
   useIAP,
   requestSubscription,
-  validateReceiptIos,
   finishTransaction,
   purchaseUpdatedListener,
   purchaseErrorListener,
   PurchaseError,
 } from "react-native-iap";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { API } from "../../config/apiConfig";
 import Constants from "expo-constants";
 
 const ITUNES_SHARED_SECRET = Constants.expoConfig?.extra?.itunesSharedSecret;
 const isIos = Platform.OS === "ios";
-
-// 🔑 This array MUST exactly match the product IDs you configured in App Store Connect.
-const subscriptionSkus = isIos
-  ? ["AC5DUserSubscriptionPlan", "AC5DGeneralSubscriptionPlan", "AC5DRealtorSubscriptionPlan"]
-  : [];
+const subscriptionSkus = isIos ? ["AC5DRealtorSubscriptionPlan"] : [];
 
 const PlanCard = ({
   title,
@@ -40,6 +36,7 @@ const PlanCard = ({
   isCurrent,
   loading,
   onSubscribe,
+  owned,
 }) => (
   <View className="bg-white rounded-2xl px-6 py-4 mb-8 shadow-md shadow-black/20 mx-6">
     <Text className="text-center text-lg font-semibold text-gray-800 mb-2">
@@ -52,22 +49,40 @@ const PlanCard = ({
       </Text>
     </Text>
 
-    <TouchableOpacity
-      activeOpacity={0.85}
-      className={`mt-6 mb-6 px-4 py-3 rounded-md ${
-        isCurrent ? "bg-gray-200" : "bg-gray-900"
-      }`}
-      disabled={isCurrent || loading}
-      onPress={isCurrent ? null : onSubscribe}
-    >
-      <Text
-        className={`text-center font-semibold text-base ${
-          isCurrent ? "text-gray-900" : "text-white"
-        }`}
+    {price !== "0" && (
+      <View className="mt-2 mb-4">
+        <Text className="text-sm text-center text-gray-600">
+          Auto-renewable subscription
+        </Text>
+        <Text className="text-xs text-center text-gray-500 mt-1">
+          Billed monthly. Auto-renews unless canceled at least 24 hours before
+          the end of the current period.
+        </Text>
+      </View>
+    )}
+
+    {/* Button Logic */}
+    {isCurrent && owned ? (
+      <TouchableOpacity
+        className="mt-2 mb-6 px-4 py-3 rounded-md bg-gray-200"
+        disabled
       >
-        {isCurrent ? "Current Plan" : loading ? "Processing..." : buttonText}
-      </Text>
-    </TouchableOpacity>
+        <Text className="text-center font-semibold text-base text-gray-900">
+          Subscribed
+        </Text>
+      </TouchableOpacity>
+    ) : !isCurrent && !owned ? (
+      <TouchableOpacity
+        activeOpacity={0.85}
+        className="mt-2 mb-6 px-4 py-3 rounded-md bg-gray-900"
+        disabled={loading}
+        onPress={onSubscribe}
+      >
+        <Text className="text-center font-semibold text-base text-white">
+          {loading ? "Processing..." : buttonText}
+        </Text>
+      </TouchableOpacity>
+    ) : null}
 
     <View className="space-y-4">
       {features.map((feature, index) => (
@@ -83,153 +98,127 @@ const PlanCard = ({
 const RealContractorPlans = () => {
   const navigation = useNavigation();
   const token = useSelector((state) => state.auth.token);
-
-  // We’ll manually manage `currentPurchase` because we need to call finishTransaction(...) ourselves.
   const [loadingSku, setLoadingSku] = useState("");
-  const [currentPurchase, setCurrentPurchase] = useState(null);
+  const [owned, setOwned] = useState(false);
+  const { connected, getSubscriptions } = useIAP();
 
-  // useIAP hook provides `connected`, plus methods to fetch SKUs and history.
-  const { connected, getSubscriptions, getPurchaseHistory } = useIAP();
+  const premiumSku = subscriptionSkus[0];
 
-  // 1) Fetch available subscriptions & history once IAP is connected
+  useEffect(() => {
+    if (!token) return;
+
+    API.get("premium/details", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (res.data.premium === true) {
+          setOwned(true);
+        }
+        console.log("🔐 Premium status:", res.data.premium);
+      })
+      .catch((err) => {
+        console.log("❌ Premium check failed:", err.message);
+      });
+  }, [token]);
+
   useEffect(() => {
     if (connected) {
       getSubscriptions({ skus: subscriptionSkus })
-        .then((subscriptions) => console.log("✅ Subscriptions fetched:", subscriptions))
-        .catch((err) => console.error("❌ Subscription fetch error:", err));
-
-      getPurchaseHistory()
-        .then((history) => console.log("🧾 Purchase History:", history))
-        .catch((err) => console.error("❌ History fetch error:", err));
+        .then((subs) => console.log("✅ Subscriptions:", subs))
+        .catch((err) => console.log("❌ Subscription fetch error:", err.message));
     }
   }, [connected]);
 
-  // 2) Listen for purchase updates and errors
   useEffect(() => {
+    if (!token) return;
+
     const purchaseUpdateSub = purchaseUpdatedListener(async (purchase) => {
       console.log("🛒 Purchase Updated:", purchase);
-      setCurrentPurchase(purchase);
+      setLoadingSku(purchase.productId);
+
+      const receipt = purchase.transactionReceipt;
+      if (!receipt) {
+        setLoadingSku("");
+        return;
+      }
+
+      const appleValidationPromise = axios.post(
+        "https://buy.itunes.apple.com/verifyReceipt",
+        {
+          "receipt-data": receipt,
+          password: ITUNES_SHARED_SECRET,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      API.post(
+        "premium/subscribe",
+        {
+          price: "19.99",
+          receipt,
+          productId: purchase.productId,
+          platform: Platform.OS,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+        .then((res) => {
+          console.log("📡 Backend response:", res.data);
+          setOwned(true);
+        })
+        .catch((err) => {
+          console.log("❌ Backend error:", err.message);
+        });
+
+      try {
+        const response = await appleValidationPromise;
+        console.log("🧾 Apple Response:", response.data);
+
+        if (response.data.status === 0) {
+          await finishTransaction(purchase);
+          console.log("✅ Apple transaction finished.");
+        } else {
+          console.log("❌ Apple status invalid:", response.data.status);
+        }
+      } catch (err) {
+        console.log("❌ Apple validation error:", err.message);
+      } finally {
+        setLoadingSku("");
+      }
     });
 
-    const purchaseErrorSub = purchaseErrorListener((error) => {
-      console.error("❌ Purchase Error:", error);
-      Alert.alert("Purchase Error", error.message);
+    const errorSub = purchaseErrorListener((error) => {
+      console.log("❌ Purchase Error:", error.message);
       setLoadingSku("");
     });
 
     return () => {
       purchaseUpdateSub.remove();
-      purchaseErrorSub.remove();
+      errorSub.remove();
     };
-  }, []);
+  }, [token]);
 
-  // 3) Whenever `currentPurchase` changes, validate its receipt and call backend
-  useEffect(() => {
-    const validateAndActivate = async () => {
-      if (!currentPurchase) return;
-
-      // iOS usually provides transactionReceipt in currentPurchase.transactionReceipt
-      let receipt = currentPurchase.transactionReceipt;
-
-      // Some SDK versions bundle the receipt inside originalJson → { receipt: “…” }
-      if (!receipt && currentPurchase.originalJson) {
-        try {
-          const parsed = JSON.parse(currentPurchase.originalJson);
-          receipt = parsed?.receipt;
-        } catch (e) {
-          console.error("❌ Failed to parse originalJson:", e);
-        }
-      }
-
-      // If `receipt` is missing or too short, alert the user
-      if (!receipt || receipt.length < 100) {
-        Alert.alert("Error", "No valid receipt found.");
-        setLoadingSku("");
-        return;
-      }
-
-      try {
-        // 3.a) Send the receipt to Apple for validation
-        let response = await validateReceiptIos(
-          { "receipt-data": receipt, password: ITUNES_SHARED_SECRET },
-          false // `false` → production; if that returns 21007, we’ll retry in sandbox
-        );
-
-        // 3.b) If this is a sandbox test receipt, retry with sandbox flag = true
-        if (response?.status === 21007) {
-          response = await validateReceiptIos(
-            { "receipt-data": receipt, password: ITUNES_SHARED_SECRET },
-            true
-          );
-        }
-
-        // 3.c) If Apple returns status = 0 → success!
-        if (response?.status === 0) {
-          await finishTransaction(currentPurchase);
-
-          // OPTIONAL: You can check expiration date in `response.latest_receipt_info[0].expires_date_ms`
-          // to verify if the subscription is still active. For a quick demo/sandbox, we often skip that.
-
-          // 3.d) Call your backend to “set-premium-badge”
-          const res = await axios.post(
-            "https://g32.iamdeveloper.in/api/user/set-premium-badge",
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          if (res.status === 200) {
-            Alert.alert("Subscribed", "Premium badge activated successfully.");
-          } else {
-            Alert.alert("Error", res.data?.message || "Activation failed.");
-          }
-        } else {
-          // Apple validation returned a non-zero status
-          Alert.alert("Validation Failed", `Status: ${response?.status}`);
-        }
-      } catch (err) {
-        console.error("❌ Validation error:", err);
-        Alert.alert("Error", "Receipt validation or activation failed.");
-      } finally {
-        setLoadingSku("");
-      }
-    };
-
-    validateAndActivate();
-  }, [currentPurchase]);
-
-  // 4) Called when user taps “Get Started” on the “Contractor Pro” card
   const handleSubscribe = async (sku) => {
     try {
       if (!connected) {
-        Alert.alert("Error", "In-App Purchases not connected.");
+        console.log("⚠️ IAP not connected");
         return;
       }
-
-      if (!sku) {
-        Alert.alert("Error", "SKU is missing.");
-        return;
-      }
-
       setLoadingSku(sku);
       await requestSubscription({ sku });
     } catch (error) {
       setLoadingSku("");
-      console.error("❌ Subscription error:", error);
-      if (error instanceof PurchaseError) {
-        Alert.alert("Purchase Error", `${error.code}: ${error.message}`);
-      } else {
-        Alert.alert("Unknown Error", error.message || "Something went wrong");
-      }
+      console.log("❌ Subscription Error:", error.message);
     }
   };
 
-  // 5) Define your two plans
   const plans = [
     {
       id: "1",
@@ -242,8 +231,8 @@ const RealContractorPlans = () => {
         "Basic support",
       ],
       buttonText: "",
-      sku: "", // no in-app purchase for the free plan
-      isCurrent: true,
+      sku: "",
+      isCurrent: !owned,
     },
     {
       id: "2",
@@ -257,9 +246,9 @@ const RealContractorPlans = () => {
         "Featured to top contractors",
         "Priority support",
       ],
-      buttonText: "Get Started",
-      sku: "AC5DRealtorSubscriptionPlan", // ⟵ exact App Store Connect ID
-      isCurrent: false,
+      buttonText: owned ? "Subscribed" : "Get Started",
+      sku: premiumSku,
+      isCurrent: owned,
     },
   ];
 
@@ -282,11 +271,43 @@ const RealContractorPlans = () => {
             {...item}
             loading={loadingSku === item.sku}
             onSubscribe={() => handleSubscribe(item.sku)}
+            owned={owned}
           />
         )}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
       />
+
+      <View className="px-6 mt-4 mb-2">
+        <Text className="text-lg text-center text-white leading-5">
+          By subscribing, you agree to our{" "}
+          <Text
+            className="underline"
+            onPress={() => Linking.openURL("https://ac5d.com/terms-of-use")}
+          >
+            Terms of Use
+          </Text>{" "}
+          and{" "}
+          <Text
+            className="underline"
+            onPress={() => Linking.openURL("https://ac5d.com/privacy-policy")}
+          >
+            Privacy Policy
+          </Text>
+          , and Apple’s{" "}
+          <Text
+            className="underline"
+            onPress={() =>
+              Linking.openURL(
+                "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
+              )
+            }
+          >
+            EULA
+          </Text>
+          .
+        </Text>
+      </View>
     </SafeAreaView>
   );
 };

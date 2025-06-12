@@ -241,6 +241,8 @@ const MenuHeader = () => {
           ))}
         </View>
       </View>
+      
+
 
       <DeleteAccountModal
         visible={showDeleteModal}

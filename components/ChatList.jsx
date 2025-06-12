@@ -57,6 +57,7 @@ const ChatListScreen = () => {
           image: user.image ? `${baseUrl}${user.image}` : null,
           email: user.email,
           unreadCount: user.message_unread_count,
+          premium: user.premium, // Include premium status
         }));
         setChats(formattedChats);
       }
@@ -122,9 +123,14 @@ const ChatListScreen = () => {
 
         <View className="flex-1">
           <View className="flex-row items-center justify-between">
-            <Text className="text-base font-semibold text-gray-800">
-              {item.name}
-            </Text>
+            <View className="flex-row items-center gap-1">
+              <Text className="text-base font-semibold text-gray-800">
+                {item.name}
+              </Text>
+              {item.premium === 1 && (
+                <Ionicons name="checkmark-circle" size={16} color="#082f49" />
+              )}
+            </View>
             {item.unreadCount > 0 && (
               <View className="bg-sky-950 p-2 rounded-full">
                 <Text className="text-white text-xs font-bold">

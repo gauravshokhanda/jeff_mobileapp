@@ -107,7 +107,7 @@ export default function Index() {
       });
       const formattedData = response.data.data.data.map((item) => ({
         id: item.id.toString(),
-        image: { uri: `${baseUrl}${item.image}` },
+        image: item.image ? { uri: `${baseUrl}${item.image}` } : null,
         banner: { uri: `${baseUrl}${item.upload_organisation}` },
         name: item.name,
         email: item.email,
@@ -116,6 +116,7 @@ export default function Index() {
         company: item.company_name,
         address: item.company_address,
         createdAt: moment(item.created_at).fromNow(),
+        isVerified: item.premium === 1,
       }));
       setContractors((prev) =>
         page === 1 ? formattedData : [...prev, ...formattedData]
@@ -240,67 +241,86 @@ export default function Index() {
     }
   }, [selectedTab]);
 
-  const renderContractor = ({ item }) => (
-    <View className="bg-white shadow-lg rounded-2xl mb-4 overflow-hidden border">
-      <View className="relative">
-        <Image
-          source={item.banner}
-          className="w-full h-24"
-          resizeMode="cover"
-        />
-        <View className="absolute bottom-1 left-4 flex-row items-center">
+  const renderContractor = ({ item }) => {
+    const firstLetter = item.name?.charAt(0).toUpperCase() || "?";
+    const hasImage = item.image?.uri;
+  
+    return (
+      <View className="bg-white shadow-lg rounded-2xl mb-4 overflow-hidden border">
+        <View className="relative">
           <Image
-            source={item.image}
-            className="w-16 h-16 rounded-full border-2 border-white"
+            source={item.banner}
+            className="w-full h-24"
+            resizeMode="cover"
           />
-          <View className="ml-4">
-            <Text className="text-lg font-bold text-white">{item.name}</Text>
-            <Text className="text-white text-sm">{item.company}</Text>
+          <View className="absolute bottom-1 left-4 flex-row items-center">
+            {hasImage ? (
+              <Image
+                source={item.image}
+                className="w-16 h-16 rounded-full border-2 border-white"
+              />
+            ) : (
+              <View className="w-16 h-16 rounded-full bg-sky-950 border-2 border-white justify-center items-center">
+                <Text className="text-white text-xl font-bold">{firstLetter}</Text>
+              </View>
+            )}
+            <View className="ml-4">
+            <View className="flex-row items-center gap-1">
+  <Text className="text-lg font-bold text-white">{item.name}</Text>
+  {item.isVerified && (
+    <View className="flex-row items-center py-0.5 rounded-full">
+      <Ionicons name="checkmark-circle" size={20} color="white" />
+    </View>
+  )}
+</View>
+              <Text className="text-white text-sm">{item.company}</Text>
+            </View>
+          </View>
+        </View>
+        <View className="p-4">
+          <Text className="font-semibold text-gray-700">
+            Email: <Text className="text-gray-600">{item.email}</Text>
+          </Text>
+          <Text className="font-semibold text-gray-700">
+            Phone: <Text className="text-gray-600">{item.contactNumber}</Text>
+          </Text>
+          <Text className="font-semibold text-gray-700">
+            City: <Text className="text-gray-600">{item.city}</Text>
+          </Text>
+          <Text className="font-semibold text-gray-700">
+            Address: <Text className="text-gray-600">{item.address}</Text>
+          </Text>
+        </View>
+        <View className="flex-row justify-between items-center px-4 pb-4 gap-2">
+          <TouchableOpacity
+            className="bg-sky-950 p-2 rounded-lg"
+            onPress={() =>
+              requireLogin(() =>
+                router.push(`ContractorProfile/?user_id=${item.id}`)
+              )
+            }
+          >
+            <Text className="text-white">Visit Profile</Text>
+          </TouchableOpacity>
+          <View className="flex-row gap-5">
+            <TouchableOpacity
+              onPress={() =>
+                requireLogin(() => router.push(`/ChatScreen?user_id=${item.id}`))
+              }
+            >
+              <Ionicons name="chatbubble-ellipses-outline" size={30} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => requireLogin(() => handleCall(item.contactNumber))}
+            >
+              <Ionicons name="call-outline" size={30} color="black" />
+            </TouchableOpacity>
           </View>
         </View>
       </View>
-      <View className="p-4">
-        <Text className="font-semibold text-gray-700">
-          Email: <Text className="text-gray-600">{item.email}</Text>
-        </Text>
-        <Text className="font-semibold text-gray-700">
-          Phone: <Text className="text-gray-600">{item.contactNumber}</Text>
-        </Text>
-        <Text className="font-semibold text-gray-700">
-          City: <Text className="text-gray-600">{item.city}</Text>
-        </Text>
-        <Text className="font-semibold text-gray-700">
-          Address: <Text className="text-gray-600">{item.address}</Text>
-        </Text>
-      </View>
-      <View className="flex-row justify-between items-center px-4 pb-4 gap-2">
-        <TouchableOpacity
-          className="bg-sky-950 p-2 rounded-lg"
-          onPress={() =>
-            requireLogin(() =>
-              router.push(`ContractorProfile/?user_id=${item.id}`)
-            )
-          }
-        >
-          <Text className="text-white">Visit Profile</Text>
-        </TouchableOpacity>
-        <View className="flex-row gap-5">
-          <TouchableOpacity
-            onPress={() =>
-              requireLogin(() => router.push(`/ChatScreen?user_id=${item.id}`))
-            }
-          >
-            <Ionicons name="chatbubble-ellipses-outline" size={30} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => requireLogin(() => handleCall(item.contactNumber))}
-          >
-            <Ionicons name="call-outline" size={30} color="black" />
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  );
+    );
+  };
+  
 
   const renderListening = ({ item }) => {
     const propertyImages = JSON.parse(item.property_images) || [];

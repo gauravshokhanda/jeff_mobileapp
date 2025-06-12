@@ -89,9 +89,18 @@ const MenuHeader = () => {
   )}
 
   <View>
-    <Text className="text-2xl font-semibold text-white">
-      Welcome, {userData?.name || "User"}!
-    </Text>
+  <View className="flex-row items-center gap-2 flex-wrap">
+  <Text className="text-2xl font-semibold text-white">
+   {userData?.name || "User"}!
+  </Text>
+  {userData.premium === 1 && (
+    <View className="flex-row items-center bg-white/20 px-2 py-0.5 rounded-full">
+      <Ionicons name="checkmark-circle" size={20} color="white" />
+      <Text className="text-sky-100 text-xs ml-1">Premium</Text>
+    </View>
+  )}
+</View>
+
     <Text className="text-gray-300">{userData?.email}</Text>
   </View>
 </View>

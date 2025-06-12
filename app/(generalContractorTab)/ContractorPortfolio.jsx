@@ -202,13 +202,20 @@ const ProfileCard = () => {
           <Ionicons name="arrow-back" size={24} color="#0369a1" />
         </TouchableOpacity>
         <View className="absolute bottom-[-40] left-6">
-          <Image
-            source={{
-              uri: userData.image || "https://via.placeholder.com/150",
-            }}
-            className="w-24 h-24 rounded-full border-4 border-white shadow-md"
-          />
-        </View>
+  {userData.image ? (
+    <Image
+      source={{ uri: userData.image }}
+      className="w-24 h-24 rounded-full border-4 border-white shadow-md"
+    />
+  ) : (
+    <View className="w-24 h-24 rounded-full border-4 border-white bg-sky-950 justify-center items-center shadow-md">
+      <Text className="text-white text-3xl font-bold">
+        {userData.name?.charAt(0).toUpperCase() || "U"}
+      </Text>
+    </View>
+  )}
+</View>
+
       </View>
 
       {/* User Details Card */}
@@ -225,7 +232,16 @@ const ProfileCard = () => {
     Personal Information
   </Text>
   <View className="space-y-2">
-    <Text className="text-gray-700 text-base">{userData.name}</Text>
+  <View className="flex-row items-center gap-2">
+  <Text className="text-gray-700 text-base">{userData.name}</Text>
+  {userData.premium === 1 && (
+    <View className="flex-row items-center bg-sky-100 px-2 py-0.5 rounded-full">
+      <Ionicons name="checkmark-circle" size={14} color="#0369a1" />
+      <Text className="text-sky-900 text-xs ml-1">premium</Text>
+    </View>
+  )}
+</View>
+
     {userData.email && (
       <Text className="text-gray-600 text-base">{userData.email}</Text>
     )}

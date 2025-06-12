@@ -199,14 +199,12 @@ const ChatScreen = () => {
 
   const renderMessage = ({ item }) => (
     <View
-      className={`mx-3 my-2 max-w-[80%] ${
-        item.sender === "me" ? "self-end items-end" : "self-start items-start"
-      }`}
+      className={`mx-3 my-2 max-w-[80%] ${item.sender === "me" ? "self-end items-end" : "self-start items-start"
+        }`}
     >
       <View
-        className={`p-3 rounded-xl ${
-          item.sender === "me" ? "bg-sky-950" : "bg-gray-100"
-        }`}
+        className={`p-3 rounded-xl ${item.sender === "me" ? "bg-sky-950" : "bg-gray-100"
+          }`}
       >
         {item.image && (
           <TouchableOpacity
@@ -231,9 +229,8 @@ const ChatScreen = () => {
 
         {!!item.text && (
           <Text
-            className={`text-base ${
-              item.sender === "me" ? "text-white" : "text-gray-900"
-            }`}
+            className={`text-base ${item.sender === "me" ? "text-white" : "text-gray-900"
+              }`}
             style={{ flexWrap: "wrap" }}
           >
             {item.text}
@@ -262,9 +259,8 @@ const ChatScreen = () => {
 
     return (
       <View
-        className={`p-3 mx-3 my-2 rounded-lg border ${
-          statusStyles[statusMessage.type]
-        }`}
+        className={`p-3 mx-3 my-2 rounded-lg border ${statusStyles[statusMessage.type]
+          }`}
       >
         <Text>{statusMessage.message}</Text>
       </View>
@@ -296,7 +292,12 @@ const ChatScreen = () => {
                   </Text>
                 </View>
               )}
-              <Text className="text-white text-lg font-bold">{user.name}</Text>
+              <View className="flex-row items-center">
+                <Text className="text-white text-lg font-bold mr-1">{user.name}</Text>
+                {user.premium === 1 && (
+                  <Ionicons name="checkmark-circle" size={18} color="#e0f2fe" />
+                )}
+              </View>
             </>
           ) : (
             <Text className="text-white text-lg font-bold">Loading...</Text>

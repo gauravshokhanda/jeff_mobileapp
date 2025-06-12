@@ -289,7 +289,15 @@ export default function Index() {
 
 
     } catch (error) {
-      console.log(error, "error")
+      console.log("Error during property submission:", error);
+
+      let errorMessage = "Something went wrong. Please try again.";
+
+      if (error.response && error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+      }
+
+      Alert.alert("Error", errorMessage);
     }
 
   };

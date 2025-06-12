@@ -18,7 +18,6 @@ import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 
 export default function PropertyDetails() {
-    console.log("my listing page open");
   const { id } = useLocalSearchParams();
   const token = useSelector((state) => state.auth.token);
   const router = useRouter();
@@ -29,6 +28,7 @@ export default function PropertyDetails() {
   const [mainImage, setMainImage] = useState("");
   const [designImages, setDesignImages] = useState([]);
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [editData, setEditData] = useState({});
   const [newImages, setNewImages] = useState([]);
 
@@ -74,19 +74,6 @@ export default function PropertyDetails() {
     handleFetchListing();
   }, [token, id]);
 
-  const handleImageReplace = async (index) => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const updated = [...newImages];
-      updated[index] = result.assets[0].uri;
-      setNewImages(updated);
-    }
-  };
-
   const handleAddAnotherImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -98,12 +85,6 @@ export default function PropertyDetails() {
     }
   };
 
-  const handleRemoveImage = (index) => {
-    const updated = [...newImages];
-    updated.splice(index, 1);
-    setNewImages(updated);
-  };
-
   const handleUpdateProperty = async () => {
     const formData = new FormData();
 
@@ -113,7 +94,6 @@ export default function PropertyDetails() {
       }
     });
 
-    // Send server image paths that remain
     const remainingImagePaths = designImages.map((img) =>
       img.replace(`${baseUrl}/`, "")
     );
@@ -121,7 +101,6 @@ export default function PropertyDetails() {
       formData.append("property_images[]", img)
     );
 
-    // Send new images only
     newImages.forEach((uri) => {
       const name = uri.split("/").pop();
       const type = `image/${name.split(".").pop()}`;
@@ -148,6 +127,20 @@ export default function PropertyDetails() {
     }
   };
 
+  const handleDeleteProperty = async () => {
+    try {
+      await API.delete(`realstate-property/delete/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setDeleteModalVisible(false);
+      Alert.alert("Deleted", "Property has been deleted.");
+      router.back();
+    } catch (error) {
+      Alert.alert("Error", "Failed to delete property.");
+      console.error("delete error", error);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       <View className="absolute z-10 w-full flex-row mt-20 justify-between p-3">
@@ -158,21 +151,28 @@ export default function PropertyDetails() {
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => setEditModalVisible(true)}
-          className="bg-sky-900 rounded-full p-2"
-        >
-          <Ionicons name="create-outline" size={24} color="white" />
-        </TouchableOpacity>
+        <View className="flex-row gap-2">
+          <TouchableOpacity
+            onPress={() => setEditModalVisible(true)}
+            className="bg-sky-900 rounded-full p-2"
+          >
+            <Ionicons name="create-outline" size={24} color="white" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setDeleteModalVisible(true)}
+            className="bg-red-600 rounded-full p-2"
+          >
+            <Ionicons name="trash" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
-        {/* Main Image */}
         {mainImage && (
           <Image source={{ uri: mainImage }} className="w-full h-60" />
         )}
 
-        {/* Thumbnail Gallery */}
         <View className="flex-row mt-3 px-3">
           {designImages.map((img, index) => (
             <TouchableOpacity key={img} onPress={() => setMainImage(img)}>
@@ -188,21 +188,20 @@ export default function PropertyDetails() {
           ))}
         </View>
 
-        {/* Property Tabs */}
         <View className="mt-4 p-4 bg-white rounded-lg mx-2 flex-row justify-center">
           {propertyTypes.map((item) => (
             <TouchableOpacity
               key={item.id}
               className={`px-6 py-2 border-b-2 ${selectedPropertyType === item.id
-                  ? "border-sky-900"
-                  : "border-gray-300"
+                ? "border-sky-900"
+                : "border-gray-300"
                 }`}
               onPress={() => setSelectedPropertyType(item.id)}
             >
               <Text
                 className={`text-lg font-medium ${selectedPropertyType === item.id
-                    ? "text-sky-900"
-                    : "text-gray-400"
+                  ? "text-sky-900"
+                  : "text-gray-400"
                   }`}
               >
                 {item.label}
@@ -211,7 +210,6 @@ export default function PropertyDetails() {
           ))}
         </View>
 
-        {/* Property Content */}
         <View className="px-4 mt-4">
           {selectedPropertyType === "detail" ? (
             labeledFields.map((field) => (
@@ -244,7 +242,6 @@ export default function PropertyDetails() {
       {/* EDIT MODAL */}
       <Modal visible={editModalVisible} animationType="slide">
         <SafeAreaView className="flex-1 p-4 bg-white">
-          {/* Modal Close Icon */}
           <TouchableOpacity
             onPress={() => setEditModalVisible(false)}
             style={{ position: "absolute", top: 20, right: 20, zIndex: 10 }}
@@ -271,7 +268,6 @@ export default function PropertyDetails() {
 
             <Text className="font-semibold mt-5 mb-2">Images</Text>
             <View className="flex-row flex-wrap">
-              {/* Existing Server Images (designImages) */}
               {designImages.map((img, index) => (
                 <View key={img + index} style={{ margin: 5 }}>
                   <Image
@@ -299,7 +295,6 @@ export default function PropertyDetails() {
                 </View>
               ))}
 
-              {/* Newly Added Images (newImages) */}
               {newImages.map((uri, index) => (
                 <View key={uri + index} style={{ margin: 5 }}>
                   <Image
@@ -327,7 +322,6 @@ export default function PropertyDetails() {
                 </View>
               ))}
 
-              {/* Plus Icon to Add */}
               <TouchableOpacity
                 onPress={handleAddAnotherImage}
                 style={{
@@ -364,6 +358,32 @@ export default function PropertyDetails() {
             </View>
           </ScrollView>
         </SafeAreaView>
+      </Modal>
+
+      {/* DELETE CONFIRMATION MODAL */}
+      <Modal visible={deleteModalVisible} transparent animationType="fade">
+        <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
+          <View className="bg-white p-6 rounded-lg w-[85%]">
+            <Text className="text-lg font-bold mb-3 text-center">Confirm Deletion</Text>
+            <Text className="text-center text-gray-600 mb-5">
+              Are you sure you want to delete this property?
+            </Text>
+            <View className="flex-row justify-between">
+              <TouchableOpacity
+                onPress={() => setDeleteModalVisible(false)}
+                className="bg-gray-400 w-[48%] p-3 rounded"
+              >
+                <Text className="text-white text-center font-semibold">Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleDeleteProperty}
+                className="bg-red-600 w-[48%] p-3 rounded"
+              >
+                <Text className="text-white text-center font-semibold">Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );

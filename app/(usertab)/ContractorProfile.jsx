@@ -37,7 +37,7 @@ const ContractorProfile = () => {
         const contractorData = response.data.data;
         setContractor({
           ...contractorData,
-          image: `${baseUrl}${contractorData.image}`,
+          image: contractorData.image ? `${baseUrl}${contractorData.image}` : null,
           upload_organisation: `${baseUrl}${contractorData.upload_organisation}`,
         });
       } catch (error) {
@@ -112,7 +112,6 @@ const ContractorProfile = () => {
           <TouchableOpacity
             onPress={() => router.back()}
             className={`absolute left-5 p-2 bg-black/40 rounded-full z-10 ${Platform.OS === "ios" ? "top-12" : "top-5"}`}
-
           >
             <Ionicons name="arrow-back" size={24} color="#fff" />
           </TouchableOpacity>
@@ -120,13 +119,32 @@ const ContractorProfile = () => {
 
         {/* Profile Image */}
         <View className="items-center -mt-14 z-10">
-          <Image
-            source={{ uri: contractor.image }}
-            className="w-28 h-28 rounded-full border-4 border-white shadow-xl"
-          />
-          <Text className="text-xl font-bold text-gray-800 mt-2 tracking-wide">
-            {contractor.name}
-          </Text>
+          {contractor.image ? (
+            <Image
+              source={{ uri: contractor.image }}
+              className="w-28 h-28 rounded-full border-4 border-white shadow-xl"
+            />
+          ) : (
+            <View className="w-28 h-28 rounded-full border-4 border-white bg-sky-950 justify-center items-center shadow-xl">
+              <Text className="text-white text-3xl font-bold">
+                {contractor.name?.charAt(0).toUpperCase() || "?"}
+              </Text>
+            </View>
+          )}
+        <View className="flex-row items-center justify-center mt-2">
+  <Text className="text-xl font-bold text-gray-800 tracking-wide">
+    {contractor.name}
+  </Text>
+  {contractor.premium === 1 && (
+    <Ionicons
+      name="checkmark-circle"
+      size={20}
+      color="#082f49" 
+      style={{ marginLeft: 6 }}
+    />
+  )}
+</View>
+
           <Text className="text-gray-500 text-sm">{contractor.company_name}</Text>
         </View>
 
@@ -142,7 +160,8 @@ const ContractorProfile = () => {
             🔢 <Text className="font-semibold">Zip Code:</Text> {contractor.zip_code}
           </Text>
           <Text className="text-base text-gray-700 mt-3">
-            📝 <Text className="font-semibold">About:</Text> {contractor.description}
+            📝 <Text className="font-semibold">About:</Text>{" "}
+            {contractor.description || "No description available."}
           </Text>
         </View>
 
@@ -174,7 +193,9 @@ const ContractorProfile = () => {
                   <Text className="text-sm text-gray-700">
                     📍 {item.city}, {item.address}
                   </Text>
-                  <Text className="text-sm text-gray-600 mt-1">{item.description}</Text>
+                  <Text className="text-sm text-gray-600 mt-1">
+                    {item.description}
+                  </Text>
                 </View>
               )}
             />

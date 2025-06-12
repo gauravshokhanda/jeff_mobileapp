@@ -17,7 +17,6 @@ const EditProfileModal = ({ visible, onClose, userData, onUpdate }) => {
     name: "",
     number: "",
     address: "",
-    city: "",
     company_name: "",
   });
 
@@ -27,7 +26,7 @@ const EditProfileModal = ({ visible, onClose, userData, onUpdate }) => {
         name: userData.name || "",
         number: userData.number || "",
         address: userData.address || "",
-        city: userData.city || "",
+       
         email: userData.email || "",
         company_name: userData.company_name || "",
       });
@@ -70,12 +69,14 @@ const EditProfileModal = ({ visible, onClose, userData, onUpdate }) => {
           <TextInput
             className="border-b border-gray-300 mb-3 pb-1 text-base"
             placeholder="Name"
+            placeholderTextColor={"gray"}
             value={form.name}
             onChangeText={(val) => handleChange("name", val)}
           />
           <TextInput
             className="border-b border-gray-300 mb-3 pb-1 text-base"
             placeholder="Mobile Number"
+            placeholderTextColor={"gray"}
             value={form.number}
             onChangeText={(val) => handleChange("number", val)}
             keyboardType="phone-pad"
@@ -83,18 +84,15 @@ const EditProfileModal = ({ visible, onClose, userData, onUpdate }) => {
           <TextInput
             className="border-b border-gray-300 mb-3 pb-1 text-base"
             placeholder="Address"
+            placeholderTextColor={"gray"}
             value={form.address}
             onChangeText={(val) => handleChange("address", val)}
           />
-          <TextInput
-            className="border-b border-gray-300 mb-3 pb-1 text-base"
-            placeholder="City"
-            value={form.city}
-            onChangeText={(val) => handleChange("city", val)}
-          />
+        
           <TextInput
             className="border-b border-gray-300 mb-4 pb-1 text-base"
             placeholder="Company Name"
+            placeholderTextColor={"gray"}
             value={form.company_name}
             onChangeText={(val) => handleChange("company_name", val)}
           />

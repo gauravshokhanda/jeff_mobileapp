@@ -61,6 +61,7 @@ const RealContractorProfile = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       setPropertyLoading(true);
+      setProperties([]); // ✅ clear old properties before fetching new ones
       try {
         const response = await API.get(
           `realstate-property/contractor/${user_id}`,
@@ -71,9 +72,12 @@ const RealContractorProfile = () => {
 
         if (response?.data?.properties?.data) {
           setProperties(response.data.properties.data);
+        } else {
+          setProperties([]); // ✅ ensure clean state even if API returns no data
         }
       } catch (error) {
         console.log("Error fetching contractor properties:", error);
+        setProperties([]); // ✅ fallback clean state on error
       } finally {
         setPropertyLoading(false);
       }
@@ -83,6 +87,7 @@ const RealContractorProfile = () => {
       fetchProperties();
     }
   }, [user_id]);
+
 
   if (loading || !contractor) {
     return (
@@ -197,9 +202,20 @@ const RealContractorProfile = () => {
               {avatarLetter}
             </Text>
           </View>
-          <Text className="text-lg font-semibold text-sky-950 mt-2">
-            {name}
-          </Text>
+          <View className="flex-row items-center mt-2">
+            <Text className="text-lg font-semibold text-sky-950">
+              {name}
+            </Text>
+            {contractor.premium === 1 && (
+              <Ionicons
+                name="checkmark-circle"
+                size={20}
+                color="#082f49" // sky-950
+                style={{ marginLeft: 6 }}
+              />
+            )}
+          </View>
+
           <Text className="text-gray-600">{email}</Text>
         </View>
 
@@ -210,7 +226,7 @@ const RealContractorProfile = () => {
 
         {propertyLoading ? (
           <ActivityIndicator size="large" color="#0369A1" className="my-6" />
-        ) : (
+        ) : properties.length > 0 ? (
           <FlatList
             data={properties}
             keyExtractor={(item) => item.id.toString()}
@@ -218,7 +234,12 @@ const RealContractorProfile = () => {
             contentContainerStyle={{ paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
           />
+        ) : (
+          <Text className="text-center text-gray-400 mt-4">
+            No properties available.
+          </Text>
         )}
+
       </View>
     </SafeAreaView>
   );

@@ -120,14 +120,19 @@ const DashboardScreen = () => {
       >
         <View className="mt-10 px-4 gap-2 flex-row items-center">
           <TouchableOpacity onPress={() => router.push("ContractorPortfolio")}>
-            <Image
-              source={{
-                uri: user?.image
-                  ? `${baseUrl}${user.image}`
-                  : "https://xsgames.co/randomusers/assets/avatars/male/74.jpg",
-              }}
-              className="w-14 h-14 border-2 border-white rounded-full"
-            />
+            {user?.image ? (
+              <Image
+                source={{ uri: `${baseUrl}${user.image}` }}
+                className="w-14 h-14 border-2 border-white rounded-full"
+              />
+            ) : (
+              <View className="w-14 h-14 border-2 border-white rounded-full bg-sky-950 justify-center items-center">
+                <Text className="text-white text-xl font-bold">
+                  {user?.name?.charAt(0).toUpperCase() || "U"}
+                </Text>
+              </View>
+            )}
+
           </TouchableOpacity>
 
           <View className="gap-1">
@@ -208,7 +213,7 @@ const DashboardScreen = () => {
               data={posts}
               keyExtractor={(item) => item.id.toString()}
               renderItem={renderItem}
-              
+
               showsVerticalScrollIndicator={false}
               ListFooterComponent={
                 <View className="flex-1">

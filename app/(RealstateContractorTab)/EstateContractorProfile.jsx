@@ -22,9 +22,11 @@ export default function EstateContractorProfile() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     fetchUserData();
+    fetchPremiumStatus();
   }, [token]);
 
   const fetchUserData = async () => {
@@ -44,6 +46,19 @@ export default function EstateContractorProfile() {
       console.error("Failed to load user data", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPremiumStatus = async () => {
+    try {
+      const response = await API.get("premium/details", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setIsPremium(response.data?.premium || false);
+    } catch (error) {
+      console.error("Error fetching premium status", error);
     }
   };
 
@@ -107,9 +122,19 @@ export default function EstateContractorProfile() {
             {userData?.name?.charAt(0).toUpperCase() || "N"}
           </Text>
         </View>
-        <Text className="text-2xl font-semibold text-sky-900 mt-4">
-          {userData?.name || "N/A"}
-        </Text>
+        <View className="flex-row items-center mt-4">
+          <Text className="text-2xl font-semibold text-sky-900">
+            {userData?.name || "N/A"}
+          </Text>
+          {isPremium && (
+            <Ionicons
+              name="checkmark-circle"
+              size={22}
+              color="#082f49" // sky-950
+              style={{ marginLeft: 6 }}
+            />
+          )}
+        </View>
         <Text className="text-gray-500">{userData?.email || "N/A"}</Text>
       </View>
 
