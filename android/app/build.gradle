@@ -87,13 +87,17 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace 'dev.expo.jeffContructionApp'
-    defaultConfig {
-        applicationId 'dev.expo.jeffContructionApp'
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0.0"
-    }
+   defaultConfig {
+    applicationId 'com.ac5dconstruction'
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
+    versionCode 4
+    versionName "1.0.2"
+
+    // ✅ Add this line
+    missingDimensionStrategy "store", "play"
+}
+
     signingConfigs {
        release {
         storeFile file("my-upload-key.keystore")
@@ -106,15 +110,14 @@ android {
         debug {
             signingConfig signingConfigs.debug
         }
-        release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
-            shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
-            minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
-        }
+    release {
+        // ✅ Use your release keystore
+        signingConfig signingConfigs.release
+        shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
+        minifyEnabled enableProguardInReleaseBuilds
+        proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
+    }
     }
     packagingOptions {
         jniLibs {

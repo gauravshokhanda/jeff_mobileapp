@@ -69,6 +69,7 @@ function RootLayout() {
             <Stack.Screen name="(usertab)" options={{ headerShown: false }} />
             <Stack.Screen name="(generalContractorTab)" options={{ headerShown: false }} />
             <Stack.Screen name="(RealstateContractorTab)" options={{ headerShown: false }} />
+            <Stack.Screen name="Guideonboarding" options={{ title: 'Guideonboarding', headerShown: false }} />
           </Stack>
         </PersistGate>
       </Provider>

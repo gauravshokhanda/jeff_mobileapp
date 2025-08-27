@@ -8,6 +8,28 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:99535253661:android:eeee5d0ceed8e63ea2a474",
+        "android_client_info": {
+          "package_name": "com.ac5dconstruction"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtPXJcbvHJPEybcuu_jajgyK3ObovLKwY"
+        },
+        {
+          "current_key": "AIzaSyCJz96AlMJOnmTQusq3R0qL38yOdsJ_60Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:99535253661:android:b0fb8c5a46f5c9b0a2a474",
         "android_client_info": {
           "package_name": "com.android.ac5d"
@@ -15,6 +37,9 @@
       },
       "oauth_client": [],
       "api_key": [
+        {
+          "current_key": "AIzaSyCtPXJcbvHJPEybcuu_jajgyK3ObovLKwY"
+        },
         {
           "current_key": "AIzaSyCJz96AlMJOnmTQusq3R0qL38yOdsJ_60Y"
         }
@@ -35,6 +60,9 @@
       "oauth_client": [],
       "api_key": [
         {
+          "current_key": "AIzaSyCtPXJcbvHJPEybcuu_jajgyK3ObovLKwY"
+        },
+        {
           "current_key": "AIzaSyCJz96AlMJOnmTQusq3R0qL38yOdsJ_60Y"
         }
       ],
@@ -53,6 +81,9 @@
       },
       "oauth_client": [],
       "api_key": [
+        {
+          "current_key": "AIzaSyCtPXJcbvHJPEybcuu_jajgyK3ObovLKwY"
+        },
         {
           "current_key": "AIzaSyCJz96AlMJOnmTQusq3R0qL38yOdsJ_60Y"
         }

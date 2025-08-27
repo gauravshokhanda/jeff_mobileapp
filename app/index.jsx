@@ -164,6 +164,11 @@ export default function Index() {
     }
   };
 
+
+  const handleReadDocumentation = () => {
+      navigation.navigate("Guideonboarding");
+  };
+
   // Onboarding Screens
   if (screenNumber > 0) {
     const screenData = {
@@ -265,12 +270,24 @@ export default function Index() {
             marginTop: -40, // Pull it up a bit over the bottom of the image
           }}
         />
+
+         <TouchableOpacity
+          onPress={handleReadDocumentation}
+          className=" border border-sky-950 rounded-3xl px-10 py-3 mt-5"
+          style={{
+            marginBottom: height * 0.02,
+          }}
+        >
+          <Text className="text-sky-950 text-lg font-semibold text-center">
+            App Tour
+          </Text>
+        </TouchableOpacity>
   
         <TouchableOpacity
           onPress={handleGetStarted}
           className="bg-sky-950 rounded-3xl px-10 py-3 mt-6"
           style={{
-            marginTop: 20,
+            marginTop: 18,
             marginBottom: height * 0.04,
           }}
         >
@@ -278,6 +295,8 @@ export default function Index() {
             Get Started
           </Text>
         </TouchableOpacity>
+
+       
       </View>
     </SafeAreaView>
   );

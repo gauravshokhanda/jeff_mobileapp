@@ -7,6 +7,7 @@ import {
   Dimensions,
   SafeAreaView,
   TouchableOpacity,
+  ScrollView
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "expo-router";
@@ -181,69 +182,72 @@ const MenuHeader = () => {
   }
 
   return (
-    <SafeAreaView className="bg-gray-200">
-      <LinearGradient
-        colors={["#082f49", "transparent"]}
-        style={{ height: screenHeight * 0.4 }}
-      >
-        <View className="mt-10 px-4 gap-2 flex-row items-center">
-          <TouchableOpacity onPress={() => router.push("UserProfile")}>
-            {userData?.image ? (
-              <Image
-                source={{ uri: `${baseUrl}/${userData.image}` }}
-                className="w-16 h-16 border-2 border-white rounded-full"
-              />
-            ) : (
-              <View className="w-16 h-16 rounded-full bg-white border-2 border-white justify-center items-center">
-                <Text className="text-2xl font-bold text-sky-800">
-                  {user?.name?.charAt(0).toUpperCase() || "U"}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-          <View className="gap-1">
-            <Text className="text-2xl font-semibold text-white">
-              Welcome! {user?.name || "User"}
-            </Text>
+    <SafeAreaView className=" flex-1 bg-gray-200">
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+
+
+        <LinearGradient
+          colors={["#082f49", "transparent"]}
+          style={{ height: screenHeight * 0.4 }}
+        >
+          <View className="mt-10 px-4 gap-2 flex-row items-center">
+            <TouchableOpacity onPress={() => router.push("UserProfile")}>
+              {userData?.image ? (
+                <Image
+                  source={{ uri: `${baseUrl}/${userData.image}` }}
+                  className="w-16 h-16 border-2 border-white rounded-full"
+                />
+              ) : (
+                <View className="w-16 h-16 rounded-full bg-white border-2 border-white justify-center items-center">
+                  <Text className="text-2xl font-bold text-sky-800">
+                    {user?.name?.charAt(0).toUpperCase() || "U"}
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+            <View className="gap-1">
+              <Text className="text-2xl font-semibold text-white">
+                Welcome! {user?.name || "User"}
+              </Text>
+            </View>
+          </View>
+        </LinearGradient>
+
+        <View
+          className="bg-white"
+          style={{
+            position: "absolute",
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            marginTop: screenHeight * 0.19,
+            width: postContentWidth,
+            marginHorizontal: (screenWidth - postContentWidth) / 2,
+            overflow: "hidden",
+          }}
+        >
+          <View className="flex flex-wrap flex-row mt-10 justify-center gap-4 p-4">
+            {imageData.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                activeOpacity={0.7}
+                className="relative h-28 flex items-center justify-center"
+                onPress={() => handlePress(item.screen)}
+                style={{ width: screenWidth * 0.4 }}
+              >
+                <Image source={item.source} className="w-full h-full absolute" />
+                <View className="absolute flex items-center">
+                  <Icon name={item.icon} size={24} color="white" />
+                  <Text className="text-white text-lg font-semibold mt-1">
+                    {item.label}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
-      </LinearGradient>
-
-      <View
-        className="bg-white"
-        style={{
-          position: "absolute",
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          marginTop: screenHeight * 0.19,
-          width: postContentWidth,
-          marginHorizontal: (screenWidth - postContentWidth) / 2,
-          overflow: "hidden",
-        }}
-      >
-        <View className="flex flex-wrap flex-row mt-10 justify-center gap-4 p-4">
-          {imageData.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              activeOpacity={0.7}
-              className="relative h-28 flex items-center justify-center"
-              onPress={() => handlePress(item.screen)}
-              style={{ width: screenWidth * 0.4 }}
-            >
-              <Image source={item.source} className="w-full h-full absolute" />
-              <View className="absolute flex items-center">
-                <Icon name={item.icon} size={24} color="white" />
-                <Text className="text-white text-lg font-semibold mt-1">
-                  {item.label}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-      
 
 
+      </ScrollView>
       <DeleteAccountModal
         visible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}

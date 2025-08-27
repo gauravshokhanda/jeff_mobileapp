@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Dimensions,
   TouchableOpacity,
+  ScrollView
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "expo-router";
@@ -153,14 +154,18 @@ const MenuHeader = () => {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className="flex-1 bg-white" 
+    >
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} >
+
+      
       <LinearGradient
         colors={["#082f49", "transparent"]}
-        style={{ height: screenHeight * 0.4 }}
+        style={{ height: screenHeight * 0.5,paddingTop: screenHeight * 0.025 }}
       >
-        <View className="mt-10 px-4 gap-2 flex-row items-center">
+        <View className="mt-10 px-4 gap-2 flex-row items-center justify-center">
           <View className="gap-1">
-            <Text className="text-2xl font-semibold text-white">
+            <Text className="text-3xl font-semibold text-white text-center">
               Welcome! {userName?.name || "User"}
             </Text>
           </View>
@@ -178,7 +183,7 @@ const MenuHeader = () => {
           overflow: "hidden",
         }}
       >
-        <View className="flex flex-wrap flex-row justify-center gap-4 p-4">
+        <View className="flex flex-wrap flex-row justify-center gap-4 p-4 bg-white">
           {imageData.map((item) => (
             <TouchableOpacity
               key={item.id}
@@ -212,6 +217,7 @@ const MenuHeader = () => {
           setResetModalVisible(false);
         }}
       />
+      </ScrollView>
     </SafeAreaView>
   );
 };

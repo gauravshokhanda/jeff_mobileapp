@@ -22,6 +22,8 @@ import AuthInput from "../components/AuthInput";
 import { LinearGradient } from "expo-linear-gradient";
 import fetchUserData from "./utils/fetchUserData";
 import ForgotPasswordModal from "../components/ForgotPasswordModal";
+import { useNavigation } from "@react-navigation/native";
+
 
 export default function SignIn() {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -36,9 +38,14 @@ export default function SignIn() {
   const router = useRouter();
   const dispatch = useDispatch();
   const Authtoken = useSelector((state) => state.auth.token);
-  const { isAuthenticated, token, user,access_token } = useSelector((state) => state.auth);
+  const { isAuthenticated, token, user, access_token } = useSelector((state) => state.auth);
   const [showResetModal, setShowResetModal] = useState(false);
+    const navigation = useNavigation();
+  
 
+    const handleReadDocumentation = () => {
+      navigation.navigate("Guideonboarding");
+  };
   useEffect(() => {
     console.log("User opened the SignIn screen");
     console.log(access_token);
@@ -265,29 +272,40 @@ export default function SignIn() {
                   </Link>
                 </View>
                 <View className="flex justify-center flex-row gap-2">
-                <TouchableOpacity
-                  onPress={() => router.replace("/(usertab)")}
-                  className="mt-4 bg-gray-300 px-6 py-3 rounded-xl"
-                >
-                  <Text
-                    className="text-gray-700 font-semibold"
-                    style={{ fontSize: screenHeight * 0.018 }}
+                  <TouchableOpacity
+                    onPress={() => router.replace("/(usertab)")}
+                    className="mt-4 bg-gray-300 px-6 py-3 rounded-xl"
                   >
-                    Login as Guest
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => router.replace("/premiumPlan")}
-                  className="mt-4 px-6 py-3 rounded-xl"
-                >
-                  <Text
-                    className="text-sky-800 underline font-semibold"
-                    style={{ fontSize: screenHeight * 0.018 }}
+                    <Text
+                      className="text-gray-700 font-semibold"
+                      style={{ fontSize: screenHeight * 0.018 }}
+                    >
+                      Login as Guest
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => router.replace("/premiumPlan")}
+                    className="mt-4 px-6 py-3 rounded-xl"
                   >
-                    Premium Plans
-                  </Text>
-                </TouchableOpacity>
+                    <Text
+                      className="text-sky-800 underline font-semibold"
+                      style={{ fontSize: screenHeight * 0.018 }}
+                    >
+                      Premium Plans
+                    </Text>
+                  </TouchableOpacity>
                 </View>
+                <TouchableOpacity
+                  onPress={handleReadDocumentation}
+                  className=" border border-sky-950 rounded-3xl px-10 py-3 mt-5"
+                  style={{
+                    marginBottom: screenHeight * 0.02,
+                  }}
+                >
+                  <Text className="text-sky-950 text-lg font-semibold text-center">
+                    App Tour
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </ScrollView>
@@ -300,23 +318,23 @@ export default function SignIn() {
       />
 
       {resendingOtp && (
-  <View
-    style={{
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: "rgba(0,0,0,0.3)",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 999,
-    }}
-  >
-    <ActivityIndicator size="large" color="#0c4a6e" />
-    <Text style={{ color: "white", marginTop: 10 }}>Sending OTP...</Text>
-  </View>
-)}
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.3)",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 999,
+          }}
+        >
+          <ActivityIndicator size="large" color="#0c4a6e" />
+          <Text style={{ color: "white", marginTop: 10 }}>Sending OTP...</Text>
+        </View>
+      )}
 
     </SafeAreaView>
   );

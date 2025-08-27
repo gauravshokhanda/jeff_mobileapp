@@ -48,7 +48,9 @@ export default function Dashboard() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100">
+    <SafeAreaView
+    style={{paddingTop:screenHeight * 0.04}}
+    className="flex-1 bg-gray-100">
       {/* Header and Search Bar */}
       <LinearGradient
         colors={["#082f49", "transparent"]}
