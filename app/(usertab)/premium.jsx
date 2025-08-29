@@ -23,7 +23,7 @@ import Constants from "expo-constants";
 import { useSelector } from "react-redux";
 import { API } from "../../config/apiConfig";
 
-const subscriptionSkus = Platform.OS === "ios" ? ["AC5DUserSubscriptionPlan"] : [];
+const subscriptionSkus = Platform.OS === "ios" ? ["AC5DUserSubscriptionPlan"] : ["ac5d_user_subscription"];
 const ITUNES_SHARED_SECRET = Constants.expoConfig?.extra?.itunesSharedSecret;
 
 const PlanCard = ({
@@ -58,9 +58,8 @@ const PlanCard = ({
     {showButton && (
       <TouchableOpacity
         activeOpacity={0.85}
-        className={`mt-6 mb-6 px-4 py-3 rounded-md ${
-          isCurrent ? "bg-gray-200" : "bg-gray-900"
-        }`}
+        className={`mt-6 mb-6 px-4 py-3 rounded-md ${isCurrent ? "bg-gray-200" : "bg-gray-900"
+          }`}
         disabled={isCurrent || loading}
         onPress={onSubscribe}
       >
@@ -68,9 +67,8 @@ const PlanCard = ({
           <ActivityIndicator color="#ffffff" />
         ) : (
           <Text
-            className={`text-center font-semibold text-base ${
-              isCurrent ? "text-gray-900" : "text-white"
-            }`}
+            className={`text-center font-semibold text-base ${isCurrent ? "text-gray-900" : "text-white"
+              }`}
           >
             {buttonText}
           </Text>
@@ -126,45 +124,59 @@ const UserPlans = () => {
 
       const receipt = purchase.transactionReceipt;
 
-      // Fire Apple Production API (non-blocking)
-      const appleValidationPromise = fetch("https://buy.itunes.apple.com/verifyReceipt", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          "receipt-data": receipt,
-          password: ITUNES_SHARED_SECRET,
-        }),
-      }).then((res) => res.json());
-
-      // Fire backend
-      API.post(
-        "/premium/subscribe",
-        {
-          receipt,
-          productId: purchase.productId,
-          platform: Platform.OS,
-          price: planPrice,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-        .then((res) => {
-          setOwned(true);
-        })
-        .catch((err) => {
-          console.log("Backend subscription error:", err.message);
-        });
-
       try {
-        const response = await appleValidationPromise;
-        if (response.status === 0) {
+        if (Platform.OS === "ios") {
+          // 🔹 Keep your existing iOS flow (unchanged)
+          const appleValidationPromise = fetch("https://buy.itunes.apple.com/verifyReceipt", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              "receipt-data": receipt,
+              password: ITUNES_SHARED_SECRET,
+            }),
+          }).then((res) => res.json());
+
+          API.post(
+            "/premium/subscribe",
+            {
+              receipt,
+              productId: purchase.productId,
+              platform: "ios",
+              price: planPrice,
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+          )
+            .then(() => setOwned(true))
+            .catch((err) => console.log("Backend subscription error (iOS):", err.message));
+
+          const response = await appleValidationPromise;
+          if (response.status === 0) {
+            await finishTransaction(purchase);
+          }
+        }
+
+        if (Platform.OS === "android") {
+          console.log("Sending Android subscription payload")
+          // 🔹 NEW: Only send purchaseToken to backend
+          const parsedReceipt = JSON.parse(purchase.transactionReceipt);
+          const purchaseToken = parsedReceipt.purchaseToken;
+          await API.post(
+            "/premium/subscribe",
+            {
+              purchaseToken,
+              productId: purchase.productId,
+              platform: "android",
+              price: planPrice,
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+          )
+            .then(() => setOwned(true))
+            .catch((err) => console.log("Backend subscription error (Android):", err.message));
+
           await finishTransaction(purchase);
         }
       } catch (err) {
-        console.log("Apple validation error:", err.message);
+        console.log("Subscription handling error:", err.message);
       } finally {
         setLoading(false);
       }
@@ -181,7 +193,9 @@ const UserPlans = () => {
     };
   }, [token]);
 
+
   const handleSubscribe = async () => {
+    console.log("handleSubscribe called");
     try {
       setLoading(true);
       await requestSubscription({ sku: premiumSku });
