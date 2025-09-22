@@ -91,8 +91,8 @@ android {
     applicationId 'com.ac5dconstruction'
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
-    versionCode 5
-    versionName "1.0.3"
+    versionCode 8
+    versionName "1.0.4"
 
     // ✅ Add this line
     missingDimensionStrategy "store", "play"

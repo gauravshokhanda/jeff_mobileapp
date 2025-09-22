@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Platform,
   Linking,
+  Alert
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -120,9 +121,14 @@ const UserPlans = () => {
 
   useEffect(() => {
     const purchaseUpdateSub = purchaseUpdatedListener(async (purchase) => {
+      console.log("Purchase update received:", JSON.stringify(purchase));
+      Alert.alert("DEBUG", "Purchase update received: " + JSON.stringify(purchase));
       if (!purchase?.transactionReceipt || purchase.productId !== premiumSku) return;
+      console.log("No valid purchase or wrong productId");
+      Alert.alert("DEBUG", "No valid purchase or wrong productId");
 
       const receipt = purchase.transactionReceipt;
+      Alert.alert("DEBUG", "Got receipt: " + receipt.substring(0, 50) + "...");
 
       try {
         if (Platform.OS === "ios") {
@@ -184,6 +190,7 @@ const UserPlans = () => {
 
     const errorSub = purchaseErrorListener((error) => {
       console.log("Purchase error:", error.message);
+      Alert.alert("Purchase Error", JSON.stringify(error));
       setLoading(false);
     });
 
@@ -196,10 +203,13 @@ const UserPlans = () => {
 
   const handleSubscribe = async () => {
     console.log("handleSubscribe called");
+    Alert.alert("Subscribe button pressed");
     try {
       setLoading(true);
       await requestSubscription({ sku: premiumSku });
+      Alert.alert("DEBUG", "requestSubscription triggered for: " + premiumSku);
     } catch (error) {
+      Alert.alert("Error", JSON.stringify(error));
       setLoading(false);
     }
   };
